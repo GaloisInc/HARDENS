@@ -4,9 +4,10 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && apt-get upgrade
 RUN apt-get install -y wget git vim python pip\
-    python3-dev software-properties-common
+    python3-dev software-properties-common \
+    iproute2 usbutils srecord
 
-# Yosys dependencies
+# Yosys
 RUN apt-get install -y build-essential clang bison flex \
 	libreadline-dev gawk tcl-dev libffi-dev git \
 	graphviz xdot pkg-config python3 libboost-system-dev \
@@ -16,7 +17,7 @@ WORKDIR /tools/yosys
 RUN make -j$(nproc)
 RUN make install PREFIX=/opt
 
-# Trellis dependencies
+# Trellis
 RUN apt-get install -y libboost-all-dev python3 python3-pip \
     cmake openocd
 RUN git clone --recursive https://github.com/SymbiFlow/prjtrellis /tools/prjtrellis
@@ -24,11 +25,11 @@ WORKDIR /tools/prjtrellis/libtrellis
 RUN cmake -DCMAKE_INSTALL_PREFIX=/opt .
 RUN make -j$(nproc)
 RUN make install
+ENV TRELLIS="/opt/share/trellis"
 
-# nextpnr dependencies
-# qt5-default
+# nextpnr
 RUN apt-get install -y python3-dev libboost-all-dev \
-    libeigen3-dev
+    libeigen3-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
 RUN git clone https://github.com/YosysHQ/nextpnr.git /tools/nextpnr
 WORKDIR /tools/nextpnr
 RUN cmake . -DARCH=ecp5 -DTRELLIS_INSTALL_PREFIX=/opt
@@ -45,12 +46,7 @@ RUN  ./configure --prefix=/opt/riscv --enable-multilib
 RUN export MAKEFLAGS="-j$(nproc)"
 RUN make
 RUN make linux
-ENV PATH="/opt/riscv/bin:${PATH}"
-
-# Install qt5
-# Qt5-default is no longer in Ubuntu 21.04
-# See a workaround at https://stackoverflow.com/a/67415291
-RUN apt-get install -y qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools
+ENV PATH="/opt/riscv/bin:/opt/bin:${PATH}"
 
 # ecpprog
 RUN apt-get install -y libftdi-dev
@@ -60,16 +56,17 @@ RUN make -j$(nproc)
 RUN make install
 
 # Iverilog
-RUN git clone https://github.com/steveicarus/iverilog.git /tools/iverilog
-WORKDIR /tools/iverilog
-RUN autoconf
-RUN ./configure
-RUN make -j$(nproc)
-RUN make install
+RUN apt-get install -y iverilog
 
-ENV PATH="/opt/bin:${PATH}"
+# Bluespec compiler
+RUN apt-get install -y libffi7
+WORKDIR /tmp
+RUN wget https://github.com/B-Lang-org/bsc/releases/download/2021.07/bsc-2021.07-ubuntu-20.04.tar.gz
+RUN tar xvzf bsc-2021.07-ubuntu-20.04.tar.gz
+RUN mv bsc-2021.07-ubuntu-20.04 /tools/bsc-2021.07-ubuntu-20.04
+ENV PATH="/tools/bsc-2021.07-ubuntu-20.04/bin:${PATH}"
 
-# Additional tools
-RUN apt-get install -y iproute2 usbutils srecord
-ENV TRELLIS="/opt/share/trellis"
+# Verilator
+RUN apt-get install -y verilator
+
 WORKDIR /
