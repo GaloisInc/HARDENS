@@ -20,11 +20,11 @@ Specifically we are talking about the following tools:
 Interestingly, Symbiflow claims to support Lattice ECP5 board, but doesn't provide any examples so the usability of Symbiflow proper is questionable.
 A brief google search also indicates that for ECP5 a combination of Yosys+Prjtrellis is used, not Symbiflow.
 
-## Yosis
+## Yosys
 
 - https://github.com/YosysHQ/yosys
 
-Yosis is a verilog synthesis tool, the way I understand it is that it reads multiple verilog files, does some optimizations and returns a single verilog file that can be then used to generate a bitstream.
+Yosys is tool suite that contains a Verilog synthesis tool.  The way I understand it is that it reads multiple Verilog files, does some optimizations, and returns a single Verilog file that can be then used to generate a bitstream.
 
 ## Project Trellis
 
@@ -44,13 +44,11 @@ nextpnr portable FPGA place and route tool.
 
 For programming the flash memory of ECP5.
 
-
 ## Icarus Verilog
 
 - http://iverilog.icarus.com/
 
-Stricter verilog parser than Yosys, used by the *icicle* project for validation.
-
+Stricter Verilog parser than Yosys, used by the *icicle* project for validation.
 
 ## Other tools
 
@@ -59,8 +57,7 @@ Stricter verilog parser than Yosys, used by the *icicle* project for validation.
 - https://github.com/m-labs/migen
 - https://github.com/litex-hub
 
-
-High level tools for designing hardware. *Migen* lets you create hardware in python.
+High level tools for designing hardware. *Migen* lets you create hardware in Python.
 
 ### Older prebuilt ECP5 toolchain 
 
