@@ -1,0 +1,57 @@
+subsystem RTS Implementation Artifacts (Artifacts)
+
+component Cryptol System Specification (CryptolSpec)
+
+component Cryptol Software Compiler (CryptolToC)
+
+component Cryptol Hardware Compiler (CryptolToSystemVerilog)
+
+component Hand-written Software Implementation (SWImpl)
+
+component Synthesized Software Implementation (SynthSW)
+
+component Hand-written Hardware Implementation (HWImpl)
+
+component Synthesized Hardware Implementation (SynthHW)
+
+component COTS High-Assurance RV32I RISC-V CPU (CPU)
+
+component CompCert Compiler (CompCert)
+
+component Bluespec Compiler (BSC)
+
+component SymbiFlow Synthesizer (SymbiFlow)
+
+component Software Binaries (Binaries)
+
+component Demonstrator Verilog
+
+component FPGA Bitstream (Bitstream)
+
+subsystem Dataflow of RTS Implementation Artifacts (Dataflow)
+
+relation CryptolToC client CryptolSpec
+relation CryptolToSystemVerilog client CryptolSpec
+
+relation SynthSW client CryptolToC
+
+relation SynthHW client CryptolToSystemVerilog
+relation SynthHW client BSC
+
+relation CompCert client SynthSoftImpl
+relation CompCert client SoftImpl
+
+relation BSC inherit Compiler
+relation BSC client HWImpl
+
+relation SymbiFlow client SynthHW
+relation SymbiFlow client CPU
+
+relation Binaries client CompCert
+
+Demonstrator Verilog client SymbiFLow
+Demonstrator Verilog contains Soft-core RISC-V CPU
+
+Bitstream contains SynthHW
+Bitstream contains CPU
+BitStream client SymbiFlow

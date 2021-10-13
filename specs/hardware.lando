@@ -1,0 +1,96 @@
+subsystem RTS Hardware Artifacts
+
+component USB Cable
+relation USB Cable inherit USB, Cable
+
+component SERDES Test SMA Connectors (J9-J26)
+
+component Parallel Config Header (J38)
+
+component Versa Expansion Connectors (J39-J40)
+
+component SPI Flag Configuration Memory (U4)
+
+component CFG Switches (SW1)
+
+component Input Switches (SW5)
+
+component Output LEDs (D5-D12)
+
+component Input Push Buttons (SW2-SW4)
+
+component 12 V DC Power Input (J37)
+
+component GPIO Headers (J32-J33)
+
+component PMOD/GPIO Header (J31)
+
+component Microphone Board/GPIO Header (J30)
+
+component Prototype Area
+
+component GPIO Headers (J5, J8)
+
+component ECP5-5G Device (U3)
+
+component JTAG Interface (J1)
+
+component Mini USB Programming (J2)
+
+component Lattice ECP-5 FPGA Development Board (FPGA Board)
+component ECP-5
+relation ECP-5 inherit FPGA
+relation FPGA Board contains ECP-5
+relation FPGA Board inherit PCB
+// @todo Add all board I/O.
+relation FPGA Dev Board contains USB Mini
+relation FPGA Dev Board contains GPIO1, GPIO2, GPIO3, GPIO4, GPIO5, GPIO6
+
+component Temperature Sensor
+
+component Pressure Sensor
+
+component Solenoid Actuator
+
+relation Temperature Sensor inherit Sensor
+relation Pressure Sensor inherit Sensor
+relation Solenoid Actuator inherit Actuator
+
+subsystem Physical Architecture
+
+component USB UI Cable (UI-C)
+
+component USB Programming Cable (Prog-C)
+
+component USB Debugging I/O Cable (Debug-C)
+
+component Dev Board (Board)
+
+component Temperature Sensor 1 (TS1)
+component Temperature Sensor 2 (TS2)
+component Pressure Sensor 1 (PS1)
+component Pressure Sensor 2 (PS2)
+component Solenoid Actuator 1 (SA1)
+component Solenoid Actuator 2 (SA2)
+
+component HARDENS Demonstrator (Demonstrator)
+
+relation Demonstrator client Board
+relation Board client UI
+relation Board client UI-C
+relation Board client Prog-C
+relation Board client Debug-C
+relation Board client TS1
+relation Board client TS2
+relation Board client PS1
+relation Board client PS2
+relation Board client SA1
+relation Board client SA2
+
+component Developer Machine
+relation UI-C client Developer Machine
+relation Prog-C client Developer Machine
+relation Debug-C client Developer Machine
+
+
+

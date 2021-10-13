@@ -1,0 +1,32 @@
+subsystem RTS Instrumentation Architecture
+
+subsystem RTS Instrumentation Systems Architecture
+
+subsystem Instrumentation Software Stack (SWStack)
+
+component Instrumentation Implementation 1 (InstImpl1)
+relation InstImpl1 inherit SWImpl
+relation InstImpl1 inherit High-Assurance
+relation InstImpl1 inherit C
+
+component Instrumentation Implementation 2  (InstImpl2)
+
+component Actuator Implementation 1 (ActImpl1)
+
+component Voting Implementation 1 (VoteImpl1)
+
+relation SWStack client Binaries
+relation Binaries client SWStack
+
+subsystem Instrumentation, Actuation, and Voting Hardware Stack (HWStack)
+
+component Instrumentation Implementation 3 (InstImpl3)
+
+component Instrumentation Implementation 4 (InstImpl4)
+
+component Actuator Implementation 2  (ActImpl2)
+
+component Voting Implementation 2 (VoteImpl2)
+
+relation HWStack client Bitstream
+relation Bitstream client HWStack

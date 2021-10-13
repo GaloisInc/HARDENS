@@ -1,0 +1,153 @@
+subsystem Proposal Acronyms (Acronyms)
+
+component 21st Century Cryptography (21CC)
+
+component Architecture Analysis and Design Language (AADL)
+
+component ISO ANSI C Specification Language (ACSL)
+
+component Advanced Encryption Standard (AES)
+
+component Application Programming Interface (API)
+
+component Application-Specific Integrated Circuit (ASIC)
+
+component Abstract State Machine (ASM)
+
+component Amazon Web Services (AWS)
+
+component Balancing the Evaluation of System Security Properties Against Industrial Needs (BESSPIN)
+
+component Behavioral Language for Embedded Systems with Software (BLESS)
+
+component Business Object Notation (BON)
+
+component Bluespec SystemVerilog (BSV)
+
+component BESSPIN Tool Suite (BTS)
+
+component Continuous Deployment (CD)
+
+component Continuous Integration (CI)
+
+component Commercial Off The Shelf (COTS)
+
+component Central Processing Unit (CPU)
+
+component Continuous Verification (CV)
+
+component Communicating Sequential Processes (CSP)
+
+component Digital Engineering (DE)
+
+component Digital Instrumentation \& Control (diandc)
+
+component Defense Industrial Base (DIB)
+
+component Department of Defense (DoD)
+
+component Domain Specific Language (DSL)
+
+component Electronic Design Automation (EDA)
+
+component Field Programmable Gate Array (FPGA)
+
+component Gnu Compiler Collection (GCC)
+
+component Government Furnished Equipment (GFE)
+
+component Galois Low-energy Asynchronous Secure SoC for Computer Vision (GLASS-CV)
+
+component General Purpose I/O (GPIO)
+
+component High-Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS)
+
+component Hardware Description Language (HDL)
+
+component Hash-based Message Authentication Code (HMAC)
+
+component Higher-Order Logic (HOL)
+
+component Hardware Security Module (HSM)
+
+component Intelligence Community (IC)
+
+component Integrated Development Environment (IDE)
+
+component Intellectual Property (IP)
+
+component Instruction Set Architecture (ISA)
+
+component Intermediate Representation (IR)
+
+component Java Modeling Language (JML)
+
+component Low Level Virtual Machine (LLVM)
+
+component Model-Based Engineering (MBE)
+
+component Model-Based Systems Engineering (MBSE)
+
+component Natural Language Processing (NLP)
+
+component Nuclear Regulatory Commission (NRC)
+
+component National Security Agency (NSA)
+
+component Nuclear Power Plant (NPP)
+
+component Object Constraint Language (OCL)
+
+component Open Systems Architecture (OSA)
+
+component Power, Performance, Area, and Security (PPAS)
+
+component Rigorous Digital Engineering (RDE)
+
+component Register Transfer Level (RTL)
+
+component Reactor Trip System (RTS)
+
+component Software Analysis Workbench (SAW)
+
+component Safety Critical Application Development Environment (SCADE)
+
+component Secure Hash Algorithm (SHA)
+
+component Satisfiability Modulo Theories (SMT)
+
+component Secret Ninja Formal Methods (SNFM)
+
+component Statement of Work (SoW)
+
+component SystemVerilog (SV)
+
+component SystemVerilog Assertions (SVA)
+
+component Size, Weight, and Power (SWaP)
+ 
+component System Modeling Language (SysML)
+
+component System-on-Chip (SoC)
+
+component System Security Integration Through Hardware and Firmware (SSITH)
+
+component User Interface (UI)
+
+component Unified Modeling Language (UML)
+
+component Universal Serial Bus (USB)
+
+component United States Government (USG)
+
+component Unified Theories of Programming (UTP)
+
+component Universal Verification Methodology (UVM)
+
+component User eXperience (UX)
+
+component Verilog
+
+component Vienna Development Method (VDM)
+
+component Very High Speed Integrated Circuit (VHSIC) Hardware Description Language (VHDL)

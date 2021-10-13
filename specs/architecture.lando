@@ -1,0 +1,86 @@
+// Architecture
+
+subsystem RTS System Architecture (RTS System)
+
+subsystem Root
+
+component Core Finite State Machine (FSM)
+
+component Programming I/O
+
+component UI I/O
+
+component Debugging I/O
+
+subsystem Actuation Logic
+
+component Voting 1
+
+component Voting 2
+
+component Actuator 1
+
+component Actuator 2
+
+subsystem Computation
+
+component RISC-V CPU 1
+
+component RISC-V CPU 2
+
+component RISC-V CPU 3
+
+subsystem Hardware
+
+subsystem FPGA
+
+component Lattice ECP-5 FGPA Development Board
+
+subsystem Actuators
+
+component Actuator 1
+
+component Actuator 2
+
+subsystem Sensors
+
+component Temperature Sensor 1
+
+component Temperature Sensor 2
+
+component Pressure Sensor 1
+
+component Pressure Sensor 2
+
+subsystem Instrumentation
+
+component Instrumentation 1
+
+component Instrumentation 2
+
+component Instrumentation 3
+
+component Instrumentation 4
+
+// Top-level subsystems.
+
+relation RTS System contains Root
+relation RTS System contains Actuation Logic
+relation RTS System contains Computation
+relation RTS System contains Hardware
+relation RTS System contains Instrumentation
+
+// Nested subsystems.
+relation Hardware contains FPGA
+relation Hardware contains Actuators
+relation Hardware contains Sensors
+
+// Client-supplier relations.
+relation Root client Actuation Logic
+relation Root client Computation
+relation Computation client Hardware
+relation Actuation Logic client Hardware
+relation Instrumentation client Hardware
+relation Instrumentation client Actuation Logic
+relation Actuation Logic client Instrumentation
+
