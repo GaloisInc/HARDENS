@@ -69,4 +69,18 @@ ENV PATH="/tools/bsc-2021.07-ubuntu-20.04/bin:${PATH}"
 # Verilator
 RUN apt-get install -y verilator
 
+# OpenFPGAloader
+RUN apt-get install -y libftdi1-2 libftdi1-dev libhidapi-libusb0 libhidapi-dev libudev-dev cmake pkg-config make g++
+RUN git clone https://github.com/trabucayre/openFPGALoader.git /tools/openFPGALoader
+WORKDIR /tools/openFPGALoader
+RUN mkdir build
+WORKDIR /tools/openFPGALoader/build
+RUN cmake ../
+RUN cmake --build .
+RUN make install
+#WORKDIR /tools/openFPGALoader
+#RUN cp 99-openfpgaloader.rules /etc/udev/rules.d/
+#RUN udevadm control --reload-rules && sudo udevadm trigger # force udev to take new rule
+#RUN usermod -a $USER -G plugdev # add user to plugdev group
+
 WORKDIR /

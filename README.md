@@ -31,7 +31,7 @@ Details [here](https://www.latticesemi.com/products/developmentboardsandkits/ecp
 
 ### GPIO headers
 
-Headers are: J5, J8, J32, J33
+Headers are: J5, J8, J32, J33 and Max I_OUT for 3V3 is 1.35A
 
 J5 Pinout:
 
