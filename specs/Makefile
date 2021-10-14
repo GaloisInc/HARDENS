@@ -2,7 +2,9 @@
 
 all: validate
 
-validate:
+validate: validate_lando validate_lobot
+
+validate_lando:
 	lando validate RTS.lando
 	lando validate dataflow.lando
 	lando validate instrumentation.lando
@@ -12,3 +14,6 @@ validate:
 	lando validate architecture.lando
 	lando validate hardware.lando
 	lando validate tool_scenarios.lando
+
+validate_lobot:
+	lobot RTS.lobot

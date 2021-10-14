@@ -360,6 +360,8 @@ component ECP-5
 
 relation ECP-5 inherit FPGA
 
+component ECP5
+
 component Printed Component Board (PCB)
 @todo kiniry Add an explanation.
 
