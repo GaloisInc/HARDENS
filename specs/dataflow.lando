@@ -1,34 +1,59 @@
 subsystem RTS Implementation Artifacts (Artifacts)
 
 component Cryptol System Specification (CryptolSpec)
+@todo kiniry Add an explanation.
 
 component Cryptol Software Compiler (CryptolToC)
+@todo kiniry Add an explanation.
 
 component Cryptol Hardware Compiler (CryptolToSystemVerilog)
+@todo kiniry Add an explanation.
+
+component Software Implementation (Software)
+@todo kiniry Add an explanation.
 
 component Hand-written Software Implementation (SWImpl)
+inherit Hand-written Software 
+@todo kiniry Add an explanation.
 
 component Synthesized Software Implementation (SynthSW)
+inherit Machine-generated Software 
+@todo kiniry Add an explanation.
+
+component Hardware Implementation (Hardware)
+@todo kiniry Add an explanation.
 
 component Hand-written Hardware Implementation (HWImpl)
+inherit Hand-written Hardware
+@todo kiniry Add an explanation.
 
 component Synthesized Hardware Implementation (SynthHW)
+inherit Machine-generated Hardware
+@todo kiniry Add an explanation.
 
 component COTS High-Assurance RV32I RISC-V CPU (CPU)
+@todo kiniry Add an explanation.
 
 component CompCert Compiler (CompCert)
+@todo kiniry Add an explanation.
 
 component Bluespec Compiler (BSC)
+@todo kiniry Add an explanation.
 
 component SymbiFlow Synthesizer (SymbiFlow)
+@todo kiniry Add an explanation.
 
 component Software Binaries (Binaries)
+@todo kiniry Add an explanation.
 
 component Demonstrator Verilog
+@todo kiniry Add an explanation.
 
 component FPGA Bitstream (Bitstream)
+@todo kiniry Add an explanation.
 
 subsystem Dataflow of RTS Implementation Artifacts (Dataflow)
+@todo kiniry Add an explanation.
 
 relation CryptolToC client CryptolSpec
 relation CryptolToSystemVerilog client CryptolSpec
@@ -49,9 +74,9 @@ relation SymbiFlow client CPU
 
 relation Binaries client CompCert
 
-Demonstrator Verilog client SymbiFLow
-Demonstrator Verilog contains Soft-core RISC-V CPU
+relation Demonstrator Verilog client SymbiFLow
+relation Demonstrator Verilog contains Soft-core RISC-V CPU
 
-Bitstream contains SynthHW
-Bitstream contains CPU
-BitStream client SymbiFlow
+relation Bitstream contains SynthHW
+relation Bitstream contains CPU
+relation BitStream client SymbiFlow

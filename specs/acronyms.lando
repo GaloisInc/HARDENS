@@ -1,153 +1,234 @@
 subsystem Proposal Acronyms (Acronyms)
+@todo kiniry Add an explanation.
 
 component 21st Century Cryptography (21CC)
+@todo kiniry Add an explanation.
 
 component Architecture Analysis and Design Language (AADL)
+@todo kiniry Add an explanation.
 
 component ISO ANSI C Specification Language (ACSL)
+@todo kiniry Add an explanation.
 
 component Advanced Encryption Standard (AES)
+@todo kiniry Add an explanation.
 
 component Application Programming Interface (API)
+@todo kiniry Add an explanation.
 
 component Application-Specific Integrated Circuit (ASIC)
+@todo kiniry Add an explanation.
 
 component Abstract State Machine (ASM)
+@todo kiniry Add an explanation.
 
 component Amazon Web Services (AWS)
+@todo kiniry Add an explanation.
 
 component Balancing the Evaluation of System Security Properties Against Industrial Needs (BESSPIN)
+@todo kiniry Add an explanation.
 
 component Behavioral Language for Embedded Systems with Software (BLESS)
+@todo kiniry Add an explanation.
 
 component Business Object Notation (BON)
+@todo kiniry Add an explanation.
 
 component Bluespec SystemVerilog (BSV)
+@todo kiniry Add an explanation.
 
 component BESSPIN Tool Suite (BTS)
+@todo kiniry Add an explanation.
 
 component Continuous Deployment (CD)
+@todo kiniry Add an explanation.
 
 component Continuous Integration (CI)
+@todo kiniry Add an explanation.
 
 component Commercial Off The Shelf (COTS)
+@todo kiniry Add an explanation.
 
 component Central Processing Unit (CPU)
+@todo kiniry Add an explanation.
 
 component Continuous Verification (CV)
+@todo kiniry Add an explanation.
 
 component Communicating Sequential Processes (CSP)
+@todo kiniry Add an explanation.
 
 component Digital Engineering (DE)
+@todo kiniry Add an explanation.
 
 component Digital Instrumentation \& Control (diandc)
+@todo kiniry Add an explanation.
 
 component Defense Industrial Base (DIB)
+@todo kiniry Add an explanation.
 
 component Department of Defense (DoD)
+@todo kiniry Add an explanation.
 
 component Domain Specific Language (DSL)
+@todo kiniry Add an explanation.
 
 component Electronic Design Automation (EDA)
+@todo kiniry Add an explanation.
 
 component Field Programmable Gate Array (FPGA)
+@todo kiniry Add an explanation.
 
 component Gnu Compiler Collection (GCC)
+@todo kiniry Add an explanation.
 
 component Government Furnished Equipment (GFE)
+@todo kiniry Add an explanation.
 
 component Galois Low-energy Asynchronous Secure SoC for Computer Vision (GLASS-CV)
+@todo kiniry Add an explanation.
 
 component General Purpose I/O (GPIO)
+@todo kiniry Add an explanation.
 
 component High-Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS)
+@todo kiniry Add an explanation.
 
 component Hardware Description Language (HDL)
+@todo kiniry Add an explanation.
 
 component Hash-based Message Authentication Code (HMAC)
+@todo kiniry Add an explanation.
 
 component Higher-Order Logic (HOL)
+@todo kiniry Add an explanation.
 
 component Hardware Security Module (HSM)
+@todo kiniry Add an explanation.
 
 component Intelligence Community (IC)
+@todo kiniry Add an explanation.
 
 component Integrated Development Environment (IDE)
+@todo kiniry Add an explanation.
 
 component Intellectual Property (IP)
+@todo kiniry Add an explanation.
 
 component Instruction Set Architecture (ISA)
+@todo kiniry Add an explanation.
 
 component Intermediate Representation (IR)
+@todo kiniry Add an explanation.
 
 component Java Modeling Language (JML)
+@todo kiniry Add an explanation.
 
 component Low Level Virtual Machine (LLVM)
+@todo kiniry Add an explanation.
 
 component Model-Based Engineering (MBE)
+@todo kiniry Add an explanation.
 
 component Model-Based Systems Engineering (MBSE)
+@todo kiniry Add an explanation.
 
 component Natural Language Processing (NLP)
+@todo kiniry Add an explanation.
 
 component Nuclear Regulatory Commission (NRC)
+@todo kiniry Add an explanation.
 
 component National Security Agency (NSA)
+@todo kiniry Add an explanation.
 
 component Nuclear Power Plant (NPP)
+@todo kiniry Add an explanation.
 
 component Object Constraint Language (OCL)
+@todo kiniry Add an explanation.
 
 component Open Systems Architecture (OSA)
+@todo kiniry Add an explanation.
 
 component Power, Performance, Area, and Security (PPAS)
+@todo kiniry Add an explanation.
 
 component Rigorous Digital Engineering (RDE)
+@todo kiniry Add an explanation.
 
 component Register Transfer Level (RTL)
+@todo kiniry Add an explanation.
 
 component Reactor Trip System (RTS)
+@todo kiniry Add an explanation.
 
 component Software Analysis Workbench (SAW)
+@todo kiniry Add an explanation.
 
 component Safety Critical Application Development Environment (SCADE)
+@todo kiniry Add an explanation.
 
 component Secure Hash Algorithm (SHA)
+@todo kiniry Add an explanation.
 
 component Satisfiability Modulo Theories (SMT)
+@todo kiniry Add an explanation.
 
 component Secret Ninja Formal Methods (SNFM)
+@todo kiniry Add an explanation.
 
 component Statement of Work (SoW)
+@todo kiniry Add an explanation.
 
 component SystemVerilog (SV)
+@todo kiniry Add an explanation.
 
 component SystemVerilog Assertions (SVA)
+@todo kiniry Add an explanation.
 
 component Size, Weight, and Power (SWaP)
- 
+@todo kiniry Add an explanation.
+
 component System Modeling Language (SysML)
+@todo kiniry Add an explanation.
 
 component System-on-Chip (SoC)
+@todo kiniry Add an explanation.
 
 component System Security Integration Through Hardware and Firmware (SSITH)
+@todo kiniry Add an explanation.
 
 component User Interface (UI)
+@todo kiniry Add an explanation.
 
 component Unified Modeling Language (UML)
+@todo kiniry Add an explanation.
 
 component Universal Serial Bus (USB)
+@todo kiniry Add an explanation.
 
 component United States Government (USG)
+@todo kiniry Add an explanation.
 
 component Unified Theories of Programming (UTP)
+@todo kiniry Add an explanation.
 
 component Universal Verification Methodology (UVM)
+@todo kiniry Add an explanation.
 
 component User eXperience (UX)
+@todo kiniry Add an explanation.
 
 component Verilog
+@todo kiniry Add an explanation.
 
 component Vienna Development Method (VDM)
+@todo kiniry Add an explanation.
 
-component Very High Speed Integrated Circuit (VHSIC) Hardware Description Language (VHDL)
+component Very High Speed Integrated Circuit (VHSIC)
+@todo kiniry Add an explanation.
+
+component VHSIC Hardware Description Language (VHDL)
+@todo kiniry Add an explanation.
+

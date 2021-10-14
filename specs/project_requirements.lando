@@ -1,12 +1,12 @@
-requirements
+requirements HARDENS Project High-level Requirements
 
-NRC Understanding (Understanding)
+NRC Understanding
 Provide to the NRC expert technical services in order to develop a
 better understanding of how Model-Based Systems Engineering (MBSE)
 methods and tools can support regulatory reviews of adequate design
-and design assurance
+and design assurance.
 
-Identify Regulatory Gaps (Gaps)
+Identify Regulatory Gaps
 Identify any barriers or gaps associated with MBSE in a regulatory
 review of Digital Instrumentation and Control Systems for existing
 Nuclear Power Plants.
@@ -25,6 +25,3 @@ Demonstrator Groundwork
 Our demonstrator lays the groundwork for a high-assurance reusable
 product for safety critical Digital Instrumentation and Control
 Systems systems in Nuclear Power Plants.
-
-
-

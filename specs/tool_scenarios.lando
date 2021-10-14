@@ -7,7 +7,7 @@ specifications.
 Verify Hardware
 Formally verify that a hardware design fulfills its specifications.
 
-Formal Equivalence Checking (FEV)
+Formal Equivalence Checking
 Formally verify that programs written in different languages (even
 across the hardware/software boundary) are equivalent.
 
@@ -25,7 +25,7 @@ Instruction Set Architectures.
 Binary Rewriting
 Perform binary analysis and rewriting for a variety of purposes.
 
-Model-Based Test Generation (MBTG)
+Model-Based Test Generation
 Automatically generate model-based tests for a software, firmware, or
 hardware system.
 
@@ -71,5 +71,10 @@ information leakage properties of embedded systems and hardware
 designs.
 
 Configure Product Line
+Make feature selections in a feature model in order to specify the
+subset of products from a product line that are of interest.
 
-
+Fully Configure Product Line
+Configure a feature model until no open choices exist, thereby
+creating a fully configured feature model that specifies a single
+product.
