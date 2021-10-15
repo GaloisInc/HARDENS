@@ -90,7 +90,7 @@ rts : kind of struct
        -- What level of assurance does the demonstrator have overall?
        assurance : assurance_level
        -- Is the FPGA being twinned via a Verilog simulator/emulator?
-       fpga : twin_or_physical
+       soc : twin_or_physical
        -- Is the first tempurature sensor a twin or physically present?
        ts1 : twin_or_physical
        -- Is the second tempurature sensor a twin or physically present?
@@ -112,8 +112,8 @@ rts : kind of struct
   where
     cost = 0 | cost = 100 | cost = 200
     all_devices_twins <=> ((ts1 = Twin) & (ts2 = Twin) & (ps1 = Twin) & (ps2 = Twin) & (sa1 = Twin) & (sa2 = Twin))
-    (fpga = Twin) => all_devices_twins
-    virtualized_platform_rt <=> ((fpga = Twin) & (board = RV32M1_VEGA) & (rt = None)) ^ ((fpga = Twin) & (board = None))
+    (soc = Twin) => all_devices_twins
+    virtualized_platform_rt <=> ((soc = Twin) & (board = RV32M1_VEGA) & (rt = None)) ^ ((soc = Twin) & (board = None))
 
 -- @design kiniry This feature model needs to be further enriched to
 -- capture the design, nature, and assuance of the RTS architecture's
