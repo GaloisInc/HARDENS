@@ -19,6 +19,20 @@ $ docker build -t hardens:latest .
 $ docker run --network host --privileged -v $PWD:/HARDENS -it hardens:latest
 ```
 
+In order to run a long-lived Docker container for reuse, use a `docker
+run`
+command like the following, ensuring that you are in the right
+directory in order to bind your sandbox properly into the container.
+```
+$ docker run -d -it --name HARDENS --network host --privileged -v $PWD:/HARDENS hardens:latest
+```
+
+After running such a detacted container, attach to it for interactive
+use by running a command like:
+```
+$ docker exec -it HARDENS bash -l
+```
+
 ## Lattice ECP5 evaluation board
 
 Details [here](https://www.latticesemi.com/products/developmentboardsandkits/ecp5evaluationboard#_C694C444BC684AD48A3ED64C227B6455). The board uses ECP5-5G FPGA ([LFE5UM5G-85F-8BG381](https://www.latticesemi.com/en/Products/FPGAandCPLD/ECP5)) which has:
