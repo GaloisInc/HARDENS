@@ -1,0 +1,21 @@
+system Reactor Trip System (RTS)
+@todo kiniry Add an explanation.
+
+subsystem RTS Architecture (Architecture)
+@todo kiniry Add an explanation.
+
+subsystem RTS Hardware Artifacts (Hardware)
+@todo kiniry Add an explanation.
+
+subsystem RTS Properties (Properties)
+@todo kiniry Add an explanation.
+
+subsystem IEEE Std 603-2018 Characteristics (Characteristics)
+@todo kiniry Add an explanation.
+
+relation RTS contains Architecture
+relation RTS contains Hardware
+relation RTS contains Properties
+relation RTS contains Characteristics
+
+// Properties

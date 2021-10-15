@@ -1,0 +1,158 @@
+subsystem RTS Hardware Artifacts
+The physical hardware components that are a part of the HARDENS RTS
+demonstrator.
+
+component USB Cable
+A normal USB cable.
+What kind of USB connector is on the start of the cable?
+What kind of USB connector is on the end of the cable?
+
+relation USB Cable inherit USB, Cable
+
+component SERDES Test SMA Connectors (J9-J26)
+@todo To be copied from board documentation.
+
+component Parallel Config Header (J38)
+@todo To be copied from board documentation.
+
+component Versa Expansion Connectors (J39-J40)
+@todo To be copied from board documentation.
+
+component SPI Flag Configuration Memory (U4)
+@todo To be copied from board documentation.
+
+component CFG Switches (SW1)
+@todo To be copied from board documentation.
+
+component Input Switches (SW5)
+@todo To be copied from board documentation.
+
+component Output LEDs (D5-D12)
+@todo To be copied from board documentation.
+
+component Input Push Buttons (SW2-SW4)
+@todo To be copied from board documentation.
+
+component 12 V DC Power Input (J37)
+@todo To be copied from board documentation.
+
+component GPIO Headers (J32-J33)
+@todo To be copied from board documentation.
+
+component PMOD/GPIO Header (J31)
+@todo To be copied from board documentation.
+
+component Microphone Board/GPIO Header (J30)
+@todo To be copied from board documentation.
+
+component Prototype Area
+@todo To be copied from board documentation.
+
+component GPIO Headers (J5_and_J8)
+@todo To be copied from board documentation.
+
+component ECP5-5G Device (U3)
+@todo To be copied from board documentation.
+
+component JTAG Interface (J1)
+@todo To be copied from board documentation.
+
+component Mini USB Programming (J2)
+@todo To be copied from board documentation.
+
+component Lattice ECP-5 FPGA Development Board (Board)
+@todo To be copied from board documentation.
+
+relation ECP5-5G inherit FPGA
+relation Board contains ECP5-5G
+relation Board inherit PCB
+
+// @todo Add all board I/O and devices listed above.
+
+relation FPGA Dev Board contains J2
+
+// relation FPGA Dev Board contains etc.
+
+component Temperature Sensor
+A sensor that is capable of measuring the temperature of its environment.
+What is your temperature reading in Celcius (C)?
+
+component Pressure Sensor
+A sensor that is capable of measuring the air pressure of its environment.
+What is your pressure reading in Pascal (P)?
+
+component Solenoid Actuator
+A solenoid actuator capable of being in an open or closed state.
+Close!
+Open!
+
+relation Temperature Sensor inherit Sensor
+relation Pressure Sensor inherit Sensor
+relation Solenoid Actuator inherit Actuator
+
+subsystem Physical Architecture
+The physical architecture of the HARDENS RTS demonstrator.
+
+component USB UI Cable (UI-C)
+The USB cable used to communicate the ASCII UI to/from the board.
+
+component USB Programming Cable (Prog-C)
+The USB cable used to program the board with a bitstream.
+
+component USB Debugging I/O Cable (Debug-C)
+The USB cable used to interact with the board in a debugger.
+
+component Dev Board (Board)
+A PCB developer board used to prototype hardware.
+
+// * MOSFET power control kit: https://www.sparkfun.com/products/12959
+
+// * 12 V Latch solenoid: https://www.sparkfun.com/products/15324
+
+// * Pressure sensor: https://www.sparkfun.com/products/11084
+
+component Temperature Sensor 1 (TS1)
+The first of two redundant temperature sensors.
+
+component Temperature Sensor 2 (TS2)
+The second of two redundant temperature sensors.
+
+component Pressure Sensor 1 (PS1)
+The first of two redundatnt pressure sensors.
+
+component Pressure Sensor 2 (PS2)
+The second of two redundant pressure sensors.
+
+component Solenoid Actuator 1 (SA1)
+The first of two redundant solenoid actuators.
+
+component Solenoid Actuator 2 (SA2)
+The second of two redundant solenoid actuators.
+
+component HARDENS Demonstrator (Demonstrator)
+The fully assembled HARDENS demonstrator hardware with all component
+present.
+
+relation Demonstrator client Board
+relation Board client UI
+relation Board client UI-C
+relation Board client Prog-C
+relation Board client Debug-C
+relation Board client TS1
+relation Board client TS2
+relation Board client PS1
+relation Board client PS2
+relation Board client SA1
+relation Board client SA2
+
+component Developer Machine
+The computer used by a developer to interface with the demonstrator,
+typically for driving the demonstrator's UI and programming and
+debugging the board.
+
+relation UI-C client Developer Machine
+relation Prog-C client Developer Machine
+relation Debug-C client Developer Machine
+
+
+
