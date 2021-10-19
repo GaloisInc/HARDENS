@@ -63,7 +63,7 @@ component Mini USB Programming (J2)
 component Lattice ECP-5 FPGA Development Board (Board)
 @todo To be copied from board documentation.
 
-relation ECP5-5G inherit FPGA
+relation ECP5-5G Device inherit FPGA
 relation Board contains ECP5-5G
 relation Board inherit PCB
 

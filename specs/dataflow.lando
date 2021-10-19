@@ -46,7 +46,7 @@ component SymbiFlow Synthesizer (SymbiFlow)
 component Software Binaries (Binaries)
 @todo kiniry Add an explanation.
 
-component Demonstrator Verilog
+component Demonstrator Verilog (RTL)
 @todo kiniry Add an explanation.
 
 component FPGA Bitstream (Bitstream)
@@ -74,8 +74,8 @@ relation SymbiFlow client CPU
 
 relation Binaries client CompCert
 
-relation Demonstrator Verilog client SymbiFLow
-relation Demonstrator Verilog contains Soft-core RISC-V CPU
+relation RTL client SymbiFLow
+relation RTL contains Soft-core RISC-V CPU
 
 relation Bitstream contains SynthHW
 relation Bitstream contains CPU
