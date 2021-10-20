@@ -15,6 +15,7 @@ components which perform the actuation logic itself—and the `Root`
 subsystem which contains the core computation and I/O components, and
 the two separate and independent devices that drive actuators.
 
+```
 package 'Semantic Properties' {
     doc /* Semantic Properties are used to document arbitrary constructs
            in our specifications.
@@ -122,10 +123,166 @@ package id Glossary 'Proposal Glossary' {
         often times includes model-based specification constructs to improve
         usability and expressivity. */
     part id BISL 'Behavioral Interface Specification Language';
-    part BlueCheck;
-    part Coq;
-    // etc.
+    part def BlueCheck;
+    part def Computer;
+    part def Coq;
+    part def Cryptol;
+    part def DevSecOps;
+    part def id DIANC 'Digital Instrumentation and Control Systems';
+    /** The NASA Formal Requirements Elicitation Tool is used to make writing,
+        understanding, and debugging formal requirements natural and
+        intuitive. */
+    part def id FRET 'Formal Requirements Elicitation Tool';
+/** A specification language integrated with support tools and an
+automated theorem prover, developed at the Computer Science Laboratory
+of SRI International.  PVS is based on a kernel consisting of an
+extension of Church's theory of types with dependent types, and is
+fundamentally a classical typed higher-order logic. */
+    part def PVS;
+/** RISC-V (pronounced ``risk-five'') is an open standard instruction set
+architecture (ISA) based on established reduced instruction set
+computer (RISC) principles. Unlike most other ISA designs, the RISC-V
+ISA is provided under open source licenses that do not require fees to
+use. A number of companies are offering or have announced RISC-V
+hardware, open source operating systems with RISC-V support are
+available and the instruction set is supported in several popular
+software toolchains. */
+    part def RISC_V;
+/** A formal specification language that uses hierarchical finite state
+machines to specify system requirements. */
+part def id RSML 'Requirements State Modeling Language';
+/** The Boolean satisfiability problem (sometimes called propositional
+satisfiability problem and abbreviated SAT) is the problem of
+determining if there exists an interpretation that satisfies a given
+Boolean formula. */
+    part def SAT;
+/** The proof script language is used to specify the assumptions and proof
+goals of formal verifications to the SAW tool. */
+    part def SAWscript;
+/** A CPU or SoC that is implemented in an HDL and synthesized to a
+bitstream and loaded onto an FPGA. */
+    part def soft_core;
+/** A formally defined computer programming language based on the Ada
+programming language, intended for the development of high integrity
+software used in systems where predictable and highly reliable
+operation is essential. It facilitates the development of applications
+that demand safety, security, or business integrity. */
+    part def SPARK;
+/* An integrated development environment for formally specifying and
+rigorously analyzing requirements. */
+    part def SpeAR;
+/** VCC is a program verification tool that proves correctness of
+annotated concurrent C programs or finds problems in them. VCC extends
+C with design by contract features, like pre- and postcondition as
+well as type invariants. Annotated programs are translated to logical
+formulas using the Boogie tool, which passes them to an automated SMT
+solver Z3 to check their validity. */
+    part def id VCC 'Verifier for Concurrent C';
+/** A software toolchain that includes static analyzers to check
+assertions about a C program; optimizing compilers to translate a C
+program to machine language; and operating systems and libraries to
+supply context for the C program. The Verified Software Toolchain
+project assures with machine-checked proofs that the assertions
+claimed at the top of the toolchain really hold in the
+machine-language program, running in the operating-system context. */
+    part def id VST 'Verified Software Toolchain';
+
+    part def Refinement;
+    part def Property;
+    part def 'Safety Property' :> Property;
+    part def 'Correctness Property' :> Property;
+    part def 'Security Property' :> Property;
+    part def Model;
+    part def 'Semi-Formal Model' :> Model;
+    part def 'Formal Model' :> Model;
+    part def Consistent :> Property;
+    part def Complete :> Property;
+    part def 'Consistent Model' :> Consistent, Model;
+    part def 'Complete Model' :> Complete, Model;
+    part def 'Consistent and Complete Model' :> 'Consistent Model', 'Complete Model';
+    part def Requirement;
+    part def Scenario;
+    part def Product;
+    part def 'Product Line';
+    part def Configure;
+    part def DOORS;
+    part def Clafer;
+    part def Lobot;
+    part def Denotational;
+    part def Operational;
+    part def Semantics;
+    part def Risk;
+    part def Power;
+    part def Resource;
+    part def Reliability;
+    /** A specification that has a precise, unambiguous, formal semantics
+        grounded in real world formal foundations and systems engineering
+        artifacts, such as source code and hardware designs. */
+    part def Rigorous;
+    part def id CDE 'Collaborative Development Environment';
+    part def id CI 'Continuous Integration';
+    part def id CV 'Continuous Verification';
+    part def Analyzer;
+    part def 'Static Analyzer' :> Analyzer;
+    part def 'Dynamic Analyzer' :> Analyzer;
+    part def id FSM 'Finite State Machine';
+    part def Deterministic;
+    part def 'Non-deterministic';
+    part def id DFSM 'Deterministic Finite State Machine' :> FSM, Deterministic;
+    part def id NFSM 'Non-deterministic Finite State Machine' :> FSM, 'Non-deterministic';
+    part def id ASM 'Abstract State Machine';
+    part def Design;
+    part def Architecture;
+    part def Specification;
+    part def 'Architecture Specification' :> Specification;
+    part def Solver;
+    part def id FM 'Formal Method';
+    part def id LF 'Logical Framework';
+    part def id PL 'Programming Language';
+    part def 'Specification Language';
+    part def Protocol;
+    part def 'System Specification' :> Specification;
+    part def 'Hand-written';
+    part def 'Machine-generated';
+    part def 'Source-level Specification Language' :> 'Specification Language';
+    part def 'Model-based Specification Language' :> 'Specification Language';
+    part def System;
+    part def 'Distributed System' :> System;
+    part def 'Concurrent System' :> System;
+    part def 'Cryptographic Protocol' :> Protocol;
+    part def 'Cryptographic Algorithm';
     part id IO 'I/O';
+    part id GPIO 'General Purpose I/O';
+    part def Sensor;
+    part def Actuator;
+    part def Solenoid :> Actuator;
+    part def Compiler;
+    part def Synthesizer;
+    part def id USB 'Universal Serial Bus';
+    part def LED;
+    part def Cable;
+    part def Program;
+    part def Bitstream;
+    part def id FPGA 'Field-Programmable Gate Array';
+    part def 'ECP-5' :> FPGA;
+    part def id PCB 'Printed Circuit Board';
+    part def Connector;
+    part def 'USB Connector' :> USB, Connector;
+    part def id USB_Mini 'USB Mini Connector' :> 'USB Connector';
+    part def 'High-Assurance';
+    part def C :> 'Programming Language';
+    part def PMOD;
+    part def JTAG;
+    part def Driver;
+    part def Voting;
+    /** A normal USB cable. */
+    part def 'USB Cable' :> USB, Cable {
+        /** What kind of USB connector is on the start of the cable? */
+        part def start_connector :> 'USB Connector';
+        /** What kind of USB connector is on the end of the cable? */
+        part def end_connector :> 'USB Connector';
+    }
+    part def 'Output LED' :> LED;
 }
 
 package id RTS 'Reactor Trip System' {
@@ -137,15 +294,11 @@ package id RTS 'Reactor Trip System' {
     alias Props for Properties;
     package id Characteristics 'IEEE Std 603-2018 Characteristics';
     comment TopLevelPackages about Architecture, Hardware, Properties, Characteristics
-        /* These are the core top-level subsystems characterizing HARDEN work. */
+    /* These are the core top-level subsystems characterizing HARDEN work. */
 }
 
-%viz RTS
-
-import RTS;
-// import Glossary;
-
 package Architecture {
+    import RTS;
     /** Note that this is the *systems* architecture, 
         which is different than our software, harddware, 
         or data architectures. */
@@ -166,11 +319,12 @@ package Architecture {
         }
         /** Documentation about computation goes here. */
         package Computation {
-            // @bug kiniry Glossary placeholder.
+            // @bug kiniry Placeholders until we figure out how to import Glossary.
             part CPU;
             part 'RISC-V CPU '[3] :> CPU;
         }
         package Hardware {
+            // @bug kiniry Placeholders until we figure out how to import Glossary.
             part PCB;
             package FPGA {
                 part 'Lattic ECP-5 FPGA Development Board' :> PCB;
@@ -192,8 +346,6 @@ package Architecture {
     }
 }
 
-%viz Architecture
-
 package Artifacts {
     part CryptolSpec;
     part CryptolToC;
@@ -214,39 +366,21 @@ package Artifacts {
     package Dataflow;
 }
 
-// import Glossary;
-// import Hardware;
-
 /** The physical hardware components that are a part of the HARDENS RTS
     demonstrator. */
 package 'RTS Hardware Artifacts' {
+    import Glossary::*;
+    import Architecture::RTS_System_Arch::Hardware::*;
     import ScalarValues::*;
 
-    // @bug kiniry Glossary placeholders.
-    part def USB;
-    part def Cable;
-    part def Connector;
-    part def USB_connector :> USB, Connector;
-    /** A normal USB cable. */
-    part def 'USB Cable' :> USB, Cable {
-        /** What kind of USB connector is on the start of the cable? */
-        attribute start_connector : USB_connector;
-        /** What kind of USB connector is on the end of the cable? */
-        attribute end_connector : USB_connector;
-    }
-    // @bug kiniry Glossary placeholder.
-    part PCB;
-    part LED;
-    part def 'Output_LED' :> LED;
     part def id DevBoard 'FGPA Dev Board' :> PCB {
-        // @bug kiniry Glossary placeholder.
         part id J9_J26 'SERDES Test SMA Connector'[16];
         part id J38 'Parallel Config Header';
         part id J39_J40 'Versa Expansion Connector'[2];
         part id U4 'SPI Flag Configuration Memory';
         part id SW1 'CFG Switch';
         part id SW5 'Input Switch';
-        part id D5_D12 'Output LED'[8] : 'Output_LED';
+        part id D5_D12 'Output LED'[8];
         part id SW2_SW4 'Input Push Button'[3];
         part id J37 '12 V DC Power Input';
         part id J5_J8_J32_J33 'GPIO Headers'[4];
@@ -260,10 +394,10 @@ package 'RTS Hardware Artifacts' {
         part id Board 'Lattice ECP-5 FPGA Development Board';
     }
     
-    item def TemperatureValue :> ScalarQuantityValue;
-    item def PressureValue :> ScalarQuantityValue;
+    item def TemperatureValue :> Real;
+    item def PressureValue :> Real;
     port def SensorValuePort {
-        out item value: Real;
+        out item value;
     }
     part Sensor {
         port value: SensorValuePort;
@@ -271,7 +405,7 @@ package 'RTS Hardware Artifacts' {
     /** A sensor that is capable of measuring the temperature of its environment. */
     part 'Temperature Sensor' :> Sensor {
         /** What is your temperature reading in Celcius (C)? */
-        port temp: TemperatureValue redefines value;
+        port temp redefines value;
     }
     /** A sensor that is capable of measuring the air pressure of its environment. */
     part 'Pressure Sensor' :> Sensor {
@@ -279,13 +413,13 @@ package 'RTS Hardware Artifacts' {
         part pressure: PressureValue redefines value;
         
     }
-    enum SolenoidState {
+    enum def SolenoidState {
         OPEN;
         CLOSED;
     }
     /** A solenoid actuator capable of being in an open or closed state. */
-    part 'Solenoid Actuator' :> Actuator {
-        item actuator_state: SolenoidState;
+    part def 'Solenoid Actuator' :> Actuator {
+        item actuator_state;
         /** Open! */
         port open;
         /** Close! */
@@ -295,67 +429,51 @@ package 'RTS Hardware Artifacts' {
 
 /** The physical architecture of the HARDENS RTS demonstrator. */
 package 'Physical Architecture' {
-  /** The USB cable used to communicate the ASCII UI to/from the board. */    
-  part id UI_C 'USB UI Cable';
+    import Glossary::*;
+    /** A PCB developer board used to prototype hardware. */
+    part def id Board 'Dev Board' :> PCB {
+        /** The USB cable used to communicate the ASCII UI to/from the board. */    
+        part def id UI_C 'USB UI Cable';
+        /** The USB cable used to program the board with a bitstream. */
+        part def id Prog_C 'USB Programming Cable';
+        /** The USB cable used to interact with the board in a debugger. */
+        part def id Debug_C 'USB Debugging I/O Cable';
+        // * MOSFET power control kit: https://www.sparkfun.com/products/12959
+        // * 12 V Latch solenoid: https://www.sparkfun.com/products/15324
+        // * Pressure sensor: https://www.sparkfun.com/products/11084
+        /** The first of two redundant temperature sensors. */
+        part def id TS1 'Temperature Sensor 1';
+        /** The second of two redundant temperature sensors. */
+        part def id TS2 'Temperature Sensor 2';
+        /** The first of two redundatnt pressure sensors. */
+        part def id PS1 'Pressure Sensor 1';
+        /** The second of two redundant pressure sensors. */
+        part def id PS2 'Pressure Sensor 2';
+        /** The first of two redundant solenoid actuators. */
+        part def id SA1 'Solenoid Actuator 1';
+        /** The second of two redundant solenoid actuators. */
+        part def id SA2 'Solenoid Actuator 2';
+        // @todo kiniry Add ports for external connectors.
+    }
+    /** The fully assembled HARDENS demonstrator hardware with all component present. */
+    part def id Demonstrator 'HARDENS Demonstrator';
+
+    /** The computer used by a developer to interface with the demonstrator,
+        typically for driving the demonstrator's UI and programming and
+        debugging the board. */
+    part def 'Developer Machine' :> Computer;
+
+    connection def DevMachineToDevBoard {
+        end: Computer;
+        end: PCB;
+    } 
+//    connection: DevMachineToDevBoard connect 'Developer Machine' to Board;
 }
-/*
-component USB Programming Cable (Prog-C)
-The USB cable used to program the board with a bitstream.
+```
 
-component USB Debugging I/O Cable (Debug-C)
-The USB cable used to interact with the board in a debugger.
+%viz "Architecture"
 
-component Dev Board (Board)
-A PCB developer board used to prototype hardware.
+%viz --view=tree "Reactor Trip System"
 
-// * MOSFET power control kit: https://www.sparkfun.com/products/12959
-
-// * 12 V Latch solenoid: https://www.sparkfun.com/products/15324
-
-// * Pressure sensor: https://www.sparkfun.com/products/11084
-
-component Temperature Sensor 1 (TS1)
-The first of two redundant temperature sensors.
-
-component Temperature Sensor 2 (TS2)
-The second of two redundant temperature sensors.
-
-component Pressure Sensor 1 (PS1)
-The first of two redundatnt pressure sensors.
-
-component Pressure Sensor 2 (PS2)
-The second of two redundant pressure sensors.
-
-component Solenoid Actuator 1 (SA1)
-The first of two redundant solenoid actuators.
-
-component Solenoid Actuator 2 (SA2)
-The second of two redundant solenoid actuators.
-
-component HARDENS Demonstrator (Demonstrator)
-The fully assembled HARDENS demonstrator hardware with all component
-present.
-
-relation Demonstrator client Board
-relation Board client UI
-relation Board client UI-C
-relation Board client Prog-C
-relation Board client Debug-C
-relation Board client TS1
-relation Board client TS2
-relation Board client PS1
-relation Board client PS2
-relation Board client SA1
-relation Board client SA2
-
-component Developer Machine
-The computer used by a developer to interface with the demonstrator,
-typically for driving the demonstrator's UI and programming and
-debugging the board.
-
-relation UI-C client Developer Machine
-relation Prog-C client Developer Machine
-relation Debug-C client Developer Machine
-*/
-
+%viz "RTS Hardware Artifacts"
 
