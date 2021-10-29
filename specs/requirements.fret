@@ -117,14 +117,14 @@ requirements:
     - for: "channel"
       in: [["T", ">"], ["P", ">"], ["S", "<"]]
       requirements:
-      - reqid: "INSTRUMENTATION_{i}_{channel}_TRIP"
+      - reqid: "INSTRUMENTATION_{i}_{channel[0]}_TRIP"
         rationale: >
           RFP function 1,2,3,9
         fulltext: >
           When
             (!Bypass_{channel[0]}_{i} & ({channel[0]}_{i} {channel[1]} Setpoint_{channel[0]}_{i}))
           RTS shall always satisfy Trip_{channel[0]}_{i}
-      - reqid: "INSTRUMENTATION_{i}_{channel}_TRIP_UI"
+      - reqid: "INSTRUMENTATION_{i}_{channel[0]}_TRIP_UI"
         rationale: "RFP function 12"
         fulltext: >
           RTS shall always satisfy UI_Trip_{channel[0]}_{i}_Display = Trip_{channel[0]}_{i}
