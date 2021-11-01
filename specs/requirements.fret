@@ -4,13 +4,13 @@ variables:
   - for: "d"
     in: [0, 1]
     variables:
-      - name: "UI_Manual_Actuate_Device_{d}"
+      - name: "UI_Manual_Actuate_Actuator_{d}"
         type: "boolean"
         mtype: "Input"
       - for: "a"
         in: [0, 1]
         variables:
-          - name: "Auto_Actuate_{a}_Device_{d}"
+          - name: "Auto_Actuate_{a}_Actuator_{d}"
             type: "boolean"
             mtype: "Output"
   - for: "a"
@@ -72,38 +72,38 @@ requirements:
   - for: "d"
     in: [0, 1]
     requirements:
-      - reqid: "ACTUATION_DEVICE_{d}"
+      - reqid: "ACTUATION_ACTUATOR_{d}"
         rationale: >
           RFP function 5,6
         fulltext: >
           RTS shall always satisfy
-            (Auto_Actuate_0_Device_{d} | Auto_Actuate_1_Device_{d} | UI_Manual_Actuate_Device_{d})
-            = Actuate_Device_{d}
+            (Auto_Actuate_0_Actuator_{d} | Auto_Actuate_1_Actuator_{d} | UI_Manual_Actuate_Actuator_{d})
+            = Actuate_Actuator_{d}
 
   - for: "a"
     in: [0, 1]
     requirements:
-      - reqid: "ACTUATION_AUTO_LOGIC_{a}_DEVICE_0"
-        parent_reqid: "ACTUATION_DEVICE_0"
+      - reqid: "ACTUATION_AUTO_LOGIC_{a}_ACTUATOR_0"
+        parent_reqid: "ACTUATION_ACTUATOR_0"
         rationale: >
           RFP function 4,5,
           RFP actuation logic architecture
         fulltext: >
-          RTS shall always satisfy if (Coincidence_{a}_T | Coincidence_{a}_P) then Auto_Actuate_{a}_Device_0
+          RTS shall always satisfy if (Coincidence_{a}_T | Coincidence_{a}_P) then Auto_Actuate_{a}_Actuator_0
 
-      - reqid: "ACTUATION_AUTO_LOGIC_{a}_DEVICE_1"
-        parent_reqid: "ACTUATION_DEVICE_1"
+      - reqid: "ACTUATION_AUTO_LOGIC_{a}_ACTUATOR_1"
+        parent_reqid: "ACTUATION_ACTUATOR_1"
         rationale: >
           RFP function 4,5,
           RFP actuation logic architecture
-        fulltext: "RTS shall always satisfy if Coincidence_{a}_S then Auto_Actuate_{a}_Device_1"
+        fulltext: "RTS shall always satisfy if Coincidence_{a}_S then Auto_Actuate_{a}_Actuator_1"
 
       - for: "channel"
         in: [["T", 0], ["P", 0], ["S", 1]]
         requirements:
           - reqid: "COINCIDENCE_LOGIC_{a}_{channel[0]}"
             rationale: "RFP function 4"
-            parent_reqid: "ACTUATION_AUTO_LOGIC_{a}_DEVICE_{channel[1]}"
+            parent_reqid: "ACTUATION_AUTO_LOGIC_{a}_ACTUATOR_{channel[1]}"
             fulltext: >
               RTS shall always satisfy
                ((Trip_{channel[0]}_0 & Trip_{channel[0]}_1)
