@@ -19,7 +19,7 @@ def getArgs():
 def getSemantics(txt):
     cmd = subprocess.run(["node", "tools/generate_semantics.js", txt], capture_output=True)
     if cmd.returncode == 0:
-        return json.loads(cmd.stdout)['collectedSemantics']
+        return json.loads(cmd.stdout)
     else:
         print(cmd.stderr)
         return None
@@ -33,38 +33,30 @@ def instantiate(req0, env={}):
             env = dict(env)
             env[i] = x
             for sub_req in req0['requirements']:
-                for req in instantiate(sub_req, env=env):
-                    if 'parent_reqid' not in req:
-                        req['parent_reqid'] = ''
-
-                    if 'rationale' not in req:
-                        req['rationale'] = ''
-
-                    fulltext = req['fulltext']
-                    req_id   = req['reqid']
-                    rationale = req['rationale']
-                    parent    = req['parent_reqid']
-
-                    text_x = fulltext.format(**env)
-                    req_id_x = req_id.format(**env)
-                    rationale_x = rationale.format(**env)
-                    parent_x = parent.format(**env)
-                    req_x = dict(req)
-                    req_x['fulltext'] = text_x
-                    req_x['rationale'] = rationale_x
-                    req_x['reqid'] = req_id_x
-                    req_x['parent_reqid'] = parent_x
-
-                    sem = getSemantics(req_x['fulltext'])
-                    if sem is not None:
-                        req_x['semantics'] = sem
-                        out.append(req_x)
-                    else:
-                        sys.exit(1)
-
+                out.extend(instantiate(sub_req, env=env))
         return out
     else:
-        return [req0]
+        if 'parent_reqid' not in req0:
+            req0['parent_reqid'] = ''
+
+        if 'rationale' not in req0:
+            req0['rationale'] = ''
+
+        fulltext = req0['fulltext']
+        req_id   = req0['reqid']
+        rationale = req0['rationale']
+        parent    = req0['parent_reqid']
+
+        text_x = fulltext.format(**env)
+        req_id_x = req_id.format(**env)
+        rationale_x = rationale.format(**env)
+        parent_x = parent.format(**env)
+        req_x = dict(req0)
+        req_x['fulltext'] = text_x
+        req_x['rationale'] = rationale_x
+        req_x['reqid'] = req_id_x
+        req_x['parent_reqid'] = parent_x
+        return [req_x]
 
 def instantiate_var(v,env={}):
     out = []
@@ -108,6 +100,13 @@ def main():
         for inst in instantiate(req):
             inst['project'] = prj
             out.append(inst)
+
+    out = getSemantics(json.dumps(out))
+                    # if sem is not None:
+                    #     req_x['semantics'] = sem
+                    #     out.append(req_x)
+                    # else:
+                    #     sys.exit(1)
 
     req_vars = {v for r in out for v in r['semantics']['variables']}
 
