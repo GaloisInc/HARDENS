@@ -54,6 +54,9 @@ component FPGA Bitstream (Bitstream)
 
 subsystem Dataflow of RTS Implementation Artifacts (Dataflow)
 @todo kiniry Add an explanation.
+indexing
+  proposal_figure: 3
+  figure_name: Dataflow of RTS Implementation Artifacts
 
 relation CryptolToC client CryptolSpec
 relation CryptolToSystemVerilog client CryptolSpec
