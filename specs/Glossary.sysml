@@ -165,8 +165,8 @@ package id Glossary 'Project Glossary' {
   abstract item def id IR 'Intermediate Representation';
   abstract item def id LLVM 'Low-Level Virtual Machine' :> IR;
   abstract item def Compiler {
-    item input: Language;
-    item output: Language;
+    item input: Language[1..*];
+    item output: Language[1..*];
   }
 
   // Hardware design.
@@ -178,6 +178,14 @@ package id Glossary 'Project Glossary' {
   abstract part def Chisel :> HDL;
 
   // Hardware engineering concepts.
+  abstract part def Component;
+  abstract part def Switch :> Component;
+  abstract part def Button :> Component;
+  abstract part def Header :> Component;
+  abstract part def Interface :> Component;
+  abstract part def Connector :> Component;
+  abstract part def Memory :> Component;
+  abstract part def ASIC :> Component;
   abstract item def id IO 'I/O';
   abstract part def id GPIO 'General Purpose I/O';
   abstract part def Sensor;
@@ -187,10 +195,11 @@ package id Glossary 'Project Glossary' {
   abstract part def id USB 'Universal Serial Bus':> Bus;
   abstract part def LED;
   abstract part def Cable;
-  abstract part def id FPGA 'Field-Programmable Gate Array';
+  abstract part def id FPGA 'Field-Programmable Gate Array' :> ASIC;
   abstract part def 'ECP-5':> FPGA;
-  abstract part def id PCB 'Printed Circuit Board';
-  abstract part def Connector;
+  abstract part def id PCB 'Printed Circuit Board' {
+    part components: Component[*];
+  }
   abstract part def 'USB Connector':> USB, Connector;
   abstract part def id USB_Mini 'USB Mini Connector':> 'USB Connector';
   abstract part def PMOD;

@@ -82,25 +82,25 @@ package id Artifacts 'RTS Implementation Artifacts' {
   // @design Remove concepts in general Glossary that duplicate or
   // overlap with these concepts.  Move abstract items to Glossary.
   part def id CryptolToC 'Cryptol Software Compiler':> Compiler {
-    item input: CryptolSpec redefines input;
-    item output: C_Source redefines output;
+    ref item input: CryptolSpec redefines input;
+    ref item output: C_Source redefines output;
   }
   part def id CryptolToSystemVerilog 'Cryptol Hardware Compiler':> Compiler {
-    item input: CryptolSpec redefines input;
-    item output: SystemVerilog redefines output;
+    ref item input: CryptolSpec redefines input;
+    ref item output: SystemVerilog redefines output;
   }
   part def id CPU 'COTS High-Assurance RV32I RISC-V CPU':> CPU, RISC_V_ISA;
   part def id CompCert 'CompCert Compiler':> Compiler {
-    item input: C_Source redefines input;
-    item output: RISCV_Binary redefines output;
+    ref item input: C_Source redefines input;
+    ref item output: RISCV_Binary redefines output;
   }
   part def id BSC 'Bluespec Compiler':> Compiler {
-    item input: BluespecSystemVerilog redefines input;
-    item output: SystemVerilog redefines output;
+    ref item input: BluespecSystemVerilog redefines input;
+    ref item output: SystemVerilog redefines output;
   }
   part def id SymbiFlow 'SymbiFlow Synthesizer' :> Synthesizer {
-    item input: SystemVerilog redefines input;
-    item output: Bitstream redefines output;
+    ref item input: SystemVerilog redefines input;
+    ref item output: Bitstream redefines output;
   }
   part def id RTL 'Demonstrator Verilog';
   part def 'Demonstrator Bitstream':> Bitstream;
@@ -121,25 +121,39 @@ package 'RTS Hardware Artifacts' {
   import Architecture::RTS_System_Arch::Hardware::*;
   import ScalarValues::*;
 
-  part def id DevBoard 'FGPA Dev Board':> PCB {
-    part id J9_J26 'SERDES Test SMA Connector'[16];
-    part id J38 'Parallel Config Header';
-    part id J39_J40 'Versa Expansion Connector'[2];
-    part id U4 'SPI Flag Configuration Memory';
-    part id SW1 'CFG Switch';
-    part id SW5 'Input Switch';
-    part id D5_D12 'Output LED'[8];
-    part id SW2_SW4 'Input Push Button'[3];
-    part id J37 '12 V DC Power Input';
-    part id J5_J8_J32_J33 'GPIO Headers'[4];
-    part id J31 'PMOD/GPIO Header';
-    part id J30 'Microphone Board/GPIO Header';
+  part def 'SERDES Test SMA Connector' :> Connector;
+  part def 'Parallel Config Header' :> Header;
+  part def 'Versa Expansion Connector' :> Connector;
+  part def 'SPI Flag Configuration Memory' :> Memory;
+  part def 'CFG Switch' :> Switch;
+  part def 'Input Switch' :> Switch;
+  part def 'Output LED' :> LED;
+  part def 'Input Push Button' :> Button;
+  part def '12 V DC Power Input' :> Power;
+  part def 'GPIO Headers' :> Header, GPIO;
+  part def 'PMOD/GPIO Header' :> Header, PMOD, GPIO;
+  part def 'Microphone Board/GPIO Header' :> Header;
+  part def 'ECP5-5G Device' :> FPGA;
+  // @todo Ensure that JTAG is, in fact, USB.
+  part def 'JTAG Interface' :> JTAG, USB;
+  part def 'Mini USB Programming' :> USB;
+  part def id DevBoard 'Lattice ECP-5 FPGA Development Board' :> PCB {
+    part J9_J26 : 'SERDES Test SMA Connector'[16] subsets components;
+    part J38 : 'Parallel Config Header' subsets components;
+    part J39_J40 : 'Versa Expansion Connector'[2] subsets components;
+    part U4 : 'SPI Flag Configuration Memory' subsets components;
+    part SW1 : 'CFG Switch' subsets components;
+    part SW5 : 'Input Switch' subsets components;
+    part D5_D12 : 'Output LED'[8] subsets components;
+    part SW2_SW4 : 'Input Push Button'[3] subsets components;
+    part J37 : '12 V DC Power Input' subsets components;
+    part J5_J8_J32_J33 : 'GPIO Headers'[4] subsets components;
+    part J31 : 'PMOD/GPIO Header' subsets components;
+    part J30 : 'Microphone Board/GPIO Header' subsets components;
     part 'Prototype Area';
-    part FPGA;
-    part id U3 'ECP5-5G Device':> FPGA;
-    part id J1 'JTAG Interface';
-    part id J2 'Mini USB Programming';
-    part id Board 'Lattice ECP-5 FPGA Development Board';
+    part U3 : 'ECP5-5G Device' subsets components;
+    part J1 : 'JTAG Interface' subsets components;
+    part J2 : 'Mini USB Programming' subsets components;
   }
   item def TemperatureValue:> Real;
   item def PressureValue:> Real;
@@ -176,39 +190,51 @@ package 'RTS Hardware Artifacts' {
 /** The physical architecture of the HARDENS RTS demonstrator. */
 package 'Physical Architecture' {
   import 'Project Glossary'::*;
+  import 'RTS Hardware Artifacts'::*;
 
   /** A PCB developer board used to prototype hardware. */
-  part def id Board 'Dev Board':> PCB {
-    /** The USB cable used to communicate the ASCII UI to/from the board. */    
-    part def id UI_C 'USB UI Cable';
-    /** The USB cable used to program the board with a bitstream. */
-    part def id Prog_C 'USB Programming Cable';
-    /** The USB cable used to interact with the board in a debugger. */
-    part def id Debug_C 'USB Debugging I/O Cable';
-    // * MOSFET power control kit: https://www.sparkfun.com/products/12959
-    // * 12 V Latch solenoid: https://www.sparkfun.com/products/15324
-    // * Pressure sensor: https://www.sparkfun.com/products/11084
-    /** The first of two redundant temperature sensors. */
-    part def id TS1 'Temperature Sensor 1';
-    /** The second of two redundant temperature sensors. */
-    part def id TS2 'Temperature Sensor 2';
-    /** The first of two redundatnt pressure sensors. */
-    part def id PS1 'Pressure Sensor 1';
-    /** The second of two redundant pressure sensors. */
-    part def id PS2 'Pressure Sensor 2';
-    /** The first of two redundant solenoid actuators. */
-    part def id SA1 'Solenoid Actuator 1';
-    /** The second of two redundant solenoid actuators. */
-    part def id SA2 'Solenoid Actuator 2';
-    // @todo kiniry Add ports for external connectors.
-  }
-  /** The fully assembled HARDENS demonstrator hardware with all component present. */
-  part def id Demonstrator 'HARDENS Demonstrator';
+  part 'HARDENS Demonstrator Board' : DevBoard;
+  /** The USB cable used to communicate the ASCII UI to/from the board. */    
+  part id UI_C 'USB UI Cable' : 'USB Cable';
+  /** The USB cable used to program the board with a bitstream. */
+  part id Prog_C 'USB Programming Cable' : 'USB Cable';
+  /** The USB cable used to interact with the board in a debugger. */
+  part id Debug_C 'USB Debugging I/O Cable' : 'USB Cable';
+  // @trace #11 https://github.com/GaloisInc/HARDENS/issues/11
+  // @todo Add attributes for URL traceability.
+  part def id MPL3115A2 'SparkFun Altitude/Pressure Sensor Breakout' :> 
+    PCB, 'Pressure Sensor'; 
+  // 4x https://www.sparkfun.com/products/11084
+  part def 'SparkFun MOSFET Power Control Kit' :> PCB, Power;
+  // 4x https://www.sparkfun.com/products/12959
+  part def id TMP102 'SparkFun Digital Temperature Sensor Breakout' :>
+    PCB, 'Temperature Sensor'; 
+  // 4x https://www.sparkfun.com/products/13314
+  part def 'Small Push-Pull Solenoid - 12VDC' :> 'Solenoid Actuator'; 
+  // 4x https://www.adafruit.com/product/412
+  part def '1N4001 Diode';
+  // 1x https://www.adafruit.com/product/755
+  /** The first of two redundant temperature sensors. */
+  part id TS1 'Temperature Sensor 1' : TMP102;
+  /** The second of two redundant temperature sensors. */
+  part id TS2 'Temperature Sensor 2' : TMP102;
+  /** The first of two redundant pressure sensors. */
+  part id PS1 'Pressure Sensor 1' : MPL3115A2;
+  /** The second of two redundant pressure sensors. */
+  part id PS2 'Pressure Sensor 2' : MPL3115A2;
+  /** The first of two redundant solenoid actuators. */
+  part id SA1 'Solenoid Actuator 1' : 'Small Push-Pull Solenoid - 12VDC';
+  /** The second of two redundant solenoid actuators. */
+  part id SA2 'Solenoid Actuator 2' : 'Small Push-Pull Solenoid - 12VDC';
+  // @todo kiniry Add ports for external connectors.
 
   /** The computer used by a developer to interface with the demonstrator,
       typically for driving the demonstrator's UI and programming and
       debugging the board. */
   part def 'Developer Machine':> Computer;
+
+  /** The fully assembled HARDENS demonstrator hardware with all component present. */
+  part id Demonstrator 'HARDENS Demonstrator';
 
   connection def DevMachineToDevBoard {
     end: Computer;
