@@ -1,0 +1,51 @@
+module RTS::Instrumentation where
+
+type T = 0
+type P = 1
+type S = 2
+
+newtype Instr_Input =
+  { channels: [2][32]
+  }
+
+newtype Instrumentation =
+  { values: [3][32]
+  , setpoints: [3][32]
+  , bypass: [2] //@ todo requirements should be updated with only two bypasses
+  , manual_trip: [3]
+  , sensor_trip: [3]
+  }
+
+Tripped: {ch} (ch <= 2) => Instrumentation -> Bit
+Tripped i = (i.manual_trip @ `ch) || (i.sensor_trip @ `ch && ~bypassed)
+  where
+    bypassed : Bit
+    bypassed = if `ch <= 1
+               then i.bypass @ `ch
+               else (i.bypass @ 0 || i.bypass @ 1)
+
+Instrumentation_Step:
+  Instr_Input ->
+  Instrumentation ->
+  Instrumentation
+Instrumentation_Step inp state0 = state_trip
+  where
+    state_read = ReadSensors state0
+    state_calc = Saturation state_read
+    state_trip = TripSensors state_calc
+
+    ReadSensors i = Read`{P} (Read`{T} i)
+    TripSensors i = Trip`{S} (Trip`{P} (Trip`{T} i))
+
+    Read : {ch} (ch <= 1) => Instrumentation -> Instrumentation
+    Read i = {i| values = update i.values `ch (inp.channels @ `ch) }
+
+    // @todo this should be some function of temperature/pressure
+    Saturation : Instrumentation -> Instrumentation
+    Saturation = undefined
+
+    Trip : {ch} (ch <= 2) => Instrumentation -> Instrumentation
+    Trip i = {i | sensor_trip = update i.sensor_trip `ch trp }
+      where
+        cmp = if `ch == 2 then (<) else (>)
+        trp = cmp (i.values @ `ch) (i.setpoints @ `ch)

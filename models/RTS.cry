@@ -1,0 +1,39 @@
+module RTS where
+
+import RTS::Instrumentation
+import RTS::Actuation
+import RTS::UI
+
+newtype RTS =
+  { instrumentation: [4]Instrumentation
+  , actuation_logic: [2]ActuationLogic
+  , device_actuate: [2] // Output?
+  , ui: UI_Output // Output?
+  }
+
+newtype Input =
+  { ui_input: UI_Input
+  , instr_input: [4]Instr_Input
+  }
+
+Step: Input -> RTS -> RTS
+Step input rts = rts_ui
+  where
+    rts_instrumentation =
+        {rts | instrumentation =
+          [Instrumentation_Step (input.instr_input @ i) (rts.instrumentation @ i)
+          | i <- [0..3] ]}
+
+    rts_actuation =
+        {rts_instrumentation | actuation_logic =
+          [ActuationLogic_Step rts_instrumentation.instrumentation act
+          | act <- rts_instrumentation.actuation_logic ]}
+
+    rts_ui =
+        {rts_actuation |
+          ui = {rts_actuation.ui |
+                 // Be explicit about which channel/value instead of relying on the order in Instrumentation
+                 instrumentation_values = [ [i.values @ `T, i.values @ `P, i.values @ `S] | i <- rts_instrumentation.instrumentation ],
+                 instrumentation_bypass = [ [i.bypass @ `T, i.bypass @ `P] | i <- rts_instrumentation.instrumentation ],
+                 instrumentation_trip   = [ [Tripped`{T} i, Tripped`{P} i, Tripped`{S} i] | i <- rts_instrumentation.instrumentation ]
+                 }}

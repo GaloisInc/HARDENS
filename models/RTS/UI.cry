@@ -1,0 +1,24 @@
+module RTS::UI where
+
+newtype UI_Input =
+  { enter_maintenance: [4]
+  , exit_maintenance: [4]
+
+  , manual_actuate: [2]
+  , manual_deactuate: [2]
+
+  , set_bypass: [4][2]
+  , unset_bypass: [4][2]
+
+  , adjust_setpoint: [4][3]
+  , setpoint_value: [32]
+
+  , set_trip: [4][3]
+  , unset_trip: [4][3]
+  }
+
+newtype UI_Output =
+  { instrumentation_values: [4][3][32]
+  , instrumentation_bypass: [4][2]
+  , instrumentation_trip: [4][3]
+  }
