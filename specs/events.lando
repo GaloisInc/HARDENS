@@ -1,0 +1,49 @@
+// Events are (seemingly-atomic, from the point of view of an external
+// observer) interactions/state-transitions of the system.  The full
+// set of specified events characterizes every potential externally
+// visible state change that the system can perform.
+
+
+// External input actions are those that are triggered by external input on UI.
+events Demonstrator External Input Actions
+
+Manually Actuate Device
+
+Select Operating Mode
+
+Perform Setpoint Adjustment
+
+Configure Bypass of an Instrument Channel
+
+Configure Active Trip Output State of an Instrument Channel
+
+
+// External output actions are those that are triggered by internal
+// state change, which is, in turn, sometimes prompted by external input
+// actions.
+events Demonstrator External Output Actions
+
+Display Pressure
+
+Display Temperature
+
+Display Saturation Margin
+
+Display Trip Output Signal State
+
+Display Indication of Channel in Bypass
+
+// Internal actions are those that are not triggered by external input on UI.
+events Demonstrator Internal Actions
+
+Trip on High Pressure
+
+Trip on High Temperature
+
+Trip on Low Saturation Margin
+
+Vote on Like Trips using Two-out-of-four Coincidence
+
+Automatically Actuate Device
+
+Self-test of Safety Signal Path

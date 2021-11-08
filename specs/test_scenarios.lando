@@ -1,0 +1,51 @@
+// Scenarios are sequences of events.  Scenarios document normal and abnormal
+// traces of system execution.
+
+// Test scenarios are scenarios that validate a system conforms to its
+// requirements through runtime verification (testing).  Each scenario
+// is refined to a (possibly parametrized) runtime verification
+// property.  If a testbench is complete, then every path of a
+// system's state machine should be covered by the its set of scenarios.
+
+requirements Test Scenarios
+
+Normal Behavior 1a. Trip on Mock High Pressure Reading from that Pressure Sensor
+
+Normal Behavior 1b. Trip on Environmental High Pressure Reading from that Pressure Sensor
+
+Normal Behavior 2a. Trip on Mock High Temperature Reading from that Temperature Sensor
+
+Normal Behavior 2a. Trip on Environmental High Temperature Reading from that Temperature Sensor
+
+Normal Behavior 3a. Trip on Mock Low Saturation Margin
+
+Normal Behavior 3a. Trip on Environmental Low Saturation Margin
+
+Normal Behavior 4. Vote on Every Possible Like Trip
+
+Normal Behavior 5a. Automatically Actuate All Mock Devices in Sequence
+
+Normal Behavior 5b. Automatically Actuate All Mock Devices in Sequence
+
+Normal Behavior 6. Manually Actuate Each Device in Sequence
+
+Normal Behavior 7a. Select Maintenance Operating Mode for each Division
+
+Normal Behavior 7b. Select Normal Operating Mode for each Division
+
+Normal Behavior 8. Perform Each Kind of Setpoint Adjustment
+
+Normal Behavior 9. Configure Bypass of Each Instrument Channel in Sequence
+
+Normal Behavior 10. Configure Active Trip Output State of Each Instrument Channel in Sequence
+
+Normal Behavior 11. Display Pressure, Temperature, and Saturation Margin
+
+Normal Behavior 12. Display Every Trip Output Signal State in Sequence
+
+Normal Behavior 13. Display Indication of Every Channel in Bypass in Sequence
+
+Normal Behavior 14. Demonstrate Periodic Continual Self-test of Safety Signal Path
+
+Normal Behavior Full Self-Test
+
