@@ -29,9 +29,14 @@ Step input rts = rts_ui
           [ActuationLogic_Step rts_instrumentation.instrumentation act
           | act <- rts_instrumentation.actuation_logic ]}
 
-    rts_ui =
+    rts_devices =
         {rts_actuation |
-          ui = {rts_actuation.ui |
+          device_actuate = [ or [ Actuated`{D0} al | al <- rts_actuation.actuation_logic ],
+                             or [ Actuated`{D1} al | al <- rts_actuation.actuation_logic ]]}
+
+    rts_ui =
+        {rts_devices |
+          ui = {rts_devices.ui |
                  // Be explicit about which channel/value instead of relying on the order in Instrumentation
                  instrumentation_values = [ [i.values @ `T, i.values @ `P, i.values @ `S] | i <- rts_instrumentation.instrumentation ],
                  instrumentation_bypass = [ [i.bypass @ `T, i.bypass @ `P] | i <- rts_instrumentation.instrumentation ],
