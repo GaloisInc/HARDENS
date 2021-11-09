@@ -40,6 +40,9 @@ Tripped i = (i.manual_trip @ `ch) || ((i.sensor_trip @ `ch) && ~bypassed)
                then i.bypass @ `ch
                else (i.bypass @ 0 || i.bypass @ 1)
 
+Toggle_Manual_Trip: [3] -> Instrumentation -> Instrumentation
+Toggle_Manual_Trip vals instr = { instr | manual_trip = vals ^ instr.manual_trip }
+
 Instrumentation_Step:
   Instr_Input ->
   Instrumentation ->

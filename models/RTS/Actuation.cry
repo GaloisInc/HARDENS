@@ -20,6 +20,9 @@ Actuated state = state.actuators @ `d
 Is_ManualActuated: {d} (d <= 1) => ActuationLogic -> Bit
 Is_ManualActuated state = state.manual_actuate @ `d
 
+Toggle_Manual_Actuation: [2] -> ActuationLogic -> ActuationLogic
+Toggle_Manual_Actuation val a = { a | manual_actuate = val ^ a.manual_actuate }
+
 Voting_Step:
   [4]Instrumentation ->
   Voting ->

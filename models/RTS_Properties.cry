@@ -69,6 +69,13 @@ property actuate_devices (inp: Input) (rts: RTS) (d: [1]) =
 // UI Logic /////////////////////
 /////////////////////////////////
 
+property manual_trip (inp: Input) (rts: RTS) (i: [2]) (c: [2]) = c <= 2 ==> (
+     (((rts'.instrumentation @ i).maintenance && (inp.ui_input.toggle_trip @ i @ c))
+       ^ ((rts.instrumentation @ i).manual_trip @ c))
+     <==>
+     (rts'.instrumentation @ i).manual_trip @ c
+   ) where rts' = Step inp rts
+
 property manual_actuate (inp: Input) (rts: RTS) =
      (inp.ui_input.toggle_actuate ^ rts.actuation_logic.manual_actuate)
   == (rts'.actuation_logic.manual_actuate)
@@ -98,9 +105,9 @@ property display_values_correct (inp: Input) (rts: RTS) (i: [2]) (c: [1]) =
   rts'.ui.instrumentation_values @ i @ c == (inp.instr_input @ i).channels @ c
   where rts' = Step inp rts
 
-property display_saturation_correct (inp: Input) (rts: RTS) (i: [2]) =
-  rts'.ui.instrumentation_values @ i @ `S == undefined (inp.instr_input @ i).channels //@ todo figure out saturation
-  where rts' = Step inp rts
+// property display_saturation_correct (inp: Input) (rts: RTS) (i: [2]) =
+//   rts'.ui.instrumentation_values @ i @ `S == undefined (inp.instr_input @ i).channels //@ todo figure out saturation
+//   where rts' = Step inp rts
 
 property display_bypass_correct (inp: Input) (rts: RTS) (i: [2]) (c: [1]) =
   rts'.ui.instrumentation_bypass @ i @ c == (rts'.instrumentation @ i).bypass @ c
@@ -113,6 +120,7 @@ property display_trip_correct (inp: Input) (rts: RTS) (i: [2]) =
   where rts' = Step inp rts
 
 private
+    infix 3 <==>
     (<==>) : Bit -> Bit -> Bit
     (<==>) x y = (x ==> y) /\ (y ==> x)
 

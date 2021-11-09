@@ -36,10 +36,15 @@ Step_Actuation rts =
 
 Step_ManualActuate: UI_Input -> RTS -> RTS
 Step_ManualActuate inp rts =
-  { rts | actuation_logic = step rts.actuation_logic }
+  { rts | actuation_logic = Toggle_Manual_Actuation inp.toggle_actuate rts.actuation_logic }
+
+Step_ManualTrip: UI_Input -> RTS -> RTS
+Step_ManualTrip inp rts =
+  { rts | instrumentation = [ step t instr | t <- inp.toggle_trip | instr <- rts.instrumentation ] }
   where
-    step: ActuationLogic -> ActuationLogic
-    step a = {a| manual_actuate = inp.toggle_actuate ^ a.manual_actuate}
+    step: [3] -> Instrumentation -> Instrumentation
+    step t instr = if In_Maintenance instr then Toggle_Manual_Trip t instr else instr
+
 
 Step_UI_Output : RTS -> RTS
 Step_UI_Output rts =
@@ -57,6 +62,7 @@ Step_UI_Commands inp rts0 =
   >>>> Step_Maintenance inp
   >>>> Step_Bypass inp
   >>>> Step_Setpoint inp
+  >>>> Step_ManualTrip inp
   >>>> Step_ManualActuate inp
 
 Step_Maintenance: UI_Input -> RTS -> RTS
