@@ -6,32 +6,48 @@ type D0 = 0
 type D1 = 1
 
 newtype ActuationLogic =
-  { vote_actuate: [2]
+  { vote_actuate: [2]Voting
   , manual_actuate: [2]
+  , actuators: [2]
   }
 
-Actuated: {d} (d <= 1) => ActuationLogic -> Bit
-Actuated state = state.vote_actuate @ `d || state.manual_actuate @ `d
+type Voting = [2]
+type ActuatorOutput = [2]
 
-ActuationLogic_Step:
+Actuated: {d} (d <= 1) => ActuationLogic -> Bit
+Actuated state = state.actuators @ `d
+
+Is_ManualActuated: {d} (d <= 1) => ActuationLogic -> Bit
+Is_ManualActuated state = state.manual_actuate @ `d
+
+Voting_Step:
   [4]Instrumentation ->
-  ActuationLogic ->
-  ActuationLogic
-ActuationLogic_Step instr state0 = actuated_state
+  Voting ->
+  Voting
+Voting_Step instr state0 = voting_state
   where
-    actuated_state =
-      Actuate`{1} votes_s
-        (Actuate`{0} (votes_t || votes_p) state0)
+    voting_state =
+      ApplyVote`{1} votes_s
+        (ApplyVote`{0} (votes_t || votes_p) state0)
 
     // Collect Votes
     votes_t = coincidence_2_4 [ Tripped`{T} i | i <- instr ]
     votes_p = coincidence_2_4 [ Tripped`{P} i | i <- instr ]
     votes_s = coincidence_2_4 [ Tripped`{S} i | i <- instr ]
 
-    Actuate: {d} (d <= 1) => Bit -> ActuationLogic -> ActuationLogic
-    Actuate vote st =
-      {st| vote_actuate = update st.vote_actuate `d vote}
+    ApplyVote: {d} (d <= 1) => Bit -> Voting -> Voting
+    ApplyVote vote st = update st `d ((st @ `d) || vote)
 
     // 2-out-of-four
     coincidence_2_4 : [4] -> Bit
     coincidence_2_4 x = (x != 0) && (x != 1) && (x != 2) && (x != 4) && (x != 8)
+
+ActuationLogic_Step:
+  [4]Instrumentation ->
+  ActuationLogic ->
+  ActuationLogic
+ActuationLogic_Step instr state =
+  {voted | actuators = voted.manual_actuate || (voted.vote_actuate @ 0) || (voted.vote_actuate @ 1) }
+  where
+    voted : ActuationLogic
+    voted = {state| vote_actuate = [ Voting_Step instr s | s <- state.vote_actuate ]}

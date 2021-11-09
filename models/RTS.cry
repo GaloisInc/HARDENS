@@ -6,8 +6,7 @@ import RTS::UI
 
 newtype RTS =
   { instrumentation: [4]Instrumentation
-  , actuation_logic: [2]ActuationLogic
-  , device_actuate: [2] // Output?
+  , actuation_logic: ActuationLogic
   , ui: UI_Output // Output?
   }
 
@@ -16,29 +15,92 @@ newtype Input =
   , instr_input: [4]Instr_Input
   }
 
+infixl 5 >>>>
+(>>>>) x f = f x
+
 Step: Input -> RTS -> RTS
-Step input rts = rts_ui
+Step input rts = rts
+            >>>> Step_UI_Commands input.ui_input
+            >>>> Step_Instrumentation input.instr_input
+            >>>> Step_Actuation
+            >>>> Step_UI_Output
+
+Step_Instrumentation: [4]Instr_Input -> RTS -> RTS
+Step_Instrumentation inp rts =
+  { rts | instrumentation = [Instrumentation_Step (inp @ i) (rts.instrumentation @ i)
+                            | i <- [0..3] ] }
+
+Step_Actuation: RTS -> RTS
+Step_Actuation rts =
+  { rts | actuation_logic = ActuationLogic_Step rts.instrumentation rts.actuation_logic }
+
+Step_ManualActuate: UI_Input -> RTS -> RTS
+Step_ManualActuate inp rts =
+  { rts | actuation_logic = step rts.actuation_logic }
   where
-    rts_instrumentation =
-        {rts | instrumentation =
-          [Instrumentation_Step (input.instr_input @ i) (rts.instrumentation @ i)
-          | i <- [0..3] ]}
+    step: ActuationLogic -> ActuationLogic
+    step a = {a| manual_actuate = inp.toggle_actuate ^ a.manual_actuate}
 
-    rts_actuation =
-        {rts_instrumentation | actuation_logic =
-          [ActuationLogic_Step rts_instrumentation.instrumentation act
-          | act <- rts_instrumentation.actuation_logic ]}
+Step_UI_Output : RTS -> RTS
+Step_UI_Output rts =
+    {rts |
+      ui = {rts.ui |
+             // Be explicit about which channel/value instead of relying on the order in Instrumentation
+             instrumentation_values = [ [i.values @ `T, i.values @ `P, i.values @ `S] | i <- rts.instrumentation ],
+             instrumentation_bypass = [ [i.bypass @ `T, i.bypass @ `P] | i <- rts.instrumentation ],
+             instrumentation_trip   = [ [Tripped`{T} i, Tripped`{P} i, Tripped`{S} i] | i <- rts.instrumentation ]
+             }}
 
-    rts_devices =
-        {rts_actuation |
-          device_actuate = [ or [ Actuated`{D0} al | al <- rts_actuation.actuation_logic ],
-                             or [ Actuated`{D1} al | al <- rts_actuation.actuation_logic ]]}
+Step_UI_Commands: UI_Input -> RTS -> RTS
+Step_UI_Commands inp rts0 =
+  rts0
+  >>>> Step_Maintenance inp
+  >>>> Step_Bypass inp
+  >>>> Step_Setpoint inp
+  >>>> Step_ManualActuate inp
 
-    rts_ui =
-        {rts_devices |
-          ui = {rts_devices.ui |
-                 // Be explicit about which channel/value instead of relying on the order in Instrumentation
-                 instrumentation_values = [ [i.values @ `T, i.values @ `P, i.values @ `S] | i <- rts_instrumentation.instrumentation ],
-                 instrumentation_bypass = [ [i.bypass @ `T, i.bypass @ `P] | i <- rts_instrumentation.instrumentation ],
-                 instrumentation_trip   = [ [Tripped`{T} i, Tripped`{P} i, Tripped`{S} i] | i <- rts_instrumentation.instrumentation ]
-                 }}
+Step_Maintenance: UI_Input -> RTS -> RTS
+Step_Maintenance inp rts0 = { rts0 | instrumentation = instrumentation' }
+  where
+    instrumentation' = [ step_i i instr
+                       | i <- [0..3]
+                       | instr <- rts0.instrumentation
+                       ]
+    step_i i instr =
+      Set_Maintenance on instr
+      where on = In_Maintenance instr ^ (inp.toggle_maintenance @ i)
+
+Step_Bypass: UI_Input -> RTS -> RTS
+Step_Bypass inp rts0 = { rts0 | instrumentation = instrumentation' }
+  where
+    instrumentation' = [ step_i i instr
+                       | i <- [0..3]
+                       | instr <- rts0.instrumentation
+                       ]
+    step_i i instr =
+      if In_Maintenance instr
+        then step_ch`{P} i (step_ch`{T} i instr)
+        else instr
+
+    step_ch : {ch} (ch <= 1) => [2] -> Instrumentation -> Instrumentation
+    step_ch i instr =
+      Set_Bypass`{ch} on instr
+      where on = In_Bypass`{ch} instr ^ (inp.toggle_bypass @ i @ `ch)
+
+Step_Setpoint: UI_Input -> RTS -> RTS
+Step_Setpoint inp rts0 = { rts0 | instrumentation = instrumentation' }
+  where
+    instrumentation' = [ step_i i instr
+                       | i <- [0..3]
+                       | instr <- rts0.instrumentation
+                       ]
+
+    step_i i instr = instr
+      >>>> step_ch`{T} i >>>> step_ch`{P} i >>>> step_ch`{S} i
+
+    step_ch : {ch} (ch <= 2) => [2] -> Instrumentation -> Instrumentation
+    step_ch i instr = if change
+                         then Set_Setpoint`{ch} (inp.setpoint_value @ i @ `ch) instr
+                         else instr
+      where
+        change = In_Maintenance instr && (inp.adjust_setpoint @ i @ `ch)

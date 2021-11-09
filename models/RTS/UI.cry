@@ -1,20 +1,18 @@
 module RTS::UI where
 
+import RTS::Instrumentation // for channel/sensor index definitions
+
 newtype UI_Input =
-  { enter_maintenance: [4]
-  , exit_maintenance: [4]
+  { toggle_maintenance: [4]
 
-  , manual_actuate: [2]
-  , manual_deactuate: [2]
-
-  , set_bypass: [4][2]
-  , unset_bypass: [4][2]
+  , toggle_bypass: [4][2]
 
   , adjust_setpoint: [4][3]
-  , setpoint_value: [32]
+  , setpoint_value: [4][3][32]
 
-  , set_trip: [4][3]
-  , unset_trip: [4][3]
+  , toggle_actuate: [2]
+
+  , toggle_trip: [4][3]
   }
 
 newtype UI_Output =

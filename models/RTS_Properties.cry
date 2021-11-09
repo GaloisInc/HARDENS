@@ -1,0 +1,126 @@
+module RTS_Properties where
+
+import RTS
+import RTS::UI
+import RTS::Instrumentation
+import RTS::Actuation
+
+/////////////////////////////////
+// Trip generation //////////////
+/////////////////////////////////
+property trip_on_high_pressure (inp: Input) (rts: RTS) (i : [2]) =
+         (((rts'.instrumentation @ i).manual_trip @ `P)
+           \/ (~(Bypass rts' @ i @ `P)
+                /\ (((rts.instrumentation @ i).sensor_trip @ `P)
+                     \/ (ReadInput inp i `P > Setpoints rts' @ i @ `P))))
+         /* ------------------------------------- */ <==>
+         (Tripped`{P} (rts'.instrumentation @ i))
+         where rts' = Step inp rts
+
+property trip_on_high_temperature (inp: Input) (rts: RTS) (i : [2]) =
+         (((rts'.instrumentation @ i).manual_trip @ `T)
+           \/ (~(Bypass rts' @ i @ `T)
+                /\ (((rts.instrumentation @ i).sensor_trip @ `T)
+                     \/ (ReadInput inp i `T > Setpoints rts' @ i @ `T))))
+         /* ------------------------------------- */ <==>
+         (Tripped`{T} (rts'.instrumentation @ i))
+         where rts' = Step inp rts
+
+OldTrip: {ch} (ch <= 1) => Input -> RTS -> RTS -> [2] -> Bit
+OldTrip inp rts rts' i =
+      (~Bypass rts' @ i @ `ch)
+   /\ ((rts.instrumentation @ i).sensor_trip @ `ch)
+
+/////////////////////////////////
+// Actuation Logic //////////////
+/////////////////////////////////
+
+CountTrips: {ch} (ch <= 2) => RTS -> Integer
+CountTrips rts = sum xs
+  where xs = [ if Tripped`{ch} instr then 1 else 0 | instr <- rts.instrumentation ]
+
+property actuation_logic_two_out_of_four_device_0
+         (inp: Input) (rts: RTS) (a: [1]) =
+          (((rts.actuation_logic.vote_actuate @ a @ `D0) \/
+           (CountTrips`{P} rts' >= 2 \/ CountTrips`{T} rts' >= 2))
+         /* --------------------------------------------- */ <==>
+          (rts'.actuation_logic.vote_actuate @ a @ `D0))
+
+         where rts' = Step inp rts
+
+property actuation_logic_two_out_of_four_device_1
+         (inp: Input) (rts: RTS) (a: [1]) =
+          ((rts.actuation_logic.vote_actuate @ a @ `D1) \/
+           (CountTrips`{S} rts' >= 2))
+         /* --------------------------------------------- */ <==>
+          (rts'.actuation_logic.vote_actuate @ a @ `D1)
+
+         where rts' = Step inp rts
+
+property actuate_devices (inp: Input) (rts: RTS) (d: [1]) =
+         (  (rts'.actuation_logic.manual_actuate @ d)
+         \/ (rts'.actuation_logic.vote_actuate @ 0 @ d)
+         \/ (rts'.actuation_logic.vote_actuate @ 1 @ d) )
+         /* --------------------------------------------------*/ <==>
+         (rts'.actuation_logic.actuators @ d)
+         where rts' = Step inp rts
+
+/////////////////////////////////
+// UI Logic /////////////////////
+/////////////////////////////////
+
+property manual_actuate (inp: Input) (rts: RTS) =
+     (inp.ui_input.toggle_actuate ^ rts.actuation_logic.manual_actuate)
+  == (rts'.actuation_logic.manual_actuate)
+  where
+    rts' = Step inp rts
+
+// Either we're allowed to set a new value and do so, or we aren't
+// but the requested value is equivalent to the current value
+property setpoint_adjust (inp: Input) (rts: RTS) (i: [2]) (c: [2]) = c <= 2 ==> (
+          ((In_Maintenance (rts'.instrumentation @ i) /\ (inp.ui_input.adjust_setpoint @ i @ c))
+         \/(rts.instrumentation @ i).setpoints @ c == (inp.ui_input.setpoint_value @ i @ c))
+       /* -------------------------------------------------------------------------------------- */ <==>
+       ((rts'.instrumentation @ i).setpoints @ c == (inp.ui_input.setpoint_value @ i @ c))
+  ) where rts' = Step inp rts
+
+// Either we're not in maintenance mode, or we aren't adjusting the setpoint, or
+// we're setting the setpoint to its current value
+property setpoint_const (inp: Input) (rts: RTS) (i: [2]) (c: [2]) = c <= 2 ==> (
+          (~In_Maintenance (rts'.instrumentation @ i)
+       \/ ~(inp.ui_input.adjust_setpoint @ i @ c)
+       \/ (inp.ui_input.setpoint_value @ i @ c == (rts.instrumentation @ i).setpoints @ c))
+       /* ---------------------------------------------------------------------------------- */ <==>
+       ((rts'.instrumentation @ i).setpoints @ c == (rts.instrumentation @ i).setpoints @ c)
+  ) where rts' = Step inp rts
+
+property display_values_correct (inp: Input) (rts: RTS) (i: [2]) (c: [1]) =
+  rts'.ui.instrumentation_values @ i @ c == (inp.instr_input @ i).channels @ c
+  where rts' = Step inp rts
+
+property display_saturation_correct (inp: Input) (rts: RTS) (i: [2]) =
+  rts'.ui.instrumentation_values @ i @ `S == undefined (inp.instr_input @ i).channels //@ todo figure out saturation
+  where rts' = Step inp rts
+
+property display_bypass_correct (inp: Input) (rts: RTS) (i: [2]) (c: [1]) =
+  rts'.ui.instrumentation_bypass @ i @ c == (rts'.instrumentation @ i).bypass @ c
+  where rts' = Step inp rts
+
+property display_trip_correct (inp: Input) (rts: RTS) (i: [2]) =
+     rts'.ui.instrumentation_trip @ i @ `T == Tripped`{T} (rts'.instrumentation @ i)
+  /\ rts'.ui.instrumentation_trip @ i @ `P == Tripped`{P} (rts'.instrumentation @ i)
+  /\ rts'.ui.instrumentation_trip @ i @ `S == Tripped`{S} (rts'.instrumentation @ i)
+  where rts' = Step inp rts
+
+private
+    (<==>) : Bit -> Bit -> Bit
+    (<==>) x y = (x ==> y) /\ (y ==> x)
+
+    ReadInput : Input -> [2] -> [2]  -> [32]
+    ReadInput inp i ch = (inp.instr_input @ i).channels @ ch
+
+    Setpoints : RTS -> [4][3][32]
+    Setpoints rts = [ (rts.instrumentation@i).setpoints | i <- [0..3] ]
+
+    Bypass : RTS -> [4][2]
+    Bypass rts = [ (rts.instrumentation@i).bypass | i <- [0..3] ]
