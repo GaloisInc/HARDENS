@@ -1,23 +1,46 @@
+/* This is the core logic of the HARDENS RTS system.
+
+   The controller loop:
+    - Reads and applies any (simultaneously supplied) UI commands
+    - Drives the intrumentation units one step
+    - Drives the actuation logic one step
+    - Updates the UI output (display)
+
+*/
 module RTS where
 
 import RTS::Instrumentation
 import RTS::Actuation
 import RTS::UI
 
-newtype RTS =
-  { instrumentation: [4]Instrumentation
-  , actuation_logic: ActuationLogic
-  , ui: UI_Output // Output?
-  }
+infixl 5 >>>>
+(>>>>) x f = f x
 
+
+/* Input models the sensor data + UI commands read in from the console etc */
 newtype Input =
   { ui_input: UI_Input
   , instr_input: [4]Instr_Input
   }
 
-infixl 5 >>>>
-(>>>>) x f = f x
+/* The core state: product of:
+   - the instrumentation divisions
+   - actuator logic
+   - UI state
+*/
+newtype RTS =
+  { instrumentation: InstrumentationState
+  , actuation_logic: ActuationState
+  , ui: UI_Output
+  }
 
+type InstrumentationState = [4]Instrumentation
+type ActuationState       = ActuationLogic
+
+/* The controller logic. This logic advances the state machines of the other components,
+   namely the instrumentation divisions, actuation logic (and, transitively, the actuators),
+   plus the UI
+*/
 Step: Input -> RTS -> RTS
 Step input rts = rts
             >>>> Step_UI_Commands input.ui_input
