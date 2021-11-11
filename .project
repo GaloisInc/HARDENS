@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>HARDENS</name>
+	<name>hardens</name>
 	<comment></comment>
 	<projects>
 		<project>sysml.library</project>
@@ -15,11 +15,4 @@
 	<natures>
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>specs</name>
-			<type>2</type>
-			<location>/Users/kiniry/Sandboxes/HARDENS/HARDENS/specs</location>
-		</link>
-	</linkedResources>
 </projectDescription>
