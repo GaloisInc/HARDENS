@@ -1,0 +1,4 @@
+module RTS::Utils where
+
+infixl 5 >>>>
+(>>>>) x f = f x

@@ -11,125 +11,64 @@ module RTS where
 
 import RTS::Instrumentation
 import RTS::Actuation
-import RTS::UI
+import RTS::Utils
 
-infixl 5 >>>>
-(>>>>) x f = f x
-
-
-/* Input models the sensor data + UI commands read in from the console etc */
-newtype Input =
-  { ui_input: UI_Input
-  , instr_input: [4]Instr_Input
+newtype UI =
+  { instrumentation_values: [4][3][32]
+  , instrumentation_bypass: [4][2]
+  , instrumentation_trip: [4][3]
   }
 
-/* The core state: product of:
-   - the instrumentation divisions
-   - actuator logic
-   - UI state
-*/
-newtype RTS =
-  { instrumentation: InstrumentationState
-  , actuation_logic: ActuationState
-  , ui: UI_Output
+newtype CoreFSM =
+  { ui: UI
+  // Instrumentation output events
+  , out_maintenance: [4]
+  , out_bypass: [4][2]
+  , out_setpoints: [4][3][32]
+  , out_force_trip: [4][3]
+  // Actuation output events
+  , out_manual_actuate: [2]
   }
 
-type InstrumentationState = [4]Instrumentation
-type ActuationState       = ActuationLogic
-
-/* The controller logic. This logic advances the state machines of the other components,
-   namely the instrumentation divisions, actuation logic (and, transitively, the actuators),
-   plus the UI
-*/
-Step: Input -> RTS -> RTS
-Step input rts = rts
-            >>>> Step_UI_Commands input.ui_input
-            >>>> Step_Instrumentation input.instr_input
-            >>>> Step_Actuation
-            >>>> Step_UI_Output
-
-Step_Instrumentation: [4]Instr_Input -> RTS -> RTS
-Step_Instrumentation inp rts =
-  { rts | instrumentation = [Instrumentation_Step (inp @ i) (rts.instrumentation @ i)
-                            | i <- [0..3] ] }
-
-Step_Actuation: RTS -> RTS
-Step_Actuation rts =
-  { rts | actuation_logic = ActuationLogic_Step rts.instrumentation rts.actuation_logic }
-
-Step_ManualActuate: UI_Input -> RTS -> RTS
-Step_ManualActuate inp rts =
-  { rts | actuation_logic = Toggle_Manual_Actuation inp.toggle_actuate rts.actuation_logic }
-
-Step_ManualTrip: UI_Input -> RTS -> RTS
-Step_ManualTrip inp rts =
-  { rts | instrumentation = [ step t instr | t <- inp.toggle_trip | instr <- rts.instrumentation ] }
+Update_UI: [4]Instrumentation -> ActuationLogic -> CoreFSM -> CoreFSM
+Update_UI instrs actuator rts0 =
+  rts0 >>>> get_values >>>> get_bypass >>>> get_trip
   where
-    step: [3] -> Instrumentation -> Instrumentation
-    step t instr = if In_Maintenance instr then Toggle_Manual_Trip t instr else instr
+    get_values rts = {rts| ui = {rts.ui| instrumentation_values = [ Get_Reading i | i <- instrs ]}}
+    get_bypass rts = {rts| ui = {rts.ui| instrumentation_bypass = [ [In_Bypass`{T} i, In_Bypass`{P} i] | i <- instrs ]}}
+    get_trip   rts = {rts| ui = {rts.ui| instrumentation_trip = [ [Is_Tripped`{T} i, Is_Tripped`{P} i, Is_Tripped`{S} i] | i <- instrs ]}}
 
+Handle_Set_Maintenance: [2] -> Bit -> CoreFSM -> CoreFSM
+Handle_Set_Maintenance div val rts =
+  {rts| out_maintenance = update rts.out_maintenance div val}
 
-Step_UI_Output : RTS -> RTS
-Step_UI_Output rts =
-    {rts |
-      ui = {rts.ui |
-             // Be explicit about which channel/value instead of relying on the order in Instrumentation
-             instrumentation_values = [ [i.values @ `T, i.values @ `P, i.values @ `S] | i <- rts.instrumentation ],
-             instrumentation_bypass = [ [i.bypass @ `T, i.bypass @ `P] | i <- rts.instrumentation ],
-             instrumentation_trip   = [ [Tripped`{T} i, Tripped`{P} i, Tripped`{S} i] | i <- rts.instrumentation ]
-             }}
+newtype RTS = { core: CoreFSM, instr: [4]Instrumentation, act: ActuationLogic }
 
-Step_UI_Commands: UI_Input -> RTS -> RTS
-Step_UI_Commands inp rts0 =
-  rts0
-  >>>> Step_Maintenance inp
-  >>>> Step_Bypass inp
-  >>>> Step_Setpoint inp
-  >>>> Step_ManualTrip inp
-  >>>> Step_ManualActuate inp
+private
+    I : ([4]Instrumentation -> [4]Instrumentation) -> RTS -> RTS
+    I f rts = {rts|instr = f rts.instr}
+    A : (ActuationLogic -> ActuationLogic) -> RTS -> RTS
+    A f rts = {rts|act = f rts.act}
+    C : (CoreFSM -> CoreFSM) -> RTS -> RTS
+    C f rts = {rts|core = f rts.core}
 
-Step_Maintenance: UI_Input -> RTS -> RTS
-Step_Maintenance inp rts0 = { rts0 | instrumentation = instrumentation' }
-  where
-    instrumentation' = [ step_i i instr
-                       | i <- [0..3]
-                       | instr <- rts0.instrumentation
-                       ]
-    step_i i instr =
-      Set_Maintenance on instr
-      where on = In_Maintenance instr ^ (inp.toggle_maintenance @ i)
-
-Step_Bypass: UI_Input -> RTS -> RTS
-Step_Bypass inp rts0 = { rts0 | instrumentation = instrumentation' }
-  where
-    instrumentation' = [ step_i i instr
-                       | i <- [0..3]
-                       | instr <- rts0.instrumentation
-                       ]
-    step_i i instr =
-      if In_Maintenance instr
-        then step_ch`{P} i (step_ch`{T} i instr)
-        else instr
-
-    step_ch : {ch} (ch <= 1) => [2] -> Instrumentation -> Instrumentation
-    step_ch i instr =
-      Set_Bypass`{ch} on instr
-      where on = In_Bypass`{ch} instr ^ (inp.toggle_bypass @ i @ `ch)
-
-Step_Setpoint: UI_Input -> RTS -> RTS
-Step_Setpoint inp rts0 = { rts0 | instrumentation = instrumentation' }
-  where
-    instrumentation' = [ step_i i instr
-                       | i <- [0..3]
-                       | instr <- rts0.instrumentation
-                       ]
-
-    step_i i instr = instr
-      >>>> step_ch`{T} i >>>> step_ch`{P} i >>>> step_ch`{S} i
-
-    step_ch : {ch} (ch <= 2) => [2] -> Instrumentation -> Instrumentation
-    step_ch i instr = if change
-                         then Set_Setpoint`{ch} (inp.setpoint_value @ i @ `ch) instr
-                         else instr
+    property sense_to_actuate_0 rts (sensors : [4][2][32]) =
+           sum [ if Is_Tripped`{T} i then 1 else 0 | i <- rts'.instr ] >= 2
+        \/ sum [ if Is_Tripped`{P} i then 1 else 0 | i <- rts'.instr ] >= 2
+        \/ Is_ManualActuated`{D0} rts.act
+        /* --------------------- */ ==
+        Is_Actuated`{D0} rts'.act
       where
-        change = In_Maintenance instr && (inp.adjust_setpoint @ i @ `ch)
+        rts' = rts
+          >>>> I (\instrs -> [ Read_Sensors (sensors @ i) instr | instr <- instrs | i <- [0..3] ])
+          >>>> (\rts1 -> {rts1| act = Check_Actuate (map Get_Tripped rts1.instr) rts1.act})
+
+    property sense_to_actuate_1 rts (sensors : [4][2][32]) =
+           sum [ if Is_Tripped`{S} i then 1 else 0 | i <- rts'.instr ] >= 2
+        \/ Is_ManualActuated`{D1} rts.act
+        /* --------------------- */ ==
+        Is_Actuated`{D1} rts'.act
+      where
+        rts' = rts
+          >>>> I (\instrs -> [ Read_Sensors (sensors @ i) instr | instr <- instrs | i <- [0..3] ])
+          >>>> (\rts1 -> {rts1| act = Check_Actuate (map Get_Tripped rts1.instr) rts1.act})
