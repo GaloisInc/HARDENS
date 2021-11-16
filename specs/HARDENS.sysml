@@ -162,34 +162,36 @@ package id Architecture 'RTS Architecture' {
       import EventControl::*;
       part eventControl : ControlUnit;
 
-      import TempSensor::*;
-      part tempSensor1 : 'Temperature Sensor';
-
-      import PressureSensor::*;
-      part pressureSensor1 : 'Pressure Sensor';
-
       import Instrumentation::*;
-      part instrumentationUnit1 : InstrumentationUnit;
+      part instrumentationAndSensing {
+        part pressureSensor1 : PressureSensor::'Pressure Sensor';
+        part tempSensor1 : TempSensor::'Temperature Sensor';
+        part instrumentationUnit1 : InstrumentationUnit;
+
+        connect tempSensor1.tempOut to instrumentationUnit1.temperatureInput;
+        connect pressureSensor1.pressureOut to instrumentationUnit1.pressureInput;
+      }
+
 
       import Actuation::*;
-      part actuationUnit1: ActuationUnit;
-      part actuator1 : Actuator;
+      part actuation {
+        part actuationUnit1: ActuationUnit;
+        part actuator1 : Actuator;
 
-      // connect sensors
-      connect tempSensor1.tempOut to instrumentationUnit1.temperatureInput;
-      connect pressureSensor1.pressureOut to instrumentationUnit1.pressureInput;
+        // connect actuators
+        connect actuationUnit1.saturationLogic.actuate to actuator1.input;
+      }
 
       // connect UI
-      connect eventControl.output to instrumentationUnit1.controlInput;
-      connect eventControl.output to actuationUnit1.controlInput;
+      connect eventControl.output to instrumentationAndSensing.instrumentationUnit1.controlInput;
+      connect eventControl.output to actuation.actuationUnit1.controlInput;
 
       // connect trip channels
-      connect instrumentationUnit1.pressureTripOut to actuationUnit1.pressureLogic.channel1;
-      connect instrumentationUnit1.temperatureTripOut to actuationUnit1.tempLogic.channel1;
-      connect instrumentationUnit1.saturationTripOut to actuationUnit1.saturationLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit1.pressureTripOut to actuation.actuationUnit1.pressureLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit1.temperatureTripOut to actuation.actuationUnit1.tempLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit1.saturationTripOut to actuation.actuationUnit1.saturationLogic.channel1;
 
-      // connect actuators
-      connect actuationUnit1.saturationLogic.actuate to actuator1.input;
+
 
     }
   } // package id RTS_System_Arch 'RTS System Architecture'
