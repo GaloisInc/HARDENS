@@ -43,18 +43,18 @@ package id Architecture 'RTS Architecture' {
 
     package Sensor {
       private import Quantities::*;
-      
+
       /** Generic sensor port */
       port def SensorOutPort {
           out value : ScalarQuantityValue;
       }
-      
+
       /** Generic sensor */
       part def GenericSensor {
         attribute currentValue : ScalarQuantityValue;
         port output: SensorOutPort;
-      }      
-      
+      }
+
       part def Demux {
         port input: ~SensorOutPort;
         // Using vector notation doesn't seem to work in connections
@@ -78,7 +78,7 @@ package id Architecture 'RTS Architecture' {
         redefines currentValue: TemperatureValue;
         redefines output: TemperatureOutPort;
       }
-      
+
       part def TempDemux :> Demux {
         redefines input: ~TemperatureOutPort;
         redefines output1: TemperatureOutPort;
@@ -101,7 +101,7 @@ package id Architecture 'RTS Architecture' {
         redefines currentValue: PressureValue;
         redefines output: PressureOutPort;
       }
-      
+
       part def PressureDemux :> Demux {
         redefines input: ~PressureOutPort;
         redefines output1: PressureOutPort;
@@ -149,16 +149,12 @@ package id Architecture 'RTS Architecture' {
       port def ActuationPort {
         out actuate: Boolean;
       }
-      
-      part def OrGate {
-        port in1: ~ActuationPort;
-        port in2: ~ActuationPort;
-        port out1: ActuationPort; 
-      }
 
       part def CoincidenceLogic {
         port channel1: ~TripPort;
         port channel2: ~TripPort;
+        port channel3: ~TripPort;
+        port channel4: ~TripPort;
         port actuate: ActuationPort;
       }
       part def OrLogic {
@@ -168,17 +164,16 @@ package id Architecture 'RTS Architecture' {
       }
 
      part def ActuationUnit {
-       part tempLogic : CoincidenceLogic;
+       part temperatureLogic : CoincidenceLogic;
        part pressureLogic : CoincidenceLogic;
-       part saturationLogic : OrLogic;
-       
-       part tempPressureTripOut: OrGate;
+       part saturationLogic : CoincidenceLogic;
 
-       import EventControl::ControlPort;
-       port controlInput:ControlPort;
-       
-       connect tempLogic.actuate to tempPressureTripOut.in1;
-       connect pressureLogic.actuate to tempPressureTripOut.in2;
+       part tempPressureTripOut: OrLogic;
+
+       port controlInput: EventControl::ControlPort;
+
+       connect temperatureLogic.actuate to tempPressureTripOut.channel1;
+       connect pressureLogic.actuate to tempPressureTripOut.channel2;
       }
       part def Actuator {
          port input: ActuationPort;
@@ -213,15 +208,15 @@ package id Architecture 'RTS Architecture' {
       part instrumentationAndSensing {
         part pressureSensor1 : PressureSensor::'Pressure Sensor';
         part pressureSensor2 : PressureSensor::'Pressure Sensor';
-        
+
         part tempSensor1 : TempSensor::'Temperature Sensor';
         part tempSensor2 : TempSensor::'Temperature Sensor';
-        
+
         part instrumentationUnit1 : InstrumentationUnit;
         part instrumentationUnit2 : InstrumentationUnit;
         part instrumentationUnit3 : InstrumentationUnit;
         part instrumentationUnit4 : InstrumentationUnit;
-        
+
         part tempDemux1 : TempSensor::Demux;
         part tempDemux2 : TempSensor::Demux;
 
@@ -237,12 +232,12 @@ package id Architecture 'RTS Architecture' {
         connect tempSensor2.output to tempDemux2.input;
         connect tempDemux2.output1 to instrumentationUnit3.temperatureInput;
         connect tempDemux2.output2 to instrumentationUnit4.temperatureInput;
-        
+
         // Pressure sensor 1
         connect pressureSensor1.output to pressureDemux1.input;
         connect pressureDemux1.output1 to instrumentationUnit1.pressureInput;
-        connect pressureDemux1.output2 to instrumentationUnit2.pressureInput; 
-        
+        connect pressureDemux1.output2 to instrumentationUnit2.pressureInput;
+
         // Pressure sensor 2
         connect pressureSensor2.output to pressureDemux2.input;
         connect pressureDemux1.output1 to instrumentationUnit3.pressureInput;
@@ -258,32 +253,62 @@ package id Architecture 'RTS Architecture' {
         part actuator1 : Actuator;
         part actuator2 : Actuator;
 
-        part saturationOrGate: OrGate;
-        part tempPressureOrGate: OrGate;
+        part actuateActuator1: OrLogic;
+        part actuateActuator2: OrLogic;
 
         // connect actuators
         // Actuator 1 - temp or pressure trip
-        connect actuationUnit1.tempPressureTripOut.out1 to tempPressureOrGate.in1;
-        connect actuationUnit2.tempPressureTripOut.out1 to tempPressureOrGate.in2;
-        connect tempPressureOrGate.out1 to actuator1.input;
+        connect actuationUnit1.tempPressureTripOut.actuate to actuateActuator1.channel1;
+        connect actuationUnit2.tempPressureTripOut.actuate to actuateActuator1.channel2;
+        connect actuateActuator1.actuate to actuator1.input;
 
         // Actuator 2 - Saturation
-        connect actuationUnit1.saturationLogic.actuate to saturationOrGate.in1;
-        connect actuationUnit2.saturationLogic.actuate to saturationOrGate.in2;
-        connect saturationOrGate.out1 to actuator2.input;        
+        connect actuationUnit1.saturationLogic.actuate to actuateActuator2.channel1;
+        connect actuationUnit2.saturationLogic.actuate to actuateActuator2.channel2;
+        connect actuateActuator2.actuate to actuator2.input;
       }
 
       // connect UI
       connect eventControl.output to instrumentationAndSensing.instrumentationUnit1.controlInput;
       connect eventControl.output to actuation.actuationUnit1.controlInput;
 
-      // connect trip channels
-      connect instrumentationAndSensing.instrumentationUnit1.pressureTripOut to actuation.actuationUnit1.pressureLogic.channel1;
-      connect instrumentationAndSensing.instrumentationUnit1.temperatureTripOut to actuation.actuationUnit1.tempLogic.channel1;
-      
-      //connect instrumentationAndSensing.instrumentationUnit1.saturationTripOut to actuation.actuationUnit1.saturationLogic.channel1;
-      //connect instrumentationAndSensing.instrumentationUnit2.saturationTripOut to actuation.actuationUnit1.saturationLogic.channel1;
+      // connect trip channels - big and ugly
 
+      // Trip on pressure above the setpoint
+      // Actuation unit 1
+      connect instrumentationAndSensing.instrumentationUnit1.pressureTripOut to actuation.actuationUnit1.pressureLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit2.pressureTripOut to actuation.actuationUnit1.pressureLogic.channel2;
+      connect instrumentationAndSensing.instrumentationUnit3.pressureTripOut to actuation.actuationUnit1.pressureLogic.channel3;
+      connect instrumentationAndSensing.instrumentationUnit4.pressureTripOut to actuation.actuationUnit1.pressureLogic.channel4;
+      // Actuation unit 2
+      connect instrumentationAndSensing.instrumentationUnit1.pressureTripOut to actuation.actuationUnit2.pressureLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit2.pressureTripOut to actuation.actuationUnit2.pressureLogic.channel2;
+      connect instrumentationAndSensing.instrumentationUnit3.pressureTripOut to actuation.actuationUnit2.pressureLogic.channel3;
+      connect instrumentationAndSensing.instrumentationUnit4.pressureTripOut to actuation.actuationUnit2.pressureLogic.channel4;
+
+      // Trip on temperature above the setpoint
+      // Actuation unit 1
+      connect instrumentationAndSensing.instrumentationUnit1.temperatureTripOut to actuation.actuationUnit1.temperatureLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit2.temperatureTripOut to actuation.actuationUnit1.temperatureLogic.channel2;
+      connect instrumentationAndSensing.instrumentationUnit3.temperatureTripOut to actuation.actuationUnit1.temperatureLogic.channel3;
+      connect instrumentationAndSensing.instrumentationUnit4.temperatureTripOut to actuation.actuationUnit1.temperatureLogic.channel4;
+      // Actuation unit 2
+      connect instrumentationAndSensing.instrumentationUnit1.temperatureTripOut to actuation.actuationUnit2.temperatureLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit2.temperatureTripOut to actuation.actuationUnit2.temperatureLogic.channel2;
+      connect instrumentationAndSensing.instrumentationUnit3.temperatureTripOut to actuation.actuationUnit2.temperatureLogic.channel3;
+      connect instrumentationAndSensing.instrumentationUnit4.temperatureTripOut to actuation.actuationUnit2.temperatureLogic.channel4;
+
+      // Trip on saturation above the setpoint
+      // Actuation unit 1
+      connect instrumentationAndSensing.instrumentationUnit1.saturationTripOut to actuation.actuationUnit1.saturationLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit2.saturationTripOut to actuation.actuationUnit1.saturationLogic.channel2;
+      connect instrumentationAndSensing.instrumentationUnit3.saturationTripOut to actuation.actuationUnit1.saturationLogic.channel3;
+      connect instrumentationAndSensing.instrumentationUnit4.saturationTripOut to actuation.actuationUnit1.saturationLogic.channel4;
+      // Actuation unit 2
+      connect instrumentationAndSensing.instrumentationUnit1.saturationTripOut to actuation.actuationUnit2.saturationLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit2.saturationTripOut to actuation.actuationUnit2.saturationLogic.channel2;
+      connect instrumentationAndSensing.instrumentationUnit3.saturationTripOut to actuation.actuationUnit2.saturationLogic.channel3;
+      connect instrumentationAndSensing.instrumentationUnit4.saturationTripOut to actuation.actuationUnit2.saturationLogic.channel4;
 
 
     }
