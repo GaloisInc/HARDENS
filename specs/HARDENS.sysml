@@ -41,35 +41,71 @@ package id Architecture 'RTS Architecture' {
       than our software, hardware, or data architectures. */
   package id RTS_System_Arch 'RTS System Architecture' {
 
+    package Sensor {
+      private import Quantities::*;
+      
+      /** Generic sensor port */
+      port def SensorOutPort {
+          out value : ScalarQuantityValue;
+      }
+      
+      /** Generic sensor */
+      part def GenericSensor {
+        attribute currentValue : ScalarQuantityValue;
+        port output: SensorOutPort;
+      }      
+      
+      part def Demux {
+        port input: ~SensorOutPort;
+        // Using vector notation doesn't seem to work in connections
+        port output1: SensorOutPort;
+        port output2: SensorOutPort;
+      }
+    }
+
     package TempSensor {
+      import Sensor::*;
       import ISQThermodynamics::TemperatureValue;
 
-      /** Generic temperature port */
-      port def TemperatureOutPort {
-          out temp : TemperatureValue;
+      /** Temperature port */
+      port def TemperatureOutPort :> SensorOutPort {
+          redefines value: TemperatureValue;
       }
 
       /** A sensor that is capable of measuring the temperature of its environment. */
-      part def 'Temperature Sensor' {
+      part def 'Temperature Sensor' :> GenericSensor {
         /** What is your temperature reading in Celsius (C)? */
-        attribute currentTemp: TemperatureValue;
-        port tempOut: TemperatureOutPort;
+        redefines currentValue: TemperatureValue;
+        redefines output: TemperatureOutPort;
+      }
+      
+      part def TempDemux :> Demux {
+        redefines input: ~TemperatureOutPort;
+        redefines output1: TemperatureOutPort;
+        redefines output2: TemperatureOutPort;
       }
     }
 
     package PressureSensor {
+      import Sensor::*;
       import ISQMechanics::PressureValue;
 
-      /** Generic pressure port */
-      port def PressureOutPort {
-          out pressure : PressureValue;
+      /** Pressure port */
+      port def PressureOutPort :> SensorOutPort {
+          redefines value: PressureValue;
       }
 
       /** A sensor that is capable of measuring the air pressure of its environment. */
-      part def 'Pressure Sensor' {
+      part def 'Pressure Sensor' :> GenericSensor {
         /** What is your pressure reading in Pascal (P)? */
-        attribute currentPressure: PressureValue;
-        port pressureOut: PressureOutPort;
+        redefines currentValue: PressureValue;
+        redefines output: PressureOutPort;
+      }
+      
+      part def PressureDemux :> Demux {
+        redefines input: ~PressureOutPort;
+        redefines output1: PressureOutPort;
+        redefines output2: PressureOutPort;
       }
     }
 
@@ -113,6 +149,12 @@ package id Architecture 'RTS Architecture' {
       port def ActuationPort {
         out actuate: Boolean;
       }
+      
+      part def OrGate {
+        port in1: ~ActuationPort;
+        port in2: ~ActuationPort;
+        port out1: ActuationPort; 
+      }
 
       part def CoincidenceLogic {
         port channel1: ~TripPort;
@@ -129,9 +171,14 @@ package id Architecture 'RTS Architecture' {
        part tempLogic : CoincidenceLogic;
        part pressureLogic : CoincidenceLogic;
        part saturationLogic : OrLogic;
+       
+       part tempPressureTripOut: OrGate;
 
        import EventControl::ControlPort;
        port controlInput:ControlPort;
+       
+       connect tempLogic.actuate to tempPressureTripOut.in1;
+       connect pressureLogic.actuate to tempPressureTripOut.in2;
       }
       part def Actuator {
          port input: ActuationPort;
@@ -165,21 +212,65 @@ package id Architecture 'RTS Architecture' {
       import Instrumentation::*;
       part instrumentationAndSensing {
         part pressureSensor1 : PressureSensor::'Pressure Sensor';
+        part pressureSensor2 : PressureSensor::'Pressure Sensor';
+        
         part tempSensor1 : TempSensor::'Temperature Sensor';
+        part tempSensor2 : TempSensor::'Temperature Sensor';
+        
         part instrumentationUnit1 : InstrumentationUnit;
+        part instrumentationUnit2 : InstrumentationUnit;
+        part instrumentationUnit3 : InstrumentationUnit;
+        part instrumentationUnit4 : InstrumentationUnit;
+        
+        part tempDemux1 : TempSensor::Demux;
+        part tempDemux2 : TempSensor::Demux;
 
-        connect tempSensor1.tempOut to instrumentationUnit1.temperatureInput;
-        connect pressureSensor1.pressureOut to instrumentationUnit1.pressureInput;
+        part pressureDemux1 : PressureSensor::Demux;
+        part pressureDemux2 : PressureSensor::Demux;
+
+        // Temp sensor 1
+        connect tempSensor1.output to tempDemux1.input;
+        connect tempDemux1.output1 to instrumentationUnit1.temperatureInput;
+        connect tempDemux1.output2 to instrumentationUnit2.temperatureInput;
+
+        // Temp sensor 2
+        connect tempSensor2.output to tempDemux2.input;
+        connect tempDemux2.output1 to instrumentationUnit3.temperatureInput;
+        connect tempDemux2.output2 to instrumentationUnit4.temperatureInput;
+        
+        // Pressure sensor 1
+        connect pressureSensor1.output to pressureDemux1.input;
+        connect pressureDemux1.output1 to instrumentationUnit1.pressureInput;
+        connect pressureDemux1.output2 to instrumentationUnit2.pressureInput; 
+        
+        // Pressure sensor 2
+        connect pressureSensor2.output to pressureDemux2.input;
+        connect pressureDemux1.output1 to instrumentationUnit3.pressureInput;
+        connect pressureDemux1.output2 to instrumentationUnit4.pressureInput;
       }
 
 
       import Actuation::*;
       part actuation {
         part actuationUnit1: ActuationUnit;
+        part actuationUnit2: ActuationUnit;
+
         part actuator1 : Actuator;
+        part actuator2 : Actuator;
+
+        part saturationOrGate: OrGate;
+        part tempPressureOrGate: OrGate;
 
         // connect actuators
-        connect actuationUnit1.saturationLogic.actuate to actuator1.input;
+        // Actuator 1 - temp or pressure trip
+        connect actuationUnit1.tempPressureTripOut.out1 to tempPressureOrGate.in1;
+        connect actuationUnit2.tempPressureTripOut.out1 to tempPressureOrGate.in2;
+        connect tempPressureOrGate.out1 to actuator1.input;
+
+        // Actuator 2 - Saturation
+        connect actuationUnit1.saturationLogic.actuate to saturationOrGate.in1;
+        connect actuationUnit2.saturationLogic.actuate to saturationOrGate.in2;
+        connect saturationOrGate.out1 to actuator2.input;        
       }
 
       // connect UI
@@ -189,7 +280,9 @@ package id Architecture 'RTS Architecture' {
       // connect trip channels
       connect instrumentationAndSensing.instrumentationUnit1.pressureTripOut to actuation.actuationUnit1.pressureLogic.channel1;
       connect instrumentationAndSensing.instrumentationUnit1.temperatureTripOut to actuation.actuationUnit1.tempLogic.channel1;
-      connect instrumentationAndSensing.instrumentationUnit1.saturationTripOut to actuation.actuationUnit1.saturationLogic.channel1;
+      
+      //connect instrumentationAndSensing.instrumentationUnit1.saturationTripOut to actuation.actuationUnit1.saturationLogic.channel1;
+      //connect instrumentationAndSensing.instrumentationUnit2.saturationTripOut to actuation.actuationUnit1.saturationLogic.channel1;
 
 
 
