@@ -187,6 +187,7 @@ package id Architecture 'RTS Architecture' {
         MAINTENANCE;
       }
 
+      // NOTE: should we add a notion of a step?
       port def ControlPort {
         out modeSelect: Mode;
         // NOTE: specify which setpoint? Temp/Pressure/Saturation?
@@ -201,8 +202,7 @@ package id Architecture 'RTS Architecture' {
     }
 
     part RTS {
-      import EventControl::*;
-      part eventControl : ControlUnit;
+      part eventControl : EventControl::ControlUnit;
 
       import Instrumentation::*;
       part instrumentationAndSensing {
