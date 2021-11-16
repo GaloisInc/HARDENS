@@ -19,7 +19,7 @@
 
 package id RTS 'Reactor Trip System' {
   import 'Semantic Properties'::*;
-  
+
   package id Architecture 'RTS Architecture';
   alias Arch for Architecture;
   package id Hardware 'RTS Hardware Artifacts';
@@ -31,47 +31,132 @@ package id RTS 'Reactor Trip System' {
   /* These are the core top-level subsystems characterizing HARDEN work. */
 }
 
-package Architecture {
-  import RTS::*;
-  import 'Project Glossary'::*;
-  import Artifacts::*;
-  import 'RTS Hardware Artifacts'::*;
+package id Architecture 'RTS Architecture' {
+  //import RTS::*;
+  //import 'Project Glossary'::*;
+  //import Artifacts::*;
+  //import 'RTS Hardware Artifacts'::*;
 
-  /** Note that this is the *systems* architecture, which is different 
+  /** Note that this is the *systems* architecture, which is different
       than our software, hardware, or data architectures. */
   package id RTS_System_Arch 'RTS System Architecture' {
-    // doc id sys_arch_doc
-    package Root {
-      import 'Project Glossary'::*;
-      part id CFSM 'Core Finite State Machine': FSM;
-      part id Programming_IO 'Programming I/O': IO;
-      part id UI_IO 'UI I/O': IO;
-      part id Debugging_IO 'Debugging I/O': IO;
-    }
-    package 'Actuation_Logic' {
-      part 'Voting Logic': 'Voting'[2];
-      part 'Actuator Logic': 'Actuator'[2];
-    }
-    /** Documentation about computation goes here. */
-    package Computation {
-      part def 'RISC-V CPU':> CPU, RISC_V_ISA;
-      part id CPUs 'RISC-V CPUs': 'RISC-V CPU'[3];
-    }
-    package Hardware {
-      package FPGA {
-        part id DevBoard 'Lattic ECP-5 FPGA Development Board': PCB;
+
+    package TempSensor {
+      import ISQThermodynamics::TemperatureValue;
+
+      /** Generic temperature port */
+      port def TemperatureOutPort {
+          out temp : TemperatureValue;
       }
-      package Actuators {
-        part 'Actuator'[2];
-      }
-      package Sensors {
-        part TS: 'Temperature Sensor'[2];
-        part PS: 'Pressure Sensor'[2];
+
+      /** A sensor that is capable of measuring the temperature of its environment. */
+      part def 'Temperature Sensor' {
+        /** What is your temperature reading in Celsius (C)? */
+        attribute currentTemp: TemperatureValue;
+        port tempOut: TemperatureOutPort;
       }
     }
+
+    package PressureSensor {
+      import ISQMechanics::PressureValue;
+
+      /** Generic pressure port */
+      port def PressureOutPort {
+          out pressure : PressureValue;
+      }
+
+      /** A sensor that is capable of measuring the air pressure of its environment. */
+      part def 'Pressure Sensor' {
+        /** What is your pressure reading in Pascal (P)? */
+        attribute currentPressure: PressureValue;
+        port pressureOut: PressureOutPort;
+      }
+    }
+
     package Instrumentation {
-      part 'Instrumentation'[4];
+      import ScalarValues::Real;
+      import ScalarValues::Boolean;
+      import TempSensor::*;
+      import PressureSensor::*;
+
+      // TODO: specialize? Such as PressureTripPort etc.
+      port def TripPort {
+        out trip : Boolean;
+      }
+
+      part def InstrumentationUnit {
+        // setpoints
+        attribute tempSetpoint : TemperatureValue;
+        attribute pressureSetpoint : PressureValue;
+        attribute saturationLimit : Real;
+
+        // mode selectors
+        attribute maintenanceMode : Boolean;
+
+        // Inputs
+        port temperatureInput: ~TemperatureOutPort;
+        port pressureInput: ~PressureOutPort;
+
+        // Outputs
+        port pressureTripOut:TripPort;
+        port temperatureTripOut:TripPort;
+        port saturationTripOut:TripPort;
+      }
     }
+
+    package Actuation {
+      import Instrumentation::*;
+
+      port def ActuationPort {
+        out actuate: Boolean;
+      }
+
+      part def CoincidenceLogic {
+        port channel1: ~TripPort;
+        port channel2: ~TripPort;
+        port actuate: ActuationPort;
+      }
+      part def OrLogic {
+        port channel1: ~TripPort;
+        port channel2: ~TripPort;
+        port actuate: ActuationPort;
+      }
+
+     part def ActuationUnit {
+       part tempLogic : CoincidenceLogic;
+       part pressureLogic : CoincidenceLogic;
+       part saturationLogic : OrLogic;
+      }
+      part def Actuator {
+         port input: ActuationPort;
+       }
+    }
+
+    part RTS {
+      // TODO: refine this
+      import TempSensor::*;
+      part tempSensor : 'Temperature Sensor'[2];
+
+      import PressureSensor::*;
+      part pressureSensor1 : 'Pressure Sensor'[2];
+
+      import Instrumentation::*;
+      part InstrumentationUnit1 : InstrumentationUnit[4];
+
+      import Actuation::*;
+      part ActuationUnit1: ActuationUnit[2];
+      part Actuator1 : Actuator[2];
+    }
+
+// TODO: finalize this
+//    // doc id sys_arch_doc
+//    package Root {
+//      import 'Project Glossary'::*;
+//      part id CFSM 'Core Finite State Machine': FSM;
+//      part id Programming_IO 'Programming I/O': IO;
+//      part id UI_IO 'UI I/O': IO;
+//      part id Debugging_IO 'Debugging I/O': IO;
+//    }
   }
 }
 
@@ -106,7 +191,7 @@ package id Artifacts 'RTS Implementation Artifacts' {
   part def 'Demonstrator Bitstream':> Bitstream;
   package id Dataflow 'Dataflow of RTS Implementation Artifacts' {
     private import 'RTS Implementation Artifacts'::*;
-    
+
     part def 'HARDENS Cryptol System Specification':> CryptolSpec {
      // :>> literate = true;
     }
@@ -155,24 +240,7 @@ package 'RTS Hardware Artifacts' {
     part J1 : 'JTAG Interface' subsets components;
     part J2 : 'Mini USB Programming' subsets components;
   }
-  item def TemperatureValue:> Real;
-  item def PressureValue:> Real;
-  port def SensorValuePort {
-    out item value;
-  }
-  abstract item def Sensor {
-    port value: SensorValuePort;
-  }
-  /** A sensor that is capable of measuring the temperature of its environment. */
-  part def 'Temperature Sensor':> Sensor {
-    /** What is your temperature reading in Celcius (C)? */
-    port temp redefines Sensor::value;
-  }
-  /** A sensor that is capable of measuring the air pressure of its environment. */
-  part def 'Pressure Sensor':> Sensor {
-    /** What is your pressure reading in Pascal (P)? */
-    part pressure: PressureValue redefines Sensor::value;
-  }
+
   enum def SolenoidState {
     OPEN;
     CLOSED;
@@ -187,61 +255,58 @@ package 'RTS Hardware Artifacts' {
   }
 }
 
-/** The physical architecture of the HARDENS RTS demonstrator. */
-package 'Physical Architecture' {
-  import 'Project Glossary'::*;
-  import 'RTS Hardware Artifacts'::*;
-
-  /** A PCB developer board used to prototype hardware. */
-  part 'HARDENS Demonstrator Board' : DevBoard;
-  /** The USB cable used to communicate the ASCII UI to/from the board. */    
-  part id UI_C 'USB UI Cable' : 'USB Cable';
-  /** The USB cable used to program the board with a bitstream. */
-  part id Prog_C 'USB Programming Cable' : 'USB Cable';
-  /** The USB cable used to interact with the board in a debugger. */
-  part id Debug_C 'USB Debugging I/O Cable' : 'USB Cable';
-  // @trace #11 https://github.com/GaloisInc/HARDENS/issues/11
-  // @todo Add attributes for URL traceability.
-  part def id MPL3115A2 'SparkFun Altitude/Pressure Sensor Breakout' :> 
-    PCB, 'Pressure Sensor'; 
-  // 4x https://www.sparkfun.com/products/11084
-  part def 'SparkFun MOSFET Power Control Kit' :> PCB, Power;
-  // 4x https://www.sparkfun.com/products/12959
-  part def id TMP102 'SparkFun Digital Temperature Sensor Breakout' :>
-    PCB, 'Temperature Sensor'; 
-  // 4x https://www.sparkfun.com/products/13314
-  part def 'Small Push-Pull Solenoid - 12VDC' :> 'Solenoid Actuator'; 
-  // 4x https://www.adafruit.com/product/412
-  part def '1N4001 Diode';
-  // 1x https://www.adafruit.com/product/755
-  /** The first of two redundant temperature sensors. */
-  part id TS1 'Temperature Sensor 1' : TMP102;
-  /** The second of two redundant temperature sensors. */
-  part id TS2 'Temperature Sensor 2' : TMP102;
-  /** The first of two redundant pressure sensors. */
-  part id PS1 'Pressure Sensor 1' : MPL3115A2;
-  /** The second of two redundant pressure sensors. */
-  part id PS2 'Pressure Sensor 2' : MPL3115A2;
-  /** The first of two redundant solenoid actuators. */
-  part id SA1 'Solenoid Actuator 1' : 'Small Push-Pull Solenoid - 12VDC';
-  /** The second of two redundant solenoid actuators. */
-  part id SA2 'Solenoid Actuator 2' : 'Small Push-Pull Solenoid - 12VDC';
-  // @todo kiniry Add ports for external connectors.
-
-  /** The computer used by a developer to interface with the demonstrator,
-      typically for driving the demonstrator's UI and programming and
-      debugging the board. */
-  part def 'Developer Machine':> Computer;
-
-  /** The fully assembled HARDENS demonstrator hardware with all component present. */
-  part id Demonstrator 'HARDENS Demonstrator';
-
-  connection def DevMachineToDevBoard {
-    end: Computer;
-    end: PCB;
-  } 
+///** The physical architecture of the HARDENS RTS demonstrator. */
+//package 'Physical Architecture' {
+//  import 'Project Glossary'::*;
+//  import 'RTS Hardware Artifacts'::*;
+//
+//  /** A PCB developer board used to prototype hardware. */
+//  part 'HARDENS Demonstrator Board' : DevBoard;
+//  /** The USB cable used to communicate the ASCII UI to/from the board. */
+//  part id UI_C 'USB UI Cable' : 'USB Cable';
+//  /** The USB cable used to program the board with a bitstream. */
+//  part id Prog_C 'USB Programming Cable' : 'USB Cable';
+//  /** The USB cable used to interact with the board in a debugger. */
+//  part id Debug_C 'USB Debugging I/O Cable' : 'USB Cable';
+//  // @trace #11 https://github.com/GaloisInc/HARDENS/issues/11
+//  // @todo Add attributes for URL traceability.
+//  part def id MPL3115A2 'SparkFun Altitude/Pressure Sensor Breakout' :>
+//    PCB, 'Pressure Sensor';
+//  // 4x https://www.sparkfun.com/products/11084
+//  part def 'SparkFun MOSFET Power Control Kit' :> PCB, Power;
+//  // 4x https://www.sparkfun.com/products/12959
+//  part def id TMP102 'SparkFun Digital Temperature Sensor Breakout' :>
+//   PCB, 'Temperature Sensor';
+//  // 4x https://www.sparkfun.com/products/13314
+//  part def 'Small Push-Pull Solenoid - 12VDC' :> 'Solenoid Actuator';
+//  // 4x https://www.adafruit.com/product/412
+//  part def '1N4001 Diode';
+//  // 1x https://www.adafruit.com/product/755
+//  /** The first of two redundant temperature sensors. */
+//  part id TS1 'Temperature Sensor 1' : TMP102;
+//  /** The second of two redundant temperature sensors. */
+//  part id TS2 'Temperature Sensor 2' : TMP102;
+//  /** The first of two redundant pressure sensors. */
+//  part id PS1 'Pressure Sensor 1' : MPL3115A2;
+//  /** The second of two redundant pressure sensors. */
+//  part id PS2 'Pressure Sensor 2' : MPL3115A2;
+//  /** The first of two redundant solenoid actuators. */
+//  part id SA1 'Solenoid Actuator 1' : 'Small Push-Pull Solenoid - 12VDC';
+//  /** The second of two redundant solenoid actuators. */
+//  part id SA2 'Solenoid Actuator 2' : 'Small Push-Pull Solenoid - 12VDC';
+//  // @todo kiniry Add ports for external connectors.
+//
+//  /** The computer used by a developer to interface with the demonstrator,
+//      typically for driving the demonstrator's UI and programming and
+//      debugging the board. */
+//  part def 'Developer Machine':> Computer;
+//
+//  /** The fully assembled HARDENS demonstrator hardware with all component present. */
+//  part id Demonstrator 'HARDENS Demonstrator';
+//
+//  connection def DevMachineToDevBoard {
+//    end: Computer;
+//    end: PCB;
+//  }
 //    connection: DevMachineToDevBoard connect 'Developer Machine' to Board;
-}
-
-
-
+//}
