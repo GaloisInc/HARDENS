@@ -101,6 +101,9 @@ package id Architecture 'RTS Architecture' {
         port pressureTripOut:TripPort;
         port temperatureTripOut:TripPort;
         port saturationTripOut:TripPort;
+
+        import EventControl::ControlPort;
+        port controlInput:ControlPort;
       }
     }
 
@@ -126,39 +129,71 @@ package id Architecture 'RTS Architecture' {
        part tempLogic : CoincidenceLogic;
        part pressureLogic : CoincidenceLogic;
        part saturationLogic : OrLogic;
+
+       import EventControl::ControlPort;
+       port controlInput:ControlPort;
       }
       part def Actuator {
          port input: ActuationPort;
        }
     }
 
-    part RTS {
-      // TODO: refine this
-      import TempSensor::*;
-      part tempSensor : 'Temperature Sensor'[2];
+    package EventControl {
+      enum def Mode {
+        AUTO;
+        MANUAL;
+        MAINTENANCE;
+      }
 
-      import PressureSensor::*;
-      part pressureSensor1 : 'Pressure Sensor'[2];
+      port def ControlPort {
+        out modeSelect: Mode;
+        // NOTE: specify which setpoint? Temp/Pressure/Saturation?
+        // Maybe redefine later
+        out setpointSelect: ScalarValues::Real;
+        out tripOn: ScalarValues::Boolean;
+      }
 
-      import Instrumentation::*;
-      part InstrumentationUnit1 : InstrumentationUnit[4];
-
-      import Actuation::*;
-      part ActuationUnit1: ActuationUnit[2];
-      part Actuator1 : Actuator[2];
+      part def ControlUnit {
+        port output: ~ControlPort;
+      }
     }
 
-// TODO: finalize this
-//    // doc id sys_arch_doc
-//    package Root {
-//      import 'Project Glossary'::*;
-//      part id CFSM 'Core Finite State Machine': FSM;
-//      part id Programming_IO 'Programming I/O': IO;
-//      part id UI_IO 'UI I/O': IO;
-//      part id Debugging_IO 'Debugging I/O': IO;
-//    }
-  }
-}
+    part RTS {
+      import EventControl::*;
+      part eventControl : ControlUnit;
+
+      import TempSensor::*;
+      part tempSensor1 : 'Temperature Sensor';
+
+      import PressureSensor::*;
+      part pressureSensor1 : 'Pressure Sensor';
+
+      import Instrumentation::*;
+      part instrumentationUnit1 : InstrumentationUnit;
+
+      import Actuation::*;
+      part actuationUnit1: ActuationUnit;
+      part actuator1 : Actuator;
+
+      // connect sensors
+      connect tempSensor1.tempOut to instrumentationUnit1.temperatureInput;
+      connect pressureSensor1.pressureOut to instrumentationUnit1.pressureInput;
+
+      // connect UI
+      connect eventControl.output to instrumentationUnit1.controlInput;
+      connect eventControl.output to actuationUnit1.controlInput;
+
+      // connect trip channels
+      connect instrumentationUnit1.pressureTripOut to actuationUnit1.pressureLogic.channel1;
+      connect instrumentationUnit1.temperatureTripOut to actuationUnit1.tempLogic.channel1;
+      connect instrumentationUnit1.saturationTripOut to actuationUnit1.saturationLogic.channel1;
+
+      // connect actuators
+      connect actuationUnit1.saturationLogic.actuate to actuator1.input;
+
+    }
+  } // package id RTS_System_Arch 'RTS System Architecture'
+} // package id Architecture 'RTS Architecture'
 
 package id Artifacts 'RTS Implementation Artifacts' {
   private import ScalarValues::*;
