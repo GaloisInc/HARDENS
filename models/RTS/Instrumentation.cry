@@ -51,9 +51,9 @@ Is_Tripped: {ch} (ch <= 2) => Instrumentation -> Bit
 Is_Tripped i = (i.manual_trip @ `ch) || ((i.sensor_trip @ `ch) && ~bypassed)
   where
     bypassed : Bit
-    bypassed = if `ch <= 1
+    bypassed = if (`ch  == `T || `ch == `P) // @todo abakst is this right for saturation?
                then i.bypass @ `ch
-               else (i.bypass @ 0 || i.bypass @ 1)
+               else (i.bypass @ `T || i.bypass @ `P)
 
 Set_Manual_Trip: [3] -> Instrumentation -> Instrumentation
 Set_Manual_Trip vals instr = { instr | manual_trip = vals }
@@ -74,7 +74,7 @@ Read_Sensors sensors state =
     Trip : {ch} (ch <= 2) => Instrumentation -> Instrumentation
     Trip i = {i | sensor_trip = update i.sensor_trip `ch (trp || (i.sensor_trip @ `ch)) }
       where
-        cmp = if `ch == 2 then (<) else (>)
+        cmp = if `ch == `S then (<) else (>)
         trp = cmp (vals @ `ch) (i.setpoints @ `ch)
 
 private
@@ -105,9 +105,9 @@ private
 
   property step_state_const (inp: Input) (instr: Instrumentation) =
          instr.manual_trip == instr'.manual_trip
-      /\ instr.setpoints == instr.setpoints
-      /\ instr.bypass == instr.bypass
-      /\ instr.maintenance == instr.maintenance
+      /\ instr.setpoints == instr'.setpoints
+      /\ instr.bypass == instr'.bypass
+      /\ instr.maintenance == instr'.maintenance
       where instr' = Read_Sensors inp instr
 
   property set_manual_correct (instr: Instrumentation) (bits: [3]) =
