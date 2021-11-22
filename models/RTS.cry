@@ -13,6 +13,22 @@ import RTS::Instrumentation
 import RTS::Actuation
 import RTS::Utils
 
+MAINTENANCE, BYPASS, SETPOINT, TRIP, ACTUATE, NEVENTS : [3]
+MAINTENANCE = 0
+BYPASS = 1
+SETPOINT = 2
+TRIP = 3
+ACTUATE = 4
+NEVENTS = 5
+
+newtype Event (ch : #) (dev : #) =
+  { event: [3]
+    // Instrumentation output event arguments
+  , division: [2]
+  , setpoint: [32]
+  , on_off: Bit
+  }
+
 newtype UI =
   { instrumentation_values: [4][3][32]
   , instrumentation_bypass: [4][2]
@@ -21,13 +37,6 @@ newtype UI =
 
 newtype CoreFSM =
   { ui: UI
-  // Instrumentation output events
-  , out_maintenance: [4]
-  , out_bypass: [4][2]
-  , out_setpoints: [4][3][32]
-  , out_force_trip: [4][3]
-  // Actuation output events
-  , out_manual_actuate: [2]
   }
 
 Update_UI: [4]Instrumentation -> ActuationLogic -> CoreFSM -> CoreFSM
@@ -38,11 +47,23 @@ Update_UI instrs actuator rts0 =
     get_bypass rts = {rts| ui = {rts.ui| instrumentation_bypass = [ [In_Bypass`{T} i, In_Bypass`{P} i] | i <- instrs ]}}
     get_trip   rts = {rts| ui = {rts.ui| instrumentation_trip = [ [Is_Tripped`{T} i, Is_Tripped`{P} i, Is_Tripped`{S} i] | i <- instrs ]}}
 
-Handle_Set_Maintenance: [2] -> Bit -> CoreFSM -> CoreFSM
-Handle_Set_Maintenance div val rts =
-  {rts| out_maintenance = update rts.out_maintenance div val}
-
 newtype RTS = { core: CoreFSM, instr: [4]Instrumentation, act: ActuationLogic }
+
+Run_Event: {ch, dev} (ch <= 2, dev <= 1) => Event ch dev -> RTS -> RTS
+Run_Event e rts =
+  if e.event == MAINTENANCE then
+    {rts| instr = update rts.instr (e.division) (Set_Maintenance e.on_off (rts.instr @ e.division))}
+  else if (e.event == BYPASS) && (`ch <= 1) then
+    {rts| instr = update rts.instr (e.division) (Set_Bypass`{Ch ch} e.on_off (rts.instr @ e.division))}
+  else if (e.event == SETPOINT) then
+    {rts| instr = update rts.instr (e.division) (Set_Setpoint`{ch} e.setpoint (rts.instr @ e.division))}
+  else if (e.event == TRIP) then
+    {rts| instr = update rts.instr (e.division) (Set_Manual_Trip`{ch} e.on_off (rts.instr @ e.division))}
+  else if (e.event == ACTUATE) then
+    {rts| act = Set_Manual_Actuation`{dev} e.on_off rts.act}
+  else rts
+  where
+    type Ch c = c % 2
 
 private
     I : ([4]Instrumentation -> [4]Instrumentation) -> RTS -> RTS
@@ -51,6 +72,20 @@ private
     A f rts = {rts|act = f rts.act}
     C : (CoreFSM -> CoreFSM) -> RTS -> RTS
     C f rts = {rts|core = f rts.core}
+
+
+    /** @requirements
+          CORE_UI_INSTRUMENTATION
+    */
+    property core_ui_instrumentation (rts: RTS) (i: [2]) =
+           ((core'.ui.instrumentation_values @ i)      == Get_Reading (rts.instr @ i))
+        /\ ((core'.ui.instrumentation_bypass @ i @ `T) == In_Bypass`{T} (rts.instr @ i))
+        /\ ((core'.ui.instrumentation_bypass @ i @ `P) == In_Bypass`{P} (rts.instr @ i))
+        /\ ((core'.ui.instrumentation_trip @ i @ `T)   == Is_Tripped`{T} (rts.instr @ i))
+        /\ ((core'.ui.instrumentation_trip @ i @ `P)   == Is_Tripped`{P} (rts.instr @ i))
+        /\ ((core'.ui.instrumentation_trip @ i @ `S)   == Is_Tripped`{S} (rts.instr @ i))
+      where
+        core' = Update_UI rts.instr rts.act rts.core
 
     property sense_to_actuate_0 rts (sensors : [4][2][32]) =
            sum [ if Is_Tripped`{T} i then 1 else 0 | i <- rts'.instr ] >= 2
