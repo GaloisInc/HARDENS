@@ -115,7 +115,6 @@ package id Architecture 'RTS Architecture' {
       import TempSensor::*;
       import PressureSensor::*;
 
-      // TODO: specialize? Such as PressureTripPort etc.
       port def TripPort {
         out trip : Boolean;
       }
@@ -138,8 +137,14 @@ package id Architecture 'RTS Architecture' {
         port temperatureTripOut:TripPort;
         port saturationTripOut:TripPort;
 
-        import EventControl::ControlPort;
-        port controlInput:ControlPort;
+        port controlInput: ~EventControl::ControlPort;
+        port manualPressureTrip : ~TripPort;
+        port manualTemperatureTrip : ~TripPort;
+        port manualSaturationTrip: ~TripPort;
+
+        port newTemperatureSetpoint: ~TemperatureOutPort;
+        port newPressureSetpoint: ~PressureOutPort;
+        port newSaturationSetpoint : ~SensorOutPort;
       }
     }
 
@@ -176,28 +181,45 @@ package id Architecture 'RTS Architecture' {
        connect pressureLogic.actuate to tempPressureTripOut.channel2;
       }
       part def Actuator {
+        // Regular input
          port input: ActuationPort;
+         // Mode switch
+         port controlInput: ~EventControl::ControlPort;
+         // If in manual, follow this input
+         port manualActuatorInput: ~ActuationPort;
        }
     }
 
     package EventControl {
       enum def Mode {
+        // Full auto
         AUTO;
+        // Only in manual mode the user can trip individual channels
         MANUAL;
+        // Only in maintenance mode the user can update setpoints
         MAINTENANCE;
       }
 
       // NOTE: should we add a notion of a step?
       port def ControlPort {
         out modeSelect: Mode;
-        // NOTE: specify which setpoint? Temp/Pressure/Saturation?
-        // Maybe redefine later
-        out setpointSelect: ScalarValues::Real;
-        out tripOn: ScalarValues::Boolean;
       }
 
       part def ControlUnit {
-        port output: ~ControlPort;
+        // Mode select x 4 instrumentation units
+        port mode: ControlPort[4];
+        // Manual trip x 4 instrumentation units
+        port manualPressureTrip : Instrumentation::TripPort[4];
+        port manualTemperatureTrip : Instrumentation::TripPort[4];
+        port manualSaturationTrip: Instrumentation::TripPort[4];
+        // New setpoints x 4 instrumentation units
+        port newPressureSetpoint: PressureSensor::PressureOutPort[4];
+        port newTemperatureSetpoint: TempSensor::TemperatureOutPort[4];
+        port newSaturationSetpoint: PressureSensor::PressureOutPort[4];
+        // Mode select x2 actuators
+        port actuationMode: ControlPort[2];
+        // Toggle actuator x2 actuators
+        port manualActuatorInput: Actuation::ActuationPort[2];
       }
     }
 
@@ -268,9 +290,9 @@ package id Architecture 'RTS Architecture' {
         connect actuateActuator2.actuate to actuator2.input;
       }
 
-      // connect UI
-      connect eventControl.output to instrumentationAndSensing.instrumentationUnit1.controlInput;
-      connect eventControl.output to actuation.actuationUnit1.controlInput;
+      // connect Control units
+      // TODO - many connections
+
 
       // connect trip channels - big and ugly
 
