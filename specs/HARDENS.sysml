@@ -119,6 +119,10 @@ package id Architecture 'RTS Architecture' {
         out trip : Boolean;
       }
 
+      port def BypassPort {
+        out trip : Boolean;
+      }
+
       part def InstrumentationUnit {
         // setpoints
         attribute tempSetpoint : TemperatureValue;
@@ -127,6 +131,11 @@ package id Architecture 'RTS Architecture' {
 
         // mode selectors
         attribute maintenanceMode : Boolean;
+
+        // Bypass
+        port bypassTemperature : BypassPort;
+        port bypassPressure : BypassPort;
+        port bypassSaturation : BypassPort;
 
         // Inputs
         port temperatureInput: ~TemperatureOutPort;
@@ -220,6 +229,10 @@ package id Architecture 'RTS Architecture' {
         port actuationMode: ControlPort[2];
         // Toggle actuator x2 actuators
         port manualActuatorInput: Actuation::ActuationPort[2];
+        // Bypass x4
+        port bypassTemperature : ~Instrumentation::BypassPort[4];
+        port bypassPressure : ~Instrumentation::BypassPort[4];
+        port bypassSaturation : ~Instrumentation::BypassPort[4];
       }
     }
 
@@ -338,6 +351,25 @@ package id Architecture 'RTS Architecture' {
       connect eventControl.manualSaturationTrip[2] to instrumentationAndSensing.instrumentationUnit2.manualSaturationTrip;
       connect eventControl.manualSaturationTrip[3] to instrumentationAndSensing.instrumentationUnit3.manualSaturationTrip;
       connect eventControl.manualSaturationTrip[4] to instrumentationAndSensing.instrumentationUnit4.manualSaturationTrip;
+
+      // Instrumentation bypass channel
+      // Bypass temperature
+      connect eventControl.bypassTemperature[1] to instrumentationAndSensing.instrumentationUnit1.bypassTemperature;
+      connect eventControl.bypassTemperature[2] to instrumentationAndSensing.instrumentationUnit2.bypassTemperature;
+      connect eventControl.bypassTemperature[3] to instrumentationAndSensing.instrumentationUnit3.bypassTemperature;
+      connect eventControl.bypassTemperature[4] to instrumentationAndSensing.instrumentationUnit4.bypassTemperature;
+
+      // Bypass pressure
+      connect eventControl.bypassPressure[1] to instrumentationAndSensing.instrumentationUnit1.bypassPressure;
+      connect eventControl.bypassPressure[2] to instrumentationAndSensing.instrumentationUnit2.bypassPressure;
+      connect eventControl.bypassPressure[3] to instrumentationAndSensing.instrumentationUnit3.bypassPressure;
+      connect eventControl.bypassPressure[4] to instrumentationAndSensing.instrumentationUnit4.bypassPressure;
+
+      // Bypass saturation
+      connect eventControl.bypassSaturation[1] to instrumentationAndSensing.instrumentationUnit1.bypassSaturation;
+      connect eventControl.bypassSaturation[2] to instrumentationAndSensing.instrumentationUnit2.bypassSaturation;
+      connect eventControl.bypassSaturation[3] to instrumentationAndSensing.instrumentationUnit3.bypassSaturation;
+      connect eventControl.bypassSaturation[4] to instrumentationAndSensing.instrumentationUnit4.bypassSaturation;
 
       // Trip on pressure above the setpoint
       // Actuation unit 1
