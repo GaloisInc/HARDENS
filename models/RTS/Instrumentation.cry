@@ -65,8 +65,8 @@ Is_Tripped i = (i.manual_trip @ `ch) || ((i.sensor_trip @ `ch) && ~bypassed)
                then i.bypass @ `ch
                else (i.bypass @ `T || i.bypass @ `P)
 
-Set_Manual_Trip: [3] -> Instrumentation -> Instrumentation
-Set_Manual_Trip vals instr = { instr | manual_trip = vals }
+Set_Manual_Trip: {ch} (ch <= 2) => Bit -> Instrumentation -> Instrumentation
+Set_Manual_Trip val instr = { instr | manual_trip = update instr.manual_trip `ch val }
 
 Saturation : [32] -> [32] -> [32]
 Saturation t p = if p == 0 then 0 else (t / p)
@@ -136,11 +136,13 @@ private
         INSTRUMENTATION_SET_MANUAL_TRIP_SATURATION
   */
   property instrumentation_set_manual_trip (instr: Instrumentation) (bits: [3]) =
-       Is_Tripped`{T} tripped == bits @ `T \/ instr.sensor_trip @ `T
-    /\ Is_Tripped`{P} tripped == bits @ `P \/ instr.sensor_trip @ `P
-    /\ Is_Tripped`{S} tripped == bits @ `S \/ instr.sensor_trip @ `S
+       Is_Tripped`{T} trippedT == bits @ `T \/ instr.sensor_trip @ `T
+    /\ Is_Tripped`{P} trippedP == bits @ `P \/ instr.sensor_trip @ `P
+    /\ Is_Tripped`{S} trippedS == bits @ `S \/ instr.sensor_trip @ `S
     where
-      tripped = Set_Manual_Trip bits instr
+      trippedT = Set_Manual_Trip`{T} (bits @ `T) instr
+      trippedP = Set_Manual_Trip`{P} (bits @ `P) instr
+      trippedS = Set_Manual_Trip`{S} (bits @ `S) instr
 
   /** @requirements
          INSTRUMENTATION_SET_SETPOINT_TEMPERATURE
@@ -155,11 +157,10 @@ private
   /** @requirements
          INSTRUMENTATION_SET_BYPASS_TEMPERATURE
          INSTRUMENTATION_SET_BYPASS_PRESSURE
-         INSTRUMENTATION_SET_BYPASS_SATURATION
   */
   property set_bypass_correct (instr: Instrumentation) (on: Bit) =
-        (In_Bypass`{T} (Set_Bypass`{T} on instr) == on)
-     == ((In_Bypass`{T} instr == on) \/ (In_Maintenance instr))
+        ((In_Bypass`{T} (Set_Bypass`{T} on instr) == on) == ((In_Bypass`{T} instr == on) \/ (In_Maintenance instr)))
+     /\ ((In_Bypass`{P} (Set_Bypass`{P} on instr) == on) == ((In_Bypass`{P} instr == on) \/ (In_Maintenance instr)))
 
   property step_state_const (inp: Input) (instr: Instrumentation) =
          instr.manual_trip == instr'.manual_trip
