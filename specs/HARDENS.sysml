@@ -137,7 +137,7 @@ package id Architecture 'RTS Architecture' {
         port temperatureTripOut:TripPort;
         port saturationTripOut:TripPort;
 
-        port controlInput: ~EventControl::ControlPort;
+        port modeSelect: ~EventControl::ControlPort;
         port manualPressureTrip : ~TripPort;
         port manualTemperatureTrip : ~TripPort;
         port manualSaturationTrip: ~TripPort;
@@ -291,10 +291,53 @@ package id Architecture 'RTS Architecture' {
       }
 
       // connect Control units
-      // TODO - many connections
+      // Actuators manual override
+      connect eventControl.actuationMode[1] to actuation.actuator1.controlInput;
+      connect eventControl.manualActuatorInput[1] to actuation.actuator1.manualActuatorInput;
+      connect eventControl.actuationMode[2] to actuation.actuator2.controlInput;
+      connect eventControl.manualActuatorInput[2] to actuation.actuator2.manualActuatorInput;
 
+      // Instrumentation mode select
+      connect eventControl.mode[1] to instrumentationAndSensing.instrumentationUnit1.modeSelect;
+      connect eventControl.mode[2] to instrumentationAndSensing.instrumentationUnit2.modeSelect;
+      connect eventControl.mode[3] to instrumentationAndSensing.instrumentationUnit3.modeSelect;
+      connect eventControl.mode[4] to instrumentationAndSensing.instrumentationUnit4.modeSelect;
 
-      // connect trip channels - big and ugly
+      // Instrumentation pressure setpoint
+      connect eventControl.newPressureSetpoint[1] to instrumentationAndSensing.instrumentationUnit1.newPressureSetpoint;
+      connect eventControl.newPressureSetpoint[2] to instrumentationAndSensing.instrumentationUnit2.newPressureSetpoint;
+      connect eventControl.newPressureSetpoint[3] to instrumentationAndSensing.instrumentationUnit3.newPressureSetpoint;
+      connect eventControl.newPressureSetpoint[4] to instrumentationAndSensing.instrumentationUnit4.newPressureSetpoint;
+
+      // Instrumentation temperature setpoint
+      connect eventControl.newTemperatureSetpoint[1] to instrumentationAndSensing.instrumentationUnit1.newTemperatureSetpoint;
+      connect eventControl.newTemperatureSetpoint[2] to instrumentationAndSensing.instrumentationUnit2.newTemperatureSetpoint;
+      connect eventControl.newTemperatureSetpoint[3] to instrumentationAndSensing.instrumentationUnit3.newTemperatureSetpoint;
+      connect eventControl.newTemperatureSetpoint[4] to instrumentationAndSensing.instrumentationUnit4.newTemperatureSetpoint;
+
+      // Instrumentation saturation setpoint
+      connect eventControl.newSaturationSetpoint[1] to instrumentationAndSensing.instrumentationUnit1.newSaturationSetpoint;
+      connect eventControl.newSaturationSetpoint[2] to instrumentationAndSensing.instrumentationUnit2.newSaturationSetpoint;
+      connect eventControl.newSaturationSetpoint[3] to instrumentationAndSensing.instrumentationUnit3.newSaturationSetpoint;
+      connect eventControl.newSaturationSetpoint[4] to instrumentationAndSensing.instrumentationUnit4.newSaturationSetpoint;
+
+      // Instrumentation manual pressure trip
+      connect eventControl.manualPressureTrip[1] to instrumentationAndSensing.instrumentationUnit1.manualPressureTrip;
+      connect eventControl.manualPressureTrip[2] to instrumentationAndSensing.instrumentationUnit2.manualPressureTrip;
+      connect eventControl.manualPressureTrip[3] to instrumentationAndSensing.instrumentationUnit3.manualPressureTrip;
+      connect eventControl.manualPressureTrip[4] to instrumentationAndSensing.instrumentationUnit4.manualPressureTrip;
+
+      // Instrumentation manual temperature trip
+      connect eventControl.manualTemperatureTrip[1] to instrumentationAndSensing.instrumentationUnit1.manualTemperatureTrip;
+      connect eventControl.manualTemperatureTrip[2] to instrumentationAndSensing.instrumentationUnit2.manualTemperatureTrip;
+      connect eventControl.manualTemperatureTrip[3] to instrumentationAndSensing.instrumentationUnit3.manualTemperatureTrip;
+      connect eventControl.manualTemperatureTrip[4] to instrumentationAndSensing.instrumentationUnit4.manualTemperatureTrip;
+
+      // Instrumentation manual saturation trip
+      connect eventControl.manualSaturationTrip[1] to instrumentationAndSensing.instrumentationUnit1.manualSaturationTrip;
+      connect eventControl.manualSaturationTrip[2] to instrumentationAndSensing.instrumentationUnit2.manualSaturationTrip;
+      connect eventControl.manualSaturationTrip[3] to instrumentationAndSensing.instrumentationUnit3.manualSaturationTrip;
+      connect eventControl.manualSaturationTrip[4] to instrumentationAndSensing.instrumentationUnit4.manualSaturationTrip;
 
       // Trip on pressure above the setpoint
       // Actuation unit 1
