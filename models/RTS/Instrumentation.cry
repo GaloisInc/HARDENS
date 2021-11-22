@@ -22,6 +22,16 @@ newtype Instrumentation =
   , maintenance: Bit
   }
 
+Initial: Instrumentation
+Initial = Instrumentation
+  { setpoints = zero
+  , reading   = zero
+  , bypass    = ~zero
+  , manual_trip = zero
+  , sensor_trip = zero
+  , maintenance = ~zero
+  }
+
 Get_Reading: Instrumentation -> [3][32]
 Get_Reading instr = instr.reading
 
@@ -51,7 +61,7 @@ Is_Tripped: {ch} (ch <= 2) => Instrumentation -> Bit
 Is_Tripped i = (i.manual_trip @ `ch) || ((i.sensor_trip @ `ch) && ~bypassed)
   where
     bypassed : Bit
-    bypassed = if (`ch  == `T || `ch == `P) // @todo abakst is this right for saturation?
+    bypassed = if (`ch == `T) || (`ch == `P) // @todo abakst is this right for saturation?
                then i.bypass @ `ch
                else (i.bypass @ `T || i.bypass @ `P)
 
@@ -78,8 +88,17 @@ Read_Sensors sensors state =
         trp = cmp (vals @ `ch) (i.setpoints @ `ch)
 
 private
+  /** @requirements
+        INSTRUMENTATION_RESET
+  */
+  property instrumentation_reset =
+    In_Maintenance Initial /\ In_Bypass`{P} Initial /\ In_Bypass`{T} Initial
 
-  property trip_on_high_pressure (inp: Input) (instr: Instrumentation) =
+  /** @requirements
+        INSTRUMENTATION_TRIP_PRESSURE
+        INSTRUMENTATION_NO_SPURIOUS_PRESSURE
+  */
+  property instrumentation_trip_pressure (inp: Input) (instr: Instrumentation) =
     instr.manual_trip @ `P
     \/ (~(In_Bypass`{P} instr)
         /\ (instr.sensor_trip @ `P \/ inp @ `P > Get_Setpoint`{P} instr'))
@@ -87,7 +106,11 @@ private
     (Is_Tripped`{P} instr')
       where instr' = Read_Sensors inp instr
 
-  property trip_on_high_temperature (inp: Input) (instr: Instrumentation) =
+  /** @requirements
+        INSTRUMENTATION_TRIP_TEMPERATURE
+        INSTRUMENTATION_NO_SPURIOUS_TEMPERATURE
+  */
+  property instrumentation_trip_temperature (inp: Input) (instr: Instrumentation) =
     instr.manual_trip @ `T
     \/ (~(In_Bypass`{T} instr)
         /\ (instr.sensor_trip @ `T \/ inp @ `T > Get_Setpoint`{T} instr'))
@@ -95,7 +118,11 @@ private
     (Is_Tripped`{T} instr')
       where instr' = Read_Sensors inp instr
 
-  property trip_on_low_saturation (inp: Input) (instr: Instrumentation) =
+  /** @requirements
+        INSTRUMENTATION_TRIP_SATURATION
+        INSTRUMENTATION_NO_SPURIOUS_SATURATION
+  */
+  property instrumentation_trip_saturation (inp: Input) (instr: Instrumentation) =
     instr.manual_trip @ `S
     \/ (~(In_Bypass`{T} instr \/ In_Bypass`{P} instr)
         /\ (instr.sensor_trip @ `S \/ Saturation (inp @ `T) (inp @ `P) < Get_Setpoint`{S} instr'))
@@ -103,24 +130,40 @@ private
     (Is_Tripped`{S} instr')
       where instr' = Read_Sensors inp instr
 
-  property step_state_const (inp: Input) (instr: Instrumentation) =
-         instr.manual_trip == instr'.manual_trip
-      /\ instr.setpoints == instr'.setpoints
-      /\ instr.bypass == instr'.bypass
-      /\ instr.maintenance == instr'.maintenance
-      where instr' = Read_Sensors inp instr
-
-  property set_manual_correct (instr: Instrumentation) (bits: [3]) =
+  /** @requirements
+        INSTRUMENTATION_SET_MANUAL_TRIP_TEMPERATURE
+        INSTRUMENTATION_SET_MANUAL_TRIP_PRESSURE
+        INSTRUMENTATION_SET_MANUAL_TRIP_SATURATION
+  */
+  property instrumentation_set_manual_trip (instr: Instrumentation) (bits: [3]) =
        Is_Tripped`{T} tripped == bits @ `T \/ instr.sensor_trip @ `T
     /\ Is_Tripped`{P} tripped == bits @ `P \/ instr.sensor_trip @ `P
     /\ Is_Tripped`{S} tripped == bits @ `S \/ instr.sensor_trip @ `S
     where
       tripped = Set_Manual_Trip bits instr
 
+  /** @requirements
+         INSTRUMENTATION_SET_SETPOINT_TEMPERATURE
+         INSTRUMENTATION_SET_SETPOINT_PRESSURE
+         INSTRUMENTATION_SET_SETPOINT_SATURATION
+  */
   property get_set_setpoint_correct (instr: Instrumentation) (val: [32]) =
        Get_Setpoint`{T} (Set_Setpoint`{T} val instr) == val
     /\ Get_Setpoint`{P} (Set_Setpoint`{P} val instr) == val
     /\ Get_Setpoint`{S} (Set_Setpoint`{S} val instr) == val
 
+  /** @requirements
+         INSTRUMENTATION_SET_BYPASS_TEMPERATURE
+         INSTRUMENTATION_SET_BYPASS_PRESSURE
+         INSTRUMENTATION_SET_BYPASS_SATURATION
+  */
   property set_bypass_correct (instr: Instrumentation) (on: Bit) =
-     (In_Bypass`{T} (Set_Bypass`{T} on instr) == on) == ((In_Bypass`{T} instr == on) \/ (In_Maintenance instr))
+        (In_Bypass`{T} (Set_Bypass`{T} on instr) == on)
+     == ((In_Bypass`{T} instr == on) \/ (In_Maintenance instr))
+
+  property step_state_const (inp: Input) (instr: Instrumentation) =
+         instr.manual_trip == instr'.manual_trip
+      /\ instr.setpoints == instr'.setpoints
+      /\ instr.bypass == instr'.bypass
+      /\ instr.maintenance == instr'.maintenance
+      where instr' = Read_Sensors inp instr
