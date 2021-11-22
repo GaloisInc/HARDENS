@@ -28,8 +28,8 @@ Is_AutoActuated state = actuators @ `d
   where
     actuators = (state.vote_actuate @ 0) || (state.vote_actuate @ 1)
 
-Set_Manual_Actuation: [2] -> ActuationLogic -> ActuationLogic
-Set_Manual_Actuation val a = { a | manual_actuate = val }
+Set_Manual_Actuation: {d} (d <= 1) => Bit -> ActuationLogic -> ActuationLogic
+Set_Manual_Actuation val a = { a | manual_actuate = update a.manual_actuate `d val }
 
 Voting_Step:
   Input /* Trip signals */ ->
@@ -114,13 +114,13 @@ private
   /** @requirements
          ACTUATION_LOGIC_MANUAL_DEVICE_0
   */
-  property actuation_logic_manual_device_0 (vals: [2]) (act: ActuationLogic) =
-    Is_Actuated`{D0} act' == (vals @ `D0) \/ Is_AutoActuated`{D0} act
-    where act' = Set_Manual_Actuation vals act
+  property actuation_logic_manual_device_0 (v: Bit) (act: ActuationLogic) =
+    Is_Actuated`{D0} act0 == v \/ Is_AutoActuated`{D0} act
+    where act0 = Set_Manual_Actuation v act
 
   /** @requirements
          ACTUATION_LOGIC_MANUAL_DEVICE_1
   */
-  property actuation_logic_manual_device_1 (vals: [2]) (act: ActuationLogic) =
-    Is_Actuated`{D1} act' == (vals @ `D1) \/ Is_AutoActuated`{D1} act
-    where act' = Set_Manual_Actuation vals act
+  property actuation_logic_manual_device_1 (v: Bit) (act: ActuationLogic) =
+    Is_Actuated`{D1} act' == v \/ Is_AutoActuated`{D1} act
+    where act' = Set_Manual_Actuation v act
