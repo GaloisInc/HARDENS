@@ -2,7 +2,8 @@ module RTS::Actuation where
 
 import RTS::Instrumentation
 
-type Input = [4][3]
+type Trips = [3]
+type Input = [4]Trips
 type D0    = 0
 type D1    = 1
 
@@ -41,14 +42,16 @@ Voting_Step input state0 = voting_state
         (ApplyVote`{0} (votes_t || votes_p) state0)
 
     // Collect Votes
-    votes_t = coincidence_2_4 [ i @ `T | i <- input ]
-    votes_p = coincidence_2_4 [ i @ `P | i <- input ]
-    votes_s = coincidence_2_4 [ i @ `S | i <- input ]
+    votes_t = Vote`{T} input
+    votes_p = Vote`{P} input
+    votes_s = Vote`{S} input
 
     ApplyVote: {d} (d <= 1) => Bit -> Voting -> Voting
     ApplyVote vote st = update st `d vote
 
-    // 2-out-of-four
+Vote: {ch} (ch <= 2) => Input -> Bit
+Vote inp = coincidence_2_4 [ i @ `ch | i <- inp ]
+  where
     coincidence_2_4 : [4] -> Bit
     coincidence_2_4 x = (x != 0) && (x != 1) && (x != 2) && (x != 4) && (x != 8)
 
@@ -66,23 +69,58 @@ private
   count : {n} (fin n) =>  [n] -> Integer
   count bs = sum [ if b then 1 else 0 | b <- bs ]
 
-  property voting_correct_device_0 (inp: Input) (act: ActuationLogic) =
+  /** @requirements
+        ACTUATION_LOGIC_VOTE_TEMPERATURE
+  */
+  property actuation_logic_vote_temperature (inp: Input) =
+    (count [i @ `T | i <- inp] >= 2) == Vote`{T} inp
+
+  /** @requirements
+        ACTUATION_LOGIC_VOTE_PRESSURE
+  */
+  property actuation_logic_vote_pressure (inp: Input) =
+    (count [i @ `P | i <- inp] >= 2) == Vote`{P} inp
+
+  /** @requirements
+        ACTUATION_LOGIC_VOTE_SATURATION
+  */
+  property actuation_logic_vote_saturation (inp: Input) =
+    (count [i @ `S | i <- inp] >= 2) == Vote`{S} inp
+
+  /** @requirements
+        ACTUATION_LOGIC_DEVICE_0
+        ACTUATION_LOGIC_VOTE_DEVICE_0
+        ACTUATION_LOGIC_VOTE_MANUAL_DEVICE_0
+  */
+  property actuation_logic_device_0 (inp: Input) (act: ActuationLogic) =
        act.manual_actuate @ `D0
-    \/ count [ i @ `T | i <- inp ] >= 2 \/ count [ i @ `P | i <- inp ] >= 2
+    \/ Vote`{T} inp
+    \/ Vote`{P} inp
     == /* ---------------- */
     Is_Actuated`{D0} act'
     where act' = Check_Actuate inp act
 
-  property voting_correct_device_1 (inp: Input) (act: ActuationLogic) =
-    act.manual_actuate @ 1 \/ count [ i @ `S | i <- inp ] >= 2
+  /** @requirements
+        ACTUATION_LOGIC_DEVICE_1
+        ACTUATION_LOGIC_VOTE_DEVICE_1
+        ACTUATION_LOGIC_VOTE_MANUAL_DEVICE_1
+  */
+  property actuation_logic_device_1 (inp: Input) (act: ActuationLogic) =
+    act.manual_actuate @ 1 \/ Vote`{S} inp
     == /* ---------------- */
     Is_Actuated`{D1} act'
     where act' = Check_Actuate inp act
 
-  property set_manual_correct_0 (vals: [2]) (act: ActuationLogic) =
+  /** @requirements
+         ACTUATION_LOGIC_MANUAL_DEVICE_0
+  */
+  property actuation_logic_manual_device_0 (vals: [2]) (act: ActuationLogic) =
     Is_Actuated`{D0} act' == (vals @ `D0) \/ Is_AutoActuated`{D0} act
     where act' = Set_Manual_Actuation vals act
 
-  property set_manual_correct_1 (vals: [2]) (act: ActuationLogic) =
+  /** @requirements
+         ACTUATION_LOGIC_MANUAL_DEVICE_1
+  */
+  property actuation_logic_manual_device_1 (vals: [2]) (act: ActuationLogic) =
     Is_Actuated`{D1} act' == (vals @ `D1) \/ Is_AutoActuated`{D1} act
     where act' = Set_Manual_Actuation vals act
