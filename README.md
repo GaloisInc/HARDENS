@@ -12,11 +12,40 @@ $ git submodule update --recursive
 ```
 
 ## Docker
-Build and run with:
+
+### HARDENS Container
+
+To build and run the core HARDENS Docker image, use the `build` and
+`run` commands.
 
 ```
 $ docker build -t hardens:latest .
 $ docker run --network host --privileged -v $PWD:/HARDENS -it hardens:latest
+```
+
+In order to run a long-lived Docker container for reuse, use a `docker
+run` command like the following, ensuring that you are in the right
+directory in order to bind your sandbox properly into the container.
+
+```
+$ docker run -d -it --name HARDENS --network host --privileged -v $PWD:/HARDENS hardens:latest
+```
+
+After running such a detacted container, attach to it for interactive
+use by running a command like:
+```
+$ docker exec -it HARDENS bash -l
+```
+
+### SysMLv2 Container
+
+To pull and use the pre-build SysMLv2 container, use the following
+`pull` command to pull the container from DockerHub.  See
+https://hub.docker.com/r/gorenje/sysmlv2-jupyter for details.
+
+```
+$ docker pull gorenje/sysmlv2-jupyter:latest
+$ docker run -d -it --name SysMLv2 --network host -v $PWD:/HARDENS gorenje/sysmlv2-jupyter:latest
 ```
 
 ## Lattice ECP5 evaluation board

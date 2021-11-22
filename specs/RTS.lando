@@ -1,3 +1,8 @@
+// title: Reactor Trip System high-assurance demonstrator.
+// project: High Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS)
+// copyright (C) 2021 Galois
+// author: Joe Kiniry <kiniry@galois.com>
+
 system Reactor Trip System (RTS)
 @todo kiniry Add an explanation.
 

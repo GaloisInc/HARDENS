@@ -245,7 +245,7 @@ component Deterministic
 component Non-deterministic
 @todo kiniry Add an explanation.
 
-component Deterministic Finite State Machine (FSM)
+component Deterministic Finite State Machine (DFSM)
 inherit FSM Deterministic
 @todo kiniry Add an explanation.
 
@@ -282,6 +282,9 @@ component Logical Framework (LF)
 component Programming Language (PL)
 @todo kiniry Add an explanation.
 
+component Specification Language
+@todo kiniry Add an explanation.
+
 component Protocol
 @todo kiniry Add an explanation.
 
@@ -303,10 +306,15 @@ component Model-based Specification Language
 inherit Specification Language
 @todo kiniry Add an explanation.
 
+component System
+@todo kiniry Add an explanation.
+
 component Distributed System
+inherit System
 @todo kiniry Add an explanation.
 
 component Concurrent System
+inherit System
 @todo kiniry Add an explanation.
 
 component Cryptographic Protocol
@@ -330,9 +338,8 @@ component Actuator
 @todo kiniry Add an explanation.
 
 component Solenoid
+inherit Actuator
 @todo kiniry Add an explanation.
-
-relation Solenoid inherit Actuator
 
 component Compiler
 @todo kiniry Add an explanation.
@@ -341,6 +348,9 @@ component Synthesizer
 @todo kiniry Add an explanation.
 
 component Universal Serial Bus (USB)
+@todo kiniry Add an explanation.
+
+component LED
 @todo kiniry Add an explanation.
 
 component Cable
@@ -352,15 +362,12 @@ component Program
 component Bitstream
 @todo kiniry Add an explanation.
 
-component FPGA
+component Field-Programmable Gate Array (FPGA)
 @todo kiniry Add an explanation.
 
 component ECP-5
+inherit FPGA
 @todo kiniry Add an explanation.
-
-relation ECP-5 inherit FPGA
-
-component ECP5
 
 component Printed Component Board (PCB)
 @todo kiniry Add an explanation.
@@ -368,10 +375,12 @@ component Printed Component Board (PCB)
 component Connector
 @todo kiniry Add an explanation.
 
-component USB Mini Connector (USB-Mini)
+component USB Connector
 @todo kiniry Add an explanation.
 
-relation USB-Mini Connector inherit Connector USB
+component USB Mini Connector (USB-Mini)
+inherit USB Connector
+@todo kiniry Add an explanation.
 
 component High-Assurance
 @todo kiniry Add an explanation.
@@ -391,3 +400,10 @@ component Driver
 component Voting
 @todo kiniry Add an explanation.
 
+component UCB Cable
+inherit USB Cable
+@todo kiniry Add an explanation.
+
+component Output LED
+inherit LED
+@todo kiniry Add an explanation.

@@ -1,0 +1,564 @@
+/*
+ # Reactor Trip System (RTS) High-assurance Demonstrator
+ ## project: High Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS)
+ ### copyright (C) 2021 Galois
+ ### author: Joe Kiniry <kiniry@galois.com>
+
+ ## Summary
+
+ The overall shape of the Reactor Trip System (RTS) is an archetypal
+ *sense-compute-actuate* architecture. Sensors are in the `Sensors`
+ subsystem. They are read by the `Instrumentation` subsystem, which
+ contains four separate and independent `Instrumentation`
+ components. The "Compute" part of the architecture is spread across
+ the `Actuation Logic` subsystem—which contains the two `Voting`
+ components which perform the actuation logic itself—and the `Root`
+ subsystem which contains the core computation and I/O components, and
+ the two separate and independent devices that drive actuators.
+ */
+
+package id RTS 'Reactor Trip System' {
+  import 'Semantic Properties'::*;
+
+  package id Architecture 'RTS Architecture';
+  alias Arch for Architecture;
+  package id Hardware 'RTS Hardware Artifacts';
+  alias HW for Hardware;
+  package id Properties 'RTS Properties';
+  alias Props for Properties;
+  package id Characteristics 'IEEE Std 603-2018 Characteristics';
+  comment TopLevelPackages about Architecture, Hardware, Properties, Characteristics
+  /* These are the core top-level subsystems characterizing HARDEN work. */
+}
+
+package id Architecture 'RTS Architecture' {
+  //import RTS::*;
+  //import 'Project Glossary'::*;
+  //import Artifacts::*;
+  //import 'RTS Hardware Artifacts'::*;
+
+  /** Note that this is the *systems* architecture, which is different
+      than our software, hardware, or data architectures. */
+  package id RTS_System_Arch 'RTS System Architecture' {
+
+    package Sensor {
+      private import Quantities::*;
+
+      /** Generic sensor port */
+      port def SensorOutPort {
+          out value : ScalarQuantityValue;
+      }
+
+      /** Generic sensor */
+      part def GenericSensor {
+        attribute currentValue : ScalarQuantityValue;
+        port output: SensorOutPort;
+      }
+
+      part def Demux {
+        port input: ~SensorOutPort;
+        // Using vector notation doesn't seem to work in connections
+        port output1: SensorOutPort;
+        port output2: SensorOutPort;
+      }
+    }
+
+    package TempSensor {
+      import Sensor::*;
+      import ISQThermodynamics::TemperatureValue;
+
+      /** Temperature port */
+      port def TemperatureOutPort :> SensorOutPort {
+          redefines value: TemperatureValue;
+      }
+
+      /** A sensor that is capable of measuring the temperature of its environment. */
+      part def 'Temperature Sensor' :> GenericSensor {
+        /** What is your temperature reading in Celsius (C)? */
+        redefines currentValue: TemperatureValue;
+        redefines output: TemperatureOutPort;
+      }
+
+      part def TempDemux :> Demux {
+        redefines input: ~TemperatureOutPort;
+        redefines output1: TemperatureOutPort;
+        redefines output2: TemperatureOutPort;
+      }
+    }
+
+    package PressureSensor {
+      import Sensor::*;
+      import ISQMechanics::PressureValue;
+
+      /** Pressure port */
+      port def PressureOutPort :> SensorOutPort {
+          redefines value: PressureValue;
+      }
+
+      /** A sensor that is capable of measuring the air pressure of its environment. */
+      part def 'Pressure Sensor' :> GenericSensor {
+        /** What is your pressure reading in Pascal (P)? */
+        redefines currentValue: PressureValue;
+        redefines output: PressureOutPort;
+      }
+
+      part def PressureDemux :> Demux {
+        redefines input: ~PressureOutPort;
+        redefines output1: PressureOutPort;
+        redefines output2: PressureOutPort;
+      }
+    }
+
+    package Instrumentation {
+      import ScalarValues::Real;
+      import ScalarValues::Boolean;
+      import TempSensor::*;
+      import PressureSensor::*;
+
+      port def TripPort {
+        out trip : Boolean;
+      }
+
+      port def BypassPort {
+        out trip : Boolean;
+      }
+
+      part def InstrumentationUnit {
+        // setpoints
+        attribute tempSetpoint : TemperatureValue;
+        attribute pressureSetpoint : PressureValue;
+        attribute saturationLimit : Real;
+
+        // mode selectors
+        attribute maintenanceMode : Boolean;
+
+        // Bypass
+        port bypassTemperature : BypassPort;
+        port bypassPressure : BypassPort;
+        port bypassSaturation : BypassPort;
+
+        // Inputs
+        port temperatureInput: ~TemperatureOutPort;
+        port pressureInput: ~PressureOutPort;
+
+        // Outputs
+        port pressureTripOut:TripPort;
+        port temperatureTripOut:TripPort;
+        port saturationTripOut:TripPort;
+
+        port modeSelect: ~EventControl::ControlPort;
+        port manualPressureTrip : ~TripPort;
+        port manualTemperatureTrip : ~TripPort;
+        port manualSaturationTrip: ~TripPort;
+
+        port newTemperatureSetpoint: ~TemperatureOutPort;
+        port newPressureSetpoint: ~PressureOutPort;
+        port newSaturationSetpoint : ~SensorOutPort;
+      }
+    }
+
+    package Actuation {
+      import Instrumentation::*;
+
+      port def ActuationPort {
+        out actuate: Boolean;
+      }
+
+      part def CoincidenceLogic {
+        port channel1: ~TripPort;
+        port channel2: ~TripPort;
+        port channel3: ~TripPort;
+        port channel4: ~TripPort;
+        port actuate: ActuationPort;
+      }
+      part def OrLogic {
+        port channel1: ~TripPort;
+        port channel2: ~TripPort;
+        port actuate: ActuationPort;
+      }
+
+     part def ActuationUnit {
+       part temperatureLogic : CoincidenceLogic;
+       part pressureLogic : CoincidenceLogic;
+       part saturationLogic : CoincidenceLogic;
+
+       part tempPressureTripOut: OrLogic;
+
+       port controlInput: EventControl::ControlPort;
+
+       connect temperatureLogic.actuate to tempPressureTripOut.channel1;
+       connect pressureLogic.actuate to tempPressureTripOut.channel2;
+      }
+      part def Actuator {
+        // Regular input
+         port input: ActuationPort;
+         // Mode switch
+         port controlInput: ~EventControl::ControlPort;
+         // If in manual, follow this input
+         port manualActuatorInput: ~ActuationPort;
+       }
+    }
+
+    package EventControl {
+      enum def Mode {
+        // Full auto
+        AUTO;
+        // Only in manual mode the user can trip individual channels
+        MANUAL;
+        // Only in maintenance mode the user can update setpoints
+        MAINTENANCE;
+      }
+
+      // NOTE: should we add a notion of a step?
+      port def ControlPort {
+        out modeSelect: Mode;
+      }
+
+      part def ControlUnit {
+        // Mode select x 4 instrumentation units
+        port mode: ControlPort[4];
+        // Manual trip x 4 instrumentation units
+        port manualPressureTrip : Instrumentation::TripPort[4];
+        port manualTemperatureTrip : Instrumentation::TripPort[4];
+        port manualSaturationTrip: Instrumentation::TripPort[4];
+        // New setpoints x 4 instrumentation units
+        port newPressureSetpoint: PressureSensor::PressureOutPort[4];
+        port newTemperatureSetpoint: TempSensor::TemperatureOutPort[4];
+        port newSaturationSetpoint: PressureSensor::PressureOutPort[4];
+        // Mode select x2 actuators
+        port actuationMode: ControlPort[2];
+        // Toggle actuator x2 actuators
+        port manualActuatorInput: Actuation::ActuationPort[2];
+        // Bypass x4
+        port bypassTemperature : ~Instrumentation::BypassPort[4];
+        port bypassPressure : ~Instrumentation::BypassPort[4];
+        port bypassSaturation : ~Instrumentation::BypassPort[4];
+      }
+    }
+
+    part RTS {
+      part eventControl : EventControl::ControlUnit;
+
+      import Instrumentation::*;
+      part instrumentationAndSensing {
+        part pressureSensor1 : PressureSensor::'Pressure Sensor';
+        part pressureSensor2 : PressureSensor::'Pressure Sensor';
+
+        part tempSensor1 : TempSensor::'Temperature Sensor';
+        part tempSensor2 : TempSensor::'Temperature Sensor';
+
+        part instrumentationUnit1 : InstrumentationUnit;
+        part instrumentationUnit2 : InstrumentationUnit;
+        part instrumentationUnit3 : InstrumentationUnit;
+        part instrumentationUnit4 : InstrumentationUnit;
+
+        part tempDemux1 : TempSensor::Demux;
+        part tempDemux2 : TempSensor::Demux;
+
+        part pressureDemux1 : PressureSensor::Demux;
+        part pressureDemux2 : PressureSensor::Demux;
+
+        // Temp sensor 1
+        connect tempSensor1.output to tempDemux1.input;
+        connect tempDemux1.output1 to instrumentationUnit1.temperatureInput;
+        connect tempDemux1.output2 to instrumentationUnit2.temperatureInput;
+
+        // Temp sensor 2
+        connect tempSensor2.output to tempDemux2.input;
+        connect tempDemux2.output1 to instrumentationUnit3.temperatureInput;
+        connect tempDemux2.output2 to instrumentationUnit4.temperatureInput;
+
+        // Pressure sensor 1
+        connect pressureSensor1.output to pressureDemux1.input;
+        connect pressureDemux1.output1 to instrumentationUnit1.pressureInput;
+        connect pressureDemux1.output2 to instrumentationUnit2.pressureInput;
+
+        // Pressure sensor 2
+        connect pressureSensor2.output to pressureDemux2.input;
+        connect pressureDemux1.output1 to instrumentationUnit3.pressureInput;
+        connect pressureDemux1.output2 to instrumentationUnit4.pressureInput;
+      }
+
+
+      import Actuation::*;
+      part actuation {
+        part actuationUnit1: ActuationUnit;
+        part actuationUnit2: ActuationUnit;
+
+        part actuator1 : Actuator;
+        part actuator2 : Actuator;
+
+        part actuateActuator1: OrLogic;
+        part actuateActuator2: OrLogic;
+
+        // connect actuators
+        // Actuator 1 - temp or pressure trip
+        connect actuationUnit1.tempPressureTripOut.actuate to actuateActuator1.channel1;
+        connect actuationUnit2.tempPressureTripOut.actuate to actuateActuator1.channel2;
+        connect actuateActuator1.actuate to actuator1.input;
+
+        // Actuator 2 - Saturation
+        connect actuationUnit1.saturationLogic.actuate to actuateActuator2.channel1;
+        connect actuationUnit2.saturationLogic.actuate to actuateActuator2.channel2;
+        connect actuateActuator2.actuate to actuator2.input;
+      }
+
+      // connect Control units
+      // Actuators manual override
+      connect eventControl.actuationMode[1] to actuation.actuator1.controlInput;
+      connect eventControl.manualActuatorInput[1] to actuation.actuator1.manualActuatorInput;
+      connect eventControl.actuationMode[2] to actuation.actuator2.controlInput;
+      connect eventControl.manualActuatorInput[2] to actuation.actuator2.manualActuatorInput;
+
+      // Instrumentation mode select
+      connect eventControl.mode[1] to instrumentationAndSensing.instrumentationUnit1.modeSelect;
+      connect eventControl.mode[2] to instrumentationAndSensing.instrumentationUnit2.modeSelect;
+      connect eventControl.mode[3] to instrumentationAndSensing.instrumentationUnit3.modeSelect;
+      connect eventControl.mode[4] to instrumentationAndSensing.instrumentationUnit4.modeSelect;
+
+      // Instrumentation pressure setpoint
+      connect eventControl.newPressureSetpoint[1] to instrumentationAndSensing.instrumentationUnit1.newPressureSetpoint;
+      connect eventControl.newPressureSetpoint[2] to instrumentationAndSensing.instrumentationUnit2.newPressureSetpoint;
+      connect eventControl.newPressureSetpoint[3] to instrumentationAndSensing.instrumentationUnit3.newPressureSetpoint;
+      connect eventControl.newPressureSetpoint[4] to instrumentationAndSensing.instrumentationUnit4.newPressureSetpoint;
+
+      // Instrumentation temperature setpoint
+      connect eventControl.newTemperatureSetpoint[1] to instrumentationAndSensing.instrumentationUnit1.newTemperatureSetpoint;
+      connect eventControl.newTemperatureSetpoint[2] to instrumentationAndSensing.instrumentationUnit2.newTemperatureSetpoint;
+      connect eventControl.newTemperatureSetpoint[3] to instrumentationAndSensing.instrumentationUnit3.newTemperatureSetpoint;
+      connect eventControl.newTemperatureSetpoint[4] to instrumentationAndSensing.instrumentationUnit4.newTemperatureSetpoint;
+
+      // Instrumentation saturation setpoint
+      connect eventControl.newSaturationSetpoint[1] to instrumentationAndSensing.instrumentationUnit1.newSaturationSetpoint;
+      connect eventControl.newSaturationSetpoint[2] to instrumentationAndSensing.instrumentationUnit2.newSaturationSetpoint;
+      connect eventControl.newSaturationSetpoint[3] to instrumentationAndSensing.instrumentationUnit3.newSaturationSetpoint;
+      connect eventControl.newSaturationSetpoint[4] to instrumentationAndSensing.instrumentationUnit4.newSaturationSetpoint;
+
+      // Instrumentation manual pressure trip
+      connect eventControl.manualPressureTrip[1] to instrumentationAndSensing.instrumentationUnit1.manualPressureTrip;
+      connect eventControl.manualPressureTrip[2] to instrumentationAndSensing.instrumentationUnit2.manualPressureTrip;
+      connect eventControl.manualPressureTrip[3] to instrumentationAndSensing.instrumentationUnit3.manualPressureTrip;
+      connect eventControl.manualPressureTrip[4] to instrumentationAndSensing.instrumentationUnit4.manualPressureTrip;
+
+      // Instrumentation manual temperature trip
+      connect eventControl.manualTemperatureTrip[1] to instrumentationAndSensing.instrumentationUnit1.manualTemperatureTrip;
+      connect eventControl.manualTemperatureTrip[2] to instrumentationAndSensing.instrumentationUnit2.manualTemperatureTrip;
+      connect eventControl.manualTemperatureTrip[3] to instrumentationAndSensing.instrumentationUnit3.manualTemperatureTrip;
+      connect eventControl.manualTemperatureTrip[4] to instrumentationAndSensing.instrumentationUnit4.manualTemperatureTrip;
+
+      // Instrumentation manual saturation trip
+      connect eventControl.manualSaturationTrip[1] to instrumentationAndSensing.instrumentationUnit1.manualSaturationTrip;
+      connect eventControl.manualSaturationTrip[2] to instrumentationAndSensing.instrumentationUnit2.manualSaturationTrip;
+      connect eventControl.manualSaturationTrip[3] to instrumentationAndSensing.instrumentationUnit3.manualSaturationTrip;
+      connect eventControl.manualSaturationTrip[4] to instrumentationAndSensing.instrumentationUnit4.manualSaturationTrip;
+
+      // Instrumentation bypass channel
+      // Bypass temperature
+      connect eventControl.bypassTemperature[1] to instrumentationAndSensing.instrumentationUnit1.bypassTemperature;
+      connect eventControl.bypassTemperature[2] to instrumentationAndSensing.instrumentationUnit2.bypassTemperature;
+      connect eventControl.bypassTemperature[3] to instrumentationAndSensing.instrumentationUnit3.bypassTemperature;
+      connect eventControl.bypassTemperature[4] to instrumentationAndSensing.instrumentationUnit4.bypassTemperature;
+
+      // Bypass pressure
+      connect eventControl.bypassPressure[1] to instrumentationAndSensing.instrumentationUnit1.bypassPressure;
+      connect eventControl.bypassPressure[2] to instrumentationAndSensing.instrumentationUnit2.bypassPressure;
+      connect eventControl.bypassPressure[3] to instrumentationAndSensing.instrumentationUnit3.bypassPressure;
+      connect eventControl.bypassPressure[4] to instrumentationAndSensing.instrumentationUnit4.bypassPressure;
+
+      // Bypass saturation
+      connect eventControl.bypassSaturation[1] to instrumentationAndSensing.instrumentationUnit1.bypassSaturation;
+      connect eventControl.bypassSaturation[2] to instrumentationAndSensing.instrumentationUnit2.bypassSaturation;
+      connect eventControl.bypassSaturation[3] to instrumentationAndSensing.instrumentationUnit3.bypassSaturation;
+      connect eventControl.bypassSaturation[4] to instrumentationAndSensing.instrumentationUnit4.bypassSaturation;
+
+      // Trip on pressure above the setpoint
+      // Actuation unit 1
+      connect instrumentationAndSensing.instrumentationUnit1.pressureTripOut to actuation.actuationUnit1.pressureLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit2.pressureTripOut to actuation.actuationUnit1.pressureLogic.channel2;
+      connect instrumentationAndSensing.instrumentationUnit3.pressureTripOut to actuation.actuationUnit1.pressureLogic.channel3;
+      connect instrumentationAndSensing.instrumentationUnit4.pressureTripOut to actuation.actuationUnit1.pressureLogic.channel4;
+      // Actuation unit 2
+      connect instrumentationAndSensing.instrumentationUnit1.pressureTripOut to actuation.actuationUnit2.pressureLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit2.pressureTripOut to actuation.actuationUnit2.pressureLogic.channel2;
+      connect instrumentationAndSensing.instrumentationUnit3.pressureTripOut to actuation.actuationUnit2.pressureLogic.channel3;
+      connect instrumentationAndSensing.instrumentationUnit4.pressureTripOut to actuation.actuationUnit2.pressureLogic.channel4;
+
+      // Trip on temperature above the setpoint
+      // Actuation unit 1
+      connect instrumentationAndSensing.instrumentationUnit1.temperatureTripOut to actuation.actuationUnit1.temperatureLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit2.temperatureTripOut to actuation.actuationUnit1.temperatureLogic.channel2;
+      connect instrumentationAndSensing.instrumentationUnit3.temperatureTripOut to actuation.actuationUnit1.temperatureLogic.channel3;
+      connect instrumentationAndSensing.instrumentationUnit4.temperatureTripOut to actuation.actuationUnit1.temperatureLogic.channel4;
+      // Actuation unit 2
+      connect instrumentationAndSensing.instrumentationUnit1.temperatureTripOut to actuation.actuationUnit2.temperatureLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit2.temperatureTripOut to actuation.actuationUnit2.temperatureLogic.channel2;
+      connect instrumentationAndSensing.instrumentationUnit3.temperatureTripOut to actuation.actuationUnit2.temperatureLogic.channel3;
+      connect instrumentationAndSensing.instrumentationUnit4.temperatureTripOut to actuation.actuationUnit2.temperatureLogic.channel4;
+
+      // Trip on saturation above the setpoint
+      // Actuation unit 1
+      connect instrumentationAndSensing.instrumentationUnit1.saturationTripOut to actuation.actuationUnit1.saturationLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit2.saturationTripOut to actuation.actuationUnit1.saturationLogic.channel2;
+      connect instrumentationAndSensing.instrumentationUnit3.saturationTripOut to actuation.actuationUnit1.saturationLogic.channel3;
+      connect instrumentationAndSensing.instrumentationUnit4.saturationTripOut to actuation.actuationUnit1.saturationLogic.channel4;
+      // Actuation unit 2
+      connect instrumentationAndSensing.instrumentationUnit1.saturationTripOut to actuation.actuationUnit2.saturationLogic.channel1;
+      connect instrumentationAndSensing.instrumentationUnit2.saturationTripOut to actuation.actuationUnit2.saturationLogic.channel2;
+      connect instrumentationAndSensing.instrumentationUnit3.saturationTripOut to actuation.actuationUnit2.saturationLogic.channel3;
+      connect instrumentationAndSensing.instrumentationUnit4.saturationTripOut to actuation.actuationUnit2.saturationLogic.channel4;
+
+
+    }
+  } // package id RTS_System_Arch 'RTS System Architecture'
+} // package id Architecture 'RTS Architecture'
+
+package id Artifacts 'RTS Implementation Artifacts' {
+  private import ScalarValues::*;
+  private import 'Project Glossary'::*;
+
+  // @design Remove concepts in general Glossary that duplicate or
+  // overlap with these concepts.  Move abstract items to Glossary.
+  part def id CryptolToC 'Cryptol Software Compiler':> Compiler {
+    ref item input: CryptolSpec redefines input;
+    ref item output: C_Source redefines output;
+  }
+  part def id CryptolToSystemVerilog 'Cryptol Hardware Compiler':> Compiler {
+    ref item input: CryptolSpec redefines input;
+    ref item output: SystemVerilog redefines output;
+  }
+  part def id CPU 'COTS High-Assurance RV32I RISC-V CPU':> CPU, RISC_V_ISA;
+  part def id CompCert 'CompCert Compiler':> Compiler {
+    ref item input: C_Source redefines input;
+    ref item output: RISCV_Binary redefines output;
+  }
+  part def id BSC 'Bluespec Compiler':> Compiler {
+    ref item input: BluespecSystemVerilog redefines input;
+    ref item output: SystemVerilog redefines output;
+  }
+  part def id SymbiFlow 'SymbiFlow Synthesizer' :> Synthesizer {
+    ref item input: SystemVerilog redefines input;
+    ref item output: Bitstream redefines output;
+  }
+  part def id RTL 'Demonstrator Verilog';
+  part def 'Demonstrator Bitstream':> Bitstream;
+  package id Dataflow 'Dataflow of RTS Implementation Artifacts' {
+    private import 'RTS Implementation Artifacts'::*;
+
+    part def 'HARDENS Cryptol System Specification':> CryptolSpec {
+     // :>> literate = true;
+    }
+    // bind 'HARDENS Cryptol System Specification'.output = CryptolToC.input;
+  }
+}
+
+/** The physical hardware components that are a part of the HARDENS RTS
+    demonstrator. */
+package 'RTS Hardware Artifacts' {
+  import 'Project Glossary'::*;
+  import Architecture::RTS_System_Arch::Hardware::*;
+  import ScalarValues::*;
+
+  part def 'SERDES Test SMA Connector' :> Connector;
+  part def 'Parallel Config Header' :> Header;
+  part def 'Versa Expansion Connector' :> Connector;
+  part def 'SPI Flag Configuration Memory' :> Memory;
+  part def 'CFG Switch' :> Switch;
+  part def 'Input Switch' :> Switch;
+  part def 'Output LED' :> LED;
+  part def 'Input Push Button' :> Button;
+  part def '12 V DC Power Input' :> Power;
+  part def 'GPIO Headers' :> Header, GPIO;
+  part def 'PMOD/GPIO Header' :> Header, PMOD, GPIO;
+  part def 'Microphone Board/GPIO Header' :> Header;
+  part def 'ECP5-5G Device' :> FPGA;
+  // @todo Ensure that JTAG is, in fact, USB.
+  part def 'JTAG Interface' :> JTAG, USB;
+  part def 'Mini USB Programming' :> USB;
+  part def id DevBoard 'Lattice ECP-5 FPGA Development Board' :> PCB {
+    part J9_J26 : 'SERDES Test SMA Connector'[16] subsets components;
+    part J38 : 'Parallel Config Header' subsets components;
+    part J39_J40 : 'Versa Expansion Connector'[2] subsets components;
+    part U4 : 'SPI Flag Configuration Memory' subsets components;
+    part SW1 : 'CFG Switch' subsets components;
+    part SW5 : 'Input Switch' subsets components;
+    part D5_D12 : 'Output LED'[8] subsets components;
+    part SW2_SW4 : 'Input Push Button'[3] subsets components;
+    part J37 : '12 V DC Power Input' subsets components;
+    part J5_J8_J32_J33 : 'GPIO Headers'[4] subsets components;
+    part J31 : 'PMOD/GPIO Header' subsets components;
+    part J30 : 'Microphone Board/GPIO Header' subsets components;
+    part 'Prototype Area';
+    part U3 : 'ECP5-5G Device' subsets components;
+    part J1 : 'JTAG Interface' subsets components;
+    part J2 : 'Mini USB Programming' subsets components;
+  }
+
+  enum def SolenoidState {
+    OPEN;
+    CLOSED;
+  }
+  /** A solenoid actuator capable of being in an open or closed state. */
+  part def 'Solenoid Actuator':> Actuator {
+    item actuator_state;
+    /** Open! */
+    port open;
+    /** Close! */
+    port close;
+  }
+}
+
+///** The physical architecture of the HARDENS RTS demonstrator. */
+//package 'Physical Architecture' {
+//  import 'Project Glossary'::*;
+//  import 'RTS Hardware Artifacts'::*;
+//
+//  /** A PCB developer board used to prototype hardware. */
+//  part 'HARDENS Demonstrator Board' : DevBoard;
+//  /** The USB cable used to communicate the ASCII UI to/from the board. */
+//  part id UI_C 'USB UI Cable' : 'USB Cable';
+//  /** The USB cable used to program the board with a bitstream. */
+//  part id Prog_C 'USB Programming Cable' : 'USB Cable';
+//  /** The USB cable used to interact with the board in a debugger. */
+//  part id Debug_C 'USB Debugging I/O Cable' : 'USB Cable';
+//  // @trace #11 https://github.com/GaloisInc/HARDENS/issues/11
+//  // @todo Add attributes for URL traceability.
+//  part def id MPL3115A2 'SparkFun Altitude/Pressure Sensor Breakout' :>
+//    PCB, 'Pressure Sensor';
+//  // 4x https://www.sparkfun.com/products/11084
+//  part def 'SparkFun MOSFET Power Control Kit' :> PCB, Power;
+//  // 4x https://www.sparkfun.com/products/12959
+//  part def id TMP102 'SparkFun Digital Temperature Sensor Breakout' :>
+//   PCB, 'Temperature Sensor';
+//  // 4x https://www.sparkfun.com/products/13314
+//  part def 'Small Push-Pull Solenoid - 12VDC' :> 'Solenoid Actuator';
+//  // 4x https://www.adafruit.com/product/412
+//  part def '1N4001 Diode';
+//  // 1x https://www.adafruit.com/product/755
+//  /** The first of two redundant temperature sensors. */
+//  part id TS1 'Temperature Sensor 1' : TMP102;
+//  /** The second of two redundant temperature sensors. */
+//  part id TS2 'Temperature Sensor 2' : TMP102;
+//  /** The first of two redundant pressure sensors. */
+//  part id PS1 'Pressure Sensor 1' : MPL3115A2;
+//  /** The second of two redundant pressure sensors. */
+//  part id PS2 'Pressure Sensor 2' : MPL3115A2;
+//  /** The first of two redundant solenoid actuators. */
+//  part id SA1 'Solenoid Actuator 1' : 'Small Push-Pull Solenoid - 12VDC';
+//  /** The second of two redundant solenoid actuators. */
+//  part id SA2 'Solenoid Actuator 2' : 'Small Push-Pull Solenoid - 12VDC';
+//  // @todo kiniry Add ports for external connectors.
+//
+//  /** The computer used by a developer to interface with the demonstrator,
+//      typically for driving the demonstrator's UI and programming and
+//      debugging the board. */
+//  part def 'Developer Machine':> Computer;
+//
+//  /** The fully assembled HARDENS demonstrator hardware with all component present. */
+//  part id Demonstrator 'HARDENS Demonstrator';
+//
+//  connection def DevMachineToDevBoard {
+//    end: Computer;
+//    end: PCB;
+//  }
+//    connection: DevMachineToDevBoard connect 'Developer Machine' to Board;
+//}
