@@ -1,0 +1,954 @@
+[
+  {
+    "variable_name": "UI_Manual_Actuate_Actuator_0",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Auto_Actuate_0_Actuator_0",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Auto_Actuate_1_Actuator_0",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Manual_Actuate_Actuator_1",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Auto_Actuate_0_Actuator_1",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Auto_Actuate_1_Actuator_1",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Coincidence_0_T",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Coincidence_0_P",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Coincidence_0_S",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Coincidence_1_T",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Coincidence_1_P",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Coincidence_1_S",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Maintenance_0",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Setpoint_T_0",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_T_0",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Manual_Trip_T_0",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_T_0_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_T_0_Display",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Trip_T_0_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "T_0",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Bypass_T_0",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Trip_T_0",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Setpoint_T_0",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Setpoint_P_0",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_P_0",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Manual_Trip_P_0",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_P_0_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_P_0_Display",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Trip_P_0_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "P_0",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Bypass_P_0",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Trip_P_0",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Setpoint_P_0",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Setpoint_S_0",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_S_0",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Manual_Trip_S_0",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_S_0_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_S_0_Display",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Trip_S_0_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "S_0",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Bypass_S_0",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Trip_S_0",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Setpoint_S_0",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Maintenance_1",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Setpoint_T_1",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_T_1",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Manual_Trip_T_1",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_T_1_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_T_1_Display",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Trip_T_1_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "T_1",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Bypass_T_1",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Trip_T_1",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Setpoint_T_1",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Setpoint_P_1",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_P_1",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Manual_Trip_P_1",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_P_1_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_P_1_Display",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Trip_P_1_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "P_1",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Bypass_P_1",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Trip_P_1",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Setpoint_P_1",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Setpoint_S_1",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_S_1",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Manual_Trip_S_1",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_S_1_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_S_1_Display",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Trip_S_1_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "S_1",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Bypass_S_1",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Trip_S_1",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Setpoint_S_1",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Maintenance_2",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Setpoint_T_2",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_T_2",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Manual_Trip_T_2",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_T_2_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_T_2_Display",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Trip_T_2_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "T_2",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Bypass_T_2",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Trip_T_2",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Setpoint_T_2",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Setpoint_P_2",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_P_2",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Manual_Trip_P_2",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_P_2_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_P_2_Display",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Trip_P_2_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "P_2",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Bypass_P_2",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Trip_P_2",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Setpoint_P_2",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Setpoint_S_2",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_S_2",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Manual_Trip_S_2",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_S_2_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_S_2_Display",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Trip_S_2_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "S_2",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Bypass_S_2",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Trip_S_2",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Setpoint_S_2",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Maintenance_3",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Setpoint_T_3",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_T_3",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Manual_Trip_T_3",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_T_3_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_T_3_Display",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Trip_T_3_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "T_3",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Bypass_T_3",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Trip_T_3",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Setpoint_T_3",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Setpoint_P_3",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_P_3",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Manual_Trip_P_3",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_P_3_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_P_3_Display",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Trip_P_3_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "P_3",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Bypass_P_3",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Trip_P_3",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Setpoint_P_3",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Setpoint_S_3",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_S_3",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Manual_Trip_S_3",
+    "dataType": "boolean",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Bypass_S_3_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_S_3_Display",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "UI_Trip_S_3_Display",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "S_3",
+    "dataType": "integer",
+    "idType": "Input",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Bypass_S_3",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Trip_S_3",
+    "dataType": "boolean",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  },
+  {
+    "variable_name": "Setpoint_S_3",
+    "dataType": "integer",
+    "idType": "Output",
+    "completed": true,
+    "modeldoc": false
+  }
+]
