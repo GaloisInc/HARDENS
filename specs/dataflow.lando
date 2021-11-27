@@ -1,13 +1,23 @@
 subsystem RTS Implementation Artifacts (Artifacts)
 
 component Cryptol System Specification (CryptolSpec)
-@todo kiniry Add an explanation.
+A specification of a model written in the Cryptol domain-specific
+language (DSL), either as Literate Cryptol, which can be Cryptol
+embedded in Markdown or LaTeX, or plain Cryptol. Cryptol is a strongly
+typed, functional DSL for specifying and reasoning about bit-level
+algorithms and their correctness properties and is mainly used to
+specify cryptographic algorithms.  See https://crypto.net/ for more
+information.
 
 component Cryptol Software Compiler (CryptolToC)
-@todo kiniry Add an explanation.
+Multiple versions of a Cryptol software compiler exist which can
+compile different subsets of the Cryptol language into implementations
+and test benches written in the C, Java, and LLVM languages.
 
 component Cryptol Hardware Compiler (CryptolToSystemVerilog)
-@todo kiniry Add an explanation.
+Multiple versions of a Cryptol hardware compiler exist which can
+compile different subsets of the Cryptol language into implementations
+and test benches written in the VHDL, Verilog, and SystemVerilog.
 
 component Software Implementation (Software)
 @todo kiniry Add an explanation.
@@ -53,7 +63,9 @@ component FPGA Bitstream (Bitstream)
 @todo kiniry Add an explanation.
 
 subsystem Dataflow of RTS Implementation Artifacts (Dataflow)
-@todo kiniry Add an explanation.
+This specification, which comes from the Galois HARDENS proposal,
+describes the relationships between various levels of specifications,
+implementations, and assurance artifacts for the HARDENS demonstrator.
 indexing
   proposal_figure: 3
   figure_name: Dataflow of RTS Implementation Artifacts

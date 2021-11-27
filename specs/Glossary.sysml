@@ -51,7 +51,11 @@ package id Glossary 'Project Glossary' {
   part def SAWscript;
   /** A CPU or SoC that is implemented in an HDL and synthesized to a
       bitstream and loaded onto an FPGA. */
-  abstract item def soft_core;
+  abstract item def 'Soft Core' {
+    // size: estimated number of gates
+    // complexity: measured complexity metric
+    // hdls: which HDLs are used in the design
+  }
   /** A formally defined computer programming language based on the Ada
       programming language, intended for the development of high integrity
       software used in systems where predictable and highly reliable
@@ -80,17 +84,17 @@ package id Glossary 'Project Glossary' {
   // Mathematical modeling concepts in RDE.
   abstract item def Refinement:> Relationship;
   abstract item def Property:> BooleanExpression;
-  abstract item def 'Safety Property':> Property;
-  abstract item def 'Correctness Property':> Property;
-  abstract item def 'Security Property':> Property;
+  abstract item def 'Safety Property' :> Property;
+  abstract item def 'Correctness Property' :> Property;
+  abstract item def 'Security Property' :> Property;
   abstract item def Model;
-  abstract item def 'Semi-Formal Model':> Model;
-  abstract item def 'Formal Model':> Model;
+  abstract item def 'Semi-Formal Model' :> Model;
+  abstract item def 'Formal Model' :> Model;
   abstract item def Consistent:> Property;
   abstract item def Complete:> Property;
-  abstract item def 'Consistent Model':> Consistent, Model;
-  abstract item def 'Complete Model':> Complete, Model;
-  abstract item def 'Consistent and Complete Model':> 'Consistent Model', 'Complete Model';
+  abstract item def 'Consistent Model' :> Consistent, Model;
+  abstract item def 'Complete Model' :> Complete, Model;
+  abstract item def 'Consistent and Complete Model' :> 'Consistent Model', 'Complete Model';
   abstract item def Denotational;
   abstract item def Operational;
   abstract item def Semantics;
@@ -113,16 +117,16 @@ package id Glossary 'Project Glossary' {
   part def Clafer;
   part def Lobot;
   abstract item def id FSM 'Finite State Machine';
-  abstract item def id DFSM 'Deterministic Finite State Machine':> FSM, Deterministic;
-  abstract item def id NFSM 'Non-deterministic Finite State Machine':> FSM, 'Non-deterministic';
+  abstract item def id DFSM 'Deterministic Finite State Machine' :> FSM, Deterministic;
+  abstract item def id NFSM 'Non-deterministic Finite State Machine' :> FSM, 'Non-deterministic';
   abstract item def id ASM 'Abstract State Machine';
   abstract part def Design;
   abstract part def Architecture;
   abstract part def Specification;
-  abstract part def 'Architecture Specification':> Specification;
+  abstract part def 'Architecture Specification' :> Specification;
   abstract part def System;
-  abstract part def 'Distributed System':> System;
-  abstract part def 'Concurrent System':> System;
+  abstract part def 'Distributed System' :> System;
+  abstract part def 'Concurrent System' :> System;
   abstract part def Algorithm;
   abstract part def Program;
   
@@ -137,27 +141,27 @@ package id Glossary 'Project Glossary' {
   abstract item def id CI 'Continuous Integration';
   abstract item def id CV 'Continuous Verification';
   abstract item def Analyzer;
-  abstract item def 'Static Analyzer':> Analyzer;
-  abstract item def 'Dynamic Analyzer':> Analyzer;
+  abstract item def 'Static Analyzer' :> Analyzer;
+  abstract item def 'Dynamic Analyzer' :> Analyzer;
   abstract part def Solver;
   abstract part def id LF 'Logical Framework';
   abstract item def 'High-Assurance';
 
   // Concepts relevant to languages and protocols.
   abstract part def Language;
-  abstract part def 'Specification Language':> Language;
+  abstract part def 'Specification Language' :> Language;
   abstract part def Protocol;
-  abstract part def 'System Specification':> Specification;
+  abstract part def 'System Specification' :> Specification;
   abstract item def 'Hand-written';
   abstract item def 'Machine-generated';
-  abstract part def 'Source-level Specification Language':> 'Specification Language';
-  abstract part def 'Model-based Specification Language':> 'Specification Language';
+  abstract part def 'Source-level Specification Language' :> 'Specification Language';
+  abstract part def 'Model-based Specification Language' :> 'Specification Language';
   abstract item def Cryptological;
-  abstract item def 'Cryptographic Protocol':> Protocol, Cryptological;
-  abstract item def 'Cryptographic Algorithm':> Algorithm, Cryptological;
+  abstract item def 'Cryptographic Protocol' :> Protocol, Cryptological;
+  abstract item def 'Cryptographic Algorithm' :> Algorithm, Cryptological;
 
   // Software engineering.
-  abstract item def id PL 'Programming Language':> Language;
+  abstract item def id PL 'Programming Language' :> Language;
   abstract item def 'Source Code';
   abstract part def C :> 'Programming Language';
   abstract part def C_Source :> C, 'Source Code';
@@ -170,7 +174,16 @@ package id Glossary 'Project Glossary' {
   }
 
   // Hardware design.
-  abstract part def Synthesizer:> Compiler;
+  abstract item def Hardware;
+  abstract item SWaP {
+    // attribute size:
+    // attribute weight: 
+    // attribute power: 
+  }
+  abstract item def Hard :> SWaP;
+  abstract item def 'Soft Core Hardware' :> Hardware, 'Soft Core';
+  abstract item def 'Physical Hardware' :> Hardware, Hard;
+  abstract part def Synthesizer :> Compiler;
   abstract item def id HDL 'Hardware Design Language';
   abstract part def BluespecSystemVerilog :> HDL;
   abstract part def SystemVerilog :> HDL;
@@ -192,16 +205,16 @@ package id Glossary 'Project Glossary' {
   abstract part def Actuator;
   abstract part def Solenoid:> Actuator;
   abstract item def Bus;
-  abstract part def id USB 'Universal Serial Bus':> Bus;
+  abstract part def id USB 'Universal Serial Bus' :> Bus;
   abstract part def LED;
   abstract part def Cable;
   abstract part def id FPGA 'Field-Programmable Gate Array' :> ASIC;
-  abstract part def 'ECP-5':> FPGA;
+  abstract part def 'ECP-5' :> FPGA;
   abstract part def id PCB 'Printed Circuit Board' {
     part components: Component[*];
   }
-  abstract part def 'USB Connector':> USB, Connector;
-  abstract part def id USB_Mini 'USB Mini Connector':> 'USB Connector';
+  abstract part def 'USB Connector' :> USB, Connector;
+  abstract part def id USB_Mini 'USB Mini Connector' :> 'USB Connector';
   abstract part def PMOD;
   abstract part def JTAG:> Protocol;
   abstract part def Driver;
@@ -212,13 +225,13 @@ package id Glossary 'Project Glossary' {
     out item 'USB Connector';
   }
   /** A normal USB cable. */
-  abstract part def 'USB Cable':> USB, Cable {
+  abstract part def 'USB Cable' :> USB, Cable {
     /** What kind of USB connector is on the start of the cable? */
     port start_connector: USB_In;
     /** What kind of USB connector is on the end of the cable? */
     port end_connector: USB_Out;
   }
-  port def 'Output LED':> LED;
+  port def 'Output LED' :> LED;
 
   // Safety-critical concepts.
   abstract item def Voting;
@@ -229,11 +242,17 @@ package id Glossary 'Project Glossary' {
      attribute literate: Boolean;
    }
   attribute def Languages {
-    attribute languages: String;
+    attribute languages: String[*];
   }
-  abstract part def id Software 'Software Implementation';
-  abstract part def id SWImpl 'Hand-written Software Implementation';
-  abstract part def id SynthSW 'Synthesized Software Implementation';
+  abstract part def id Impl 'Implementation' {
+    attribute languages: Languages[*];
+  }
+  abstract part def id Software 'Software Implementation'
+    :> Implementation;
+  abstract part def id SWImpl 'Hand-written Software Implementation' 
+    :> Software, 'Hand-written';
+  abstract part def id SynthSW 'Synthesized Software Implementation' 
+    :> Software, 'Machine-generated';
   abstract part def id Hardware 'Hardware Implementation';
   abstract part def id HWImpl 'Hand-written Hardware Implementation';
   abstract part def id SynthHW 'Synthesized Hardware Implementation';
