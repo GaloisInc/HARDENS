@@ -1,0 +1,27 @@
+print "Loading reference term";
+vote_reference <- cryptol_load "../../models/RTS/Actuation.cry";
+
+print "Loading generated term";
+generated      <- llvm_load_module "vote.bc";
+
+let spec = do {
+  // inp: [4][3]
+  inp   <- llvm_fresh_var "inp" (llvm_array 4 (llvm_int 8));
+  p_inp <- llvm_alloc (llvm_array 4 (llvm_int 8));
+  llvm_points_to p_inp (llvm_term inp);
+
+  llvm_execute_func [p_inp];
+
+  // vote : [4][3] -> [2] -> Bit
+  llvm_return (llvm_term {{ (zero # reverse (vote_reference::Voting_Step (map drop inp))) : [8] }});
+};
+
+llvm_verify generated "Voting_Step" [] false spec z3;
+
+//llvm_verify generated "vote"
+// let thm = {{
+//   \inp ch ->
+//   (x, p) <- setup;
+//     vote_reference::vote inp ch == vote_generated inp ch
+// }}
+// prove_print abc thm;
