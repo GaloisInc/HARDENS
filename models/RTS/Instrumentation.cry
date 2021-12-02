@@ -73,24 +73,30 @@ Is_Tripped: Channel -> Instrumentation -> Bit
 Is_Tripped ch instr = In_Mode ch Manual instr
                    || (In_Mode ch Operate instr && (instr.sensor_trip @ ch))
 
-Update_Tripped:
+Saturation : [32] -> [32] -> [32]
+Saturation t p = if p == 0 then 0 else (t / p)
+
+Step_Trip_Signals:
   Input ->
   Instrumentation ->
   Instrumentation
-Update_Tripped sensors state =
-  {state| reading = vals} >>>> Trip T >>>> Trip P >>>> Trip S
+Step_Trip_Signals sensors state =
+  { state | reading = vals
+          , sensor_trip = Generate_Sensor_Trips vals state.setpoints }
   where
-    vals: [NChannels][32]
-    vals = [sensors @ T, sensors @ P, Saturation (sensors @ T) (sensors @ P)]
+    vals: [3][32]
+    vals = [ sensors @ T
+           , sensors @ P
+           , Saturation (sensors @ T) (sensors @ P)
+           ]
 
-    Trip : Channel -> Instrumentation -> Instrumentation
-    Trip ch i = {i | sensor_trip = update i.sensor_trip ch trp }
-      where
-        cmp = if ch == S then (<) else (>)
-        trp = cmp (vals @ ch) (i.setpoints @ ch)
-
-Saturation : [32] -> [32] -> [32]
-Saturation t p = if p == 0 then 0 else (t / p)
+Generate_Sensor_Trips : [NChannels][32] -> [NChannels][32] -> [NChannels]
+Generate_Sensor_Trips vals setpoints =
+  [ trp ch | ch <- [0..NChannels-1] ]
+  where
+    trp ch = if ch == S then v < sp else sp < v
+               where v  = vals @ ch
+                     sp = setpoints @ ch
 
 private
   /** @requirements
@@ -110,7 +116,7 @@ private
     \/ (In_Mode P Operate instr /\ inp @ P > Get_Setpoint P instr')
     /* ------------------------------------------------------------------- */ ==
     (Is_Tripped P instr')
-      where instr' = Update_Tripped inp instr
+      where instr' = Step_Trip_Signals inp instr
 
   /** @requirements
         INSTRUMENTATION_TRIP_TEMPERATURE
@@ -120,7 +126,7 @@ private
      \/  (In_Mode T Operate instr /\ inp @ T > Get_Setpoint T instr')
     /* ------------------------------------------------------------------- */ ==
     (Is_Tripped T instr')
-      where instr' = Update_Tripped inp instr
+      where instr' = Step_Trip_Signals inp instr
 
   /** @requirements
         INSTRUMENTATION_TRIP_SATURATION
@@ -130,7 +136,7 @@ private
        \/ (In_Mode S Operate instr /\ Saturation (inp @ T) (inp @ P) < Get_Setpoint S instr')
     /* ------------------------------------------------------------------- */ ==
     (Is_Tripped S instr')
-      where instr' = Update_Tripped inp instr
+      where instr' = Step_Trip_Signals inp instr
 
   /** @requirements
         INSTRUMENTATION_SET_MANUAL_TRIP_TEMPERATURE
@@ -174,4 +180,4 @@ private
          instr.mode == instr'.mode
       /\ instr.setpoints == instr'.setpoints
       /\ instr.maintenance == instr'.maintenance
-      where instr' = Update_Tripped inp instr
+      where instr' = Step_Trip_Signals inp instr
