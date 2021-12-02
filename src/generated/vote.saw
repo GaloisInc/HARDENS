@@ -17,7 +17,7 @@ let spec = do {
   // vote_step : [4][3] -> [2]
   // Cryptol is big endian
   // But we're sticking with the standard bit 0 is the LSB in the C code
-  llvm_return (llvm_term {{ (zero # reverse (vote_reference::Voting_Step (map drop inp))) : [8] }});
+  llvm_return (llvm_term {{ (zero # reverse (vote_reference::Voting_Step (reverse (map reverse (map drop inp))))) : [8] }});
 };
 
 llvm_verify generated "Voting_Step" [] false spec z3;
