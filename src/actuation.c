@@ -1,5 +1,9 @@
 #include "actuation.h"
 
+uint8_t vote(uint8_t trip_input[NTRIP], uint8_t ch);
+uint8_t Voting_Step(uint8_t trip_input[NTRIP]);
+#define VOTE_I(_v, _i) (((_v) >> (_i)) & 0x1)
+
 /* Read trip signals
  * @requires arr is NTRIP elements
  * @ensures arr[0..3] set to the current trip input signals
