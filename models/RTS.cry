@@ -102,7 +102,7 @@ private
         or [ Is_Actuated D0 a | a <- rts'.act ]
       where
         rts' = rts
-          >>>> I (\instrs -> [ Update_Tripped (sensors @ i) instr | instr <- instrs | i <- [0..3] ])
+          >>>> I (\instrs -> [ Step_Trip_Signals (sensors @ i) instr | instr <- instrs | i <- [0..3] ])
           >>>> (\rts1 -> {rts1| act = map (Check_Actuate (map Get_Tripped rts1.instr)) rts1.act})
 
     property sense_to_actuate_1 rts (sensors : [4][2][32]) =
@@ -113,5 +113,5 @@ private
         or [ Is_Actuated D1 a | a <- rts'.act ]
       where
         rts' = rts
-          >>>> I (\instrs -> [ Update_Tripped (sensors @ i) instr | instr <- instrs | i <- [0..3] ])
+          >>>> I (\instrs -> [ Step_Trip_Signals (sensors @ i) instr | instr <- instrs | i <- [0..3] ])
           >>>> (\rts1 -> {rts1| act = map (Check_Actuate (map Get_Tripped rts1.instr)) rts1.act})

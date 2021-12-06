@@ -2,7 +2,8 @@
 
 #define TRIP_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
-uint8_t Generate_Sensor_Trips(uint8_t bypass[2], uint32_t vals[3], uint32_t setpoints[3]);
+uint8_t Generate_Sensor_Trips(uint32_t vals[3], uint32_t setpoints[3]);
+uint8_t Is_Ch_Tripped(uint8_t mode, uint8_t trip);
 
 /* Read the value of channel `channel`, setting *val on success;
  * @return < 0 on error
@@ -27,7 +28,7 @@ instrumentation_step_trip(struct instrumentation_state *state)
   if ((err = read_channel(T, &reading[T])) < 0) return err;
   if ((err = read_channel(P, &reading[P])) < 0) return err;
   /* update trip signals */
-  uint8_t new_trips = Generate_Sensor_Trips(state->bypass, reading, state->setpoints);
+  uint8_t new_trips = Generate_Sensor_Trips(reading, state->setpoints);
   for (int i = 0; i < NTRIP; ++i) {
     state->sensor_trip[i] |= TRIP_I(new_trips, i);
   }
@@ -49,14 +50,14 @@ instrumentation_handle_command(struct instrumentation_state *state)
         state->maintenance = cmd.cmd.maintenance.on;
         break;
 
-      case SET_BYPASS:
-        if (state->maintenance && cmd.cmd.bypass.channel < NCH) {
-          state->bypass[cmd.cmd.bypass.channel] = cmd.cmd.bypass.on;
+      case SET_MODE:
+        if (state->maintenance && cmd.cmd.mode.channel < NTRIP && cmd.cmd.mode.mode) {
+          state->mode[cmd.cmd.mode.channel] = cmd.cmd.mode.mode;
         }
         break;
 
       case SET_SETPOINT:
-        if (state->maintenance && cmd.cmd.setpoint.channel < NCH) {
+        if (state->maintenance && cmd.cmd.setpoint.channel < NTRIP) {
           state->setpoints[cmd.cmd.setpoint.channel] = cmd.cmd.setpoint.val;
         }
         break;
@@ -73,7 +74,7 @@ int
 instrumentation_set_output_trips(struct instrumentation_state *state)
 {
   for (int i = 0; i < NTRIP; ++i) {
-    set_output_trip(i, state->manual_trip[i] || state->sensor_trip[i]);
+    set_output_trip(i, Is_Ch_Tripped(state->mode[i], state->sensor_trip[i]));
   }
   return 0;
 }

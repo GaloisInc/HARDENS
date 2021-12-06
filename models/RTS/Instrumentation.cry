@@ -73,6 +73,10 @@ Is_Tripped: Channel -> Instrumentation -> Bit
 Is_Tripped ch instr = In_Mode ch Manual instr
                    || (In_Mode ch Operate instr && (instr.sensor_trip @ ch))
 
+Is_Ch_Tripped : Mode -> Bit -> Bit
+Is_Ch_Tripped mode sensor_tripped =
+  (mode == Manual) || ((mode == Operate) && sensor_tripped)
+
 Saturation : [32] -> [32] -> [32]
 Saturation t p = if p == 0 then 0 else (t / p)
 

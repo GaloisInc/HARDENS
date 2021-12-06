@@ -43,7 +43,7 @@ ${GEN_VOTE_INC}: ${MODEL_DIR}/${ACTUATION_CRY}
 
 ${GEN_STEP_TRIP_SIGNALS_INC}: ${MODEL_DIR}/${INSTRUMENTATION_CRY}
 	cd ${MODEL_DIR} && \
-		crymp -f Generate_Sensor_Trips ${INSTRUMENTATION_CRY} -o ${ROOT_DIR}/${GEN_STEP_TRIP_SIGNALS_INC}
+		crymp -f Generate_Sensor_Trips,Is_Ch_Tripped ${INSTRUMENTATION_CRY} -o ${ROOT_DIR}/${GEN_STEP_TRIP_SIGNALS_INC}
 
 actuation.o: actuation.c
 	clang -I../include $^ -c -o $@
