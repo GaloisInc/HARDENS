@@ -8,7 +8,7 @@ type D0    = 0
 type D1    = 1
 
 newtype ActuationLogic =
-  { vote_actuate: [2]Voting
+  { vote_actuate: Voting
   , manual_actuate: [2]
   }
 
@@ -18,15 +18,13 @@ type ActuatorOutput = [2]
 Is_Actuated: {d} (d <= 1) => ActuationLogic -> Bit
 Is_Actuated state = actuators @ `d
   where
-    actuators = state.manual_actuate || (state.vote_actuate @ 0) || (state.vote_actuate @ 1)
+    actuators = state.manual_actuate || state.vote_actuate
 
 Is_ManualActuated: {d} (d <= 1) => ActuationLogic -> Bit
 Is_ManualActuated state = state.manual_actuate @ `d
 
 Is_AutoActuated: {d} (d <= 1) => ActuationLogic -> Bit
-Is_AutoActuated state = actuators @ `d
-  where
-    actuators = (state.vote_actuate @ 0) || (state.vote_actuate @ 1)
+Is_AutoActuated state = state.vote_actuate @ `d
 
 Set_Manual_Actuation: {d} (d <= 1) => Bit -> ActuationLogic -> ActuationLogic
 Set_Manual_Actuation val a = { a | manual_actuate = update a.manual_actuate `d val }
@@ -47,7 +45,7 @@ Voting_Step input state0 = voting_state
     votes_s = Vote`{S} input
 
     ApplyVote: {d} (d <= 1) => Bit -> Voting -> Voting
-    ApplyVote vote st = update st `d vote
+    ApplyVote vote st = update st `d (st @ `d || vote)
 
 Vote: {ch} (ch <= 2) => Input -> Bit
 Vote inp = coincidence_2_4 [ i @ `ch | i <- inp ]
@@ -62,7 +60,7 @@ Check_Actuate:
 Check_Actuate input state = voted
   where
     voted : ActuationLogic
-    voted = {state| vote_actuate = [ Voting_Step input s | s <- state.vote_actuate ]}
+    voted = {state| vote_actuate = Voting_Step input state.vote_actuate}
 
 private
 
@@ -94,6 +92,7 @@ private
   */
   property actuation_logic_device_0 (inp: Input) (act: ActuationLogic) =
        act.manual_actuate @ `D0
+    \/ Is_AutoActuated`{D0} act
     \/ Vote`{T} inp
     \/ Vote`{P} inp
     == /* ---------------- */
@@ -106,7 +105,9 @@ private
         ACTUATION_LOGIC_VOTE_MANUAL_DEVICE_1
   */
   property actuation_logic_device_1 (inp: Input) (act: ActuationLogic) =
-    act.manual_actuate @ 1 \/ Vote`{S} inp
+       act.manual_actuate @ 1
+    \/ Is_AutoActuated`{D1} act
+    \/ Vote`{S} inp
     == /* ---------------- */
     Is_Actuated`{D1} act'
     where act' = Check_Actuate inp act
@@ -116,11 +117,11 @@ private
   */
   property actuation_logic_manual_device_0 (v: Bit) (act: ActuationLogic) =
     Is_Actuated`{D0} act0 == v \/ Is_AutoActuated`{D0} act
-    where act0 = Set_Manual_Actuation v act
+    where act0 = Set_Manual_Actuation`{D0} v act
 
   /** @requirements
          ACTUATION_LOGIC_MANUAL_DEVICE_1
   */
   property actuation_logic_manual_device_1 (v: Bit) (act: ActuationLogic) =
     Is_Actuated`{D1} act' == v \/ Is_AutoActuated`{D1} act
-    where act' = Set_Manual_Actuation v act
+    where act' = Set_Manual_Actuation`{D1} v act
