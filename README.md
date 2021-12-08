@@ -57,3 +57,22 @@ General purpose button `SW4` is connected to `P4`
 * MOSFET power control kit: https://www.sparkfun.com/products/12959
 * 12 V Latch solenoid: https://www.sparkfun.com/products/15324
 * Pressure sensor: https://www.sparkfun.com/products/11084
+
+## Bluespec cheatsheet
+
+
+```
+# Elaborate modules
+$ bsc -sim -g mkTestbench Testbench.bsv
+```
+
+
+```
+# Create simulation binary
+$ bsc -sim -e mkTestbench -o ./mkTestbench_bsim
+```
+
+```
+# Generate verilog
+$ bsc -verilog -g mkTestbench Testbench.bsv
+```

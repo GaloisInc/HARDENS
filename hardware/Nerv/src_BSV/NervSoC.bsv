@@ -18,7 +18,7 @@ module mkNervSoC (NervSoC_IFC);
 
    Nerv_IFC nerv <- mkNerv;
 
-   RegFile #(Bit #(30), Bit #(32)) imem <- mkRegFileFullLoad ("imem_contents.memhex32");
+   RegFile #(Bit #(30), Bit #(32)) imem <- mkRegFileFullLoad ("firmware.hex");
    RegFile #(Bit #(30), Bit #(32)) dmem <- mkRegFileFull;
 
    Reg #(Bit #(32)) rg_leds <- mkRegU;
@@ -50,9 +50,9 @@ module mkNervSoC (NervSoC_IFC);
 		   strb2byte (wstrb [3])};
 
       if (addr == 32'h 0100_0000)
-	 rg_leds <= ((rg_leds & (~ mask)) | (wdata & mask));
+	      rg_leds <= ((rg_leds & (~ mask)) | (wdata & mask));
       else
-	 dmem.upd (addr [31:2], ((mem_data & (~ mask)) | (wdata & mask)));
+	      dmem.upd (addr [31:2], ((mem_data & (~ mask)) | (wdata & mask)));
 
       rg_dmem_rdata <= mem_data;
    endrule
