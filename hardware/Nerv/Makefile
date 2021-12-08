@@ -50,7 +50,7 @@ compile: build_bsim build
 	@echo Compilation finished
 
 .PHONY: link
-link:
+link: compile
 	@echo Linking...
 	bsc  -sim  -parallel-sim-link 8\
 		$(BSCDIRS_BSIM)  -p $(BSCPATH_BSIM) \
@@ -60,7 +60,7 @@ link:
 	@echo Linking finished
 
 .PHONY: simulate
-simulate:
+simulate: link
 	@echo Simulation...
 	./$(EXEFILE_BSIM)
 	@echo Simulation finished
@@ -80,23 +80,36 @@ verilog:
 	mkdir -p $@
 
 .PHONY: rtl
-rtl: build_v verilog
+rtl: build_v verilog firmware.hex
 	@echo Verilog generation ...
 	bsc -u -elab -verilog  $(BSCDIRS_V)  $(BSCFLAGS)  -p $(BSCPATH_V)  $(TOPFILE)
 	@echo Verilog generation finished
 
 .PHONY: vlink
-vlink:
+vlink: rtl
 	bsc -verilog  -vsim $(VSIM)  $(BSCDIRS_V) \
 		-e $(TOPMODULE) -o ./$(EXEFILE_VSIM) \
-		-keep-fires
+		-keep-fires ../../nerv/nerv.sv
 	@echo Verilog linking finished
 
 .PHONY: vsim
-vsim:
+vsim: vlink
 	@echo Simulation...
 	./$(EXEFILE_VSIM)
 	@echo Simulation finished
+
+# ----------------------------------------------------------------
+# FIRMWARE BUILD
+TOOLCHAIN_PREFIX?=riscv64-unknown-elf-
+firmware.elf: firmware.s firmware.c
+	$(TOOLCHAIN_PREFIX)gcc -march=rv32i -mabi=ilp32 -Os -Wall -Wextra -Wl,-Bstatic,-T,sections.lds,--strip-debug -ffreestanding -nostdlib -o $@ $^
+
+firmware.hex: firmware.elf
+	$(TOOLCHAIN_PREFIX)objcopy -O verilog $< $@
+	cat $@ | sed -r 's,(..) (..) (..) (..),\4\3\2\1,g' > tmp
+	mv tmp verilog_sample/$@
+	rm $<
+	rm $@
 
 # ----------------------------------------------------------------
 
@@ -106,6 +119,6 @@ clean:
 
 .PHONY: full_clean
 full_clean: clean
-	rm -r -f  exe_*  build*  verilog  exe_HW_*
+	rm -r -f  exe_*  build*  verilog  exe_HW_* firmware.hex firmware.elf
 
 # ----------------------------------------------------------------
