@@ -4,3 +4,4 @@
 *.a
 *.bc
 *.ll
+*/.vscode/*
