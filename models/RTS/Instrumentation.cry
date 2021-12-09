@@ -9,21 +9,26 @@ import RTS::Utils
 
 type Input = [2][32]
 
-type T = 0
-type P = 1
-type S = 2
+type NChannels = 3
+type Channel = [lg2 NChannels]
+T,P,S : Channel
+T = 0 // Temperature
+P = 1 // Pressure
+S = 2 // Saturation
 
-type Mode = [2]
-type Bypass = 0
-type Operate = 1
-type Trip = 2
-type Invalid = 3
+type NModes = 3
+type Mode = [width NModes]
+// Type-level Mode values
+Bypass,Operate,Manual: Mode
+Bypass = 0 // Do not generate a "trip"
+Operate = 1 // generate "trip" on setpoint violation
+Manual = 2 // Force "trip" generation
 
 newtype Instrumentation =
-  { setpoints: [3][32]
-  , reading: [3][32]
-  , mode: [3][2]
-  , sensor_trip: [3]
+  { setpoints: [NChannels][32]
+  , reading: [NChannels][32]
+  , mode: [NChannels]Mode
+  , sensor_trip: [NChannels]
   , maintenance: Bit
   }
 
@@ -36,7 +41,7 @@ Initial = Instrumentation
   , maintenance = ~zero
   }
 
-Get_Reading: Instrumentation -> [3][32]
+Get_Reading: Instrumentation -> [NChannels][32]
 Get_Reading instr = instr.reading
 
 In_Maintenance: Instrumentation -> Bit
@@ -45,44 +50,44 @@ In_Maintenance instr = instr.maintenance
 Set_Maintenance: Bit -> Instrumentation -> Instrumentation
 Set_Maintenance on instr = { instr | maintenance = on }
 
-Set_Trip_Mode: {ch} (ch <= 2) => Mode -> Instrumentation -> Instrumentation
-Set_Trip_Mode mode i =
+Set_Mode: Channel -> Mode -> Instrumentation -> Instrumentation
+Set_Mode ch mode i =
   if In_Maintenance i && (mode <= 2) then
-    {i | mode = update i.mode `ch mode}
+    {i | mode = update i.mode ch mode}
   else
     i
 
-In_Trip_Mode: {ch} (ch <= 2) => Mode -> Instrumentation -> Bit
-In_Trip_Mode mode instr = (instr.mode @ `ch) == mode
+In_Mode: Channel -> Mode -> Instrumentation -> Bit
+In_Mode ch mode instr = (instr.mode @ ch) == mode
 
-Get_Setpoint: {ch} (ch <= 2) => Instrumentation -> [32]
-Get_Setpoint instr = instr.setpoints @ `ch
+Get_Setpoint: Channel -> Instrumentation -> [32]
+Get_Setpoint ch instr = instr.setpoints @ ch
 
-Set_Setpoint: {ch} (ch <= 2) => [32] -> Instrumentation -> Instrumentation
-Set_Setpoint val instr = { instr | setpoints = update instr.setpoints `ch val }
+Set_Setpoint: Channel -> [32] -> Instrumentation -> Instrumentation
+Set_Setpoint ch val instr = { instr | setpoints = update instr.setpoints ch val }
 
-Get_Tripped: Instrumentation -> [3]
-Get_Tripped instr = [Is_Tripped`{T} instr, Is_Tripped`{P} instr, Is_Tripped`{S} instr]
+Get_Tripped: Instrumentation -> [NChannels]
+Get_Tripped instr = [Is_Tripped T instr, Is_Tripped P instr, Is_Tripped S instr]
 
-Is_Tripped: {ch} (ch <= 2) => Instrumentation -> Bit
-Is_Tripped instr = In_Trip_Mode`{ch} `Trip instr
-               || (In_Trip_Mode`{ch} `Operate instr && (instr.sensor_trip @ `ch))
+Is_Tripped: Channel -> Instrumentation -> Bit
+Is_Tripped ch instr = In_Mode ch Manual instr
+                   || (In_Mode ch Operate instr && (instr.sensor_trip @ ch))
 
 Update_Tripped:
   Input ->
   Instrumentation ->
   Instrumentation
 Update_Tripped sensors state =
-  {state| reading = vals} >>>> Trip`{T} >>>> Trip`{P} >>>> Trip`{S}
+  {state| reading = vals} >>>> Trip T >>>> Trip P >>>> Trip S
   where
-    vals: [3][32]
-    vals = [sensors @ `T, sensors @ `P, Saturation (sensors @ `T) (sensors @ `P)]
+    vals: [NChannels][32]
+    vals = [sensors @ T, sensors @ P, Saturation (sensors @ T) (sensors @ P)]
 
-    Trip : {ch} (ch <= 2) => Instrumentation -> Instrumentation
-    Trip i = {i | sensor_trip = update i.sensor_trip `ch trp }
+    Trip : Channel -> Instrumentation -> Instrumentation
+    Trip ch i = {i | sensor_trip = update i.sensor_trip ch trp }
       where
-        cmp = if `ch == `S then (<) else (>)
-        trp = cmp (vals @ `ch) (i.setpoints @ `ch)
+        cmp = if ch == S then (<) else (>)
+        trp = cmp (vals @ ch) (i.setpoints @ ch)
 
 Saturation : [32] -> [32] -> [32]
 Saturation t p = if p == 0 then 0 else (t / p)
@@ -93,38 +98,38 @@ private
   */
   property instrumentation_reset =
     In_Maintenance Initial
-    /\ In_Trip_Mode`{P} `Bypass Initial
-    /\ In_Trip_Mode`{T} `Bypass Initial
-    /\ In_Trip_Mode`{S} `Bypass Initial
+    /\ In_Mode P Bypass Initial
+    /\ In_Mode T Bypass Initial
+    /\ In_Mode S Bypass Initial
 
   /** @requirements
         INSTRUMENTATION_TRIP_PRESSURE
   */
   property instrumentation_trip_pressure (inp: Input) (instr: Instrumentation) =
-       In_Trip_Mode`{P} `Trip instr
-    \/ (In_Trip_Mode`{P} `Operate instr /\ inp @ `P > Get_Setpoint`{P} instr')
+       In_Mode P Manual instr
+    \/ (In_Mode P Operate instr /\ inp @ P > Get_Setpoint P instr')
     /* ------------------------------------------------------------------- */ ==
-    (Is_Tripped`{P} instr')
+    (Is_Tripped P instr')
       where instr' = Update_Tripped inp instr
 
   /** @requirements
         INSTRUMENTATION_TRIP_TEMPERATURE
   */
   property instrumentation_trip_temperature (inp: Input) (instr: Instrumentation) =
-          In_Trip_Mode`{T} `Trip instr
-     \/  (In_Trip_Mode`{T} `Operate instr /\ inp @ `T > Get_Setpoint`{T} instr')
+          In_Mode T Manual instr
+     \/  (In_Mode T Operate instr /\ inp @ T > Get_Setpoint T instr')
     /* ------------------------------------------------------------------- */ ==
-    (Is_Tripped`{T} instr')
+    (Is_Tripped T instr')
       where instr' = Update_Tripped inp instr
 
   /** @requirements
         INSTRUMENTATION_TRIP_SATURATION
   */
   property instrumentation_trip_saturation (inp: Input) (instr: Instrumentation) =
-       In_Trip_Mode`{S} `Trip instr
-       \/ (In_Trip_Mode`{S} `Operate instr /\ Saturation (inp @ `T) (inp @ `P) < Get_Setpoint`{S} instr')
+       In_Mode S Manual instr
+       \/ (In_Mode S Operate instr /\ Saturation (inp @ T) (inp @ P) < Get_Setpoint S instr')
     /* ------------------------------------------------------------------- */ ==
-    (Is_Tripped`{S} instr')
+    (Is_Tripped S instr')
       where instr' = Update_Tripped inp instr
 
   /** @requirements
@@ -134,14 +139,14 @@ private
   */
   property instrumentation_set_manual_trip (instr: Instrumentation) =
     In_Maintenance instr ==> (
-         (Is_Tripped`{T} trippedT \/ ~ (instr.sensor_trip @ `T))
-      /\ (Is_Tripped`{P} trippedP \/ ~ (instr.sensor_trip @ `P))
-      /\ (Is_Tripped`{S} trippedS \/ ~ (instr.sensor_trip @ `S))
+         (Is_Tripped T trippedT \/ ~ (instr.sensor_trip @ T))
+      /\ (Is_Tripped P trippedP \/ ~ (instr.sensor_trip @ P))
+      /\ (Is_Tripped S trippedS \/ ~ (instr.sensor_trip @ S))
     )
     where
-      trippedT = Set_Trip_Mode`{T} `Trip instr
-      trippedP = Set_Trip_Mode`{P} `Trip instr
-      trippedS = Set_Trip_Mode`{S} `Trip instr
+      trippedT = Set_Mode T Manual instr
+      trippedP = Set_Mode P Manual instr
+      trippedS = Set_Mode S Manual instr
 
   /** @requirements
          INSTRUMENTATION_SET_SETPOINT_TEMPERATURE
@@ -149,9 +154,9 @@ private
          INSTRUMENTATION_SET_SETPOINT_SATURATION
   */
   property get_set_setpoint_correct (instr: Instrumentation) (val: [32]) =
-       Get_Setpoint`{T} (Set_Setpoint`{T} val instr) == val
-    /\ Get_Setpoint`{P} (Set_Setpoint`{P} val instr) == val
-    /\ Get_Setpoint`{S} (Set_Setpoint`{S} val instr) == val
+       Get_Setpoint T (Set_Setpoint T val instr) == val
+    /\ Get_Setpoint P (Set_Setpoint P val instr) == val
+    /\ Get_Setpoint S (Set_Setpoint S val instr) == val
 
   /** @requirements
          INSTRUMENTATION_SET_BYPASS_TEMPERATURE
@@ -160,9 +165,9 @@ private
   */
   property set_bypass_correct (instr: Instrumentation) =
        In_Maintenance instr ==> (
-            ~ Is_Tripped`{T} (Set_Trip_Mode`{T} `Bypass instr)
-         /\ ~ Is_Tripped`{P} (Set_Trip_Mode`{P} `Bypass instr)
-         /\ ~ Is_Tripped`{S} (Set_Trip_Mode`{S} `Bypass instr)
+            ~ Is_Tripped T (Set_Mode T Bypass instr)
+         /\ ~ Is_Tripped P (Set_Mode P Bypass instr)
+         /\ ~ Is_Tripped S (Set_Mode S Bypass instr)
        )
 
   property step_state_const (inp: Input) (instr: Instrumentation) =
