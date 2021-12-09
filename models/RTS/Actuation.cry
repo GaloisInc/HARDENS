@@ -10,7 +10,7 @@ type Device = [lg2 NDevices]
 D0 = 0
 D1 = 1
 
-newtype ActuationLogic =
+type ActuationLogic =
   { vote_actuate: Voting
   , manual_actuate: [2] // RFP does not suggest this is protected by a mode
   }
@@ -32,29 +32,17 @@ Is_AutoActuated d state = state.vote_actuate @ d
 Set_Manual_Actuation: Device -> Bit -> ActuationLogic -> ActuationLogic
 Set_Manual_Actuation d val a = { a | manual_actuate = update a.manual_actuate d val }
 
-Voting_Step:
-  Input /* Trip signals */ ->
-  Voting ->
-  Voting
-Voting_Step input state0 = voting_state
+Voting_Step : Input -> Voting -> Voting
+Voting_Step inp old_votes = [d0, d1]
   where
-    voting_state =
-      ApplyVote D1 votes_s
-        (ApplyVote D0 (votes_t || votes_p) state0)
-
-    // Collect Votes
-    votes_t = Vote T input
-    votes_p = Vote P input
-    votes_s = Vote S input
-
-    ApplyVote: Device -> Bit -> Voting -> Voting
-    ApplyVote d vote st = update st d (st @ d || vote)
+    d0 = Vote T inp || Vote P  inp || old_votes @ D0
+    d1 = Vote S inp || old_votes @ D1
 
 Vote: Channel -> Input -> Bit
-Vote ch inp = coincidence_2_4 [ i @ ch | i <- inp ]
-  where
-    coincidence_2_4 : [4] -> Bit
-    coincidence_2_4 x = (x != 0) && (x != 1) && (x != 2) && (x != 4) && (x != 8)
+Vote ch inp = Coincidence_2_4 [ i @ ch | i <- inp ]
+
+Coincidence_2_4 : [4] -> Bit
+Coincidence_2_4 x = (x != 0) && (x != 1) && (x != 2) && (x != 4) && (x != 8)
 
 Check_Actuate:
   Input ->

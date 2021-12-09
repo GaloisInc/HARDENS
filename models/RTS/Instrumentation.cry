@@ -24,7 +24,7 @@ Bypass = 0 // Do not generate a "trip"
 Operate = 1 // generate "trip" on setpoint violation
 Manual = 2 // Force "trip" generation
 
-newtype Instrumentation =
+type Instrumentation =
   { setpoints: [NChannels][32]
   , reading: [NChannels][32]
   , mode: [NChannels]Mode
@@ -33,7 +33,7 @@ newtype Instrumentation =
   }
 
 Initial: Instrumentation
-Initial = Instrumentation
+Initial =
   { setpoints   = zero
   , reading     = zero
   , mode        = zero
