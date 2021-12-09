@@ -35,8 +35,10 @@ Set_Manual_Actuation d val a = { a | manual_actuate = update a.manual_actuate d 
 Voting_Step : Input -> Voting -> Voting
 Voting_Step inp old_votes = [d0, d1]
   where
-    d0 = Vote T inp || Vote P  inp || old_votes @ D0
-    d1 = Vote S inp || old_votes @ D1
+    // Should use constants for the below, but that
+    // is problematic for crymp
+    d0 = Vote 0 inp || Vote 1 inp || old_votes @ (0 : Device)
+    d1 = Vote 2 inp || old_votes @ (1 : Device)
 
 Vote: Channel -> Input -> Bit
 Vote ch inp = Coincidence_2_4 [ i @ ch | i <- inp ]
