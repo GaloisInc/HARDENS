@@ -10,65 +10,70 @@
 module RTS where
 
 import RTS::Instrumentation
+import RTS::Instrumentation as Instrumentation
 import RTS::Actuation
 import RTS::Utils
 
-MAINTENANCE, BYPASS, SETPOINT, TRIP, ACTUATE, NEVENTS : [3]
-MAINTENANCE = 0
-BYPASS = 1
-SETPOINT = 2
-TRIP = 3
-ACTUATE = 4
-NEVENTS = 5
+type EventType = [2]
+// Event Type Values
+EVENT_MAINTENANCE, EVENT_TRIP_MODE, EVENT_SETPOINT, EVENT_ACTUATE : EventType
+EVENT_MAINTENANCE = 0
+EVENT_TRIP_MODE = 1
+EVENT_SETPOINT = 2
+EVENT_ACTUATE = 3
 
-newtype Event (ch : #) (dev : #) =
-  { event: [3]
-    // Instrumentation output event arguments
-  , division: [2]
+// Union of all possible events
+newtype Event =
+  { event: [2] // The event tag
+  , ch: [2] // Which channel
+  , dev: [1] // Which device
+  , unit: [2] // Which Instrumentation unit
   , setpoint: [32]
+  , mode: Instrumentation::Mode
   , on_off: Bit
   }
 
 newtype UI =
-  { instrumentation_values: [4][3][32]
-  , instrumentation_bypass: [4][2]
-  , instrumentation_trip: [4][3]
+  { instrumentation_values: [4][NChannels][32]
+  , instrumentation_bypass: [4][NChannels]
+  , instrumentation_trip: [4][NChannels]
   }
 
 newtype CoreFSM =
   { ui: UI
   }
 
-Update_UI: [4]Instrumentation -> ActuationLogic -> CoreFSM -> CoreFSM
+Update_UI: [4]Instrumentation -> [2]ActuationLogic -> CoreFSM -> CoreFSM
 Update_UI instrs actuator rts0 =
   rts0 >>>> get_values >>>> get_bypass >>>> get_trip
   where
     get_values rts = {rts| ui = {rts.ui| instrumentation_values = [ Get_Reading i | i <- instrs ]}}
-    get_bypass rts = {rts| ui = {rts.ui| instrumentation_bypass = [ [In_Bypass`{T} i, In_Bypass`{P} i] | i <- instrs ]}}
-    get_trip   rts = {rts| ui = {rts.ui| instrumentation_trip = [ [Is_Tripped`{T} i, Is_Tripped`{P} i, Is_Tripped`{S} i] | i <- instrs ]}}
+    get_bypass rts = {rts| ui = {rts.ui| instrumentation_bypass = [ [In_Mode T Bypass i, In_Mode P Bypass i, In_Mode S Bypass i] | i <- instrs ]}}
+    get_trip   rts = {rts| ui = {rts.ui| instrumentation_trip = [ [Is_Tripped T i, Is_Tripped P i, Is_Tripped S i] | i <- instrs ]}}
 
-newtype RTS = { core: CoreFSM, instr: [4]Instrumentation, act: ActuationLogic }
+newtype RTS = { core: CoreFSM, instr: [4]Instrumentation, act: [2]ActuationLogic }
 
-Run_Event: {ch, dev} (ch <= 2, dev <= 1) => Event ch dev -> RTS -> RTS
+Run_Event: Event -> RTS -> RTS
 Run_Event e rts =
-  if e.event == MAINTENANCE then
-    {rts| instr = update rts.instr (e.division) (Set_Maintenance e.on_off (rts.instr @ e.division))}
-  else if (e.event == BYPASS) && (`ch <= 1) then
-    {rts| instr = update rts.instr (e.division) (Set_Bypass`{Ch ch} e.on_off (rts.instr @ e.division))}
-  else if (e.event == SETPOINT) then
-    {rts| instr = update rts.instr (e.division) (Set_Setpoint`{ch} e.setpoint (rts.instr @ e.division))}
-  else if (e.event == TRIP) then
-    {rts| instr = update rts.instr (e.division) (Set_Manual_Trip`{ch} e.on_off (rts.instr @ e.division))}
-  else if (e.event == ACTUATE) then
-    {rts| act = Set_Manual_Actuation`{dev} e.on_off rts.act}
+  if e.event == EVENT_MAINTENANCE then
+    {rts| instr = update rts.instr (e.unit) (Set_Maintenance e.on_off (rts.instr @ e.unit))}
+  else if (e.event == EVENT_TRIP_MODE) && (ch < `NChannels) && (e.mode < `NModes) then
+    {rts| instr = update rts.instr (e.unit) (Set_Mode ch e.mode (rts.instr @ e.unit))}
+  else if (e.event == EVENT_SETPOINT) then
+    {rts| instr = update rts.instr (e.unit) (Set_Setpoint ch e.setpoint (rts.instr @ e.unit))}
+  else if (e.event == EVENT_ACTUATE) then
+    {rts| act = [Set_Manual_Actuation dev e.on_off a | a <- rts.act]}
   else rts
   where
-    type Ch c = c % 2
+    ch : Channel
+    ch = e.ch
+    dev : Device
+    dev = e.dev
 
 private
     I : ([4]Instrumentation -> [4]Instrumentation) -> RTS -> RTS
     I f rts = {rts|instr = f rts.instr}
-    A : (ActuationLogic -> ActuationLogic) -> RTS -> RTS
+    A : ([2]ActuationLogic -> [2]ActuationLogic) -> RTS -> RTS
     A f rts = {rts|act = f rts.act}
     C : (CoreFSM -> CoreFSM) -> RTS -> RTS
     C f rts = {rts|core = f rts.core}
@@ -79,31 +84,34 @@ private
     */
     property core_ui_instrumentation (rts: RTS) (i: [2]) =
            ((core'.ui.instrumentation_values @ i)      == Get_Reading (rts.instr @ i))
-        /\ ((core'.ui.instrumentation_bypass @ i @ `T) == In_Bypass`{T} (rts.instr @ i))
-        /\ ((core'.ui.instrumentation_bypass @ i @ `P) == In_Bypass`{P} (rts.instr @ i))
-        /\ ((core'.ui.instrumentation_trip @ i @ `T)   == Is_Tripped`{T} (rts.instr @ i))
-        /\ ((core'.ui.instrumentation_trip @ i @ `P)   == Is_Tripped`{P} (rts.instr @ i))
-        /\ ((core'.ui.instrumentation_trip @ i @ `S)   == Is_Tripped`{S} (rts.instr @ i))
+        /\ ((core'.ui.instrumentation_bypass @ i @ T) == In_Mode T Bypass (rts.instr @ i))
+        /\ ((core'.ui.instrumentation_bypass @ i @ P) == In_Mode P Bypass (rts.instr @ i))
+        /\ ((core'.ui.instrumentation_bypass @ i @ S) == In_Mode S Bypass (rts.instr @ i))
+        /\ ((core'.ui.instrumentation_trip @ i @ T)   == Is_Tripped T (rts.instr @ i))
+        /\ ((core'.ui.instrumentation_trip @ i @ P)   == Is_Tripped P (rts.instr @ i))
+        /\ ((core'.ui.instrumentation_trip @ i @ S)   == Is_Tripped S (rts.instr @ i))
       where
         core' = Update_UI rts.instr rts.act rts.core
 
     property sense_to_actuate_0 rts (sensors : [4][2][32]) =
-           sum [ if Is_Tripped`{T} i then 1 else 0 | i <- rts'.instr ] >= 2
-        \/ sum [ if Is_Tripped`{P} i then 1 else 0 | i <- rts'.instr ] >= 2
-        \/ Is_ManualActuated`{D0} rts.act
+           sum [ if Is_Tripped T i then 1 else 0 | i <- rts'.instr ] >= 2
+        \/ sum [ if Is_Tripped P i then 1 else 0 | i <- rts'.instr ] >= 2
+        \/ or [ Is_ManualActuated D0 a | a <- rts.act ]
+        \/ or [ Is_Actuated D0 a | a <- rts.act ]
         /* --------------------- */ ==
-        Is_Actuated`{D0} rts'.act
+        or [ Is_Actuated D0 a | a <- rts'.act ]
       where
         rts' = rts
-          >>>> I (\instrs -> [ Read_Sensors (sensors @ i) instr | instr <- instrs | i <- [0..3] ])
-          >>>> (\rts1 -> {rts1| act = Check_Actuate (map Get_Tripped rts1.instr) rts1.act})
+          >>>> I (\instrs -> [ Update_Tripped (sensors @ i) instr | instr <- instrs | i <- [0..3] ])
+          >>>> (\rts1 -> {rts1| act = map (Check_Actuate (map Get_Tripped rts1.instr)) rts1.act})
 
     property sense_to_actuate_1 rts (sensors : [4][2][32]) =
-           sum [ if Is_Tripped`{S} i then 1 else 0 | i <- rts'.instr ] >= 2
-        \/ Is_ManualActuated`{D1} rts.act
+           sum [ if Is_Tripped S i then 1 else 0 | i <- rts'.instr ] >= 2
+        \/ or [ Is_ManualActuated D1 a | a <- rts.act ]
+        \/ or [ Is_Actuated D1 a | a <- rts.act ]
         /* --------------------- */ ==
-        Is_Actuated`{D1} rts'.act
+        or [ Is_Actuated D1 a | a <- rts'.act ]
       where
         rts' = rts
-          >>>> I (\instrs -> [ Read_Sensors (sensors @ i) instr | instr <- instrs | i <- [0..3] ])
-          >>>> (\rts1 -> {rts1| act = Check_Actuate (map Get_Tripped rts1.instr) rts1.act})
+          >>>> I (\instrs -> [ Update_Tripped (sensors @ i) instr | instr <- instrs | i <- [0..3] ])
+          >>>> (\rts1 -> {rts1| act = map (Check_Actuate (map Get_Tripped rts1.instr)) rts1.act})

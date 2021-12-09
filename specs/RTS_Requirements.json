@@ -51,7 +51,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c246d50-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8cdcf310-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_SENSOR_TRIP_PRESSURE",
@@ -59,7 +59,7 @@
         "project": "HARDENS",
         "rationale": "RFP [1]",
         "comments": "",
-        "fulltext": "Upon MAINTENANCE & PRESSURE_MODE = 1 Instrumentation shall, until MAINTENANCE & !(PRESSURE_MODE = 1), satisfy (if SENSOR_PRESSURE < SETPOINT_PRESSURE then TRIP_PRESSURE) & (if TRIP_PRESSURE then SENSOR_PRESSURE < SETPOINT_PRESSURE)",
+        "fulltext": "Upon MAINTENANCE & PRESSURE_MODE = 1 Instrumentation shall, until MAINTENANCE & !(PRESSURE_MODE = 1), satisfy (if SENSOR_PRESSURE > SETPOINT_PRESSURE then TRIP_PRESSURE) & (if TRIP_PRESSURE then SENSOR_PRESSURE > SETPOINT_PRESSURE)",
         "semantics": {
             "type": "nasa",
             "scope": {
@@ -92,22 +92,22 @@
                 58,
                 100
             ],
-            "post_condition": "(( SENSOR_PRESSURE < SETPOINT_PRESSURE => TRIP_PRESSURE ) & ( TRIP_PRESSURE => SENSOR_PRESSURE < SETPOINT_PRESSURE ))",
+            "post_condition": "(( SENSOR_PRESSURE > SETPOINT_PRESSURE => TRIP_PRESSURE ) & ( TRIP_PRESSURE => SENSOR_PRESSURE > SETPOINT_PRESSURE ))",
             "responseTextRange": [
                 102,
                 230
             ],
-            "ft": "((LAST V (((! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_PRESSURE < SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE < SETPOINT_PRESSURE ))</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_PRESSURE < SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE < SETPOINT_PRESSURE ))</i></b>))))) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> -> ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_PRESSURE < SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE < SETPOINT_PRESSURE ))</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_PRESSURE < SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE < SETPOINT_PRESSURE ))</i></b>))))",
-            "pt": "(H ((H (! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> & ((Y (! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>)) | FTP)))) -> <b><i>(( SENSOR_PRESSURE < SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE < SETPOINT_PRESSURE ))</i></b>)))",
-            "ftExpanded": "((LAST V (((! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_PRESSURE < SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE < SETPOINT_PRESSURE ))</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_PRESSURE < SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE < SETPOINT_PRESSURE ))</i></b>))))) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> -> ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_PRESSURE < SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE < SETPOINT_PRESSURE ))</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_PRESSURE < SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE < SETPOINT_PRESSURE ))</i></b>))))",
-            "ptExpanded": "(H ((H (! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> & ((Y (! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(( SENSOR_PRESSURE < SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE < SETPOINT_PRESSURE ))</i></b>)))",
+            "ft": "((LAST V (((! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b>))))) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> -> ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b>))))",
+            "pt": "(H ((H (! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> & ((Y (! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>)) | FTP)))) -> <b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b>))))) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> -> ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> & ((Y (! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b>)))",
             "component": "<b><i>Instrumentation</i></b>",
-            "CoCoSpecCode": "(H((H( not (MAINTENANCE and PRESSURE_MODE = 1))) or ((SI( ((MAINTENANCE and PRESSURE_MODE = 1) and ((pre ( not (MAINTENANCE and PRESSURE_MODE = 1))) or FTP)), ( not (MAINTENANCE and not ( PRESSURE_MODE = 1 ))) )) => (( SENSOR_PRESSURE < SETPOINT_PRESSURE => TRIP_PRESSURE ) and ( TRIP_PRESSURE => SENSOR_PRESSURE < SETPOINT_PRESSURE )))))",
-            "diagramVariables": "TC = <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>, SC = <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>, Response = <b><i>(( SENSOR_PRESSURE < SETPOINT_PRESSURE => TRIP_PRESSURE ) & ( TRIP_PRESSURE => SENSOR_PRESSURE < SETPOINT_PRESSURE ))</i></b>.",
+            "CoCoSpecCode": "(H((H( not (MAINTENANCE and PRESSURE_MODE = 1))) or ((SI( ((MAINTENANCE and PRESSURE_MODE = 1) and ((pre ( not (MAINTENANCE and PRESSURE_MODE = 1))) or FTP)), ( not (MAINTENANCE and not ( PRESSURE_MODE = 1 ))) )) => (( SENSOR_PRESSURE > SETPOINT_PRESSURE => TRIP_PRESSURE ) and ( TRIP_PRESSURE => SENSOR_PRESSURE > SETPOINT_PRESSURE )))))",
+            "diagramVariables": "TC = <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>, SC = <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>, Response = <b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE => TRIP_PRESSURE ) & ( TRIP_PRESSURE => SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b>.",
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c24bb70-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8cdd1a20-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_SET_SETPOINT_PRESSURE",
@@ -162,7 +162,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b> is true and any point in the interval where <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c250990-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce111c0-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_SENSOR_TRIP_SATURATION",
@@ -218,7 +218,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c2557b0-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce15fe0-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_SET_MANUAL_TRIP_PRESSURE",
@@ -272,7 +272,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c25a5d0-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce1ae00-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_SET_BYPASS_SATURATION",
@@ -326,7 +326,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c25cce0-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce1fc20-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "ACTUATION_LOGIC_DEVICE_0",
@@ -372,7 +372,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "6c264210-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce24a40-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_SET_SETPOINT_SATURATION",
@@ -427,7 +427,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b> is true and any point in the interval where <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c26b740-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce29860-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_SET_BYPASS_PRESSURE",
@@ -481,7 +481,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c270560-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce2e680-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_SET_MANUAL_TRIP_SATURATION",
@@ -535,7 +535,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c275380-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce334a0-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "ACTUATION_LOGIC_VOTE_TEMPERATURE",
@@ -583,7 +583,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "6c27a1a0-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce35bb0-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "ACTUATION_LOGIC_DEVICE_1",
@@ -629,7 +629,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "6c27efc0-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce3a9d0-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "ACTUATION_LOGIC_VOTE_PRESSURE",
@@ -677,7 +677,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "6c2816d0-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce3f7f0-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_TRIP_TEMPERATURE",
@@ -719,7 +719,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "6c2864f0-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce44610-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_RESET",
@@ -774,7 +774,7 @@
             "description": "ENFORCED: in the interval (if defined) starting strictly after the first <b><i>RESET</i></b> interval and spanning to the end of the execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, if trigger holds then RES also holds at the same time point.",
             "diagram": "_media/user-interface/examples/svgDiagrams/after_null_immediately_satisfaction.svg"
         },
-        "_id": "6c288c00-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce46d20-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_TRIP_SATURATION",
@@ -816,7 +816,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "6c28b310-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce49430-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "CORE_UI_INSTRUMENTATION",
@@ -876,7 +876,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "6c290130-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce4e250-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_SET_MAINTENANCE",
@@ -930,7 +930,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(SET_MAINTENANCE)</i></b> is true and any point in the interval where <b><i>(SET_MAINTENANCE)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c294f50-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce53070-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "ACTUATION_LOGIC_MANUAL_DEVICE_0",
@@ -984,7 +984,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b> is true and any point in the interval where <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c297660-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce57e90-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "ACTUATION_LOGIC_VOTE_SATURATION",
@@ -1032,7 +1032,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "6c29c480-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce5a5a0-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "ACTUATION_LOGIC_MANUAL_DEVICE_1",
@@ -1086,7 +1086,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b> is true and any point in the interval where <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c2a12a0-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce5f3c0-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "ACTUATION_LOGIC_VOTE_DEVICE_1",
@@ -1138,7 +1138,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(VOTE_TRIP_SATURATION)</i></b> is true and any point in the interval where <b><i>(VOTE_TRIP_SATURATION)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_always_satisfaction.svg"
         },
-        "_id": "6c2a39b0-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce61ad0-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_SET_BYPASS_TEMPERATURE",
@@ -1192,7 +1192,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c2aaee0-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce641e0-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_TRIP_PRESSURE",
@@ -1234,7 +1234,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "6c2aaee1-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce69000-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "ACTUATION_LOGIC_VOTE_DEVICE_0",
@@ -1287,7 +1287,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b> is true and any point in the interval where <b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_always_satisfaction.svg"
         },
-        "_id": "6c2afd00-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce6b710-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_SENSOR_TRIP_TEMPERATURE",
@@ -1295,7 +1295,7 @@
         "project": "HARDENS",
         "rationale": "RFP [2]",
         "comments": "",
-        "fulltext": "Upon MAINTENANCE & TEMPERATURE_MODE = 1 Instrumentation shall, until MAINTENANCE & !(TEMPERATURE_MODE = 1), satisfy (if SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE then TRIP_TEMPERATURE) & (if TRIP_TEMPERATURE then SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE)",
+        "fulltext": "Upon MAINTENANCE & TEMPERATURE_MODE = 1 Instrumentation shall, until MAINTENANCE & !(TEMPERATURE_MODE = 1), satisfy (if SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE then TRIP_TEMPERATURE) & (if TRIP_TEMPERATURE then SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE)",
         "semantics": {
             "type": "nasa",
             "scope": {
@@ -1328,22 +1328,22 @@
                 61,
                 106
             ],
-            "post_condition": "(( SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE => TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE => SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE ))",
+            "post_condition": "(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE => TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE => SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))",
             "responseTextRange": [
                 108,
                 254
             ],
-            "ft": "((LAST V (((! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE ))</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE ))</i></b>))))) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> -> ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE ))</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE ))</i></b>))))",
-            "pt": "(H ((H (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> & ((Y (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>)) | FTP)))) -> <b><i>(( SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE ))</i></b>)))",
-            "ftExpanded": "((LAST V (((! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE ))</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE ))</i></b>))))) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> -> ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE ))</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE ))</i></b>))))",
-            "ptExpanded": "(H ((H (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> & ((Y (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(( SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE ))</i></b>)))",
+            "ft": "((LAST V (((! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b>))))) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> -> ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b>))))",
+            "pt": "(H ((H (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> & ((Y (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>)) | FTP)))) -> <b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b>))))) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> -> ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> & ((Y (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b>)))",
             "component": "<b><i>Instrumentation</i></b>",
-            "CoCoSpecCode": "(H((H( not (MAINTENANCE and TEMPERATURE_MODE = 1))) or ((SI( ((MAINTENANCE and TEMPERATURE_MODE = 1) and ((pre ( not (MAINTENANCE and TEMPERATURE_MODE = 1))) or FTP)), ( not (MAINTENANCE and not ( TEMPERATURE_MODE = 1 ))) )) => (( SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE => TRIP_TEMPERATURE ) and ( TRIP_TEMPERATURE => SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE )))))",
-            "diagramVariables": "TC = <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>, SC = <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>, Response = <b><i>(( SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE => TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE => SENSOR_TEMPERATURE < SETPOINT_TEMPERATURE ))</i></b>.",
+            "CoCoSpecCode": "(H((H( not (MAINTENANCE and TEMPERATURE_MODE = 1))) or ((SI( ((MAINTENANCE and TEMPERATURE_MODE = 1) and ((pre ( not (MAINTENANCE and TEMPERATURE_MODE = 1))) or FTP)), ( not (MAINTENANCE and not ( TEMPERATURE_MODE = 1 ))) )) => (( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE => TRIP_TEMPERATURE ) and ( TRIP_TEMPERATURE => SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE )))))",
+            "diagramVariables": "TC = <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>, SC = <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>, Response = <b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE => TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE => SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b>.",
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c2b2410-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce70530-5932-11ec-96a3-f79b5f3617de"
     },
     {
         "reqid": "INSTRUMENTATION_SET_SETPOINT_TEMPERATURE",
@@ -1398,6 +1398,6 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b> is true and any point in the interval where <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "6c2b7230-56c7-11ec-bdd8-27e4a8777a8e"
+        "_id": "8ce75350-5932-11ec-96a3-f79b5f3617de"
     }
 ]
