@@ -19,7 +19,7 @@
 
 module testbench;
 
-localparam TIMEOUT = (1<<10);
+localparam TIMEOUT = (1<<24);
 reg clock;
 
 wire LEDR_N, LEDG_N, LED1, LED2, LED3, LED4, LED5;
@@ -48,6 +48,8 @@ reg [31:0] cycles = 0;
 
 always @(posedge clock) begin
 	cycles <= cycles + 32'h1;
+	if (cycles % 10000 == 0)
+		$display("LEDs: [%0b,%0b,%0b,%0b,%0b,%0b,%0b]", LED1,LED2,LED3,LED4,LED5,LEDR_N,LEDG_N);
 	if (cycles >= TIMEOUT) begin
 		$display("Simulated %0d cycles", cycles);
 		$finish;

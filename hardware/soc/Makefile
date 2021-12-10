@@ -26,7 +26,14 @@ firmware.elf: firmware.s firmware.c
 	$(TOOLCHAIN_PREFIX)gcc -march=rv32i -mabi=ilp32 -Os -Wall -Wextra -Wl,-Bstatic,-T,sections.lds,--strip-debug -ffreestanding -nostdlib -o $@ $^
 
 firmware.hex: firmware.elf
-	$(TOOLCHAIN_PREFIX)objcopy -O verilog $< /dev/stdout | sed -r 's,(..) (..) (..) (..),\4\3\2\1,g' > $@
+	$(TOOLCHAIN_PREFIX)objcopy -O verilog $< $@
+	cat $@ | sed -r 's,(..) (..) (..) (..),\4\3\2\1,g' > tmp
+	mv tmp $@
+
+veribench: firmware.hex
+	verilator --cc -o veribench -Wno-lint -Wno-STMTDLY -O0 -x-assign 0 --build -j top.v $(NERV_SRC)/nerv.sv $(NERV_SRC)/nervsoc.sv
+	cp firmware.hex obj_dir/.
+	verilator --cc -o veribench -Wno-lint -Wno-STMTDLY --exe -O0 -x-assign 0 --build -j top.v $(NERV_SRC)/nerv.sv $(NERV_SRC)/nervsoc.sv main.cpp
 
 testbench: testbench.sv $(NERV_SRC)/nerv.sv $(NERV_SRC)/nervsoc.sv top.v firmware.hex
 	iverilog -o testbench -D STALL -D NERV_DBGREGS testbench.sv $(NERV_SRC)/nerv.sv $(NERV_SRC)/nervsoc.sv top.v
