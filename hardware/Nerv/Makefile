@@ -4,7 +4,7 @@ all:	 compile  link  simulate
 # ----------------------------------------------------------------
 
 TOPFILE   ?= src_BSV/Top.bsv
-# TOPFILE   ?= src_BSV/Top2.bsv
+#TOPFILE   ?= src_BSV/Top2.bsv
 
 TOPMODULE ?= mkTop
 EXEFILE_BSIM ?= exe_HW_bsim
@@ -89,8 +89,23 @@ rtl: build_v verilog firmware.hex
 vlink: rtl
 	bsc -verilog  -vsim $(VSIM)  $(BSCDIRS_V) \
 		-e $(TOPMODULE) -o ./$(EXEFILE_VSIM) \
-		-keep-fires ../../nerv/nerv.sv
+		-keep-fires lib/nerv.v
 	@echo Verilog linking finished
+
+testbench: rtl
+	iverilog -o testbench -I verilog ../../nerv/nerv.sv -I lib
+
+#  -Wno-UNOPTFLAT
+#  -Wno-STMTDLY
+
+VERILATOR_FLAGS = --prof-cfuncs -Wno-lint  -CFLAGS -DVL_DEBUG -O3 --report-unoptflat --x-assign fast --x-initial fast --noassert --stats --build -j
+veribench: rtl firmware.hex
+	verilator --cc -o veribench $(VERILATOR_FLAGS) -I./lib -I./verilog verilog/mkNervSoC.v
+	cp firmware.hex obj_dir/.
+	verilator --cc -o veribench $(VERILATOR_FLAGS) --exe -I./lib -I./verilog verilog/mkNervSoC.v main.cpp
+
+test:
+	vvp -N testbench +vcd
 
 .PHONY: vsim
 vsim: vlink
@@ -106,10 +121,11 @@ firmware.elf: firmware.s firmware.c
 
 firmware.hex: firmware.elf
 	$(TOOLCHAIN_PREFIX)objcopy -O verilog $< $@
+	cp $@ tmp.hex
 	cat $@ | sed -r 's,(..) (..) (..) (..),\4\3\2\1,g' > tmp
-	mv tmp verilog_sample/$@
-	rm $<
-	rm $@
+	cp tmp verilog/$@
+	cp tmp $@
+	rm tmp
 
 # ----------------------------------------------------------------
 
@@ -119,6 +135,6 @@ clean:
 
 .PHONY: full_clean
 full_clean: clean
-	rm -r -f  exe_*  build*  verilog  exe_HW_* firmware.hex firmware.elf
+	rm -r -f  exe_*  build*  verilog  exe_HW_* firmware.hex firmware.elf obj_dir
 
 # ----------------------------------------------------------------

@@ -18,8 +18,8 @@ module mkNervSoC (NervSoC_IFC);
 
    Nerv_IFC nerv <- mkNerv;
 
-   RegFile #(Bit #(30), Bit #(32)) imem <- mkRegFileFullLoad ("firmware.hex");
-   RegFile #(Bit #(30), Bit #(32)) dmem <- mkRegFileFull;
+   RegFile #(Bit #(30), Bit #(32)) imem <- mkRegFileLoad ("firmware.hex",0,1023);
+   RegFile #(Bit #(30), Bit #(32)) dmem <- mkRegFile(0,1023);
 
    Reg #(Bit #(32)) rg_leds <- mkRegU;
    Reg #(Bit #(32)) rg_dmem_rdata <- mkRegU;
@@ -30,8 +30,10 @@ module mkNervSoC (NervSoC_IFC);
    rule rl_always;
       let addr = nerv.m_imem_addr [31:2];
       nerv.m_imem_data (imem.sub (addr));
+      //nerv.m_imem_data (0);
       nerv.m_stall (False);
       nerv.m_dmem_rdata (rg_dmem_rdata);
+      //nerv.m_dmem_rdata (0);
 
       // Note: not using trap for anything
       let trap = nerv.m_trap;
