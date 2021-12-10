@@ -2,42 +2,42 @@ typedef unsigned _ExtInt(1) w1;
 typedef unsigned _ExtInt(2) w2;
 typedef unsigned _ExtInt(3) w3;
 typedef unsigned _ExtInt(32) w32;
-w1 rotl1(w1 x, w1 shf)
+w1 static rotl1(w1 x, w1 shf)
 {
     w1 offset = 1;
     return x << shf | x >> offset - shf;
 }
-w1 rotr1(w1 x, w1 shf)
+w1 static rotr1(w1 x, w1 shf)
 {
     w1 offset = 1;
     return x >> shf | x << offset - shf;
 }
-w2 rotl2(w2 x, w2 shf)
+w2 static rotl2(w2 x, w2 shf)
 {
     w2 offset = 2;
     return x << shf | x >> offset - shf;
 }
-w2 rotr2(w2 x, w2 shf)
+w2 static rotr2(w2 x, w2 shf)
 {
     w2 offset = 2;
     return x >> shf | x << offset - shf;
 }
-w3 rotl3(w3 x, w3 shf)
+w3 static rotl3(w3 x, w3 shf)
 {
     w3 offset = 3;
     return x << shf | x >> offset - shf;
 }
-w3 rotr3(w3 x, w3 shf)
+w3 static rotr3(w3 x, w3 shf)
 {
     w3 offset = 3;
     return x >> shf | x << offset - shf;
 }
-w32 rotl32(w32 x, w32 shf)
+w32 static rotl32(w32 x, w32 shf)
 {
     w32 offset = 32;
     return x << shf | x >> offset - shf;
 }
-w32 rotr32(w32 x, w32 shf)
+w32 static rotr32(w32 x, w32 shf)
 {
     w32 offset = 32;
     return x >> shf | x << offset - shf;

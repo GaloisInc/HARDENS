@@ -15,7 +15,10 @@ GEN_STEP_TRIP_SIGNALS_INC=${GEN_STEP_TRIP_SIGNALS_C:.c=.inc.c}
 GEN_STEP_TRIP_SIGNALS_O=${GEN_STEP_TRIP_SIGNALS_C:.c=.o}
 
 
-all: actuation.a instrumentation.a core.a
+all: posix
+
+posix: actuation.a instrumentation.a core.a posix_main.o sense_actuate.o
+	clang -g posix_main.o core.a actuation.a instrumentation.a sense_actuate.o -o rts.posix
 
 core.a: core.o
 	libtool -static -o $@ $^
@@ -35,10 +38,10 @@ proof: ${GEN_VOTE_INC} ${GEN_STEP_TRIP_SIGNALS_INC}
 	clang -g -emit-llvm -c ${GEN_STEP_TRIP_SIGNALS_C} -o ${GEN_DIR}/step_trip_signals.bc
 
 ${GEN_VOTE_O}: ${GEN_VOTE_INC}
-	clang ${GEN_VOTE_C} -Wall -Wno-shift-op-parentheses -c -o ${GEN_VOTE_O}
+	clang -g ${GEN_VOTE_C} -Wall -Wno-shift-op-parentheses -c -o ${GEN_VOTE_O}
 
 ${GEN_STEP_TRIP_SIGNALS_O}: ${GEN_STEP_TRIP_SIGNALS_INC}
-	clang ${GEN_STEP_TRIP_SIGNALS_C} -Wall -Wno-shift-op-parentheses -c -o ${GEN_STEP_TRIP_SIGNALS_O}
+	clang -g ${GEN_STEP_TRIP_SIGNALS_C} -Wall -Wno-shift-op-parentheses -c -o ${GEN_STEP_TRIP_SIGNALS_O}
 
 ${GEN_VOTE_INC}: ${MODEL_DIR}/${ACTUATION_CRY}
 	cd ${MODEL_DIR} && \
@@ -49,4 +52,4 @@ ${GEN_STEP_TRIP_SIGNALS_INC}: ${MODEL_DIR}/${INSTRUMENTATION_CRY}
 		crymp -f Generate_Sensor_Trips,Is_Ch_Tripped ${INSTRUMENTATION_CRY} -o ${ROOT_DIR}/${GEN_STEP_TRIP_SIGNALS_INC}
 
 %.o: %.c
-	clang -Wall -I../include $^ -c -o $@
+	clang -g -Wall -I../include $^ -c -o $@

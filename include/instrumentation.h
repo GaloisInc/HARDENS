@@ -1,7 +1,7 @@
 #ifndef INSTRUMENTATION_H_
 #define INSTRUMENTATION_H_
 
-#include <stdint.h>
+#include "common.h"
 
 #define T 0
 #define P 1
@@ -20,29 +20,7 @@ struct instrumentation_state {
   uint8_t maintenance;
 };
 
-struct set_mode {
-  uint8_t channel;
-  uint8_t mode;
-};
-struct set_maintenance {
-  uint8_t on;
-};
-struct set_setpoint {
-  uint8_t channel;
-  uint32_t val;
-};
-
-#define SET_MODE 0
-#define SET_MAINTENANCE 1
-#define SET_SETPOINT 2
-
-struct instrumentation_command {
-  uint8_t type;
-  union {
-    struct set_mode mode;
-    struct set_maintenance maintenance;
-    struct set_setpoint setpoint;
-  } cmd;
-};
+int instrumentation_init(struct instrumentation_state *state);
+int instrumentation_step(uint8_t div, struct instrumentation_state *state);
 
 #endif // INSTRUMENTATION_H_
