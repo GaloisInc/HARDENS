@@ -2,7 +2,7 @@ module RTS::Actuation where
 
 import RTS::Instrumentation
 
-type Trips = [3]
+type Trips = [3][8] // [8] is more convenient
 type Input = [4]Trips
 
 type NDevices = 2
@@ -47,7 +47,7 @@ Voting_Step inp old_votes = [d0, d1]
     d1 = Vote 2 inp || old_votes @ (1 : Device)
 
 Vote: Channel -> Input -> Bit
-Vote ch inp = Coincidence_2_4 [ i @ ch | i <- inp ]
+Vote ch inp = Coincidence_2_4 [ (i @ ch) == 1 | i <- inp ]
 
 Coincidence_2_4 : [4] -> Bit
 Coincidence_2_4 x = (x != 0) && (x != 1) && (x != 2) && (x != 4) && (x != 8)
@@ -70,19 +70,19 @@ private
         ACTUATION_LOGIC_VOTE_TEMPERATURE
   */
   property actuation_logic_vote_temperature (inp: Input) =
-    (count [i @ T | i <- inp] >= 2) == Vote T inp
+    (count [(i @ T) == 1 | i <- inp] >= 2) == Vote T inp
 
   /** @requirements
         ACTUATION_LOGIC_VOTE_PRESSURE
   */
   property actuation_logic_vote_pressure (inp: Input) =
-    (count [i @ P | i <- inp] >= 2) == Vote P inp
+    (count [(i @ P) == 1 | i <- inp] >= 2) == Vote P inp
 
   /** @requirements
         ACTUATION_LOGIC_VOTE_SATURATION
   */
   property actuation_logic_vote_saturation (inp: Input) =
-    (count [i @ S | i <- inp] >= 2) == Vote S inp
+    (count [(i @ S) == 1 | i <- inp] >= 2) == Vote S inp
 
   /** @requirements
         ACTUATION_LOGIC_DEVICE_0
