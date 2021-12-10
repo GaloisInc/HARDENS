@@ -18,6 +18,12 @@ type ActuationLogic =
 type Voting = [2]
 type ActuatorOutput = [2]
 
+// This controls an actuator,
+// the input is the output signal
+// from *two* logic units
+ActuateDevice: [2] -> Bit
+ActuateDevice vs = (vs @ 0) || (vs @ 1)
+
 Is_Actuated: Device -> ActuationLogic -> Bit
 Is_Actuated d state = actuators @ d
   where
@@ -118,3 +124,7 @@ private
   property actuation_logic_manual_device_1 (v: Bit) (act: ActuationLogic) =
     Is_Actuated D1 act' == v \/ Is_AutoActuated D1 act
     where act' = Set_Manual_Actuation D1 v act
+
+  property actuation_logic d act0 act1 =
+    ActuateDevice [Is_Actuated d act0, Is_Actuated d act1] ==
+    (Is_Actuated d act0 \/ Is_Actuated d act1)
