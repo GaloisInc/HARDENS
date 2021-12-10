@@ -19,7 +19,7 @@ read_trip_signals(uint8_t *arr);
  *   command
  */
 extern int
-read_actuation_command(struct manual_actuation_command *cmd);
+read_actuation_command(struct actuation_command *cmd);
 
 /* (De)Activate an actuator
  * @ensures \ret < 0 on error
@@ -49,7 +49,7 @@ int
 actuation_handle_command(struct actuation_logic *state)
 {
     int read_command = 0;
-    struct manual_actuation_command cmd;
+    struct actuation_command cmd;
 
     read_command = read_actuation_command(&cmd);
     if (read_command < 0) return read_command;
