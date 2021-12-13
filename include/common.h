@@ -3,8 +3,42 @@
 
 #include <stdint.h>
 
+//////////////////////////////////////////////////////////////
+// Constants derived from architecture and Cryptol model    //
+//////////////////////////////////////////////////////////////
+
 // Instrumentation
+// Trip modes:
 #define NMODES 3
+#define BYPASS 0
+#define OPERATE 1
+#define TRIP 2
+
+// Command Types
+#define SET_MODE 0
+#define SET_MAINTENANCE 1
+#define SET_SETPOINT 2
+
+// Channel/Trip signal IDs
+#define NTRIP 3
+#define T 0
+#define P 1
+#define S 2
+
+// Actuation
+#define NVOTE_LOGIC 2
+#define NDEV 2
+
+// Core
+// Command Types
+#define INSTRUMENTATION_COMMAND 0
+#define ACTUATION_COMMAND 1
+
+//////////////////////////////////////////////////////////////
+// RTS Command Definitions                                  //
+//////////////////////////////////////////////////////////////
+
+// Instrumentation
 struct set_mode {
   uint8_t channel;
   uint8_t mode_val;
@@ -16,11 +50,6 @@ struct set_setpoint {
   uint8_t channel;
   uint32_t val;
 };
-
-#define SET_MODE 0
-#define SET_MAINTENANCE 1
-#define SET_SETPOINT 2
-
 struct instrumentation_command {
   uint8_t type;
   union {
@@ -36,10 +65,7 @@ struct actuation_command {
     uint8_t on;
 };
 
-// Core
-#define INSTRUMENTATION_COMMAND 0
-#define ACTUATION_COMMAND 1
-
+// Root command structure
 struct rts_command {
   uint8_t type;
   uint8_t instrumentation_division;
@@ -48,5 +74,14 @@ struct rts_command {
     struct actuation_command act;
   } cmd;
 };
+
+// Redefine variable bit-width types:
+#define _ExtInt_1 char
+#define _ExtInt_2 char
+#define _ExtInt_3 char
+#define _ExtInt_4 char
+#define _ExtInt_8 char
+#define _ExtInt_32 int
+#define _ExtInt(w) _ExtInt_##w
 
 #endif // COMMON_H_

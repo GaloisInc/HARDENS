@@ -14,8 +14,8 @@ uint32_t saturation(uint32_t temperature, uint32_t pressure)
 int instrumentation_step_trip(uint8_t div,
                               struct instrumentation_state *state) {
   int err = 0;
-  err |= read_channel(div, T, &state->reading[T]);
-  err |= read_channel(div, P, &state->reading[P]);
+  err |= read_instrumentation_channel(div, T, &state->reading[T]);
+  err |= read_instrumentation_channel(div, P, &state->reading[P]);
   state->reading[S] = saturation(state->reading[T], state->reading[P]);
 
   uint8_t new_trips = Generate_Sensor_Trips(state->reading, state->setpoints);
@@ -64,7 +64,7 @@ int instrumentation_handle_command(uint8_t div,
 int instrumentation_set_output_trips(uint8_t div,
                                      struct instrumentation_state *state) {
   for (int i = 0; i < NTRIP; ++i) {
-    set_output_trip(div, i,
+    set_output_instrumentation_trip(div, i,
                     Is_Ch_Tripped(state->mode[i], state->sensor_trip[i]));
   }
   return 0;

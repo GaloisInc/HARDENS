@@ -23,7 +23,7 @@ EVENT_SETPOINT = 2
 EVENT_ACTUATE = 3
 
 // Union of all possible events
-newtype Event =
+type Event =
   { event: [2] // The event tag
   , ch: [2] // Which channel
   , dev: [1] // Which device
@@ -33,13 +33,13 @@ newtype Event =
   , on_off: Bit
   }
 
-newtype UI =
+type UI =
   { instrumentation_values: [4][NChannels][32]
   , instrumentation_bypass: [4][NChannels]
   , instrumentation_trip: [4][NChannels]
   }
 
-newtype CoreFSM =
+type CoreFSM =
   { ui: UI
   }
 
@@ -51,7 +51,7 @@ Update_UI instrs actuator rts0 =
     get_bypass rts = {rts| ui = {rts.ui| instrumentation_bypass = [ [In_Mode T Bypass i, In_Mode P Bypass i, In_Mode S Bypass i] | i <- instrs ]}}
     get_trip   rts = {rts| ui = {rts.ui| instrumentation_trip = [ [Is_Tripped T i, Is_Tripped P i, Is_Tripped S i] | i <- instrs ]}}
 
-newtype RTS = { core: CoreFSM, instr: [4]Instrumentation, act: [2]ActuationLogic }
+type RTS = { core: CoreFSM, instr: [4]Instrumentation, act: [2]ActuationLogic }
 
 Run_Event: Event -> RTS -> RTS
 Run_Event e rts =
@@ -70,6 +70,11 @@ Run_Event e rts =
     dev : Device
     dev = e.dev
 
+// Self test instr:
+// 1. bypass a channel
+// 2. value above setpoint
+// 3. call trip generate path but mask out trip?
+
 private
     I : ([4]Instrumentation -> [4]Instrumentation) -> RTS -> RTS
     I f rts = {rts|instr = f rts.instr}
@@ -83,7 +88,7 @@ private
           CORE_UI_INSTRUMENTATION
     */
     property core_ui_instrumentation (rts: RTS) (i: [2]) =
-           ((core'.ui.instrumentation_values @ i)      == Get_Reading (rts.instr @ i))
+           ((core'.ui.instrumentation_values @ i)     == Get_Reading (rts.instr @ i))
         /\ ((core'.ui.instrumentation_bypass @ i @ T) == In_Mode T Bypass (rts.instr @ i))
         /\ ((core'.ui.instrumentation_bypass @ i @ P) == In_Mode P Bypass (rts.instr @ i))
         /\ ((core'.ui.instrumentation_bypass @ i @ S) == In_Mode S Bypass (rts.instr @ i))

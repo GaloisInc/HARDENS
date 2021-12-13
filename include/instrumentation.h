@@ -3,15 +3,6 @@
 
 #include "common.h"
 
-#define T 0
-#define P 1
-#define S 2
-#define NTRIP 3
-
-#define BYPASS 0
-#define OPERATE 1
-#define TRIP 2
-
 struct instrumentation_state {
   uint32_t reading[NTRIP];
   uint32_t setpoints[NTRIP];

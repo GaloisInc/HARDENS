@@ -1,4 +1,4 @@
-#include "actuation.h"
+#include "actuation_logic.h"
 #include "common.h"
 #include "platform.h"
 
@@ -7,12 +7,12 @@ uint8_t Voting_Step(uint8_t trip_input[4][NTRIP]);
 #define VOTE_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
 int
-actuation_logic_step(struct actuation_logic *state)
+actuation_logic_vote(struct actuation_logic *state)
 {
     int err = 0;
     uint8_t trip[4][3];
 
-    err |= read_trip_signals(trip);
+    err |= read_instrumentation_trip_signals(trip);
 
     uint8_t votes = Voting_Step(trip);
 
@@ -31,22 +31,22 @@ actuation_handle_command(uint8_t logic_no, struct actuation_command *cmd, struct
 }
 
 int
-actuate_devices(uint8_t logic_no, struct actuation_logic *state)
+output_actuation_signals(uint8_t logic_no, struct actuation_logic *state)
 {
     int err = 0;
     for (int d = 0; d < NDEV; ++d) {
         uint8_t on = state->vote_actuate[d] || state->manual_actuate[d];
-        err |= actuate_device(logic_no, d, on);
+        err |= set_output_actuation_logic(logic_no, d, on);
     }
 
     return err;
 }
 
-int actuation_step(uint8_t logic_no, struct actuation_logic *state)
+int actuation_logic_step(uint8_t logic_no, struct actuation_logic *state)
 {
     int err = 0;
     /* Read trip signals & vote */
-    err |= actuation_logic_step(state);
+    err |= actuation_logic_vote(state);
 
     /* Handle any external commands */
     struct actuation_command cmd;
@@ -58,6 +58,6 @@ int actuation_step(uint8_t logic_no, struct actuation_logic *state)
     }
 
     /* Actuate devices based on voting and commands */
-    err |= actuate_devices(logic_no, state);
+    err |= output_actuation_signals(logic_no, state);
     return err;
 }

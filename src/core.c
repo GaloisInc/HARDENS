@@ -1,6 +1,7 @@
 #include "core.h"
 #include "platform.h"
 #include "stdio.h"
+#include "actuate.h"
 
 #define INST_OFFSET 0
 #define ACT_OFFSET 5
@@ -85,7 +86,8 @@ int core_step(struct ui_values *ui) {
   int err = 0;
   struct rts_command rts;
 
-  err |= update_ui(ui);
+  // Actuate devices if necessary
+  actuate_devices();
 
   int read_cmd = read_rts_command(&rts);
   if (read_cmd < 0) {
@@ -106,6 +108,8 @@ int core_step(struct ui_values *ui) {
       break;
     }
   }
+
+  err |= update_ui(ui);
 
   // Self Test
 

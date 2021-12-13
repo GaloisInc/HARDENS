@@ -22,7 +22,7 @@ type ActuatorOutput = [2]
 // the input is the output signal
 // from *two* logic units
 ActuateDevice: [2] -> Bit
-ActuateDevice vs = (vs @ 0) || (vs @ 1)
+ActuateDevice vs = (vs @ (0:[1])) || (vs @ (1:[1]))
 
 Is_Actuated: Device -> ActuationLogic -> Bit
 Is_Actuated d state = actuators @ d

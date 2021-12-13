@@ -1,7 +1,7 @@
 #include "common.h"
 #include "platform.h"
 #include "instrumentation.h"
-#include "actuation.h"
+#include "actuation_logic.h"
 
 int sense_actuate_init(int core_id,
                        struct instrumentation_state *instrumentation,
@@ -21,7 +21,8 @@ int sense_actuate_step(int core_id,
   for (int i = 0; i < 2; ++i) {
     err |= instrumentation_step(core_id*2 + i, &instrumentation[i]);
   }
-  err |= actuation_step(core_id, actuation);
+  // Do we think the devices should be actuated?
+  err |= actuation_logic_step(core_id, actuation);
 
   return err;
 }

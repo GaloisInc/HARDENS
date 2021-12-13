@@ -4,41 +4,52 @@
 
 #include "common.h"
 
-/* Read trip signals
- * @requires arr is NTRIP elements
- * @ensures arr[0..3] set to the current trip input signals
- * @ensures \ret < 0 on error
- */
-int
-read_trip_signals(uint8_t arr[4][3]);
-
-/* (De)Activate an actuator
- * @ensures \ret < 0 on error
- */
-int actuate_device(uint8_t logic_no, uint8_t device_no, uint8_t on);
+/////////////////////////////////////////
+// Reading signals and values          //
+/////////////////////////////////////////
 
 /* Read the value of channel `channel`, setting *val on success;
  * @return < 0 on error
  */
-int read_channel(uint8_t div, uint8_t channel, uint32_t *val);
-
-uint32_t saturation(uint32_t temp, uint32_t pressure);
-
-int
-set_output_trip(uint8_t division, uint8_t channel, uint8_t val);
-
-int read_rts_command(struct rts_command *cmd);
-
-/* Communicate with instrumentation division */
-int read_instrumentation_command(uint8_t division, struct instrumentation_command *cmd);
-int send_instrumentation_command(uint8_t division, struct instrumentation_command *cmd);
+int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val);
 
 int get_instrumentation_value(uint8_t division, uint8_t ch, uint32_t *value);
 int get_instrumentation_trip(uint8_t division, uint8_t ch, uint8_t *value);
 int get_instrumentation_mode(uint8_t division, uint8_t ch, uint8_t *value);
 int get_instrumentation_maintenance(uint8_t division, uint8_t *value);
 
+// Reading actuation signals
 int get_actuation_state(uint8_t i, uint8_t device, uint8_t *value);
+
+/* Read trip signals
+ * @requires arr is NTRIP elements
+ * @ensures arr[0..3] set to the current trip input signals
+ * @ensures \ret < 0 on error
+ */
+int read_instrumentation_trip_signals(uint8_t arr[4][3]);
+
+// @todo move me
+uint32_t saturation(uint32_t temp, uint32_t pressure);
+
+/////////////////////////////////////////
+// Setting output signals              //
+/////////////////////////////////////////
+
+/* Output decision from an actuation logic
+ * @ensures \ret < 0 on error
+ */
+int set_output_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t on);
+int set_output_instrumentation_trip(uint8_t division, uint8_t channel, uint8_t val);
+int set_actuate_device(uint8_t device_no, uint8_t on);
+
+/////////////////////////////////////////
+// Sending commands between components //
+/////////////////////////////////////////
+int read_rts_command(struct rts_command *cmd);
+
+/* Communicate with instrumentation division */
+int read_instrumentation_command(uint8_t division, struct instrumentation_command *cmd);
+int send_instrumentation_command(uint8_t division, struct instrumentation_command *cmd);
 
 /* Read external command, setting *cmd. Does not block.
  * @requires cmd valid

@@ -3,7 +3,7 @@
 
 #include "common.h"
 #include "instrumentation.h"
-#include "actuation.h"
+#include "actuation_logic.h"
 
 #define NDIVISIONS 4
 
@@ -17,12 +17,4 @@ struct ui_values {
 };
 
 int core_step(struct ui_values *ui);
-
-int sense_actuate_init(int core_id,
-                       struct instrumentation_state *instrumentation,
-                       struct actuation_logic *actuation);
-
-int sense_actuate_step(int core_id,
-                       struct instrumentation_state *instrumentation,
-                       struct actuation_logic *actuation);
 #endif // CORE_H_

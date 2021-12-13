@@ -1,5 +1,6 @@
-#include "actuation.h"
+#include "actuation_logic.h"
 #include "core.h"
+#include "sense_actuate.h"
 #include "instrumentation.h"
 #include "platform.h"
 #include <assert.h>
@@ -23,16 +24,23 @@ static uint32_t sensors[4][2];
 static uint8_t trip_signals[4][NTRIP];
 struct instrumentation_command *inst_command_buf[4];
 
-static uint8_t device_actuation[2][NDEV];
+static uint8_t actuator_state[NDEV];
+static uint8_t device_actuation_logic[2][NDEV];
 struct actuation_command *act_command_buf[2];
 
-int read_trip_signals(uint8_t arr[4][3]) {
+int read_instrumentation_trip_signals(uint8_t arr[4][3]) {
   for (int div = 0; div < 4; ++div) {
     for (int i = 0; i < NTRIP; ++i) {
       arr[div][i] = trip_signals[div][i];
     }
   }
 
+  return 0;
+}
+
+int set_actuate_device(uint8_t device_no, uint8_t on)
+{
+  actuator_state[device_no] = on;
   return 0;
 }
 
@@ -44,6 +52,8 @@ int read_rts_command(struct rts_command *cmd) {
   size_t linecap = 0;
   ssize_t linelen;
 
+  printf("\e[10;1H\e[2K");
+  set_display_line(9, "> ", 0);
   linelen = getline(&line, &linecap, stdin);
   if (linelen < 0)
     return 0;
@@ -86,12 +96,12 @@ int read_rts_command(struct rts_command *cmd) {
   return ok;
 }
 
-int read_channel(uint8_t div, uint8_t channel, uint32_t *val) {
+int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
   *val = sensors[div][channel];
   return 0;
 }
 
-int set_output_trip(uint8_t div, uint8_t channel, uint8_t val) {
+int set_output_instrumentation_trip(uint8_t div, uint8_t channel, uint8_t val) {
   trip_signals[div][channel] = val;
   return 0;
 }
@@ -141,10 +151,10 @@ int send_instrumentation_command(uint8_t id,
   return 0;
 }
 
-int actuate_device(uint8_t logic_no, uint8_t device_no, uint8_t on) {
+int set_output_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t on) {
   assert(logic_no < 2);
   assert(device_no < 2);
-  device_actuation[logic_no][device_no] = on;
+  device_actuation_logic[logic_no][device_no] = on;
   return 0;
 }
 
@@ -169,12 +179,12 @@ int get_instrumentation_maintenance(uint8_t division, uint8_t *value) {
 }
 
 int get_actuation_state(uint8_t i, uint8_t device, uint8_t *value) {
-  *value = device_actuation[i][device];
+  *value = device_actuation_logic[i][device];
   return 0;
 }
 
 int set_display_line(uint8_t line_number, char *display, uint32_t size) {
-  return printf("\e[%d;0H%s\n", line_number + 1, display);
+  return printf("\e[%d;1H%s", line_number + 1, display);
 }
 
 int main(int argc, char **argv) {
@@ -186,7 +196,10 @@ int main(int argc, char **argv) {
 
   printf("\e[1;1H\e[2J");
   while (1) {
-    printf("\e[8;1H\e[2K");
+    char line[256];
+    printf("\e[9;1H\e[2K");
+    sprintf(line, "HW ACTUATORS %s %s", actuator_state[0] ? "ON" : "OFF", actuator_state[1]? "ON" : "OFF");
+    set_display_line(8, line, 0);
     core_step(&ui);
     sense_actuate_step(0, &instrumentation[0], &actuation_logic[0]);
     sense_actuate_step(1, &instrumentation[2], &actuation_logic[1]);

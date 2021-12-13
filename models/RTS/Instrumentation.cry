@@ -17,7 +17,7 @@ P = 1 // Pressure
 S = 2 // Saturation
 
 type NModes = 3
-type Mode = [width (NModes - 1)]
+type Mode = [lg2 NModes]
 // Type-level Mode values
 Bypass,Operate,Manual: Mode
 Bypass = 0 // Do not generate a "trip"
