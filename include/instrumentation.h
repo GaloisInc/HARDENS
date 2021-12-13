@@ -20,7 +20,7 @@ struct instrumentation_state {
   uint8_t maintenance;
 };
 
-int instrumentation_init(struct instrumentation_state *state);
+void instrumentation_init(struct instrumentation_state *state);
 int instrumentation_step(uint8_t div, struct instrumentation_state *state);
 
 #endif // INSTRUMENTATION_H_

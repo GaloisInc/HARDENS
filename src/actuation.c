@@ -12,8 +12,7 @@ actuation_logic_step(struct actuation_logic *state)
     int err = 0;
     uint8_t trip[4][3];
 
-    err = read_trip_signals(trip);
-    if(err) return err;
+    err |= read_trip_signals(trip);
 
     uint8_t votes = Voting_Step(trip);
 
@@ -25,14 +24,9 @@ actuation_logic_step(struct actuation_logic *state)
 }
 
 int
-actuation_handle_command(uint8_t logic_no, struct actuation_logic *state)
+actuation_handle_command(uint8_t logic_no, struct actuation_command *cmd, struct actuation_logic *state)
 {
-    struct actuation_command cmd;
-    int err = read_actuation_command(logic_no, &cmd);
-    if (err > 0) {
-        state->manual_actuate[cmd.device] = cmd.on;
-    }
-
+    state->manual_actuate[cmd->device] = cmd->on;
     return 0;
 }
 
@@ -42,9 +36,6 @@ actuate_devices(uint8_t logic_no, struct actuation_logic *state)
     int err = 0;
     for (int d = 0; d < NDEV; ++d) {
         uint8_t on = state->vote_actuate[d] || state->manual_actuate[d];
-        // @abakst if it's a problem to actuate "on"
-        // repeatedly then we just need to track this state in the
-        // actuation logic struct.
         err |= actuate_device(logic_no, d, on);
     }
 
@@ -55,14 +46,18 @@ int actuation_step(uint8_t logic_no, struct actuation_logic *state)
 {
     int err = 0;
     /* Read trip signals & vote */
-    err = actuation_logic_step(state);
-    if(err) return err;
+    err |= actuation_logic_step(state);
 
     /* Handle any external commands */
-    err = actuation_handle_command(logic_no, state);
-    if(err) return err;
+    struct actuation_command cmd;
+    int read_cmd = read_actuation_command(logic_no, &cmd);
+    if (read_cmd > 0) {
+        err |= actuation_handle_command(logic_no, &cmd, state);
+    } else if (read_cmd < 0) {
+        err |= -read_cmd;
+    }
 
     /* Actuate devices based on voting and commands */
-    err = actuate_devices(logic_no, state);
+    err |= actuate_devices(logic_no, state);
     return err;
 }
