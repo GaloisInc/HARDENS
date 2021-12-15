@@ -2,8 +2,7 @@
 #include "common.h"
 #include "platform.h"
 
-uint8_t vote(uint8_t trip_input[4][NTRIP], uint8_t ch);
-uint8_t Voting_Step(uint8_t trip_input[4][NTRIP]);
+uint8_t Voting_Step(uint8_t trip_input[4][NTRIP], uint8_t old_votes);;
 #define VOTE_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
 int
@@ -14,7 +13,11 @@ actuation_logic_vote(struct actuation_logic *state)
 
     err |= read_instrumentation_trip_signals(trip);
 
-    uint8_t votes = Voting_Step(trip);
+    uint8_t old_votes = 0;
+    for (int i = 0; i < NDEV; ++i) {
+        old_votes |= (state->vote_actuate[i] & 0x1) << i;
+    }
+    uint8_t votes = Voting_Step(trip, old_votes);
 
     for (int i = 0; i < NDEV; ++i) {
         state->vote_actuate[i] = VOTE_I(votes, i);
