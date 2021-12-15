@@ -20,7 +20,7 @@ int instrumentation_step_trip(uint8_t div,
 
   uint8_t new_trips = Generate_Sensor_Trips(state->reading, state->setpoints);
   for (int i = 0; i < NTRIP; ++i) {
-    state->sensor_trip[i] |= TRIP_I(new_trips, i);
+    state->sensor_trip[i] = TRIP_I(new_trips, i);
   }
 
   return err;
