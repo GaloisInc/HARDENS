@@ -18,7 +18,6 @@ S = 2 // Saturation
 
 type NModes = 3
 type Mode = [lg2 NModes]
-// Type-level Mode values
 Bypass,Operate,Manual: Mode
 Bypass = 0 // Do not generate a "trip"
 Operate = 1 // generate "trip" on setpoint violation

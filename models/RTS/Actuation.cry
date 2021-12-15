@@ -1,5 +1,6 @@
 module RTS::Actuation where
 
+import RTS::Utils
 import RTS::Instrumentation
 
 type Trips = [3][8] // [8] is more convenient
@@ -7,6 +8,7 @@ type Input = [4]Trips
 
 type NDevices = 2
 type Device = [lg2 NDevices]
+D0, D1: Device
 D0 = 0
 D1 = 1
 
@@ -18,14 +20,38 @@ type ActuationLogic =
 type Voting = [2]
 type ActuatorOutput = [2]
 
+type CommandType = [lg2 NCommands]
+type NCommands = 2
+Manual_Actuate, Null_Cmd: CommandType
+Manual_Actuate = 0
+Null_Cmd = 1
+
+type Command =
+  { command: CommandType
+  , device: Device
+  , actuate: Bit
+  }
+
+NoCommand: Command
+NoCommand = { command = Null_Cmd, device = zero, actuate = zero }
+
 // This controls an actuator,
 // the input is the output signal
 // from *two* logic units
 Actuate_Device: [2] -> Bit
 Actuate_Device vs = (vs @ (0:[1])) || (vs @ (1:[1]))
 
-Step: Input -> ActuationLogic -> ActuationLogic
-Step inp l = {l| vote_actuate = Voting_Step inp l.vote_actuate}
+Step: Input -> Command -> ActuationLogic -> ActuationLogic
+Step inp cmd l =
+    {l| vote_actuate = Voting_Step inp l.vote_actuate}// >>>> Handle_Command cmd
+
+Handle_Command: Command -> ActuationLogic -> ActuationLogic
+Handle_Command cmd logic =
+  if cmd.command == Manual_Actuate then
+    Set_Manual_Actuation cmd.device cmd.actuate logic
+  else
+    logic
+
 
 Voting_Step : Input -> Voting -> Voting
 Voting_Step inp old_votes = [d0, d1]
