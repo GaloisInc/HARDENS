@@ -29,15 +29,17 @@ type Instrumentation =
   , reading: [NChannels][32]
   , mode: [NChannels]Mode
   , sensor_trip: [NChannels]
+  , output_trip: [NChannels][8]
   , maintenance: Bit
   }
 
 type CommandType = [lg2 NCommands]
-type NCommands = 3
-Set_Mode_Cmd, Set_Maintenance_Cmd, Set_Setpoint_Cmd : CommandType
+type NCommands = 4
+Set_Mode_Cmd, Set_Maintenance_Cmd, Set_Setpoint_Cmd, Null_Cmd : CommandType
 Set_Mode_Cmd = 0
 Set_Maintenance_Cmd = 1
 Set_Setpoint_Cmd = 2
+Null_Cmd = 3
 
 type Command =
   { command: CommandType
@@ -47,6 +49,8 @@ type Command =
   , on_off: Bit
   }
 
+NoCommand: Command
+NoCommand = { command= Null_Cmd, channel= zero, mode= zero, setpoint= zero, on_off= zero }
 
 Initial: Instrumentation
 Initial =
@@ -54,8 +58,52 @@ Initial =
   , reading     = zero
   , mode        = zero
   , sensor_trip = zero
+  , output_trip = repeat zero
   , maintenance = ~zero
   }
+
+Step: Input -> Command -> Instrumentation -> Instrumentation
+Step inp cmd instr =
+       Read_Input inp instr
+  >>>> Step_Trip_Signals
+  >>>> Handle_Command cmd
+  >>>> OutputTrips
+  where
+    OutputTrips state =
+      { state | output_trip = [ zero # [Is_Ch_Tripped (state.mode @ ch) (state.sensor_trip @ ch)] | ch <- [0..2] ] }
+
+Read_Input : Input -> Instrumentation -> Instrumentation
+Read_Input sensors instr = { instr | reading = vals }
+  where
+    vals: [3][32]
+    // 0 and 1 should be T and P, but this causes problems for crymp
+    vals = [ sensors @ 0
+           , sensors @ 1
+           , Saturation (sensors @ 0) (sensors @ 1)
+           ]
+
+Step_Trip_Signals:
+  Instrumentation ->
+  Instrumentation
+Step_Trip_Signals state =
+  { state | sensor_trip = sensor_trips }
+  where
+    sensor_trips = Generate_Sensor_Trips state.reading state.setpoints
+
+Handle_Command: Command -> Instrumentation -> Instrumentation
+Handle_Command cmd instr =
+  if (cmd.command == Set_Mode_Cmd) && (cmd.channel < `NChannels) then
+    Set_Mode cmd.channel cmd.mode instr
+  else if cmd.command == Set_Maintenance_Cmd then
+    Set_Maintenance cmd.on_off instr
+  else if (cmd.command == Set_Setpoint_Cmd) && (cmd.channel < `NChannels) then
+    Set_Setpoint cmd.channel cmd.setpoint instr
+  else
+    instr
+
+////////////////////////////////////////
+// Queries, "Setters", "Getters", etc
+////////////////////////////////////////
 
 Get_Reading: Instrumentation -> [NChannels][32]
 Get_Reading instr = instr.reading
@@ -107,35 +155,6 @@ Generate_Sensor_Trips vals setpoints =
                where v  = vals @ ch
                      sp = setpoints @ ch
 
-Step_Trip_Signals:
-  Input ->
-  Instrumentation ->
-  Instrumentation
-Step_Trip_Signals sensors state =
-  { state | reading = vals
-          , sensor_trip = Generate_Sensor_Trips vals state.setpoints }
-  where
-    vals: [3][32]
-    // 0 and 1 should be T and P, but this causes problems for crymp
-    vals = [ sensors @ 0
-           , sensors @ 1
-           , Saturation (sensors @ 0) (sensors @ 1)
-           ]
-
-Handle_Command: Command -> Instrumentation -> Instrumentation
-Handle_Command cmd instr =
-  if cmd.command == Set_Mode_Cmd then
-    Set_Mode cmd.channel cmd.mode instr
-  else if cmd.command == Set_Maintenance_Cmd then
-    Set_Maintenance cmd.on_off instr
-  else if cmd.command == Set_Setpoint_Cmd then
-    Set_Setpoint cmd.channel cmd.setpoint instr
-  else
-    instr
-
-Step: Input -> Command -> Instrumentation -> Instrumentation
-Step inp cmd instr = Step_Trip_Signals inp instr >>>> Handle_Command cmd
-
 private
   /** @requirements
         INSTRUMENTATION_RESET
@@ -154,7 +173,7 @@ private
     \/ (In_Mode P Operate instr /\ inp @ P > Get_Setpoint P instr')
     /* ------------------------------------------------------------------- */ ==
     (Is_Tripped P instr')
-      where instr' = Step_Trip_Signals inp instr
+      where instr' = Read_Input inp instr >>>> Step_Trip_Signals
 
   /** @requirements
         INSTRUMENTATION_TRIP_TEMPERATURE
@@ -164,7 +183,7 @@ private
      \/  (In_Mode T Operate instr /\ inp @ T > Get_Setpoint T instr')
     /* ------------------------------------------------------------------- */ ==
     (Is_Tripped T instr')
-      where instr' = Step_Trip_Signals inp instr
+      where instr' = Read_Input inp instr >>>> Step_Trip_Signals
 
   /** @requirements
         INSTRUMENTATION_TRIP_SATURATION
@@ -174,7 +193,7 @@ private
        \/ (In_Mode S Operate instr /\ Saturation (inp @ T) (inp @ P) < Get_Setpoint S instr')
     /* ------------------------------------------------------------------- */ ==
     (Is_Tripped S instr')
-      where instr' = Step_Trip_Signals inp instr
+      where instr' = Read_Input inp instr >>>> Step_Trip_Signals
 
   /** @requirements
         INSTRUMENTATION_SET_MANUAL_TRIP_TEMPERATURE
@@ -218,4 +237,10 @@ private
          instr.mode == instr'.mode
       /\ instr.setpoints == instr'.setpoints
       /\ instr.maintenance == instr'.maintenance
-      where instr' = Step_Trip_Signals inp instr
+      where instr' = Read_Input inp instr >>>> Step_Trip_Signals
+
+  // Not connected to a high level requirement
+  property is_ch_trip_correct instr =
+       Is_Tripped T instr == Is_Ch_Tripped (instr.mode @ T) (instr.sensor_trip @ T)
+    /\ Is_Tripped P instr == Is_Ch_Tripped (instr.mode @ P) (instr.sensor_trip @ P)
+    /\ Is_Tripped S instr == Is_Ch_Tripped (instr.mode @ S) (instr.sensor_trip @ S)

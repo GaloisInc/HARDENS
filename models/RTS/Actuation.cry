@@ -21,8 +21,19 @@ type ActuatorOutput = [2]
 // This controls an actuator,
 // the input is the output signal
 // from *two* logic units
-ActuateDevice: [2] -> Bit
-ActuateDevice vs = (vs @ (0:[1])) || (vs @ (1:[1]))
+Actuate_Device: [2] -> Bit
+Actuate_Device vs = (vs @ (0:[1])) || (vs @ (1:[1]))
+
+Step: Input -> ActuationLogic -> ActuationLogic
+Step inp l = {l| vote_actuate = Voting_Step inp l.vote_actuate}
+
+Voting_Step : Input -> Voting -> Voting
+Voting_Step inp old_votes = [d0, d1]
+  where
+    // Should use constants for the below, but that
+    // is problematic for crymp
+    d0 = Vote 0 inp || Vote 1 inp || old_votes @ (0 : Device)
+    d1 = Vote 2 inp || old_votes @ (1 : Device)
 
 Is_Actuated: Device -> ActuationLogic -> Bit
 Is_Actuated d state = actuators @ d
@@ -37,14 +48,6 @@ Is_AutoActuated d state = state.vote_actuate @ d
 
 Set_Manual_Actuation: Device -> Bit -> ActuationLogic -> ActuationLogic
 Set_Manual_Actuation d val a = { a | manual_actuate = update a.manual_actuate d val }
-
-Voting_Step : Input -> Voting -> Voting
-Voting_Step inp old_votes = [d0, d1]
-  where
-    // Should use constants for the below, but that
-    // is problematic for crymp
-    d0 = Vote 0 inp || Vote 1 inp || old_votes @ (0 : Device)
-    d1 = Vote 2 inp || old_votes @ (1 : Device)
 
 Vote: Channel -> Input -> Bit
 Vote ch inp = Coincidence_2_4 [ (i @ ch) == 1 | i <- inp ]
@@ -126,5 +129,5 @@ private
     where act' = Set_Manual_Actuation D1 v act
 
   property actuation_logic d act0 act1 =
-    ActuateDevice [Is_Actuated d act0, Is_Actuated d act1] ==
+    Actuate_Device [Is_Actuated d act0, Is_Actuated d act1] ==
     (Is_Actuated d act0 \/ Is_Actuated d act1)
