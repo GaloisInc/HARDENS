@@ -17,7 +17,7 @@
  * the two separate and independent devices that drive actuators.
  */
 package id RTS 'Reactor Trip System' {
-  import 'Semantic Properties'::*;
+  private import 'Semantic Properties'::*;
   
   package id Architecture 'RTS Architecture';
   alias Arch for Architecture;
@@ -33,38 +33,38 @@ package id RTS 'Reactor Trip System' {
 }
 
 package 'Kiniry RTS System Architecture Draft' {
-    // doc id sys_arch_doc
-    package Root {
-      import 'Project Glossary'::*;
-      part id CFSM 'Core Finite State Machine': FSM;
-      part id Programming_IO 'Programming I/O': IO;
-      part id UI_IO 'UI I/O': IO;
-      part id Debugging_IO 'Debugging I/O': IO;
+  private import 'Project Glossary'::*;
+
+  // doc id sys_arch_doc
+  package Root {
+    part id CFSM 'Core Finite State Machine': FSM;
+    part id Programming_IO 'Programming I/O': IO;
+    part id UI_IO 'UI I/O': IO;
+    part id Debugging_IO 'Debugging I/O': IO;
+  }
+  package 'Actuation_Logic' {
+    part 'Voting Logic': 'Voting'[2];
+    part 'Actuator Logic': 'Actuator'[2];
+  }
+  /** Documentation about computation goes here. */
+  package Computation {
+    part def 'RISC-V CPU':> CPU, RISC_V_ISA;
+    part id CPUs 'RISC-V CPUs': 'RISC-V CPU'[3];
+  }
+  package Hardware {
+    package FPGA {
+      part id DevBoard 'Lattic ECP-5 FPGA Development Board': PCB;
     }
-    package 'Actuation_Logic' {
-      part 'Voting Logic': 'Voting'[2];
-      part 'Actuator Logic': 'Actuator'[2];
+    package Actuators {
+      part 'Actuator'[2];
     }
-    /** Documentation about computation goes here. */
-    package Computation {
-      part def 'RISC-V CPU':> CPU, RISC_V_ISA;
-      part id CPUs 'RISC-V CPUs': 'RISC-V CPU'[3];
+    package Sensors {
+      part TS: 'Temperature Sensor'[2];
+      part PS: 'Pressure Sensor'[2];
     }
-    package Hardware {
-      package FPGA {
-        part id DevBoard 'Lattic ECP-5 FPGA Development Board': PCB;
-      }
-      package Actuators {
-        part 'Actuator'[2];
-      }
-      package Sensors {
-        part TS: 'Temperature Sensor'[2];
-        part PS: 'Pressure Sensor'[2];
-      }
-    }
-    package Instrumentation {
-      part 'Instrumentation'[4];
-    }
+  }
+  package Instrumentation {
+    part 'Instrumentation'[4];
   }
 }
 
@@ -75,11 +75,7 @@ package 'Kiniry RTS System Architecture Draft' {
  * hardware, network, and data architecture specifications.
  */
 package id Architecture 'RTS Architecture' {
-
-  //import RTS::*;
-  //import 'Project Glossary'::*;
-  //import Artifacts::*;
-  //import 'RTS Hardware Artifacts'::*;
+  private import 'Project Glossary'::*;
 
   /**
    * Note that this is the *systems* architecture, which is different
@@ -96,7 +92,7 @@ package id Architecture 'RTS Architecture' {
       }
 
       /** Generic sensor */
-      part def GenericSensor {
+      part def GenericSensor :> Sensor {
         attribute currentValue : ScalarQuantityValue;
         port output: SensorOutPort;
       }
@@ -115,8 +111,8 @@ package id Architecture 'RTS Architecture' {
 
     /** A generic temperature sensor. */
     package TempSensor {
-      import Sensor::*;
-      import ISQThermodynamics::TemperatureValue;
+      private import Sensor::*;
+      private import ISQThermodynamics::TemperatureValue;
 
       /** Temperature port */
       port def TemperatureOutPort :> SensorOutPort {
@@ -139,8 +135,8 @@ package id Architecture 'RTS Architecture' {
 
     /** A generic pressure sensor. */
     package PressureSensor {
-      import Sensor::*;
-      import ISQMechanics::PressureValue;
+      private import Sensor::*;
+      private import ISQMechanics::PressureValue;
 
       /** Pressure port */
       port def PressureOutPort :> SensorOutPort {
@@ -166,10 +162,10 @@ package id Architecture 'RTS Architecture' {
      * NPP I&C system.
      */
     package Instrumentation {
-      import ScalarValues::Real;
-      import ScalarValues::Boolean;
-      import TempSensor::*;
-      import PressureSensor::*;
+      private import ScalarValues::Real;
+      private import ScalarValues::Boolean;
+      private import TempSensor::*;
+      private import PressureSensor::*;
 
       port def TripPort {
         out trip : Boolean;
@@ -181,9 +177,6 @@ package id Architecture 'RTS Architecture' {
         part TS: 'Temperature Sensor'[2];
         part PS: 'Pressure Sensor'[2];
       }
-    }
-    package Instrumentation {
-      part 'Instrumentation'[4];
     }
   }
 }
@@ -232,9 +225,9 @@ package id Artifacts 'RTS Implementation Artifacts' {
  * demonstrator. 
  */
 package 'RTS Hardware Artifacts' {
-  import 'Project Glossary'::*;
-  import Architecture::RTS_System_Arch::Hardware::*;
-  import ScalarValues::*;
+  private import 'Project Glossary'::*;
+  private import 'Kiniry RTS System Architecture Draft'::*;
+  private import ScalarValues::*;
 
   part def 'SERDES Test SMA Connector' :> Connector;
   part def 'Parallel Config Header' :> Header;
@@ -304,8 +297,8 @@ package 'RTS Hardware Artifacts' {
 
 /** The physical architecture of the HARDENS RTS demonstrator. */
 package 'Physical Architecture' {
-  import 'Project Glossary'::*;
-  import 'RTS Hardware Artifacts'::*;
+  private import 'Project Glossary'::*;
+  private import 'RTS Hardware Artifacts'::*;
 
   /** A PCB developer board used to prototype hardware. */
   part 'HARDENS Demonstrator Board' : DevBoard;
