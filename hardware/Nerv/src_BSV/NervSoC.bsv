@@ -17,6 +17,9 @@ endinterface
 module mkNervSoC (NervSoC_IFC);
 
    Nerv_IFC nerv <- mkNerv;
+   // To instantiate more cores, uncomment lines below
+   // Nerv_IFC nerv2 <- mkNerv;
+   // Nerv_IFC nerv3 <- mkNerv;
 
    RegFile #(Bit #(30), Bit #(32)) imem <- mkRegFileLoad ("firmware.hex",0,1023);
    RegFile #(Bit #(30), Bit #(32)) dmem <- mkRegFile(0,1023);
