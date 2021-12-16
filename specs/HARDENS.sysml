@@ -17,8 +17,8 @@
  * the two separate and independent devices that drive actuators.
  */
 package id RTS 'Reactor Trip System' {
-  import 'Semantic Properties'::*;
-
+  private import 'Semantic Properties'::*;
+  
   package id Architecture 'RTS Architecture';
   alias Arch for Architecture;
   package id Hardware 'RTS Hardware Artifacts';
@@ -386,11 +386,7 @@ package id Architecture 'RTS Architecture' {
  * hardware, network, and data architecture specifications.
  */
 package id Architecture 'RTS Architecture' {
-
-  //import RTS::*;
-  //import 'Project Glossary'::*;
-  //import Artifacts::*;
-  //import 'RTS Hardware Artifacts'::*;
+  private import 'Project Glossary'::*;
 
   /**
    * Note that this is the *systems* architecture, which is different
@@ -407,7 +403,7 @@ package id Architecture 'RTS Architecture' {
       }
 
       /** Generic sensor */
-      part def GenericSensor {
+      part def GenericSensor :> Sensor {
         attribute currentValue : ScalarQuantityValue;
         port output: SensorOutPort;
       }
@@ -426,8 +422,8 @@ package id Architecture 'RTS Architecture' {
 
     /** A generic temperature sensor. */
     package TempSensor {
-      import Sensor::*;
-      import ISQThermodynamics::TemperatureValue;
+      private import Sensor::*;
+      private import ISQThermodynamics::TemperatureValue;
 
       /** Temperature port */
       port def TemperatureOutPort :> SensorOutPort {
@@ -450,8 +446,8 @@ package id Architecture 'RTS Architecture' {
 
     /** A generic pressure sensor. */
     package PressureSensor {
-      import Sensor::*;
-      import ISQMechanics::PressureValue;
+      private import Sensor::*;
+      private import ISQMechanics::PressureValue;
 
       /** Pressure port */
       port def PressureOutPort :> SensorOutPort {
@@ -477,10 +473,10 @@ package id Architecture 'RTS Architecture' {
      * NPP I&C system.
      */
     package Instrumentation {
-      import ScalarValues::Real;
-      import ScalarValues::Boolean;
-      import TempSensor::*;
-      import PressureSensor::*;
+      private import ScalarValues::Real;
+      private import ScalarValues::Boolean;
+      private import TempSensor::*;
+      private import PressureSensor::*;
 
       port def TripPort {
         out trip : Boolean;
@@ -492,9 +488,6 @@ package id Architecture 'RTS Architecture' {
         part TS: 'Temperature Sensor'[2];
         part PS: 'Pressure Sensor'[2];
       }
-    }
-    package Instrumentation {
-      part 'Instrumentation'[4];
     }
   }
 }
@@ -543,9 +536,9 @@ package id Artifacts 'RTS Implementation Artifacts' {
  * demonstrator. 
  */
 package 'RTS Hardware Artifacts' {
-  import 'Project Glossary'::*;
+  private import 'Project Glossary'::*;
   //import Architecture::RTS_System_Arch::Hardware::*;
-  import ScalarValues::*;
+  private import ScalarValues::*;
 
   part def 'SERDES Test SMA Connector' :> Connector;
   part def 'Parallel Config Header' :> Header;

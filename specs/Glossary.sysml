@@ -117,8 +117,10 @@ package id Glossary 'Project Glossary' {
   part def Clafer;
   part def Lobot;
   abstract item def id FSM 'Finite State Machine';
-  abstract item def id DFSM 'Deterministic Finite State Machine' :> FSM, Deterministic;
-  abstract item def id NFSM 'Non-deterministic Finite State Machine' :> FSM, 'Non-deterministic';
+  abstract item def id DFSM 'Deterministic Finite State Machine' 
+    :> FSM, Deterministic;
+  abstract item def id NFSM 'Non-deterministic Finite State Machine' 
+    :> FSM, 'Non-deterministic';
   abstract item def id ASM 'Abstract State Machine';
   abstract part def Design;
   abstract part def Architecture;
@@ -154,8 +156,10 @@ package id Glossary 'Project Glossary' {
   abstract part def 'System Specification' :> Specification;
   abstract item def 'Hand-written';
   abstract item def 'Machine-generated';
-  abstract part def 'Source-level Specification Language' :> 'Specification Language';
-  abstract part def 'Model-based Specification Language' :> 'Specification Language';
+  abstract part def 'Source-level Specification Language' 
+    :> 'Specification Language';
+  abstract part def 'Model-based Specification Language' 
+    :> 'Specification Language';
   abstract item def Cryptological;
   abstract item def 'Cryptographic Protocol' :> Protocol, Cryptological;
   abstract item def 'Cryptographic Algorithm' :> Algorithm, Cryptological;
@@ -175,7 +179,7 @@ package id Glossary 'Project Glossary' {
 
   // Hardware design.
   abstract item def Hardware;
-  abstract item SWaP {
+  abstract item def SWaP {
     // attribute size:
     // attribute weight: 
     // attribute power: 
@@ -189,6 +193,7 @@ package id Glossary 'Project Glossary' {
   abstract part def SystemVerilog :> HDL;
   abstract part def Verilog :> SystemVerilog;
   abstract part def Chisel :> HDL;
+  abstract part def id CPU 'Central Processing Unit';
 
   // Hardware engineering concepts.
   abstract part def Component;
@@ -202,8 +207,10 @@ package id Glossary 'Project Glossary' {
   abstract item def id IO 'I/O';
   abstract part def id GPIO 'General Purpose I/O';
   abstract part def Sensor;
+  abstract part def 'Temperature Sensor';
+  abstract part def 'Pressure Sensor';
   abstract part def Actuator;
-  abstract part def Solenoid:> Actuator;
+  abstract part def Solenoid :> Actuator;
   abstract item def Bus;
   abstract part def id USB 'Universal Serial Bus' :> Bus;
   abstract part def LED;
@@ -253,7 +260,7 @@ package id Glossary 'Project Glossary' {
     :> Software, 'Hand-written';
   abstract part def id SynthSW 'Synthesized Software Implementation' 
     :> Software, 'Machine-generated';
-  abstract part def id Hardware 'Hardware Implementation';
+  abstract part def 'Hardware Implementation';
   abstract part def id HWImpl 'Hand-written Hardware Implementation';
   abstract part def id SynthHW 'Synthesized Hardware Implementation';
   abstract part def id Binary 'Software Binaries' {
