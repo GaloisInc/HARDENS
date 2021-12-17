@@ -150,52 +150,24 @@ MaskTripFrom p trips =
   | ch <- [0..2]
   ]
 
-Test_Instrumentation : [2] -> RTS -> RTS
-Test_Instrumentation i rts = {rts | control = {rts.control|self_test_fail = ~ (all Run_test tests)}}
+Test_Instrumentation : {n} (fin n) =>
+  [n]([8], [2][32], Channel) -> [2] -> RTS -> RTS
+Test_Instrumentation tests i rts = {rts | control = {rts.control|self_test_fail = ~ (all Run_test tests)}}
   where
     Run_test: ([8],[2][32],Channel) -> Bit
     Run_test (trip,vals,ch) = (rts.instrumentation.units @ i)
                          >>>> Set_Maintenance True
                          >>>> Set_Mode ch Operate
-                         >>>> Set_Setpoint ch 10
                          >>>> Set_Maintenance False
                          >>>> (\in -> I::Step vals I::NoCommand in)
-                         >>>> (\in -> (trip == (in.output_trip @ ch)))
+                         >>>> (\in -> trip == (in.output_trip @ ch))
 
-    // For example...
-    tests: [_]([8],[2][32],Channel)
-    tests = [ (1, [h,l], T) | h <- high, l <- low ] #
-            [ (0, [l,h], T) | h <- high, l <- low ] #
-            [ (1, [l,h], P) | h <- high, l <- low ] #
-            [ (0, [h,l], P) | h <- high, l <- low ] #
-            [ (1, [t,p], S) | t <- [10,20,30], p <- [4,5,6] ] #
-            [ (0, [t,p], S) | t <- [60,70,80], p <- [3,4,5] ]
-
-    high: [_][32]
-    high = [11, 12, 20]
-
-    low: [_][32]
-    low = [0, 9, 10]
-
-Test_Voting: [1] -> RTS -> RTS
-Test_Voting l rts = {rts | control = {rts.control|self_test_fail = ~ (all Run_test tests)}}
+Test_Voting: {n} (fin n) => [n](Bit, [1], AU::Input) -> [1] -> RTS -> RTS
+Test_Voting tests l rts = {rts | control = {rts.control|self_test_fail = ~ (all Run_test tests)}}
   where
     Run_test (on,d,trips) = (rts.actuation.units @ l)
                        >>>> AU::TripInput trips
                        >>>> \a -> (a.output @ d) == on
-
-    tests : [_](Bit, [1], AU::Input)
-    tests = [ (should_trip d [t,p,s], d, [t,p,s]) | d <- [0,1], t <- all_trips, p <- all_trips, s <- all_trips ]
-
-    should_trip d ts =
-      if d == D0 then
-           (sum [ if (t != 0) then 1 else 0 | t <- ts @ T ] >= 2)
-        || (sum [ if (t != 0) then 1 else 0 | t <- ts @ P ] >= 2)
-      else
-           sum [ if (t != 0) then 1 else 0 | t <- ts @ S ] >= 2
-
-    all_trips: [16][4][8]
-    all_trips = [ [a,b,c,d] | a <- [0,1], b <- [0,1], c <- [0,1], d <- [0,1] ]
 
 private
     property sense_to_actuate_0 rts (sensors : [4][2][32]) cmds =
@@ -219,17 +191,17 @@ private
       where
         rts' = rts >>>> Sense_Actuate sensors cmds
 
-    property end_to_end_test rts i1 i2 (ch : [2]) vote sensors =
+    property end_to_end_test (ch : [2]) rts i1 i2 vote sensors =
        ( ~rts.control.self_test_fail
          /\ (i1 != i2)
          /\ and [ (a.output == 0) | a <- rts.actuation.units ]
-         /\ (ch < 3 /* not provable if ch == S */)) /\ (ch != S) // Add this to make it provable
+         /\ (ch < 3 /* not provable if ch == S */))// /\ (ch != S) // Add this to make it provable
       /* ------------------------------------------*/ ==>
          ~rts'.control.self_test_fail
      where
-       rts' = RunEndToEnd rts i1 i2 ch vote sensors
+       rts' = RunEndToEnd rts i1 i2 ch vote (repeat sensors)
 
-    property end_to_end_test_non_interference rts (sensors: [4][2][32]) (ch : [2]) =
+    property end_to_end_test_non_interference (ch : [2]) rts (sensors: [4][2][32]) =
       (~ rts.control.self_test_fail
        // Start in a state where we haven't actuated
        /\ and [ (a.output == 0) | a <- rts.actuation.units ]
@@ -247,6 +219,29 @@ private
         i1 = rts.control.self_test_instrs@0
         i2 = rts.control.self_test_instrs@1
         rts' = rts >>>> Sense_Actuate sensors (repeat I::NoCommand)
+
+    property test_instrumentation_ok i rts vs (ch : Channel) =
+      ~ (rts.control.self_test_fail) ==> (
+          (ch < 3) ==>
+          (~(Test_Instrumentation [(pass, vs, ch)] i rts).control.self_test_fail)
+        )
+      where
+        pass: [8]
+        pass = if ChShouldTrip ch vs {(rts.instrumentation.units @ i) | mode = repeat Operate} then 1 else 0
+
+    property test_voting_ok d ts l rts =
+      (~rts.control.self_test_fail && and [ a.output == 0 | a <- rts.actuation.units ]) ==>
+      ~ ((Test_Voting [(expect, d, ts)] l rts).control.self_test_fail)
+      where
+        expect =
+          if d == D0 then
+               (sum [ if (t != 0) then 1 else 0 | t <- ts @ T ] >= 2)
+            || (sum [ if (t != 0) then 1 else 0 | t <- ts @ P ] >= 2)
+          else
+               sum [ if (t != 0) then 1 else 0 | t <- ts @ S ] >= 2
+
+    I : ([4]InstrumentationUnit -> [4]InstrumentationUnit) -> RTS -> RTS
+    I f rts = {rts|instrumentation = { units = f rts.instrumentation.units }}
 
     RunEndToEnd rts i1 i2 ch vote sensors = rts'
       where
@@ -277,14 +272,3 @@ private
         else (instr.setpoints @ ch) > Saturation (vs @ T) (vs @ P)
       else
         In_Mode ch Manual instr
-
-    property Test_Instrumentation_OK i rts =
-      ~(rts.control.self_test_fail) ==>
-      ~ ((Test_Instrumentation i rts).control.self_test_fail)
-
-    property Test_Voting_OK l rts =
-      (~rts.control.self_test_fail && and [ a.output == 0 | a <- rts.actuation.units ]) ==>
-      ~ ((Test_Voting l rts).control.self_test_fail)
-
-    I : ([4]InstrumentationUnit -> [4]InstrumentationUnit) -> RTS -> RTS
-    I f rts = {rts|instrumentation = { units = f rts.instrumentation.units }}
