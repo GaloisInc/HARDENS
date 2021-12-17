@@ -2,7 +2,7 @@ module Coincidence_2_4
     ( input logic [3:0] x,
       output logic out
     );
-    // ../models/RTS/Actuation.cry:53:1--53:16
+    // ../models/RTS/Actuation.cry:82:1--82:16
     assign out = (x != 4'h0) & ((x != 4'h1) & ((x != 4'h2) & ((x != 4'h4) & (x != 4'h8))));
 endmodule
 module Vote
@@ -11,7 +11,7 @@ module Vote
       input logic [95:0] inp,
       output logic out
     );
-    // ../models/RTS/Actuation.cry:50:1--50:5
+    // ../models/RTS/Actuation.cry:79:1--79:5
     logic [3:0] temp1;
     genvar gv0;
     for (gv0 = 0; gv0 < 4; gv0 = gv0 + 1)
@@ -30,7 +30,7 @@ module Voting_Step
     );
     logic d0;
     logic d1;
-    // ../models/RTS/Actuation.cry:46:5--46:7
+    // ../models/RTS/Actuation.cry:61:5--61:7
     logic Vote_out;
     Vote Vote_inst1 (.ch(2'h0),
                      .inp(inp),
@@ -40,13 +40,13 @@ module Voting_Step
                      .inp(inp),
                      .out(Vote_out1));
     assign d0 = Vote_out | (Vote_out1 | old_votes[1]);
-    // ../models/RTS/Actuation.cry:47:5--47:7
+    // ../models/RTS/Actuation.cry:62:5--62:7
     logic Vote_out2;
     Vote Vote_inst3 (.ch(2'h2),
                      .inp(inp),
                      .out(Vote_out2));
     assign d1 = Vote_out2 | old_votes[0];
-    // ../models/RTS/Actuation.cry:42:1--42:12
+    // ../models/RTS/Actuation.cry:57:1--57:12
     assign out[1] = d0;
     assign out[0] = d1;
 endmodule

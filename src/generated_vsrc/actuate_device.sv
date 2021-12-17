@@ -1,7 +1,7 @@
-module ActuateDevice
+module Actuate_Device
     ( input logic [1:0] vs,
       output logic out
     );
-    // ../models/RTS/Actuation.cry:25:1--25:14
+    // ../models/RTS/Actuation.cry:42:1--42:15
     assign out = vs[1] | vs[0];
 endmodule

@@ -53,7 +53,7 @@ w32 static rotr32(w32 x, w32 shf)
     w32 offset = 32;
     return x >> shf | x << offset - shf;
 }
-w1 Coincidence_2_4(w4 x4819)
+w1 Coincidence_2_4(w4 x4846)
 {
     w1 app_4097;
     w1 app_4098;
@@ -66,11 +66,11 @@ w1 Coincidence_2_4(w4 x4819)
     w1 app_4105;
     w1 return_4096;
     return_4096 = 0;
-    app_4097 = x4819 != (w4) 0;
-    app_4098 = x4819 != (w4) 1;
-    app_4099 = x4819 != (w4) 2;
-    app_4100 = x4819 != (w4) 4;
-    app_4101 = x4819 != (w4) 8;
+    app_4097 = x4846 != (w4) 0;
+    app_4098 = x4846 != (w4) 1;
+    app_4099 = x4846 != (w4) 2;
+    app_4100 = x4846 != (w4) 4;
+    app_4101 = x4846 != (w4) 8;
     app_4102 = app_4100 & app_4101;
     app_4103 = app_4099 & app_4102;
     app_4104 = app_4098 & app_4103;
@@ -78,7 +78,7 @@ w1 Coincidence_2_4(w4 x4819)
     return_4096 = app_4105;
     return return_4096;
 }
-w2 Voting_Step(w8 inp4812[4][3], w2 old_votes4813)
+w2 Voting_Step(w8 inp4829[4][3], w2 old_votes4830)
 {
     w1 app_4140;
     w1 app_4141;
@@ -103,10 +103,10 @@ w2 Voting_Step(w8 inp4812[4][3], w2 old_votes4813)
     w4 arrv_4153;
     w2 return_4107;
     return_4107 = 0;
-    app_4140 = inp4812[(w32) 0][(w2) 0] == (w8) 1;
-    app_4141 = inp4812[(w32) 1][(w2) 0] == (w8) 1;
-    app_4142 = inp4812[(w32) 2][(w2) 0] == (w8) 1;
-    app_4143 = inp4812[(w32) 3][(w2) 0] == (w8) 1;
+    app_4140 = inp4829[(w32) 0][(w2) 0] == (w8) 1;
+    app_4141 = inp4829[(w32) 1][(w2) 0] == (w8) 1;
+    app_4142 = inp4829[(w32) 2][(w2) 0] == (w8) 1;
+    app_4143 = inp4829[(w32) 3][(w2) 0] == (w8) 1;
     arrv_4139 = 0;
     if (app_4140)
     {
@@ -141,10 +141,10 @@ w2 Voting_Step(w8 inp4812[4][3], w2 old_votes4813)
         arrv_4139 &= ~((w4) 1 << 3);
     }
     app_4144 = Coincidence_2_4(arrv_4139);
-    app_4146 = inp4812[(w32) 0][(w2) 1] == (w8) 1;
-    app_4147 = inp4812[(w32) 1][(w2) 1] == (w8) 1;
-    app_4148 = inp4812[(w32) 2][(w2) 1] == (w8) 1;
-    app_4149 = inp4812[(w32) 3][(w2) 1] == (w8) 1;
+    app_4146 = inp4829[(w32) 0][(w2) 1] == (w8) 1;
+    app_4147 = inp4829[(w32) 1][(w2) 1] == (w8) 1;
+    app_4148 = inp4829[(w32) 2][(w2) 1] == (w8) 1;
+    app_4149 = inp4829[(w32) 3][(w2) 1] == (w8) 1;
     arrv_4145 = 0;
     if (app_4146)
     {
@@ -179,12 +179,12 @@ w2 Voting_Step(w8 inp4812[4][3], w2 old_votes4813)
         arrv_4145 &= ~((w4) 1 << 3);
     }
     app_4150 = Coincidence_2_4(arrv_4145);
-    app_4151 = app_4150 | old_votes4813 >> (w1) 0 & 1;
+    app_4151 = app_4150 | old_votes4830 >> (w1) 0 & 1;
     app_4152 = app_4144 | app_4151;
-    app_4154 = inp4812[(w32) 0][(w2) 2] == (w8) 1;
-    app_4155 = inp4812[(w32) 1][(w2) 2] == (w8) 1;
-    app_4156 = inp4812[(w32) 2][(w2) 2] == (w8) 1;
-    app_4157 = inp4812[(w32) 3][(w2) 2] == (w8) 1;
+    app_4154 = inp4829[(w32) 0][(w2) 2] == (w8) 1;
+    app_4155 = inp4829[(w32) 1][(w2) 2] == (w8) 1;
+    app_4156 = inp4829[(w32) 2][(w2) 2] == (w8) 1;
+    app_4157 = inp4829[(w32) 3][(w2) 2] == (w8) 1;
     arrv_4153 = 0;
     if (app_4154)
     {
@@ -219,7 +219,7 @@ w2 Voting_Step(w8 inp4812[4][3], w2 old_votes4813)
         arrv_4153 &= ~((w4) 1 << 3);
     }
     app_4158 = Coincidence_2_4(arrv_4153);
-    app_4159 = app_4158 | old_votes4813 >> (w1) 1 & 1;
+    app_4159 = app_4158 | old_votes4830 >> (w1) 1 & 1;
     if (app_4152)
     {
         return_4107 |= (w2) 1 << (w32) 0;
