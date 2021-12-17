@@ -15,7 +15,7 @@ GEN_VOTE_F=Coincidence_2_4,Voting_Step
 GEN_ACTUATE_DEVICE_C=${C_GEN_DIR}/actuate_device.c
 GEN_ACTUATE_DEVICE_SV=${SV_GEN_DIR}/actuate_device.sv
 GEN_ACTUATE_DEVICE_INC=${GEN_ACTUATE_DEVICE_C:.c=.inc.c}
-GEN_ACTUATE_DEVICE_F=ActuateDevice
+GEN_ACTUATE_DEVICE_F=Actuate_Device
 
 GEN_STEP_TRIP_SIGNALS_C=${C_GEN_DIR}/step_trip_signals.c
 GEN_STEP_TRIP_SIGNALS_SV=${SV_GEN_DIR}/step_trip_signals.sv
@@ -31,12 +31,14 @@ OBJ=${SRC:.c=.o}
 C_GEN_OBJ=${C_GEN_SRC:.c=.o}
 POSIX_OBJ=${POSIX_SRC:.c=.o}
 
+VERILATED_INC=$(shell verilator --getenv VERILATOR_ROOT)/include
+VERILATED_SRC=$(VERILATED_INC)/verilated.cpp
 CVERILOG_FLAGS=--yosys-defaults --little-endian
 
 SV_LIBS=generated_vsrc/generate_sensor_trips/VGenerate_Sensor_Trips__ALL.a\
   generated_vsrc/voting_step/VVoting_Step__ALL.a\
   generated_vsrc/is_ch_tripped/VIs_Ch_Tripped__ALL.a\
-  generated_vsrc/actuate_device/VActuateDevice__ALL.a
+  generated_vsrc/actuate_device/Vactuate_device__ALL.a
 
 # Thanks: https://blog.jgc.org/2007/06/escaping-comma-and-space-in-gnu-make.html
 comma := ,
@@ -56,7 +58,7 @@ rts.posix: ${OBJ} ${C_GEN_OBJ} ${POSIX_OBJ}
 	clang -fsanitize=address,undefined -g $^ -o rts.posix
 
 rts.posix.verilog: ${OBJ} ${POSIX_OBJ} ${SV_LIBS} generated_vsrc/svlib.o generated_vsrc/generate_sensor_trips/VGenerate_Sensor_Trips__ALL.a
-	clang++ -fsanitize=address,undefined -g $^ -o rts.posix.verilog `verilator --getenv VERILATOR_ROOT`/include/verilated.cpp -I`verilator --getenv VERILATOR_ROOT`/include
+	clang++ -fsanitize=address,undefined -g $^ -o rts.posix.verilog ${VERILATED_SRC} -I${VERILATED_SRC}/include
 
 linux: rts.posix
 	mv rts.posix rts.linux
@@ -110,8 +112,8 @@ generated_vsrc/voting_step/VVoting_Step__ALL.a: generated_vsrc/vote.sv
 	verilator --cc -Wno-WIDTH -Wno-LITENDIAN --top-module Voting_Step $^ \
       -Mdir generated_vsrc/voting_step --build
 
-generated_vsrc/actuate_device/VActuateDevice__ALL.a: generated_vsrc/actuate_device.sv
-	verilator --cc -Wno-WIDTH -Wno-LITENDIAN --top-module ActuateDevice $^ \
+generated_vsrc/actuate_device/Vactuate_device__ALL.a: generated_vsrc/actuate_device.sv
+	verilator --cc -Wno-WIDTH -Wno-LITENDIAN --top-module Actuate_Device $^ \
       -Mdir generated_vsrc/actuate_device --build
 
 %.o: %.inc.c
@@ -121,4 +123,4 @@ generated_vsrc/actuate_device/VActuateDevice__ALL.a: generated_vsrc/actuate_devi
 	clang -g -Wall -I../include $^ -c -o $@
 
 generated_vsrc/svlib.o: generated_vsrc/svlib.cpp
-	clang++ -g -Wall -I../include -I`verilator --getenv VERILATOR_ROOT`/include $^ -c -o $@
+	clang++ -g -Wall -I../include -I${VERILATED_INC} $^ -c -o $@
