@@ -1,4 +1,4 @@
-module RTS2 where
+module RTS where
 
 import RTS::Utils
 import RTS::InstrumentationUnit
