@@ -122,6 +122,27 @@ package id Architecture 'RTS Architecture' {
       port def BypassPort {
         out trip : Boolean;
       }
+      
+      enum def TripMode {
+      	enum Bypass;
+      	enum Operate;
+      	enum Manual;
+      }
+      
+      enum def Channel {
+      	enum Temperature;
+      	enum Pressure;
+      	enum Saturation;
+      }
+       
+      attribute def TripModeCommand {
+      	attribute mode: TripMode;
+      	attribute channel: Channel;
+      }
+      
+      port def TripModePort {
+      	out mode: TripModeCommand;
+      }
 
       part def InstrumentationUnit {
         // setpoints
@@ -131,25 +152,22 @@ package id Architecture 'RTS Architecture' {
 
         // mode selectors
         attribute maintenanceMode : Boolean;
-
-        // Bypass
-        port bypassTemperature : BypassPort;
-        port bypassPressure : BypassPort;
-        port bypassSaturation : BypassPort;
+        attribute temperatureTripMode: TripMode;
+        attribute pressureTripMode: TripMode;    
+        attribute saturationTripMode: TripMode;
+        
 
         // Inputs
         port temperatureInput: ~TemperatureOutPort;
         port pressureInput: ~PressureOutPort;
+        port tripMode: ~TripModePort;      	        
 
         // Outputs
         port pressureTripOut:TripPort;
         port temperatureTripOut:TripPort;
         port saturationTripOut:TripPort;
 
-        port modeSelect: ~EventControl::ControlPort;
-        port manualPressureTrip : ~TripPort;
-        port manualTemperatureTrip : ~TripPort;
-        port manualSaturationTrip: ~TripPort;
+        port setMaintenanceMode: ~EventControl::MaintenancePort;
 
         port newTemperatureSetpoint: ~TemperatureOutPort;
         port newPressureSetpoint: ~PressureOutPort;
@@ -184,55 +202,34 @@ package id Architecture 'RTS Architecture' {
 
        part tempPressureTripOut: OrLogic;
 
-       port controlInput: EventControl::ControlPort;
-
        connect temperatureLogic.actuate to tempPressureTripOut.channel1;
        connect pressureLogic.actuate to tempPressureTripOut.channel2;
       }
       part def Actuator {
-        // Regular input
+         // Actuate if either of these are true
          port input: ActuationPort;
-         // Mode switch
-         port controlInput: ~EventControl::ControlPort;
-         // If in manual, follow this input
          port manualActuatorInput: ~ActuationPort;
        }
     }
 
     package EventControl {
-      enum def Mode {
-        // Full auto
-        AUTO;
-        // Only in manual mode the user can trip individual channels
-        MANUAL;
-        // Only in maintenance mode the user can update setpoints
-        MAINTENANCE;
-      }
-
-      // NOTE: should we add a notion of a step?
-      port def ControlPort {
-        out modeSelect: Mode;
+	  import ScalarValues::Boolean;
+	  
+      port def MaintenancePort {
+        out maintenance: Boolean;
       }
 
       part def ControlUnit {
-        // Mode select x 4 instrumentation units
-        port mode: ControlPort[4];
-        // Manual trip x 4 instrumentation units
-        port manualPressureTrip : Instrumentation::TripPort[4];
-        port manualTemperatureTrip : Instrumentation::TripPort[4];
-        port manualSaturationTrip: Instrumentation::TripPort[4];
+        // Maintenance mode select x 4 instrumentation units
+        port maintenanceMode: MaintenancePort[4];
+        // Trip mode select x 4 instrumentation units
+        port tripMode: Instrumentation::TripModePort[4];
         // New setpoints x 4 instrumentation units
         port newPressureSetpoint: PressureSensor::PressureOutPort[4];
         port newTemperatureSetpoint: TempSensor::TemperatureOutPort[4];
         port newSaturationSetpoint: PressureSensor::PressureOutPort[4];
-        // Mode select x2 actuators
-        port actuationMode: ControlPort[2];
         // Toggle actuator x2 actuators
         port manualActuatorInput: Actuation::ActuationPort[2];
-        // Bypass x4
-        port bypassTemperature : ~Instrumentation::BypassPort[4];
-        port bypassPressure : ~Instrumentation::BypassPort[4];
-        port bypassSaturation : ~Instrumentation::BypassPort[4];
       }
     }
 
@@ -305,16 +302,15 @@ package id Architecture 'RTS Architecture' {
 
       // connect Control units
       // Actuators manual override
-      connect eventControl.actuationMode[1] to actuation.actuator1.controlInput;
       connect eventControl.manualActuatorInput[1] to actuation.actuator1.manualActuatorInput;
-      connect eventControl.actuationMode[2] to actuation.actuator2.controlInput;
       connect eventControl.manualActuatorInput[2] to actuation.actuator2.manualActuatorInput;
 
       // Instrumentation mode select
-      connect eventControl.mode[1] to instrumentationAndSensing.instrumentationUnit1.modeSelect;
-      connect eventControl.mode[2] to instrumentationAndSensing.instrumentationUnit2.modeSelect;
-      connect eventControl.mode[3] to instrumentationAndSensing.instrumentationUnit3.modeSelect;
-      connect eventControl.mode[4] to instrumentationAndSensing.instrumentationUnit4.modeSelect;
+      connect eventControl.maintenanceMode[1] to instrumentationAndSensing.instrumentationUnit1.setMaintenanceMode;
+      connect eventControl.maintenanceMode[2] to instrumentationAndSensing.instrumentationUnit2.setMaintenanceMode;
+      connect eventControl.maintenanceMode[3] to instrumentationAndSensing.instrumentationUnit3.setMaintenanceMode;
+      connect eventControl.maintenanceMode[4] to instrumentationAndSensing.instrumentationUnit4.setMaintenanceMode;
+
 
       // Instrumentation pressure setpoint
       connect eventControl.newPressureSetpoint[1] to instrumentationAndSensing.instrumentationUnit1.newPressureSetpoint;
@@ -334,42 +330,12 @@ package id Architecture 'RTS Architecture' {
       connect eventControl.newSaturationSetpoint[3] to instrumentationAndSensing.instrumentationUnit3.newSaturationSetpoint;
       connect eventControl.newSaturationSetpoint[4] to instrumentationAndSensing.instrumentationUnit4.newSaturationSetpoint;
 
-      // Instrumentation manual pressure trip
-      connect eventControl.manualPressureTrip[1] to instrumentationAndSensing.instrumentationUnit1.manualPressureTrip;
-      connect eventControl.manualPressureTrip[2] to instrumentationAndSensing.instrumentationUnit2.manualPressureTrip;
-      connect eventControl.manualPressureTrip[3] to instrumentationAndSensing.instrumentationUnit3.manualPressureTrip;
-      connect eventControl.manualPressureTrip[4] to instrumentationAndSensing.instrumentationUnit4.manualPressureTrip;
-
-      // Instrumentation manual temperature trip
-      connect eventControl.manualTemperatureTrip[1] to instrumentationAndSensing.instrumentationUnit1.manualTemperatureTrip;
-      connect eventControl.manualTemperatureTrip[2] to instrumentationAndSensing.instrumentationUnit2.manualTemperatureTrip;
-      connect eventControl.manualTemperatureTrip[3] to instrumentationAndSensing.instrumentationUnit3.manualTemperatureTrip;
-      connect eventControl.manualTemperatureTrip[4] to instrumentationAndSensing.instrumentationUnit4.manualTemperatureTrip;
-
-      // Instrumentation manual saturation trip
-      connect eventControl.manualSaturationTrip[1] to instrumentationAndSensing.instrumentationUnit1.manualSaturationTrip;
-      connect eventControl.manualSaturationTrip[2] to instrumentationAndSensing.instrumentationUnit2.manualSaturationTrip;
-      connect eventControl.manualSaturationTrip[3] to instrumentationAndSensing.instrumentationUnit3.manualSaturationTrip;
-      connect eventControl.manualSaturationTrip[4] to instrumentationAndSensing.instrumentationUnit4.manualSaturationTrip;
-
-      // Instrumentation bypass channel
+      // Instrumentation trip mode
       // Bypass temperature
-      connect eventControl.bypassTemperature[1] to instrumentationAndSensing.instrumentationUnit1.bypassTemperature;
-      connect eventControl.bypassTemperature[2] to instrumentationAndSensing.instrumentationUnit2.bypassTemperature;
-      connect eventControl.bypassTemperature[3] to instrumentationAndSensing.instrumentationUnit3.bypassTemperature;
-      connect eventControl.bypassTemperature[4] to instrumentationAndSensing.instrumentationUnit4.bypassTemperature;
-
-      // Bypass pressure
-      connect eventControl.bypassPressure[1] to instrumentationAndSensing.instrumentationUnit1.bypassPressure;
-      connect eventControl.bypassPressure[2] to instrumentationAndSensing.instrumentationUnit2.bypassPressure;
-      connect eventControl.bypassPressure[3] to instrumentationAndSensing.instrumentationUnit3.bypassPressure;
-      connect eventControl.bypassPressure[4] to instrumentationAndSensing.instrumentationUnit4.bypassPressure;
-
-      // Bypass saturation
-      connect eventControl.bypassSaturation[1] to instrumentationAndSensing.instrumentationUnit1.bypassSaturation;
-      connect eventControl.bypassSaturation[2] to instrumentationAndSensing.instrumentationUnit2.bypassSaturation;
-      connect eventControl.bypassSaturation[3] to instrumentationAndSensing.instrumentationUnit3.bypassSaturation;
-      connect eventControl.bypassSaturation[4] to instrumentationAndSensing.instrumentationUnit4.bypassSaturation;
+      connect eventControl.tripMode[1] to instrumentationAndSensing.instrumentationUnit1.tripMode;
+      connect eventControl.tripMode[2] to instrumentationAndSensing.instrumentationUnit2.tripMode;
+      connect eventControl.tripMode[3] to instrumentationAndSensing.instrumentationUnit3.tripMode;
+      connect eventControl.tripMode[4] to instrumentationAndSensing.instrumentationUnit4.tripMode;
 
       // Trip on pressure above the setpoint
       // Actuation unit 1
@@ -455,7 +421,7 @@ package id Artifacts 'RTS Implementation Artifacts' {
     demonstrator. */
 package 'RTS Hardware Artifacts' {
   import 'Project Glossary'::*;
-  import Architecture::RTS_System_Arch::Hardware::*;
+  //import Architecture::RTS_System_Arch::Hardware::*;
   import ScalarValues::*;
 
   part def 'SERDES Test SMA Connector' :> Connector;

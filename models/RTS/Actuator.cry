@@ -1,0 +1,18 @@
+module RTS::Actuator where
+
+type Actuation = Bit
+type Mode      = Bit
+
+/** @requirements
+      ACTUATION_LOGIC_MANUAL_DEVICE_{0,1} satisfied by definition
+*/
+type Actuator =
+  { input: Actuation
+  , manualActuatorInput: Actuation
+  }
+
+SetInput: Actuation -> Actuator -> Actuator
+SetInput on actuator = {actuator| input = on}
+
+SetManual: Actuation -> Actuator -> Actuator
+SetManual on actuator = {actuator | manualActuatorInput = on}
