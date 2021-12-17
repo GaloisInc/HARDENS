@@ -269,6 +269,6 @@ private
       if In_Mode ch Operate instr then
         if (ch == T) || (ch == P)
         then (instr.setpoints @ ch) < (vs @ ch)
-        else (instr.setpoints @ ch) > Saturation (vs @ T) (vs @ P)
+        else (instr.setpoints @ ch) >$ Saturation (vs @ T) (vs @ P)
       else
         In_Mode ch Manual instr
