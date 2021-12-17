@@ -70,6 +70,7 @@ proof: ${GEN_VOTE_INC} ${GEN_STEP_TRIP_SIGNALS_INC}
 	clang -g -emit-llvm -c ${GEN_VOTE_C} -o ${C_GEN_DIR}/vote.bc
 	clang -g -emit-llvm -c ${GEN_STEP_TRIP_SIGNALS_C} -o ${C_GEN_DIR}/step_trip_signals.bc
 
+ifeq ($(REGEN_SOURCES),1)
 ${GEN_VOTE_INC}: ${MODEL_DIR}/${ACTUATION_CRY}
 	cd ${MODEL_DIR} && \
 		crymp -f ${GEN_VOTE_F} ${ACTUATION_CRY} -o ${ROOT_DIR}/${GEN_VOTE_INC}
@@ -99,6 +100,7 @@ ${GEN_STEP_TRIP_SIGNALS_SV}: ${MODEL_DIR}/${ACTUATION_CRY}
     cryptol-verilogc ${MODEL_DIR}/${ACTUATION_CRY} -o ${GEN_STEP_TRIP_SIGNALS_SV} \
     ${CVERILOG_FLAGS} \
 	--top-level=$(subst $(comma), --top-level=,${GEN_STEP_TRIP_SIGNALS_F})
+endif
 
 generated_vsrc/generate_sensor_trips/VGenerate_Sensor_Trips__ALL.a: generated_vsrc/step_trip_signals.sv
 	verilator --cc -Wno-WIDTH -Wno-LITENDIAN --top-module Generate_Sensor_Trips $^ \
