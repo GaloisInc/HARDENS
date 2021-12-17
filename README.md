@@ -2,6 +2,14 @@
 
 Repository for the HARDENS project for the [Nuclear Regulatory Commission](https://www.nrc.gov/about-nrc.html).
 
+The repository is structured as follows:
+
+- [specs](./specs) contains a domain model (`*.lando`, `*.lobot`), requirements
+  (exported from `FRET` to `RTS_requirements.json`), and a specification of the RTS architecture
+  (`*.sysml`).
+- [models](./models) contains the executable Cryptol model
+- [assets](./assets) and [docs](./docs) contain project and device documentation
+
 ## Submodules
 
 Initialize with:
