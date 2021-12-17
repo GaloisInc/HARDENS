@@ -140,8 +140,6 @@ Sense_Actuate inputs icmds rts =
     actuators_test : [2]Actuator
     actuators_test = [ A::SetInput (or [ logic.output @ d | logic <- test_actuation_logic ]) a | a <- rts.actuation.actuators | d <- [0...] ]
 
-    // devices_test : [2]
-    // devices_test = [A::Actuate_Device logic | logic <- logic_test ]
     test_fail    = rts.control.self_test_expect != (actuators_test @ test_dev).input
 
 MaskTripFrom: {idx} (Integral idx, Literal 0 idx) =>
