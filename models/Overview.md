@@ -62,13 +62,17 @@ behavior.
 
 ## Implementation Status
 
-- Each component in the architecture has a representation as Cryptol type and/or functions.
+- Each component in the architecture has a representation as Cryptol
+  type and/or functions.
 
-- Each Cryptol module has a set of _properties_ that are true of the model. These properties are 
-  either derived from the formal requirements (and indicated as such), or are further refinements of the
-  system behavior. These properties are all provable by `SMT` except where indicated.
+- Each Cryptol module has a set of _properties_ that are true of the
+  model. These properties are either derived from the formal
+  requirements (and indicated as such), or are further refinements of
+  the system behavior. These properties are all provable by `SMT`
+  except where indicated.
   
-- The `InstrumentationUnit` module currently uses a strawman implementation for
-  calculating the saturation margin given a temperature and pressure. The model
-  is agnostic to its actual implementation, but this will be replaced by a
-  lookup table derived from standard steam tables.
+- The `InstrumentationUnit` module currently uses a strawman
+  implementation for calculating the saturation margin given a
+  temperature and pressure. The model is agnostic to its actual
+  implementation, but this will be replaced by a lookup table derived
+  from standard steam tables.
