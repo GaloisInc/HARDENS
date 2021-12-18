@@ -8,14 +8,19 @@
 events Demonstrator External Input Actions
 
 Manually Actuate Device
+@todo TBD.
 
 Select Operating Mode
+@todo TBD.
 
 Perform Setpoint Adjustment
+@todo TBD.
 
 Configure Bypass of an Instrument Channel
+@todo TBD.
 
 Configure Active Trip Output State of an Instrument Channel
+@todo TBD.
 
 
 // External output actions are those that are triggered by internal
@@ -24,26 +29,37 @@ Configure Active Trip Output State of an Instrument Channel
 events Demonstrator External Output Actions
 
 Display Pressure
+@todo TBD.
 
 Display Temperature
+@todo TBD.
 
 Display Saturation Margin
+@todo TBD.
 
 Display Trip Output Signal State
+@todo TBD.
 
 Display Indication of Channel in Bypass
+@todo TBD.
 
 // Internal actions are those that are not triggered by external input on UI.
 events Demonstrator Internal Actions
 
 Trip on High Pressure
+@todo TBD.
 
 Trip on High Temperature
+@todo TBD.
 
 Trip on Low Saturation Margin
+@todo TBD.
 
 Vote on Like Trips using Two-out-of-four Coincidence
+@todo TBD.
 
 Automatically Actuate Device
+@todo TBD.
 
 Self-test of Safety Signal Path
+@todo TBD.
