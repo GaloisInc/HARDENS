@@ -1,6 +1,75 @@
 # HARDENS
 
+## Copyright (C) Galois 2021
+## Principal Investigator: Joe Kiniry <kiniry@galois.com>
+## Project Lead: Andrew Bivin <abivin@galois.com>
+## Research Engineers: Alexander Bakst <abakst@galois.com> and Michal Podhradsky <mpodhradsky@galois.com>
+
 Repository for the HARDENS project for the [Nuclear Regulatory Commission](https://www.nrc.gov/about-nrc.html).
+
+## Overview
+
+The goal of HARDENS is to provide to the NRC expert technical services
+in order to (1) develop a better understanding of how Model-Based
+Systems Engineering (MBSE) methods and tools can support regulatory
+reviews of adequate design and design assurance, and (2) identify any
+barriers or gaps associated with MBSE in a regulatory review of
+Digital Instrumentation and Control Systems for existing Nuclear Power
+Plants (NPPs).
+
+In the HARDENS project Galois will demonstrate to the Nuclear
+Regulatory Commission (NRC) cutting- edge capabilities in the
+model-based design, validation, and verification of safety-critical,
+mission-critical, high-assurance systems. Our demonstrator includes
+high-assurance software and hardware, includes open source RISC-V
+Central Processing Units (CPUs), and lays the groundwork for a
+high-assurance reusable product for safety critical Digital
+Instrumentation and Control Systems systems in NPPs.
+
+Details about the HARDENS project are found in our 
+[original proposal](docs/HARDENS.pdf), which was written in response 
+to the [original NRC RFP](docs/RFP.pdf).
+
+This document summarizes the current state of affairs of the project
+and demonstrator.
+
+## Task 1: Implementation
+
+As described in our proposal and the project Statement of Work, in
+Task 1 (Implementation), the first task of the HARDENS project, Galois
+will implement the system described above using both (1) highly
+integrated computer-based engineering development processes and (2)
+model-based systems engineering.  All the modules of the simple
+protection system will be modeled functionally, and one FPGA-based
+circuit card will be modeled/designed in detail. The deliverable will
+be the model-based design itself. We will use Galois’s RDE process and
+methodology to achieve this goal, as well as the V&V in Task 2.
+
+All project models---the SysMLv2 model, the executable, rigorously
+validated and formally verified Cryptol model, and the semi-formal and
+formal requirements model---are included in this release and are found
+in the `develop` branch of the repository.
+
+Also, the initial implementation of the system which runs as an
+application on a POSIX host (e.g., a Linux or macOS development
+machine or in the HARDENS Docker image) is found in the
+as-of-yet-unmerged `c-impl` branch in the HARDENS repository.  That
+implementation includes both hand-written C code conforming to the
+model-based specifications discussed above, as well as automatically
+synthesized formally verified sub-components, as described in the
+HARDENS proposal, for a small handful of critical sub-components.
+These synthesized components are generated in formally verified C
+source code and in the System Verilog HDL.
+
+Finally, we have a formally verified RISC-V CPU, called the `nerv`
+CPU, built and tested on the ECP5-5G board.  We have sketched out
+an initial three core SoC design using Bluespec SystemVerilog, but
+have not yet built that SoC for emulation or put it on the FGPA.  We
+will accomplish such early in Task 2, and cross-compile our POSIX C
+implementation to that SoC.  That ongoing work is found in the `nerv`
+branch of the repository.
+
+## Repository Structure
 
 The repository is structured as follows:
 
@@ -12,7 +81,8 @@ The repository is structured as follows:
 
 ## Submodules
 
-Initialize with:
+This repository does not currently use any submodules.  If/when it
+does, initialize with:
 
 ```
 $ git submodule init
@@ -20,6 +90,10 @@ $ git submodule update --recursive
 ```
 
 ## Docker
+
+A Docker container has been built to make for easier use, evaluation,
+reusability, and repeatibility of project results.  We are adding
+tools to this container as necessary during project execution.
 
 ### HARDENS Container
 
@@ -57,6 +131,8 @@ $ docker run -d -it --name SysMLv2 --network host -v $PWD:/HARDENS gorenje/sysml
 ```
 
 ## Lattice ECP5 evaluation board
+
+We are using an ECP5-5G FPGA board for the RTS demonstrator.
 
 Details [here](https://www.latticesemi.com/products/developmentboardsandkits/ecp5evaluationboard#_C694C444BC684AD48A3ED64C227B6455). The board uses ECP5-5G FPGA ([LFE5UM5G-85F-8BG381](https://www.latticesemi.com/en/Products/FPGAandCPLD/ECP5)) which has:
 
