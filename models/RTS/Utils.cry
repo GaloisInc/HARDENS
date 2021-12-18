@@ -1,0 +1,7 @@
+module RTS::Utils where
+
+infixl 5 >>>>
+(>>>>) x f = f x
+
+numBits: {n} (fin n) => [n] -> Integer
+numBits lst = sum [ if b then 1 else 0 | b <- lst ]

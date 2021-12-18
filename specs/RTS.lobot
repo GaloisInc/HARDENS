@@ -1,0 +1,151 @@
+-- title: Reactor Trip System high-assurance demonstrator.
+-- project: High Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS)
+-- copyright (C) 2021 Galois
+-- author: Joe Kiniry <kiniry@galois.com>
+
+nat : kind of int where self >= 0
+
+-- Our development platforms for running the RTS demonstrator in a
+-- fully virtualized (Twin) mode.  If we choose to target a real RV32,
+-- then we will be running on the bare metal.
+
+type virtualized_platform_runtime =
+  { MacOS, Linux, RV32_bare_metal, None }
+
+-- The developer boards we have to choose from.  We are using the
+-- ECP-5 5G 85F variant of the Lattice Semiconductor dev board, and if
+-- we choose to put the demonstrator on a real RV32, we will likely
+-- use the Vega board.
+
+type dev_board =
+  { LFE5UM5G_85F_EVN, RV32M1_VEGA, None }
+
+-- The ECP-5 FPGA comes in several flavors.  We are using the 5G
+-- variant for this project.  Other variants should be able to use the
+-- exact same build chain.
+
+type fpga =
+  { ECP5, ECP5_5G }
+
+-- We can assign an assurance level of every sub-component of the
+-- system.  This definition is made here to provide an enumeration of
+-- assurance levels which we will assign/update later as assurance
+-- work goes on.
+
+type assurance_level =
+  { None, Low, Medium, High }
+
+-- Every subsystem and the system overall is realized either by a
+-- physical component (e.g., a real sensor, actuator, or FPGA) or a
+-- "Digital Twin", which is a simulation/emulation of the component in
+-- question.
+
+type twin_or_physical =
+  { Twin, Physical }
+
+-- Twins come in different fidelity levels.
+
+-- "Perfect" fidelity means that our simulator/emulation is capable of
+-- executing the actual software/hardware of the system, subsystem, or
+-- component in such detail that all requirements can be validated or
+-- verified in the twin as accurately as in the physical realization.
+
+-- "High" fidelity means that we are executing the actual
+-- software/hardware in question in a simulator or emulator that
+-- replicates most, but not all, of the underlying functionality and
+-- behavior of the device in question.  For example, a cycle-accurate
+-- Verilog simulator is high-fidelity, but is not "Perfect" fidelity
+-- if we are concerned about EM side-channels.
+
+-- A "Medium" fidelity twin also executes the actual
+-- software/hardware, but elides non-behavioral properties that are
+-- critical to fulfilling all system requirements.  A hardware virtual
+-- platform (VP) or an event-based Verilog simulator or emulator are
+-- two examples of medium-fidelity digital twin environments.
+
+-- A "Low" fidelity twin is an executable model that is usually fully
+-- decoupled from the implementation.  In order for the model to be
+-- refinement-consistent with regards to more concrete models or the
+-- software/hardware implementation, all measurable properties of the
+-- model which relate to system requirements must hold through the
+-- refinement.
+
+type twin_fidelity =
+  { Low, Medium, High, Perfect }
+
+-- The feature model of the RTS demonstrator itself.
+
+-- The cost of a demonstrator is expressed in U.S. dollars and is
+-- based upon the value of the board plus all physical devices that
+-- are attached.  A purely virtualized RTS demonstrator has zero
+-- hardware cost.
+-- @todo Refine the definition of cost to be precise with regards
+-- to components chosen by the team.
+
+rts : kind of struct
+  with -- Which development board is being used?
+       board : dev_board 
+       -- How much does the hardware for this demonstrator cost in USD?
+       cost : nat
+       -- What level of assurance does the demonstrator have overall?
+       assurance : assurance_level
+       -- Is the FPGA being twinned via a Verilog simulator/emulator?
+       soc : twin_or_physical
+       -- Is the first tempurature sensor a twin or physically present?
+       ts1 : twin_or_physical
+       -- Is the second tempurature sensor a twin or physically present?
+       ts2 : twin_or_physical
+       -- Is the first pressure sensor a twin or physically present?
+       ps1 : twin_or_physical
+       -- Is the second pressure sensor a twin or physically present?
+       ps2 : twin_or_physical
+       -- Is the first actuator a twin or physically present?
+       sa1 : twin_or_physical
+       -- Is the second actuator a twin or physically present?
+       sa2 : twin_or_physical
+       -- Are all devices twins?
+       all_devices_twins : bool
+       -- Is this instance of the RTS fully virtualized and running only in software?
+       virtualized_platform_rt : bool
+       -- What development platform is being used to run this fully virtualized twin?
+       rt : virtualized_platform_runtime
+  where
+    cost = 0 | cost = 100 | cost = 200
+    all_devices_twins <=> ((ts1 = Twin) & (ts2 = Twin) & (ps1 = Twin) & (ps2 = Twin) & (sa1 = Twin) & (sa2 = Twin))
+    (soc = Twin) => all_devices_twins
+    virtualized_platform_rt <=> ((soc = Twin) & (board = RV32M1_VEGA) & (rt = None)) ^ ((soc = Twin) & (board = None))
+
+-- @design kiniry This feature model needs to be further enriched to
+-- capture the design, nature, and assuance of the RTS architecture's
+-- primary subsystems and components.  We will perform that
+-- refinement after writing the RTS SysML system architecture.
+
+-- @issue Refine feature model to reflect system architecture.
+
+-- @design kiniry There are likely additional constraints to add to
+-- this feature model.  Some things to think about include: whether or
+-- not we want to support twins for arbitrary subset of devices, do we
+-- want to support the use of an RV32 development board attached to
+-- the physical devices, and what is the assurance of the RTS given
+-- the assurance of its constituant parts?
+
+-- @issue Refine feature model constraints after RTS models are
+-- written.
+
+-- There are 16 configurations of virtualized configurations.
+
+-- @issue Ensure that all build configurations are supported by RTS
+-- build system.
+
+virtualized_rts_configs : kind of rts
+  where all_devices_twins = true & cost = 0 & board = None & virtualized_platform_rt = true
+
+-- @todo Feature model checks go below.  An example check is included.
+
+-- @issue Refine feature model checks to reflect final architecture,
+-- requirements, and RTS demonstrator assurance.
+
+-- Virtualized builds do not need a development board.
+check_twin_build_configs : check
+   on c : virtualized_rts_configs
+   that c.board = None

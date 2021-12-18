@@ -1,0 +1,18 @@
+:m RTS::InstrumentationUnit
+:prove
+
+:m RTS::ActuationUnit
+:prove
+
+:m RTS
+:prove sense_to_actuate_0
+:prove sense_to_actuate_1
+
+:prove end_to_end_test T
+:prove end_to_end_test P
+:prove end_to_end_test_non_interference
+:prove test_instrumentation_ok
+:prove test_voting_ok
+
+:set tests = 100000
+:check end_to_end_test S

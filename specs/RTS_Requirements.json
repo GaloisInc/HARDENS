@@ -1,0 +1,1403 @@
+[
+    {
+        "reqid": "INSTRUMENTATION_SET_MANUAL_TRIP_TEMPERATURE",
+        "parent_reqid": "INSTRUMENTATION_TRIP_TEMPERATURE",
+        "project": "HARDENS",
+        "rationale": "RFP [10]",
+        "comments": "",
+        "fulltext": "Upon MAINTENANCE & TEMPERATURE_MODE = 2 Instrumentation shall, until MAINTENANCE & !(TEMPERATURE_MODE = 2), satisfy TRIP_TEMPERATURE",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "MAINTENANCE",
+                "TEMPERATURE_MODE",
+                "TRIP_TEMPERATURE"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(MAINTENANCE & TEMPERATURE_MODE = 2)",
+            "regular_condition": "(MAINTENANCE & TEMPERATURE_MODE = 2)",
+            "conditionTextRange": [
+                0,
+                38
+            ],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                40,
+                54
+            ],
+            "stop_condition": "(MAINTENANCE & ! ( TEMPERATURE_MODE = 2 ))",
+            "timingTextRange": [
+                61,
+                106
+            ],
+            "post_condition": "(TRIP_TEMPERATURE)",
+            "responseTextRange": [
+                108,
+                131
+            ],
+            "ft": "((LAST V (((! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 2 ))</i></b> V (<b><i>(TRIP_TEMPERATURE)</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 2 ))</i></b>)) | (LAST V <b><i>(TRIP_TEMPERATURE)</i></b>))))) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b> -> ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 2 ))</i></b> V (<b><i>(TRIP_TEMPERATURE)</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 2 ))</i></b>)) | (LAST V <b><i>(TRIP_TEMPERATURE)</i></b>))))",
+            "pt": "(H ((H (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 2 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 2 ))</i></b>) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b> & ((Y (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b>)) | FTP)))) -> <b><i>(TRIP_TEMPERATURE)</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 2 ))</i></b> V (<b><i>(TRIP_TEMPERATURE)</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 2 ))</i></b>)) | (LAST V <b><i>(TRIP_TEMPERATURE)</i></b>))))) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b> -> ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 2 ))</i></b> V (<b><i>(TRIP_TEMPERATURE)</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 2 ))</i></b>)) | (LAST V <b><i>(TRIP_TEMPERATURE)</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 2 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 2 ))</i></b>) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b> & ((Y (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(TRIP_TEMPERATURE)</i></b>)))",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((H( not (MAINTENANCE and TEMPERATURE_MODE = 2))) or ((SI( ((MAINTENANCE and TEMPERATURE_MODE = 2) and ((pre ( not (MAINTENANCE and TEMPERATURE_MODE = 2))) or FTP)), ( not (MAINTENANCE and not ( TEMPERATURE_MODE = 2 ))) )) => (TRIP_TEMPERATURE))))",
+            "diagramVariables": "TC = <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b>, SC = <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 2 ))</i></b>, Response = <b><i>(TRIP_TEMPERATURE)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8cdcf310-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_SENSOR_TRIP_PRESSURE",
+        "parent_reqid": "INSTRUMENTATION_TRIP_PRESSURE",
+        "project": "HARDENS",
+        "rationale": "RFP [1]",
+        "comments": "",
+        "fulltext": "Upon MAINTENANCE & PRESSURE_MODE = 1 Instrumentation shall, until MAINTENANCE & !(PRESSURE_MODE = 1), satisfy (if SENSOR_PRESSURE > SETPOINT_PRESSURE then TRIP_PRESSURE) & (if TRIP_PRESSURE then SENSOR_PRESSURE > SETPOINT_PRESSURE)",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "MAINTENANCE",
+                "PRESSURE_MODE",
+                "SENSOR_PRESSURE",
+                "SETPOINT_PRESSURE",
+                "TRIP_PRESSURE"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(MAINTENANCE & PRESSURE_MODE = 1)",
+            "regular_condition": "(MAINTENANCE & PRESSURE_MODE = 1)",
+            "conditionTextRange": [
+                0,
+                35
+            ],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                37,
+                51
+            ],
+            "stop_condition": "(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))",
+            "timingTextRange": [
+                58,
+                100
+            ],
+            "post_condition": "(( SENSOR_PRESSURE > SETPOINT_PRESSURE => TRIP_PRESSURE ) & ( TRIP_PRESSURE => SENSOR_PRESSURE > SETPOINT_PRESSURE ))",
+            "responseTextRange": [
+                102,
+                230
+            ],
+            "ft": "((LAST V (((! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b>))))) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> -> ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b>))))",
+            "pt": "(H ((H (! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> & ((Y (! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>)) | FTP)))) -> <b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b>))))) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> -> ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> & ((Y (! <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE -> TRIP_PRESSURE ) & ( TRIP_PRESSURE -> SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b>)))",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((H( not (MAINTENANCE and PRESSURE_MODE = 1))) or ((SI( ((MAINTENANCE and PRESSURE_MODE = 1) and ((pre ( not (MAINTENANCE and PRESSURE_MODE = 1))) or FTP)), ( not (MAINTENANCE and not ( PRESSURE_MODE = 1 ))) )) => (( SENSOR_PRESSURE > SETPOINT_PRESSURE => TRIP_PRESSURE ) and ( TRIP_PRESSURE => SENSOR_PRESSURE > SETPOINT_PRESSURE )))))",
+            "diagramVariables": "TC = <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b>, SC = <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 1 ))</i></b>, Response = <b><i>(( SENSOR_PRESSURE > SETPOINT_PRESSURE => TRIP_PRESSURE ) & ( TRIP_PRESSURE => SENSOR_PRESSURE > SETPOINT_PRESSURE ))</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8cdd1a20-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_SET_SETPOINT_PRESSURE",
+        "parent_reqid": "INSTRUMENTATION_TRIP_PRESSURE",
+        "project": "HARDENS",
+        "rationale": "RFP [8]",
+        "comments": "",
+        "fulltext": "Upon (MAINTENANCE & SET_SETPOINT_PRESSURE) Instrumentation shall, until MAINTENANCE & SET_SETPOINT_PRESSURE, satisfy SETPOINT_PRESSURE = INPUT_SETPOINT_PRESSURE",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "MAINTENANCE",
+                "SET_SETPOINT_PRESSURE",
+                "SETPOINT_PRESSURE",
+                "INPUT_SETPOINT_PRESSURE"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(( MAINTENANCE & SET_SETPOINT_PRESSURE ))",
+            "regular_condition": "(( MAINTENANCE & SET_SETPOINT_PRESSURE ))",
+            "conditionTextRange": [
+                0,
+                41
+            ],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                43,
+                57
+            ],
+            "stop_condition": "(MAINTENANCE & SET_SETPOINT_PRESSURE)",
+            "timingTextRange": [
+                64,
+                107
+            ],
+            "post_condition": "(SETPOINT_PRESSURE = INPUT_SETPOINT_PRESSURE)",
+            "responseTextRange": [
+                109,
+                159
+            ],
+            "ft": "((LAST V (((! <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b>) & ((! LAST) & (X <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b>))) -> (X ((<b><i>(MAINTENANCE & SET_SETPOINT_PRESSURE)</i></b> V (<b><i>(SETPOINT_PRESSURE = INPUT_SETPOINT_PRESSURE)</i></b> | <b><i>(MAINTENANCE & SET_SETPOINT_PRESSURE)</i></b>)) | (LAST V <b><i>(SETPOINT_PRESSURE = INPUT_SETPOINT_PRESSURE)</i></b>))))) & (<b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b> -> ((<b><i>(MAINTENANCE & SET_SETPOINT_PRESSURE)</i></b> V (<b><i>(SETPOINT_PRESSURE = INPUT_SETPOINT_PRESSURE)</i></b> | <b><i>(MAINTENANCE & SET_SETPOINT_PRESSURE)</i></b>)) | (LAST V <b><i>(SETPOINT_PRESSURE = INPUT_SETPOINT_PRESSURE)</i></b>))))",
+            "pt": "(H ((H (! <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b>)) | (((! <b><i>(MAINTENANCE & SET_SETPOINT_PRESSURE)</i></b>) S ((! <b><i>(MAINTENANCE & SET_SETPOINT_PRESSURE)</i></b>) & (<b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b> & ((Y (! <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b>)) | FTP)))) -> <b><i>(SETPOINT_PRESSURE = INPUT_SETPOINT_PRESSURE)</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b>) & ((! LAST) & (X <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b>))) -> (X ((<b><i>(MAINTENANCE & SET_SETPOINT_PRESSURE)</i></b> V (<b><i>(SETPOINT_PRESSURE = INPUT_SETPOINT_PRESSURE)</i></b> | <b><i>(MAINTENANCE & SET_SETPOINT_PRESSURE)</i></b>)) | (LAST V <b><i>(SETPOINT_PRESSURE = INPUT_SETPOINT_PRESSURE)</i></b>))))) & (<b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b> -> ((<b><i>(MAINTENANCE & SET_SETPOINT_PRESSURE)</i></b> V (<b><i>(SETPOINT_PRESSURE = INPUT_SETPOINT_PRESSURE)</i></b> | <b><i>(MAINTENANCE & SET_SETPOINT_PRESSURE)</i></b>)) | (LAST V <b><i>(SETPOINT_PRESSURE = INPUT_SETPOINT_PRESSURE)</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b>)) | (((! <b><i>(MAINTENANCE & SET_SETPOINT_PRESSURE)</i></b>) S ((! <b><i>(MAINTENANCE & SET_SETPOINT_PRESSURE)</i></b>) & (<b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b> & ((Y (! <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b>)) | (! (Y TRUE)))))) -> <b><i>(SETPOINT_PRESSURE = INPUT_SETPOINT_PRESSURE)</i></b>)))",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((H( not (( MAINTENANCE and SET_SETPOINT_PRESSURE )))) or ((SI( ((( MAINTENANCE and SET_SETPOINT_PRESSURE )) and ((pre ( not (( MAINTENANCE and SET_SETPOINT_PRESSURE )))) or FTP)), ( not (MAINTENANCE and SET_SETPOINT_PRESSURE)) )) => (SETPOINT_PRESSURE = INPUT_SETPOINT_PRESSURE))))",
+            "diagramVariables": "TC = <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b>, SC = <b><i>(MAINTENANCE & SET_SETPOINT_PRESSURE)</i></b>, Response = <b><i>(SETPOINT_PRESSURE = INPUT_SETPOINT_PRESSURE)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b> is true and any point in the interval where <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8ce111c0-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_SENSOR_TRIP_SATURATION",
+        "parent_reqid": "INSTRUMENTATION_TRIP_SATURATION",
+        "project": "HARDENS",
+        "rationale": "RFP [3]",
+        "comments": "",
+        "fulltext": "Upon MAINTENANCE & SATURATION_MODE = 1 Instrumentation shall, until MAINTENANCE & !(SATURATION_MODE = 1) satisfy (if SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION then TRIP_SATURATION) & (if TRIP_SATURATION then SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION)",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "MAINTENANCE",
+                "SATURATION_MODE",
+                "SATURATION_FUNCTION_VALUE",
+                "SETPOINT_SATURATION",
+                "TRIP_SATURATION"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(MAINTENANCE & SATURATION_MODE = 1)",
+            "regular_condition": "(MAINTENANCE & SATURATION_MODE = 1)",
+            "conditionTextRange": [
+                0,
+                37
+            ],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                39,
+                53
+            ],
+            "stop_condition": "(MAINTENANCE & ! ( SATURATION_MODE = 1 ))",
+            "timingTextRange": [
+                60,
+                103
+            ],
+            "post_condition": "(( SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION => TRIP_SATURATION ) & ( TRIP_SATURATION => SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION ))",
+            "responseTextRange": [
+                105,
+                261
+            ],
+            "ft": "((LAST V (((! <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( SATURATION_MODE = 1 ))</i></b> V (<b><i>(( SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION -> TRIP_SATURATION ) & ( TRIP_SATURATION -> SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION ))</i></b> | <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION -> TRIP_SATURATION ) & ( TRIP_SATURATION -> SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION ))</i></b>))))) & (<b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b> -> ((<b><i>(MAINTENANCE & ! ( SATURATION_MODE = 1 ))</i></b> V (<b><i>(( SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION -> TRIP_SATURATION ) & ( TRIP_SATURATION -> SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION ))</i></b> | <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION -> TRIP_SATURATION ) & ( TRIP_SATURATION -> SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION ))</i></b>))))",
+            "pt": "(H ((H (! <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 1 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 1 ))</i></b>) & (<b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b> & ((Y (! <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b>)) | FTP)))) -> <b><i>(( SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION -> TRIP_SATURATION ) & ( TRIP_SATURATION -> SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION ))</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( SATURATION_MODE = 1 ))</i></b> V (<b><i>(( SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION -> TRIP_SATURATION ) & ( TRIP_SATURATION -> SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION ))</i></b> | <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION -> TRIP_SATURATION ) & ( TRIP_SATURATION -> SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION ))</i></b>))))) & (<b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b> -> ((<b><i>(MAINTENANCE & ! ( SATURATION_MODE = 1 ))</i></b> V (<b><i>(( SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION -> TRIP_SATURATION ) & ( TRIP_SATURATION -> SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION ))</i></b> | <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION -> TRIP_SATURATION ) & ( TRIP_SATURATION -> SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION ))</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 1 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 1 ))</i></b>) & (<b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b> & ((Y (! <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(( SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION -> TRIP_SATURATION ) & ( TRIP_SATURATION -> SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION ))</i></b>)))",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((H( not (MAINTENANCE and SATURATION_MODE = 1))) or ((SI( ((MAINTENANCE and SATURATION_MODE = 1) and ((pre ( not (MAINTENANCE and SATURATION_MODE = 1))) or FTP)), ( not (MAINTENANCE and not ( SATURATION_MODE = 1 ))) )) => (( SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION => TRIP_SATURATION ) and ( TRIP_SATURATION => SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION )))))",
+            "diagramVariables": "TC = <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b>, SC = <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 1 ))</i></b>, Response = <b><i>(( SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION => TRIP_SATURATION ) & ( TRIP_SATURATION => SATURATION_FUNCTION_VALUE < SETPOINT_SATURATION ))</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8ce15fe0-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_SET_MANUAL_TRIP_PRESSURE",
+        "parent_reqid": "INSTRUMENTATION_TRIP_PRESSURE",
+        "project": "HARDENS",
+        "rationale": "RFP [10]",
+        "comments": "",
+        "fulltext": "Upon MAINTENANCE & PRESSURE_MODE = 2 Instrumentation shall, until MAINTENANCE & !(PRESSURE_MODE = 2), satisfy TRIP_PRESSURE",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "MAINTENANCE",
+                "PRESSURE_MODE",
+                "TRIP_PRESSURE"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(MAINTENANCE & PRESSURE_MODE = 2)",
+            "regular_condition": "(MAINTENANCE & PRESSURE_MODE = 2)",
+            "conditionTextRange": [
+                0,
+                35
+            ],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                37,
+                51
+            ],
+            "stop_condition": "(MAINTENANCE & ! ( PRESSURE_MODE = 2 ))",
+            "timingTextRange": [
+                58,
+                100
+            ],
+            "post_condition": "(TRIP_PRESSURE)",
+            "responseTextRange": [
+                102,
+                122
+            ],
+            "ft": "((LAST V (((! <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 2 ))</i></b> V (<b><i>(TRIP_PRESSURE)</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 2 ))</i></b>)) | (LAST V <b><i>(TRIP_PRESSURE)</i></b>))))) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b> -> ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 2 ))</i></b> V (<b><i>(TRIP_PRESSURE)</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 2 ))</i></b>)) | (LAST V <b><i>(TRIP_PRESSURE)</i></b>))))",
+            "pt": "(H ((H (! <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 2 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 2 ))</i></b>) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b> & ((Y (! <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b>)) | FTP)))) -> <b><i>(TRIP_PRESSURE)</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 2 ))</i></b> V (<b><i>(TRIP_PRESSURE)</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 2 ))</i></b>)) | (LAST V <b><i>(TRIP_PRESSURE)</i></b>))))) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b> -> ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 2 ))</i></b> V (<b><i>(TRIP_PRESSURE)</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 2 ))</i></b>)) | (LAST V <b><i>(TRIP_PRESSURE)</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 2 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 2 ))</i></b>) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b> & ((Y (! <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(TRIP_PRESSURE)</i></b>)))",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((H( not (MAINTENANCE and PRESSURE_MODE = 2))) or ((SI( ((MAINTENANCE and PRESSURE_MODE = 2) and ((pre ( not (MAINTENANCE and PRESSURE_MODE = 2))) or FTP)), ( not (MAINTENANCE and not ( PRESSURE_MODE = 2 ))) )) => (TRIP_PRESSURE))))",
+            "diagramVariables": "TC = <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b>, SC = <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 2 ))</i></b>, Response = <b><i>(TRIP_PRESSURE)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8ce1ae00-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_SET_BYPASS_SATURATION",
+        "parent_reqid": "INSTRUMENTATION_TRIP_SATURATION",
+        "project": "HARDENS",
+        "rationale": "",
+        "comments": "",
+        "fulltext": "Upon MAINTENANCE & SATURATION_MODE = 0 Instrumentation shall, until MAINTENANCE & !(SATURATION_MODE = 0), satisfy !TRIP_SATURATION",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "MAINTENANCE",
+                "SATURATION_MODE",
+                "TRIP_SATURATION"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(MAINTENANCE & SATURATION_MODE = 0)",
+            "regular_condition": "(MAINTENANCE & SATURATION_MODE = 0)",
+            "conditionTextRange": [
+                0,
+                37
+            ],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                39,
+                53
+            ],
+            "stop_condition": "(MAINTENANCE & ! ( SATURATION_MODE = 0 ))",
+            "timingTextRange": [
+                60,
+                104
+            ],
+            "post_condition": "(! TRIP_SATURATION)",
+            "responseTextRange": [
+                106,
+                129
+            ],
+            "ft": "((LAST V (((! <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( SATURATION_MODE = 0 ))</i></b> V (<b><i>(! TRIP_SATURATION)</i></b> | <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 0 ))</i></b>)) | (LAST V <b><i>(! TRIP_SATURATION)</i></b>))))) & (<b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b> -> ((<b><i>(MAINTENANCE & ! ( SATURATION_MODE = 0 ))</i></b> V (<b><i>(! TRIP_SATURATION)</i></b> | <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 0 ))</i></b>)) | (LAST V <b><i>(! TRIP_SATURATION)</i></b>))))",
+            "pt": "(H ((H (! <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 0 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 0 ))</i></b>) & (<b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b> & ((Y (! <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b>)) | FTP)))) -> <b><i>(! TRIP_SATURATION)</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( SATURATION_MODE = 0 ))</i></b> V (<b><i>(! TRIP_SATURATION)</i></b> | <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 0 ))</i></b>)) | (LAST V <b><i>(! TRIP_SATURATION)</i></b>))))) & (<b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b> -> ((<b><i>(MAINTENANCE & ! ( SATURATION_MODE = 0 ))</i></b> V (<b><i>(! TRIP_SATURATION)</i></b> | <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 0 ))</i></b>)) | (LAST V <b><i>(! TRIP_SATURATION)</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 0 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 0 ))</i></b>) & (<b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b> & ((Y (! <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(! TRIP_SATURATION)</i></b>)))",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((H( not (MAINTENANCE and SATURATION_MODE = 0))) or ((SI( ((MAINTENANCE and SATURATION_MODE = 0) and ((pre ( not (MAINTENANCE and SATURATION_MODE = 0))) or FTP)), ( not (MAINTENANCE and not ( SATURATION_MODE = 0 ))) )) => (not TRIP_SATURATION))))",
+            "diagramVariables": "TC = <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b>, SC = <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 0 ))</i></b>, Response = <b><i>(! TRIP_SATURATION)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8ce1fc20-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "ACTUATION_LOGIC_DEVICE_0",
+        "parent_reqid": "",
+        "project": "HARDENS",
+        "rationale": "RFP [5, 6]",
+        "comments": "",
+        "fulltext": "Actuation_Logic shall always satisfy ((VOTE_ACTUATE_DEVICE_0 | MANUAL_ACTUATE_DEVICE_0) => ACTUATE_DEVICE_0) & (ACTUATE_DEVICE_0 => (VOTE_ACTUATE_DEVICE_0 | MANUAL_ACTUATE_DEVICE_0))",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "null",
+            "timing": "always",
+            "response": "satisfaction",
+            "variables": [
+                "VOTE_ACTUATE_DEVICE_0",
+                "MANUAL_ACTUATE_DEVICE_0",
+                "ACTUATE_DEVICE_0"
+            ],
+            "component_name": "Actuation_Logic",
+            "componentTextRange": [
+                0,
+                14
+            ],
+            "timingTextRange": [
+                22,
+                27
+            ],
+            "post_condition": "(( ( VOTE_ACTUATE_DEVICE_0 | MANUAL_ACTUATE_DEVICE_0 ) => ACTUATE_DEVICE_0 ) & ( ACTUATE_DEVICE_0 => ( VOTE_ACTUATE_DEVICE_0 | MANUAL_ACTUATE_DEVICE_0 ) ))",
+            "responseTextRange": [
+                29,
+                181
+            ],
+            "ft": "(LAST V <b><i>(( ( VOTE_ACTUATE_DEVICE_0 | MANUAL_ACTUATE_DEVICE_0 ) -> ACTUATE_DEVICE_0 ) & ( ACTUATE_DEVICE_0 -> ( VOTE_ACTUATE_DEVICE_0 | MANUAL_ACTUATE_DEVICE_0 ) ))</i></b>)",
+            "pt": "(H <b><i>(( ( VOTE_ACTUATE_DEVICE_0 | MANUAL_ACTUATE_DEVICE_0 ) -> ACTUATE_DEVICE_0 ) & ( ACTUATE_DEVICE_0 -> ( VOTE_ACTUATE_DEVICE_0 | MANUAL_ACTUATE_DEVICE_0 ) ))</i></b>)",
+            "ftExpanded": "(LAST V <b><i>(( ( VOTE_ACTUATE_DEVICE_0 | MANUAL_ACTUATE_DEVICE_0 ) -> ACTUATE_DEVICE_0 ) & ( ACTUATE_DEVICE_0 -> ( VOTE_ACTUATE_DEVICE_0 | MANUAL_ACTUATE_DEVICE_0 ) ))</i></b>)",
+            "ptExpanded": "(H <b><i>(( ( VOTE_ACTUATE_DEVICE_0 | MANUAL_ACTUATE_DEVICE_0 ) -> ACTUATE_DEVICE_0 ) & ( ACTUATE_DEVICE_0 -> ( VOTE_ACTUATE_DEVICE_0 | MANUAL_ACTUATE_DEVICE_0 ) ))</i></b>)",
+            "component": "<b><i>Actuation_Logic</i></b>",
+            "CoCoSpecCode": "(H((( ( VOTE_ACTUATE_DEVICE_0 or MANUAL_ACTUATE_DEVICE_0 ) => ACTUATE_DEVICE_0 ) and ( ACTUATE_DEVICE_0 => ( VOTE_ACTUATE_DEVICE_0 or MANUAL_ACTUATE_DEVICE_0 ) ))))",
+            "diagramVariables": "Response = <b><i>(( ( VOTE_ACTUATE_DEVICE_0 | MANUAL_ACTUATE_DEVICE_0 ) => ACTUATE_DEVICE_0 ) & ( ACTUATE_DEVICE_0 => ( VOTE_ACTUATE_DEVICE_0 | MANUAL_ACTUATE_DEVICE_0 ) ))</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
+        },
+        "_id": "8ce24a40-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_SET_SETPOINT_SATURATION",
+        "parent_reqid": "INSTRUMENTATION_TRIP_SATURATION",
+        "project": "HARDENS",
+        "rationale": "RFP [8]",
+        "comments": "",
+        "fulltext": "Upon (MAINTENANCE & SET_SETPOINT_SATURATION) Instrumentation shall, until MAINTENANCE & SET_SETPOINT_SATURATION, satisfy SETPOINT_SATURATION = INPUT_SETPOINT_SATURATION",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "MAINTENANCE",
+                "SET_SETPOINT_SATURATION",
+                "SETPOINT_SATURATION",
+                "INPUT_SETPOINT_SATURATION"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(( MAINTENANCE & SET_SETPOINT_SATURATION ))",
+            "regular_condition": "(( MAINTENANCE & SET_SETPOINT_SATURATION ))",
+            "conditionTextRange": [
+                0,
+                43
+            ],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                45,
+                59
+            ],
+            "stop_condition": "(MAINTENANCE & SET_SETPOINT_SATURATION)",
+            "timingTextRange": [
+                66,
+                111
+            ],
+            "post_condition": "(SETPOINT_SATURATION = INPUT_SETPOINT_SATURATION)",
+            "responseTextRange": [
+                113,
+                167
+            ],
+            "ft": "((LAST V (((! <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b>) & ((! LAST) & (X <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b>))) -> (X ((<b><i>(MAINTENANCE & SET_SETPOINT_SATURATION)</i></b> V (<b><i>(SETPOINT_SATURATION = INPUT_SETPOINT_SATURATION)</i></b> | <b><i>(MAINTENANCE & SET_SETPOINT_SATURATION)</i></b>)) | (LAST V <b><i>(SETPOINT_SATURATION = INPUT_SETPOINT_SATURATION)</i></b>))))) & (<b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b> -> ((<b><i>(MAINTENANCE & SET_SETPOINT_SATURATION)</i></b> V (<b><i>(SETPOINT_SATURATION = INPUT_SETPOINT_SATURATION)</i></b> | <b><i>(MAINTENANCE & SET_SETPOINT_SATURATION)</i></b>)) | (LAST V <b><i>(SETPOINT_SATURATION = INPUT_SETPOINT_SATURATION)</i></b>))))",
+            "pt": "(H ((H (! <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b>)) | (((! <b><i>(MAINTENANCE & SET_SETPOINT_SATURATION)</i></b>) S ((! <b><i>(MAINTENANCE & SET_SETPOINT_SATURATION)</i></b>) & (<b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b> & ((Y (! <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b>)) | FTP)))) -> <b><i>(SETPOINT_SATURATION = INPUT_SETPOINT_SATURATION)</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b>) & ((! LAST) & (X <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b>))) -> (X ((<b><i>(MAINTENANCE & SET_SETPOINT_SATURATION)</i></b> V (<b><i>(SETPOINT_SATURATION = INPUT_SETPOINT_SATURATION)</i></b> | <b><i>(MAINTENANCE & SET_SETPOINT_SATURATION)</i></b>)) | (LAST V <b><i>(SETPOINT_SATURATION = INPUT_SETPOINT_SATURATION)</i></b>))))) & (<b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b> -> ((<b><i>(MAINTENANCE & SET_SETPOINT_SATURATION)</i></b> V (<b><i>(SETPOINT_SATURATION = INPUT_SETPOINT_SATURATION)</i></b> | <b><i>(MAINTENANCE & SET_SETPOINT_SATURATION)</i></b>)) | (LAST V <b><i>(SETPOINT_SATURATION = INPUT_SETPOINT_SATURATION)</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b>)) | (((! <b><i>(MAINTENANCE & SET_SETPOINT_SATURATION)</i></b>) S ((! <b><i>(MAINTENANCE & SET_SETPOINT_SATURATION)</i></b>) & (<b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b> & ((Y (! <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b>)) | (! (Y TRUE)))))) -> <b><i>(SETPOINT_SATURATION = INPUT_SETPOINT_SATURATION)</i></b>)))",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((H( not (( MAINTENANCE and SET_SETPOINT_SATURATION )))) or ((SI( ((( MAINTENANCE and SET_SETPOINT_SATURATION )) and ((pre ( not (( MAINTENANCE and SET_SETPOINT_SATURATION )))) or FTP)), ( not (MAINTENANCE and SET_SETPOINT_SATURATION)) )) => (SETPOINT_SATURATION = INPUT_SETPOINT_SATURATION))))",
+            "diagramVariables": "TC = <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b>, SC = <b><i>(MAINTENANCE & SET_SETPOINT_SATURATION)</i></b>, Response = <b><i>(SETPOINT_SATURATION = INPUT_SETPOINT_SATURATION)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b> is true and any point in the interval where <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8ce29860-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_SET_BYPASS_PRESSURE",
+        "parent_reqid": "INSTRUMENTATION_TRIP_PRESSURE",
+        "project": "HARDENS",
+        "rationale": "RFP [9]",
+        "comments": "",
+        "fulltext": "Upon MAINTENANCE & PRESSURE_MODE = 0 Instrumentation shall, until MAINTENANCE & !(PRESSURE_MODE = 0), satisfy !TRIP_PRESSURE",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "MAINTENANCE",
+                "PRESSURE_MODE",
+                "TRIP_PRESSURE"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(MAINTENANCE & PRESSURE_MODE = 0)",
+            "regular_condition": "(MAINTENANCE & PRESSURE_MODE = 0)",
+            "conditionTextRange": [
+                0,
+                35
+            ],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                37,
+                51
+            ],
+            "stop_condition": "(MAINTENANCE & ! ( PRESSURE_MODE = 0 ))",
+            "timingTextRange": [
+                58,
+                100
+            ],
+            "post_condition": "(! TRIP_PRESSURE)",
+            "responseTextRange": [
+                102,
+                123
+            ],
+            "ft": "((LAST V (((! <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 0 ))</i></b> V (<b><i>(! TRIP_PRESSURE)</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 0 ))</i></b>)) | (LAST V <b><i>(! TRIP_PRESSURE)</i></b>))))) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b> -> ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 0 ))</i></b> V (<b><i>(! TRIP_PRESSURE)</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 0 ))</i></b>)) | (LAST V <b><i>(! TRIP_PRESSURE)</i></b>))))",
+            "pt": "(H ((H (! <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 0 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 0 ))</i></b>) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b> & ((Y (! <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b>)) | FTP)))) -> <b><i>(! TRIP_PRESSURE)</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 0 ))</i></b> V (<b><i>(! TRIP_PRESSURE)</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 0 ))</i></b>)) | (LAST V <b><i>(! TRIP_PRESSURE)</i></b>))))) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b> -> ((<b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 0 ))</i></b> V (<b><i>(! TRIP_PRESSURE)</i></b> | <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 0 ))</i></b>)) | (LAST V <b><i>(! TRIP_PRESSURE)</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 0 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 0 ))</i></b>) & (<b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b> & ((Y (! <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(! TRIP_PRESSURE)</i></b>)))",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((H( not (MAINTENANCE and PRESSURE_MODE = 0))) or ((SI( ((MAINTENANCE and PRESSURE_MODE = 0) and ((pre ( not (MAINTENANCE and PRESSURE_MODE = 0))) or FTP)), ( not (MAINTENANCE and not ( PRESSURE_MODE = 0 ))) )) => (not TRIP_PRESSURE))))",
+            "diagramVariables": "TC = <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b>, SC = <b><i>(MAINTENANCE & ! ( PRESSURE_MODE = 0 ))</i></b>, Response = <b><i>(! TRIP_PRESSURE)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8ce2e680-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_SET_MANUAL_TRIP_SATURATION",
+        "parent_reqid": "INSTRUMENTATION_TRIP_SATURATION",
+        "project": "HARDENS",
+        "rationale": "RFP [10]",
+        "comments": "",
+        "fulltext": "Upon MAINTENANCE & SATURATION_MODE = 2 Instrumentation shall, until MAINTENANCE & !(SATURATION_MODE = 2), satisfy TRIP_SATURATION",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "MAINTENANCE",
+                "SATURATION_MODE",
+                "TRIP_SATURATION"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(MAINTENANCE & SATURATION_MODE = 2)",
+            "regular_condition": "(MAINTENANCE & SATURATION_MODE = 2)",
+            "conditionTextRange": [
+                0,
+                37
+            ],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                39,
+                53
+            ],
+            "stop_condition": "(MAINTENANCE & ! ( SATURATION_MODE = 2 ))",
+            "timingTextRange": [
+                60,
+                104
+            ],
+            "post_condition": "(TRIP_SATURATION)",
+            "responseTextRange": [
+                106,
+                128
+            ],
+            "ft": "((LAST V (((! <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( SATURATION_MODE = 2 ))</i></b> V (<b><i>(TRIP_SATURATION)</i></b> | <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 2 ))</i></b>)) | (LAST V <b><i>(TRIP_SATURATION)</i></b>))))) & (<b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b> -> ((<b><i>(MAINTENANCE & ! ( SATURATION_MODE = 2 ))</i></b> V (<b><i>(TRIP_SATURATION)</i></b> | <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 2 ))</i></b>)) | (LAST V <b><i>(TRIP_SATURATION)</i></b>))))",
+            "pt": "(H ((H (! <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 2 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 2 ))</i></b>) & (<b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b> & ((Y (! <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b>)) | FTP)))) -> <b><i>(TRIP_SATURATION)</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( SATURATION_MODE = 2 ))</i></b> V (<b><i>(TRIP_SATURATION)</i></b> | <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 2 ))</i></b>)) | (LAST V <b><i>(TRIP_SATURATION)</i></b>))))) & (<b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b> -> ((<b><i>(MAINTENANCE & ! ( SATURATION_MODE = 2 ))</i></b> V (<b><i>(TRIP_SATURATION)</i></b> | <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 2 ))</i></b>)) | (LAST V <b><i>(TRIP_SATURATION)</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 2 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 2 ))</i></b>) & (<b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b> & ((Y (! <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(TRIP_SATURATION)</i></b>)))",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((H( not (MAINTENANCE and SATURATION_MODE = 2))) or ((SI( ((MAINTENANCE and SATURATION_MODE = 2) and ((pre ( not (MAINTENANCE and SATURATION_MODE = 2))) or FTP)), ( not (MAINTENANCE and not ( SATURATION_MODE = 2 ))) )) => (TRIP_SATURATION))))",
+            "diagramVariables": "TC = <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b>, SC = <b><i>(MAINTENANCE & ! ( SATURATION_MODE = 2 ))</i></b>, Response = <b><i>(TRIP_SATURATION)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8ce334a0-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "ACTUATION_LOGIC_VOTE_TEMPERATURE",
+        "parent_reqid": "ACTUATION_LOGIC_VOTE_DEVICE_0",
+        "project": "HARDENS",
+        "rationale": "RFP Actuation Logic Architecture, [2,4]",
+        "comments": "",
+        "fulltext": "Actuation_Logic shall always satisfy (((TRIP_TEMPERATURE_0 & TRIP_TEMPERATURE_1) | ((TRIP_TEMPERATURE_0 | TRIP_TEMPERATURE_1) & (TRIP_TEMPERATURE_2 | TRIP_TEMPERATURE_3)) | (TRIP_TEMPERATURE_2 & TRIP_TEMPERATURE_3)) => VOTE_TRIP_TEMPERATURE) & (VOTE_TRIP_TEMPERATURE => ((TRIP_TEMPERATURE_0 & TRIP_TEMPERATURE_1) | ((TRIP_TEMPERATURE_0 | TRIP_TEMPERATURE_1) & (TRIP_TEMPERATURE_2 | TRIP_TEMPERATURE_3)) | (TRIP_TEMPERATURE_2 & TRIP_TEMPERATURE_3)))",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "null",
+            "timing": "always",
+            "response": "satisfaction",
+            "variables": [
+                "TRIP_TEMPERATURE_0",
+                "TRIP_TEMPERATURE_1",
+                "TRIP_TEMPERATURE_2",
+                "TRIP_TEMPERATURE_3",
+                "VOTE_TRIP_TEMPERATURE"
+            ],
+            "component_name": "Actuation_Logic",
+            "componentTextRange": [
+                0,
+                14
+            ],
+            "timingTextRange": [
+                22,
+                27
+            ],
+            "post_condition": "(( ( ( TRIP_TEMPERATURE_0 & TRIP_TEMPERATURE_1 ) | ( ( TRIP_TEMPERATURE_0 | TRIP_TEMPERATURE_1 ) & ( TRIP_TEMPERATURE_2 | TRIP_TEMPERATURE_3 ) ) | ( TRIP_TEMPERATURE_2 & TRIP_TEMPERATURE_3 ) ) => VOTE_TRIP_TEMPERATURE ) & ( VOTE_TRIP_TEMPERATURE => ( ( TRIP_TEMPERATURE_0 & TRIP_TEMPERATURE_1 ) | ( ( TRIP_TEMPERATURE_0 | TRIP_TEMPERATURE_1 ) & ( TRIP_TEMPERATURE_2 | TRIP_TEMPERATURE_3 ) ) | ( TRIP_TEMPERATURE_2 & TRIP_TEMPERATURE_3 ) ) ))",
+            "responseTextRange": [
+                29,
+                447
+            ],
+            "ft": "(LAST V <b><i>(( ( ( TRIP_TEMPERATURE_0 & TRIP_TEMPERATURE_1 ) | ( ( TRIP_TEMPERATURE_0 | TRIP_TEMPERATURE_1 ) & ( TRIP_TEMPERATURE_2 | TRIP_TEMPERATURE_3 ) ) | ( TRIP_TEMPERATURE_2 & TRIP_TEMPERATURE_3 ) ) -> VOTE_TRIP_TEMPERATURE ) & ( VOTE_TRIP_TEMPERATURE -> ( ( TRIP_TEMPERATURE_0 & TRIP_TEMPERATURE_1 ) | ( ( TRIP_TEMPERATURE_0 | TRIP_TEMPERATURE_1 ) & ( TRIP_TEMPERATURE_2 | TRIP_TEMPERATURE_3 ) ) | ( TRIP_TEMPERATURE_2 & TRIP_TEMPERATURE_3 ) ) ))</i></b>)",
+            "pt": "(H <b><i>(( ( ( TRIP_TEMPERATURE_0 & TRIP_TEMPERATURE_1 ) | ( ( TRIP_TEMPERATURE_0 | TRIP_TEMPERATURE_1 ) & ( TRIP_TEMPERATURE_2 | TRIP_TEMPERATURE_3 ) ) | ( TRIP_TEMPERATURE_2 & TRIP_TEMPERATURE_3 ) ) -> VOTE_TRIP_TEMPERATURE ) & ( VOTE_TRIP_TEMPERATURE -> ( ( TRIP_TEMPERATURE_0 & TRIP_TEMPERATURE_1 ) | ( ( TRIP_TEMPERATURE_0 | TRIP_TEMPERATURE_1 ) & ( TRIP_TEMPERATURE_2 | TRIP_TEMPERATURE_3 ) ) | ( TRIP_TEMPERATURE_2 & TRIP_TEMPERATURE_3 ) ) ))</i></b>)",
+            "ftExpanded": "(LAST V <b><i>(( ( ( TRIP_TEMPERATURE_0 & TRIP_TEMPERATURE_1 ) | ( ( TRIP_TEMPERATURE_0 | TRIP_TEMPERATURE_1 ) & ( TRIP_TEMPERATURE_2 | TRIP_TEMPERATURE_3 ) ) | ( TRIP_TEMPERATURE_2 & TRIP_TEMPERATURE_3 ) ) -> VOTE_TRIP_TEMPERATURE ) & ( VOTE_TRIP_TEMPERATURE -> ( ( TRIP_TEMPERATURE_0 & TRIP_TEMPERATURE_1 ) | ( ( TRIP_TEMPERATURE_0 | TRIP_TEMPERATURE_1 ) & ( TRIP_TEMPERATURE_2 | TRIP_TEMPERATURE_3 ) ) | ( TRIP_TEMPERATURE_2 & TRIP_TEMPERATURE_3 ) ) ))</i></b>)",
+            "ptExpanded": "(H <b><i>(( ( ( TRIP_TEMPERATURE_0 & TRIP_TEMPERATURE_1 ) | ( ( TRIP_TEMPERATURE_0 | TRIP_TEMPERATURE_1 ) & ( TRIP_TEMPERATURE_2 | TRIP_TEMPERATURE_3 ) ) | ( TRIP_TEMPERATURE_2 & TRIP_TEMPERATURE_3 ) ) -> VOTE_TRIP_TEMPERATURE ) & ( VOTE_TRIP_TEMPERATURE -> ( ( TRIP_TEMPERATURE_0 & TRIP_TEMPERATURE_1 ) | ( ( TRIP_TEMPERATURE_0 | TRIP_TEMPERATURE_1 ) & ( TRIP_TEMPERATURE_2 | TRIP_TEMPERATURE_3 ) ) | ( TRIP_TEMPERATURE_2 & TRIP_TEMPERATURE_3 ) ) ))</i></b>)",
+            "component": "<b><i>Actuation_Logic</i></b>",
+            "CoCoSpecCode": "(H((( ( ( TRIP_TEMPERATURE_0 and TRIP_TEMPERATURE_1 ) or ( ( TRIP_TEMPERATURE_0 or TRIP_TEMPERATURE_1 ) and ( TRIP_TEMPERATURE_2 or TRIP_TEMPERATURE_3 ) ) or ( TRIP_TEMPERATURE_2 and TRIP_TEMPERATURE_3 ) ) => VOTE_TRIP_TEMPERATURE ) and ( VOTE_TRIP_TEMPERATURE => ( ( TRIP_TEMPERATURE_0 and TRIP_TEMPERATURE_1 ) or ( ( TRIP_TEMPERATURE_0 or TRIP_TEMPERATURE_1 ) and ( TRIP_TEMPERATURE_2 or TRIP_TEMPERATURE_3 ) ) or ( TRIP_TEMPERATURE_2 and TRIP_TEMPERATURE_3 ) ) ))))",
+            "diagramVariables": "Response = <b><i>(( ( ( TRIP_TEMPERATURE_0 & TRIP_TEMPERATURE_1 ) | ( ( TRIP_TEMPERATURE_0 | TRIP_TEMPERATURE_1 ) & ( TRIP_TEMPERATURE_2 | TRIP_TEMPERATURE_3 ) ) | ( TRIP_TEMPERATURE_2 & TRIP_TEMPERATURE_3 ) ) => VOTE_TRIP_TEMPERATURE ) & ( VOTE_TRIP_TEMPERATURE => ( ( TRIP_TEMPERATURE_0 & TRIP_TEMPERATURE_1 ) | ( ( TRIP_TEMPERATURE_0 | TRIP_TEMPERATURE_1 ) & ( TRIP_TEMPERATURE_2 | TRIP_TEMPERATURE_3 ) ) | ( TRIP_TEMPERATURE_2 & TRIP_TEMPERATURE_3 ) ) ))</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
+        },
+        "_id": "8ce35bb0-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "ACTUATION_LOGIC_DEVICE_1",
+        "parent_reqid": "",
+        "project": "HARDENS",
+        "rationale": "RFP [5, 6]",
+        "comments": "",
+        "fulltext": "Actuation_Logic shall always satisfy (VOTE_ACTUATE_DEVICE_1 | MANUAL_ACTUATE_DEVICE_1 => ACTUATE_DEVICE_1) & (ACTUATE_DEVICE_1 => VOTE_ACTUATE_DEVICE_1 | MANUAL_ACTUATE_DEVICE_1)",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "null",
+            "timing": "always",
+            "response": "satisfaction",
+            "variables": [
+                "VOTE_ACTUATE_DEVICE_1",
+                "MANUAL_ACTUATE_DEVICE_1",
+                "ACTUATE_DEVICE_1"
+            ],
+            "component_name": "Actuation_Logic",
+            "componentTextRange": [
+                0,
+                14
+            ],
+            "timingTextRange": [
+                22,
+                27
+            ],
+            "post_condition": "(( VOTE_ACTUATE_DEVICE_1 | MANUAL_ACTUATE_DEVICE_1 => ACTUATE_DEVICE_1 ) & ( ACTUATE_DEVICE_1 => VOTE_ACTUATE_DEVICE_1 | MANUAL_ACTUATE_DEVICE_1 ))",
+            "responseTextRange": [
+                29,
+                177
+            ],
+            "ft": "(LAST V <b><i>(( VOTE_ACTUATE_DEVICE_1 | MANUAL_ACTUATE_DEVICE_1 -> ACTUATE_DEVICE_1 ) & ( ACTUATE_DEVICE_1 -> VOTE_ACTUATE_DEVICE_1 | MANUAL_ACTUATE_DEVICE_1 ))</i></b>)",
+            "pt": "(H <b><i>(( VOTE_ACTUATE_DEVICE_1 | MANUAL_ACTUATE_DEVICE_1 -> ACTUATE_DEVICE_1 ) & ( ACTUATE_DEVICE_1 -> VOTE_ACTUATE_DEVICE_1 | MANUAL_ACTUATE_DEVICE_1 ))</i></b>)",
+            "ftExpanded": "(LAST V <b><i>(( VOTE_ACTUATE_DEVICE_1 | MANUAL_ACTUATE_DEVICE_1 -> ACTUATE_DEVICE_1 ) & ( ACTUATE_DEVICE_1 -> VOTE_ACTUATE_DEVICE_1 | MANUAL_ACTUATE_DEVICE_1 ))</i></b>)",
+            "ptExpanded": "(H <b><i>(( VOTE_ACTUATE_DEVICE_1 | MANUAL_ACTUATE_DEVICE_1 -> ACTUATE_DEVICE_1 ) & ( ACTUATE_DEVICE_1 -> VOTE_ACTUATE_DEVICE_1 | MANUAL_ACTUATE_DEVICE_1 ))</i></b>)",
+            "component": "<b><i>Actuation_Logic</i></b>",
+            "CoCoSpecCode": "(H((( VOTE_ACTUATE_DEVICE_1 or MANUAL_ACTUATE_DEVICE_1 => ACTUATE_DEVICE_1 ) and ( ACTUATE_DEVICE_1 => VOTE_ACTUATE_DEVICE_1 or MANUAL_ACTUATE_DEVICE_1 ))))",
+            "diagramVariables": "Response = <b><i>(( VOTE_ACTUATE_DEVICE_1 | MANUAL_ACTUATE_DEVICE_1 => ACTUATE_DEVICE_1 ) & ( ACTUATE_DEVICE_1 => VOTE_ACTUATE_DEVICE_1 | MANUAL_ACTUATE_DEVICE_1 ))</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
+        },
+        "_id": "8ce3a9d0-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "ACTUATION_LOGIC_VOTE_PRESSURE",
+        "parent_reqid": "ACTUATION_LOGIC_VOTE_DEVICE_0",
+        "project": "HARDENS",
+        "rationale": "RFP Actuation Logic Architecture, [1,4]",
+        "comments": "",
+        "fulltext": "Actuation_Logic shall always satisfy (IF ((TRIP_PRESSURE_0 & TRIP_PRESSURE_1) | (( TRIP_PRESSURE_0 | TRIP_PRESSURE_1) & (TRIP_PRESSURE_2 | TRIP_PRESSURE_3)) | (TRIP_PRESSURE_2 & TRIP_PRESSURE_3)) THEN VOTE_TRIP_PRESSURE) & (IF VOTE_TRIP_PRESSURE THEN ((TRIP_PRESSURE_0 & TRIP_PRESSURE_1) | (( TRIP_PRESSURE_0 | TRIP_PRESSURE_1) & (TRIP_PRESSURE_2 | TRIP_PRESSURE_3)) | (TRIP_PRESSURE_2 & TRIP_PRESSURE_3)))",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "null",
+            "timing": "always",
+            "response": "satisfaction",
+            "variables": [
+                "TRIP_PRESSURE_0",
+                "TRIP_PRESSURE_1",
+                "TRIP_PRESSURE_2",
+                "TRIP_PRESSURE_3",
+                "VOTE_TRIP_PRESSURE"
+            ],
+            "component_name": "Actuation_Logic",
+            "componentTextRange": [
+                0,
+                14
+            ],
+            "timingTextRange": [
+                22,
+                27
+            ],
+            "post_condition": "(( ( ( TRIP_PRESSURE_0 & TRIP_PRESSURE_1 ) | ( ( TRIP_PRESSURE_0 | TRIP_PRESSURE_1 ) & ( TRIP_PRESSURE_2 | TRIP_PRESSURE_3 ) ) | ( TRIP_PRESSURE_2 & TRIP_PRESSURE_3 ) ) => VOTE_TRIP_PRESSURE ) & ( VOTE_TRIP_PRESSURE => ( ( TRIP_PRESSURE_0 & TRIP_PRESSURE_1 ) | ( ( TRIP_PRESSURE_0 | TRIP_PRESSURE_1 ) & ( TRIP_PRESSURE_2 | TRIP_PRESSURE_3 ) ) | ( TRIP_PRESSURE_2 & TRIP_PRESSURE_3 ) ) ))",
+            "responseTextRange": [
+                29,
+                405
+            ],
+            "ft": "(LAST V <b><i>(( ( ( TRIP_PRESSURE_0 & TRIP_PRESSURE_1 ) | ( ( TRIP_PRESSURE_0 | TRIP_PRESSURE_1 ) & ( TRIP_PRESSURE_2 | TRIP_PRESSURE_3 ) ) | ( TRIP_PRESSURE_2 & TRIP_PRESSURE_3 ) ) -> VOTE_TRIP_PRESSURE ) & ( VOTE_TRIP_PRESSURE -> ( ( TRIP_PRESSURE_0 & TRIP_PRESSURE_1 ) | ( ( TRIP_PRESSURE_0 | TRIP_PRESSURE_1 ) & ( TRIP_PRESSURE_2 | TRIP_PRESSURE_3 ) ) | ( TRIP_PRESSURE_2 & TRIP_PRESSURE_3 ) ) ))</i></b>)",
+            "pt": "(H <b><i>(( ( ( TRIP_PRESSURE_0 & TRIP_PRESSURE_1 ) | ( ( TRIP_PRESSURE_0 | TRIP_PRESSURE_1 ) & ( TRIP_PRESSURE_2 | TRIP_PRESSURE_3 ) ) | ( TRIP_PRESSURE_2 & TRIP_PRESSURE_3 ) ) -> VOTE_TRIP_PRESSURE ) & ( VOTE_TRIP_PRESSURE -> ( ( TRIP_PRESSURE_0 & TRIP_PRESSURE_1 ) | ( ( TRIP_PRESSURE_0 | TRIP_PRESSURE_1 ) & ( TRIP_PRESSURE_2 | TRIP_PRESSURE_3 ) ) | ( TRIP_PRESSURE_2 & TRIP_PRESSURE_3 ) ) ))</i></b>)",
+            "ftExpanded": "(LAST V <b><i>(( ( ( TRIP_PRESSURE_0 & TRIP_PRESSURE_1 ) | ( ( TRIP_PRESSURE_0 | TRIP_PRESSURE_1 ) & ( TRIP_PRESSURE_2 | TRIP_PRESSURE_3 ) ) | ( TRIP_PRESSURE_2 & TRIP_PRESSURE_3 ) ) -> VOTE_TRIP_PRESSURE ) & ( VOTE_TRIP_PRESSURE -> ( ( TRIP_PRESSURE_0 & TRIP_PRESSURE_1 ) | ( ( TRIP_PRESSURE_0 | TRIP_PRESSURE_1 ) & ( TRIP_PRESSURE_2 | TRIP_PRESSURE_3 ) ) | ( TRIP_PRESSURE_2 & TRIP_PRESSURE_3 ) ) ))</i></b>)",
+            "ptExpanded": "(H <b><i>(( ( ( TRIP_PRESSURE_0 & TRIP_PRESSURE_1 ) | ( ( TRIP_PRESSURE_0 | TRIP_PRESSURE_1 ) & ( TRIP_PRESSURE_2 | TRIP_PRESSURE_3 ) ) | ( TRIP_PRESSURE_2 & TRIP_PRESSURE_3 ) ) -> VOTE_TRIP_PRESSURE ) & ( VOTE_TRIP_PRESSURE -> ( ( TRIP_PRESSURE_0 & TRIP_PRESSURE_1 ) | ( ( TRIP_PRESSURE_0 | TRIP_PRESSURE_1 ) & ( TRIP_PRESSURE_2 | TRIP_PRESSURE_3 ) ) | ( TRIP_PRESSURE_2 & TRIP_PRESSURE_3 ) ) ))</i></b>)",
+            "component": "<b><i>Actuation_Logic</i></b>",
+            "CoCoSpecCode": "(H((( ( ( TRIP_PRESSURE_0 and TRIP_PRESSURE_1 ) or ( ( TRIP_PRESSURE_0 or TRIP_PRESSURE_1 ) and ( TRIP_PRESSURE_2 or TRIP_PRESSURE_3 ) ) or ( TRIP_PRESSURE_2 and TRIP_PRESSURE_3 ) ) => VOTE_TRIP_PRESSURE ) and ( VOTE_TRIP_PRESSURE => ( ( TRIP_PRESSURE_0 and TRIP_PRESSURE_1 ) or ( ( TRIP_PRESSURE_0 or TRIP_PRESSURE_1 ) and ( TRIP_PRESSURE_2 or TRIP_PRESSURE_3 ) ) or ( TRIP_PRESSURE_2 and TRIP_PRESSURE_3 ) ) ))))",
+            "diagramVariables": "Response = <b><i>(( ( ( TRIP_PRESSURE_0 & TRIP_PRESSURE_1 ) | ( ( TRIP_PRESSURE_0 | TRIP_PRESSURE_1 ) & ( TRIP_PRESSURE_2 | TRIP_PRESSURE_3 ) ) | ( TRIP_PRESSURE_2 & TRIP_PRESSURE_3 ) ) => VOTE_TRIP_PRESSURE ) & ( VOTE_TRIP_PRESSURE => ( ( TRIP_PRESSURE_0 & TRIP_PRESSURE_1 ) | ( ( TRIP_PRESSURE_0 | TRIP_PRESSURE_1 ) & ( TRIP_PRESSURE_2 | TRIP_PRESSURE_3 ) ) | ( TRIP_PRESSURE_2 & TRIP_PRESSURE_3 ) ) ))</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
+        },
+        "_id": "8ce3f7f0-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_TRIP_TEMPERATURE",
+        "parent_reqid": "",
+        "project": "HARDENS",
+        "rationale": "RFP [3,10]",
+        "comments": "",
+        "fulltext": "Instrumentation shall always satisfy true",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "null",
+            "timing": "always",
+            "response": "satisfaction",
+            "variables": [],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                0,
+                14
+            ],
+            "timingTextRange": [
+                22,
+                27
+            ],
+            "post_condition": "(true)",
+            "responseTextRange": [
+                29,
+                40
+            ],
+            "ft": "(LAST V <b><i>(true)</i></b>)",
+            "pt": "(H <b><i>(true)</i></b>)",
+            "ftExpanded": "(LAST V <b><i>(true)</i></b>)",
+            "ptExpanded": "(H <b><i>(true)</i></b>)",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((true)))",
+            "diagramVariables": "Response = <b><i>(true)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
+        },
+        "_id": "8ce44610-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_RESET",
+        "parent_reqid": "",
+        "project": "HARDENS",
+        "rationale": "",
+        "comments": "",
+        "fulltext": "AFTER RESET Instrumentation shall immediately satisfy (MAINTENANCE & PRESSURE_TRIP_MODE = 0 & TEMPERATURE_TRIP_MODE = 0 & SATURATION_TRIP_MODE = 0)",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "after",
+                "exclusive": false,
+                "required": false
+            },
+            "condition": "null",
+            "timing": "immediately",
+            "response": "satisfaction",
+            "variables": [
+                "RESET",
+                "MAINTENANCE",
+                "PRESSURE_TRIP_MODE",
+                "TEMPERATURE_TRIP_MODE",
+                "SATURATION_TRIP_MODE"
+            ],
+            "scope_mode": "RESET",
+            "scopeTextRange": [
+                0,
+                10
+            ],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                12,
+                26
+            ],
+            "timingTextRange": [
+                34,
+                44
+            ],
+            "post_condition": "(( MAINTENANCE & PRESSURE_TRIP_MODE = 0 & TEMPERATURE_TRIP_MODE = 0 & SATURATION_TRIP_MODE = 0 ))",
+            "responseTextRange": [
+                46,
+                146
+            ],
+            "ft": "(((! FLin_<b><i>RESET</i></b>) U (FLin_<b><i>RESET</i></b> & (X <b><i>(( MAINTENANCE & PRESSURE_TRIP_MODE = 0 & TEMPERATURE_TRIP_MODE = 0 & SATURATION_TRIP_MODE = 0 ))</i></b>))) | (LAST V (! FLin_<b><i>RESET</i></b>)))",
+            "pt": "((O FLin_<b><i>RESET</i></b>) -> ((FLin_<b><i>RESET</i></b> -> <b><i>(( MAINTENANCE & PRESSURE_TRIP_MODE = 0 & TEMPERATURE_TRIP_MODE = 0 & SATURATION_TRIP_MODE = 0 ))</i></b>) S ((FLin_<b><i>RESET</i></b> -> <b><i>(( MAINTENANCE & PRESSURE_TRIP_MODE = 0 & TEMPERATURE_TRIP_MODE = 0 & SATURATION_TRIP_MODE = 0 ))</i></b>) & FLin_<b><i>RESET</i></b>)))",
+            "ftExpanded": "(((! ((<b><i>RESET</i></b> & (! LAST)) & (X (! <b><i>RESET</i></b>)))) U (((<b><i>RESET</i></b> & (! LAST)) & (X (! <b><i>RESET</i></b>))) & (X <b><i>(( MAINTENANCE & PRESSURE_TRIP_MODE = 0 & TEMPERATURE_TRIP_MODE = 0 & SATURATION_TRIP_MODE = 0 ))</i></b>))) | (LAST V (! ((<b><i>RESET</i></b> & (! LAST)) & (X (! <b><i>RESET</i></b>))))))",
+            "ptExpanded": "((O (((! <b><i>RESET</i></b>) & (Y <b><i>RESET</i></b>)) & (Y (H (! ((! <b><i>RESET</i></b>) & (Y <b><i>RESET</i></b>))))))) -> (((((! <b><i>RESET</i></b>) & (Y <b><i>RESET</i></b>)) & (Y (H (! ((! <b><i>RESET</i></b>) & (Y <b><i>RESET</i></b>)))))) -> <b><i>(( MAINTENANCE & PRESSURE_TRIP_MODE = 0 & TEMPERATURE_TRIP_MODE = 0 & SATURATION_TRIP_MODE = 0 ))</i></b>) S (((((! <b><i>RESET</i></b>) & (Y <b><i>RESET</i></b>)) & (Y (H (! ((! <b><i>RESET</i></b>) & (Y <b><i>RESET</i></b>)))))) -> <b><i>(( MAINTENANCE & PRESSURE_TRIP_MODE = 0 & TEMPERATURE_TRIP_MODE = 0 & SATURATION_TRIP_MODE = 0 ))</i></b>) & (((! <b><i>RESET</i></b>) & (Y <b><i>RESET</i></b>)) & (Y (H (! ((! <b><i>RESET</i></b>) & (Y <b><i>RESET</i></b>)))))))))",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "((O((( not RESET) and (pre (RESET))) and pre (H( not (( not RESET) and (pre (RESET))))))) => (SI( ((( not RESET) and (pre (RESET))) and pre (H( not (( not RESET) and (pre (RESET)))))), (((( not RESET) and (pre (RESET))) and pre (H( not (( not RESET) and (pre (RESET)))))) => (( MAINTENANCE and PRESSURE_TRIP_MODE = 0 and TEMPERATURE_TRIP_MODE = 0 and SATURATION_TRIP_MODE = 0 ))) )))",
+            "diagramVariables": "M = <b><i>RESET</i></b>, Response = <b><i>(( MAINTENANCE & PRESSURE_TRIP_MODE = 0 & TEMPERATURE_TRIP_MODE = 0 & SATURATION_TRIP_MODE = 0 ))</i></b>.",
+            "description": "ENFORCED: in the interval (if defined) starting strictly after the first <b><i>RESET</i></b> interval and spanning to the end of the execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, if trigger holds then RES also holds at the same time point.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/after_null_immediately_satisfaction.svg"
+        },
+        "_id": "8ce46d20-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_TRIP_SATURATION",
+        "parent_reqid": "",
+        "project": "HARDENS",
+        "rationale": "RFP [2,10]",
+        "comments": "",
+        "fulltext": "Instrumentation shall always satisfy true",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "null",
+            "timing": "always",
+            "response": "satisfaction",
+            "variables": [],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                0,
+                14
+            ],
+            "timingTextRange": [
+                22,
+                27
+            ],
+            "post_condition": "(true)",
+            "responseTextRange": [
+                29,
+                40
+            ],
+            "ft": "(LAST V <b><i>(true)</i></b>)",
+            "pt": "(H <b><i>(true)</i></b>)",
+            "ftExpanded": "(LAST V <b><i>(true)</i></b>)",
+            "ptExpanded": "(H <b><i>(true)</i></b>)",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((true)))",
+            "diagramVariables": "Response = <b><i>(true)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
+        },
+        "_id": "8ce49430-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "CORE_UI_INSTRUMENTATION",
+        "parent_reqid": "",
+        "project": "HARDENS",
+        "rationale": "RFP [11,12,13]",
+        "comments": "c.f. \"Integrating Formal Verification and Assurance:\nAn Inspection Rover Case Study\" for quantifier modeling",
+        "fulltext": "Core shall always satisfy forAll_instr_i & INSTRUMENTATION_i_PRESSURE = UI_i_PRESSURE & INSTRUMENTATION_i_TEMPERATURE = UI_i_TEMPERATURE & INSTRUMENTATION_i_SATURATION = UI_i_SATURATION & INSTRUMENTATION_i_BYPASS_PRESSURE = UI_i_BYPASS_PRESSURE & INSTRUMENTATION_i_BYPASS_TEMPERATURE = UI_i_BYPASS_TEMPERATURE & INSTRUMENTATION_i_TRIP_PRESSURE = UI_i_TRIP_PRESSURE & INSTRUMENTATION_i_TRIP_TEMPERATURE = UI_i_TRIP_TEMPERATURE & INSTRUMENTATION_i_TRIP_SATURATION = UI_i_TRIP_SATURATION",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "null",
+            "timing": "always",
+            "response": "satisfaction",
+            "variables": [
+                "forAll_instr_i",
+                "INSTRUMENTATION_i_PRESSURE",
+                "UI_i_PRESSURE",
+                "INSTRUMENTATION_i_TEMPERATURE",
+                "UI_i_TEMPERATURE",
+                "INSTRUMENTATION_i_SATURATION",
+                "UI_i_SATURATION",
+                "INSTRUMENTATION_i_BYPASS_PRESSURE",
+                "UI_i_BYPASS_PRESSURE",
+                "INSTRUMENTATION_i_BYPASS_TEMPERATURE",
+                "UI_i_BYPASS_TEMPERATURE",
+                "INSTRUMENTATION_i_TRIP_PRESSURE",
+                "UI_i_TRIP_PRESSURE",
+                "INSTRUMENTATION_i_TRIP_TEMPERATURE",
+                "UI_i_TRIP_TEMPERATURE",
+                "INSTRUMENTATION_i_TRIP_SATURATION",
+                "UI_i_TRIP_SATURATION"
+            ],
+            "component_name": "Core",
+            "componentTextRange": [
+                0,
+                3
+            ],
+            "timingTextRange": [
+                11,
+                16
+            ],
+            "post_condition": "(forAll_instr_i & INSTRUMENTATION_i_PRESSURE = UI_i_PRESSURE & INSTRUMENTATION_i_TEMPERATURE = UI_i_TEMPERATURE & INSTRUMENTATION_i_SATURATION = UI_i_SATURATION & INSTRUMENTATION_i_BYPASS_PRESSURE = UI_i_BYPASS_PRESSURE & INSTRUMENTATION_i_BYPASS_TEMPERATURE = UI_i_BYPASS_TEMPERATURE & INSTRUMENTATION_i_TRIP_PRESSURE = UI_i_TRIP_PRESSURE & INSTRUMENTATION_i_TRIP_TEMPERATURE = UI_i_TRIP_TEMPERATURE & INSTRUMENTATION_i_TRIP_SATURATION = UI_i_TRIP_SATURATION)",
+            "responseTextRange": [
+                18,
+                483
+            ],
+            "ft": "(LAST V <b><i>(forAll_instr_i & INSTRUMENTATION_i_PRESSURE = UI_i_PRESSURE & INSTRUMENTATION_i_TEMPERATURE = UI_i_TEMPERATURE & INSTRUMENTATION_i_SATURATION = UI_i_SATURATION & INSTRUMENTATION_i_BYPASS_PRESSURE = UI_i_BYPASS_PRESSURE & INSTRUMENTATION_i_BYPASS_TEMPERATURE = UI_i_BYPASS_TEMPERATURE & INSTRUMENTATION_i_TRIP_PRESSURE = UI_i_TRIP_PRESSURE & INSTRUMENTATION_i_TRIP_TEMPERATURE = UI_i_TRIP_TEMPERATURE & INSTRUMENTATION_i_TRIP_SATURATION = UI_i_TRIP_SATURATION)</i></b>)",
+            "pt": "(H <b><i>(forAll_instr_i & INSTRUMENTATION_i_PRESSURE = UI_i_PRESSURE & INSTRUMENTATION_i_TEMPERATURE = UI_i_TEMPERATURE & INSTRUMENTATION_i_SATURATION = UI_i_SATURATION & INSTRUMENTATION_i_BYPASS_PRESSURE = UI_i_BYPASS_PRESSURE & INSTRUMENTATION_i_BYPASS_TEMPERATURE = UI_i_BYPASS_TEMPERATURE & INSTRUMENTATION_i_TRIP_PRESSURE = UI_i_TRIP_PRESSURE & INSTRUMENTATION_i_TRIP_TEMPERATURE = UI_i_TRIP_TEMPERATURE & INSTRUMENTATION_i_TRIP_SATURATION = UI_i_TRIP_SATURATION)</i></b>)",
+            "ftExpanded": "(LAST V <b><i>(forAll_instr_i & INSTRUMENTATION_i_PRESSURE = UI_i_PRESSURE & INSTRUMENTATION_i_TEMPERATURE = UI_i_TEMPERATURE & INSTRUMENTATION_i_SATURATION = UI_i_SATURATION & INSTRUMENTATION_i_BYPASS_PRESSURE = UI_i_BYPASS_PRESSURE & INSTRUMENTATION_i_BYPASS_TEMPERATURE = UI_i_BYPASS_TEMPERATURE & INSTRUMENTATION_i_TRIP_PRESSURE = UI_i_TRIP_PRESSURE & INSTRUMENTATION_i_TRIP_TEMPERATURE = UI_i_TRIP_TEMPERATURE & INSTRUMENTATION_i_TRIP_SATURATION = UI_i_TRIP_SATURATION)</i></b>)",
+            "ptExpanded": "(H <b><i>(forAll_instr_i & INSTRUMENTATION_i_PRESSURE = UI_i_PRESSURE & INSTRUMENTATION_i_TEMPERATURE = UI_i_TEMPERATURE & INSTRUMENTATION_i_SATURATION = UI_i_SATURATION & INSTRUMENTATION_i_BYPASS_PRESSURE = UI_i_BYPASS_PRESSURE & INSTRUMENTATION_i_BYPASS_TEMPERATURE = UI_i_BYPASS_TEMPERATURE & INSTRUMENTATION_i_TRIP_PRESSURE = UI_i_TRIP_PRESSURE & INSTRUMENTATION_i_TRIP_TEMPERATURE = UI_i_TRIP_TEMPERATURE & INSTRUMENTATION_i_TRIP_SATURATION = UI_i_TRIP_SATURATION)</i></b>)",
+            "component": "<b><i>Core</i></b>",
+            "CoCoSpecCode": "(H((forAll_instr_i and INSTRUMENTATION_i_PRESSURE = UI_i_PRESSURE and INSTRUMENTATION_i_TEMPERATURE = UI_i_TEMPERATURE and INSTRUMENTATION_i_SATURATION = UI_i_SATURATION and INSTRUMENTATION_i_BYPASS_PRESSURE = UI_i_BYPASS_PRESSURE and INSTRUMENTATION_i_BYPASS_TEMPERATURE = UI_i_BYPASS_TEMPERATURE and INSTRUMENTATION_i_TRIP_PRESSURE = UI_i_TRIP_PRESSURE and INSTRUMENTATION_i_TRIP_TEMPERATURE = UI_i_TRIP_TEMPERATURE and INSTRUMENTATION_i_TRIP_SATURATION = UI_i_TRIP_SATURATION)))",
+            "diagramVariables": "Response = <b><i>(forAll_instr_i & INSTRUMENTATION_i_PRESSURE = UI_i_PRESSURE & INSTRUMENTATION_i_TEMPERATURE = UI_i_TEMPERATURE & INSTRUMENTATION_i_SATURATION = UI_i_SATURATION & INSTRUMENTATION_i_BYPASS_PRESSURE = UI_i_BYPASS_PRESSURE & INSTRUMENTATION_i_BYPASS_TEMPERATURE = UI_i_BYPASS_TEMPERATURE & INSTRUMENTATION_i_TRIP_PRESSURE = UI_i_TRIP_PRESSURE & INSTRUMENTATION_i_TRIP_TEMPERATURE = UI_i_TRIP_TEMPERATURE & INSTRUMENTATION_i_TRIP_SATURATION = UI_i_TRIP_SATURATION)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
+        },
+        "_id": "8ce4e250-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_SET_MAINTENANCE",
+        "parent_reqid": "",
+        "project": "HARDENS",
+        "rationale": "RFP [7]",
+        "comments": "Mutually exclusive by virtue of tracking state via a single boolean",
+        "fulltext": "Upon SET_MAINTENANCE Instrumentation shall, until UNSET_MAINTENANCE, satisfy MAINTENANCE",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "SET_MAINTENANCE",
+                "UNSET_MAINTENANCE",
+                "MAINTENANCE"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(SET_MAINTENANCE)",
+            "regular_condition": "(SET_MAINTENANCE)",
+            "conditionTextRange": [
+                0,
+                19
+            ],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                21,
+                35
+            ],
+            "stop_condition": "(UNSET_MAINTENANCE)",
+            "timingTextRange": [
+                42,
+                67
+            ],
+            "post_condition": "(MAINTENANCE)",
+            "responseTextRange": [
+                69,
+                87
+            ],
+            "ft": "((LAST V (((! <b><i>(SET_MAINTENANCE)</i></b>) & ((! LAST) & (X <b><i>(SET_MAINTENANCE)</i></b>))) -> (X ((<b><i>(UNSET_MAINTENANCE)</i></b> V (<b><i>(MAINTENANCE)</i></b> | <b><i>(UNSET_MAINTENANCE)</i></b>)) | (LAST V <b><i>(MAINTENANCE)</i></b>))))) & (<b><i>(SET_MAINTENANCE)</i></b> -> ((<b><i>(UNSET_MAINTENANCE)</i></b> V (<b><i>(MAINTENANCE)</i></b> | <b><i>(UNSET_MAINTENANCE)</i></b>)) | (LAST V <b><i>(MAINTENANCE)</i></b>))))",
+            "pt": "(H ((H (! <b><i>(SET_MAINTENANCE)</i></b>)) | (((! <b><i>(UNSET_MAINTENANCE)</i></b>) S ((! <b><i>(UNSET_MAINTENANCE)</i></b>) & (<b><i>(SET_MAINTENANCE)</i></b> & ((Y (! <b><i>(SET_MAINTENANCE)</i></b>)) | FTP)))) -> <b><i>(MAINTENANCE)</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(SET_MAINTENANCE)</i></b>) & ((! LAST) & (X <b><i>(SET_MAINTENANCE)</i></b>))) -> (X ((<b><i>(UNSET_MAINTENANCE)</i></b> V (<b><i>(MAINTENANCE)</i></b> | <b><i>(UNSET_MAINTENANCE)</i></b>)) | (LAST V <b><i>(MAINTENANCE)</i></b>))))) & (<b><i>(SET_MAINTENANCE)</i></b> -> ((<b><i>(UNSET_MAINTENANCE)</i></b> V (<b><i>(MAINTENANCE)</i></b> | <b><i>(UNSET_MAINTENANCE)</i></b>)) | (LAST V <b><i>(MAINTENANCE)</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(SET_MAINTENANCE)</i></b>)) | (((! <b><i>(UNSET_MAINTENANCE)</i></b>) S ((! <b><i>(UNSET_MAINTENANCE)</i></b>) & (<b><i>(SET_MAINTENANCE)</i></b> & ((Y (! <b><i>(SET_MAINTENANCE)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(MAINTENANCE)</i></b>)))",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((H( not (SET_MAINTENANCE))) or ((SI( ((SET_MAINTENANCE) and ((pre ( not (SET_MAINTENANCE))) or FTP)), ( not (UNSET_MAINTENANCE)) )) => (MAINTENANCE))))",
+            "diagramVariables": "TC = <b><i>(SET_MAINTENANCE)</i></b>, SC = <b><i>(UNSET_MAINTENANCE)</i></b>, Response = <b><i>(MAINTENANCE)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(SET_MAINTENANCE)</i></b> is true and any point in the interval where <b><i>(SET_MAINTENANCE)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8ce53070-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "ACTUATION_LOGIC_MANUAL_DEVICE_0",
+        "parent_reqid": "ACTUATION_LOGIC_DEVICE_0",
+        "project": "HARDENS",
+        "rationale": "RFP 6",
+        "comments": "",
+        "fulltext": "Upon SET_MANUAL_ACTUATE_DEVICE_0 Actuation_Logic shall, until UNSET_MANUAL_ACTUATE_DEVICE_0, satisfy MANUAL_ACTUATE_DEVICE_0",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "SET_MANUAL_ACTUATE_DEVICE_0",
+                "UNSET_MANUAL_ACTUATE_DEVICE_0",
+                "MANUAL_ACTUATE_DEVICE_0"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(SET_MANUAL_ACTUATE_DEVICE_0)",
+            "regular_condition": "(SET_MANUAL_ACTUATE_DEVICE_0)",
+            "conditionTextRange": [
+                0,
+                31
+            ],
+            "component_name": "Actuation_Logic",
+            "componentTextRange": [
+                33,
+                47
+            ],
+            "stop_condition": "(UNSET_MANUAL_ACTUATE_DEVICE_0)",
+            "timingTextRange": [
+                54,
+                91
+            ],
+            "post_condition": "(MANUAL_ACTUATE_DEVICE_0)",
+            "responseTextRange": [
+                93,
+                123
+            ],
+            "ft": "((LAST V (((! <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b>) & ((! LAST) & (X <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b>))) -> (X ((<b><i>(UNSET_MANUAL_ACTUATE_DEVICE_0)</i></b> V (<b><i>(MANUAL_ACTUATE_DEVICE_0)</i></b> | <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_0)</i></b>)) | (LAST V <b><i>(MANUAL_ACTUATE_DEVICE_0)</i></b>))))) & (<b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b> -> ((<b><i>(UNSET_MANUAL_ACTUATE_DEVICE_0)</i></b> V (<b><i>(MANUAL_ACTUATE_DEVICE_0)</i></b> | <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_0)</i></b>)) | (LAST V <b><i>(MANUAL_ACTUATE_DEVICE_0)</i></b>))))",
+            "pt": "(H ((H (! <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b>)) | (((! <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_0)</i></b>) S ((! <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_0)</i></b>) & (<b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b> & ((Y (! <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b>)) | FTP)))) -> <b><i>(MANUAL_ACTUATE_DEVICE_0)</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b>) & ((! LAST) & (X <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b>))) -> (X ((<b><i>(UNSET_MANUAL_ACTUATE_DEVICE_0)</i></b> V (<b><i>(MANUAL_ACTUATE_DEVICE_0)</i></b> | <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_0)</i></b>)) | (LAST V <b><i>(MANUAL_ACTUATE_DEVICE_0)</i></b>))))) & (<b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b> -> ((<b><i>(UNSET_MANUAL_ACTUATE_DEVICE_0)</i></b> V (<b><i>(MANUAL_ACTUATE_DEVICE_0)</i></b> | <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_0)</i></b>)) | (LAST V <b><i>(MANUAL_ACTUATE_DEVICE_0)</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b>)) | (((! <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_0)</i></b>) S ((! <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_0)</i></b>) & (<b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b> & ((Y (! <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(MANUAL_ACTUATE_DEVICE_0)</i></b>)))",
+            "component": "<b><i>Actuation_Logic</i></b>",
+            "CoCoSpecCode": "(H((H( not (SET_MANUAL_ACTUATE_DEVICE_0))) or ((SI( ((SET_MANUAL_ACTUATE_DEVICE_0) and ((pre ( not (SET_MANUAL_ACTUATE_DEVICE_0))) or FTP)), ( not (UNSET_MANUAL_ACTUATE_DEVICE_0)) )) => (MANUAL_ACTUATE_DEVICE_0))))",
+            "diagramVariables": "TC = <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b>, SC = <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_0)</i></b>, Response = <b><i>(MANUAL_ACTUATE_DEVICE_0)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b> is true and any point in the interval where <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8ce57e90-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "ACTUATION_LOGIC_VOTE_SATURATION",
+        "parent_reqid": "ACTUATION_LOGIC_VOTE_DEVICE_1",
+        "project": "HARDENS",
+        "rationale": "RFP Actuation Logic Architecture, [3,4]",
+        "comments": "",
+        "fulltext": "Actuation_Logic shall always satisfy (((TRIP_SATURATION_0 & TRIP_SATURATION_1) | (( TRIP_SATURATION_0 | TRIP_SATURATION_1) & (TRIP_SATURATION_2 | TRIP_SATURATION_3)) | (TRIP_SATURATION_2 & TRIP_SATURATION_3)) => VOTE_TRIP_SATURATION) & (VOTE_TRIP_SATURATION => ((TRIP_SATURATION_0 & TRIP_SATURATION_1) | (( TRIP_SATURATION_0 | TRIP_SATURATION_1) & (TRIP_SATURATION_2 | TRIP_SATURATION_3)) | (TRIP_SATURATION_2 & TRIP_SATURATION_3)))",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "null",
+            "timing": "always",
+            "response": "satisfaction",
+            "variables": [
+                "TRIP_SATURATION_0",
+                "TRIP_SATURATION_1",
+                "TRIP_SATURATION_2",
+                "TRIP_SATURATION_3",
+                "VOTE_TRIP_SATURATION"
+            ],
+            "component_name": "Actuation_Logic",
+            "componentTextRange": [
+                0,
+                14
+            ],
+            "timingTextRange": [
+                22,
+                27
+            ],
+            "post_condition": "(( ( ( TRIP_SATURATION_0 & TRIP_SATURATION_1 ) | ( ( TRIP_SATURATION_0 | TRIP_SATURATION_1 ) & ( TRIP_SATURATION_2 | TRIP_SATURATION_3 ) ) | ( TRIP_SATURATION_2 & TRIP_SATURATION_3 ) ) => VOTE_TRIP_SATURATION ) & ( VOTE_TRIP_SATURATION => ( ( TRIP_SATURATION_0 & TRIP_SATURATION_1 ) | ( ( TRIP_SATURATION_0 | TRIP_SATURATION_1 ) & ( TRIP_SATURATION_2 | TRIP_SATURATION_3 ) ) | ( TRIP_SATURATION_2 & TRIP_SATURATION_3 ) ) ))",
+            "responseTextRange": [
+                29,
+                431
+            ],
+            "ft": "(LAST V <b><i>(( ( ( TRIP_SATURATION_0 & TRIP_SATURATION_1 ) | ( ( TRIP_SATURATION_0 | TRIP_SATURATION_1 ) & ( TRIP_SATURATION_2 | TRIP_SATURATION_3 ) ) | ( TRIP_SATURATION_2 & TRIP_SATURATION_3 ) ) -> VOTE_TRIP_SATURATION ) & ( VOTE_TRIP_SATURATION -> ( ( TRIP_SATURATION_0 & TRIP_SATURATION_1 ) | ( ( TRIP_SATURATION_0 | TRIP_SATURATION_1 ) & ( TRIP_SATURATION_2 | TRIP_SATURATION_3 ) ) | ( TRIP_SATURATION_2 & TRIP_SATURATION_3 ) ) ))</i></b>)",
+            "pt": "(H <b><i>(( ( ( TRIP_SATURATION_0 & TRIP_SATURATION_1 ) | ( ( TRIP_SATURATION_0 | TRIP_SATURATION_1 ) & ( TRIP_SATURATION_2 | TRIP_SATURATION_3 ) ) | ( TRIP_SATURATION_2 & TRIP_SATURATION_3 ) ) -> VOTE_TRIP_SATURATION ) & ( VOTE_TRIP_SATURATION -> ( ( TRIP_SATURATION_0 & TRIP_SATURATION_1 ) | ( ( TRIP_SATURATION_0 | TRIP_SATURATION_1 ) & ( TRIP_SATURATION_2 | TRIP_SATURATION_3 ) ) | ( TRIP_SATURATION_2 & TRIP_SATURATION_3 ) ) ))</i></b>)",
+            "ftExpanded": "(LAST V <b><i>(( ( ( TRIP_SATURATION_0 & TRIP_SATURATION_1 ) | ( ( TRIP_SATURATION_0 | TRIP_SATURATION_1 ) & ( TRIP_SATURATION_2 | TRIP_SATURATION_3 ) ) | ( TRIP_SATURATION_2 & TRIP_SATURATION_3 ) ) -> VOTE_TRIP_SATURATION ) & ( VOTE_TRIP_SATURATION -> ( ( TRIP_SATURATION_0 & TRIP_SATURATION_1 ) | ( ( TRIP_SATURATION_0 | TRIP_SATURATION_1 ) & ( TRIP_SATURATION_2 | TRIP_SATURATION_3 ) ) | ( TRIP_SATURATION_2 & TRIP_SATURATION_3 ) ) ))</i></b>)",
+            "ptExpanded": "(H <b><i>(( ( ( TRIP_SATURATION_0 & TRIP_SATURATION_1 ) | ( ( TRIP_SATURATION_0 | TRIP_SATURATION_1 ) & ( TRIP_SATURATION_2 | TRIP_SATURATION_3 ) ) | ( TRIP_SATURATION_2 & TRIP_SATURATION_3 ) ) -> VOTE_TRIP_SATURATION ) & ( VOTE_TRIP_SATURATION -> ( ( TRIP_SATURATION_0 & TRIP_SATURATION_1 ) | ( ( TRIP_SATURATION_0 | TRIP_SATURATION_1 ) & ( TRIP_SATURATION_2 | TRIP_SATURATION_3 ) ) | ( TRIP_SATURATION_2 & TRIP_SATURATION_3 ) ) ))</i></b>)",
+            "component": "<b><i>Actuation_Logic</i></b>",
+            "CoCoSpecCode": "(H((( ( ( TRIP_SATURATION_0 and TRIP_SATURATION_1 ) or ( ( TRIP_SATURATION_0 or TRIP_SATURATION_1 ) and ( TRIP_SATURATION_2 or TRIP_SATURATION_3 ) ) or ( TRIP_SATURATION_2 and TRIP_SATURATION_3 ) ) => VOTE_TRIP_SATURATION ) and ( VOTE_TRIP_SATURATION => ( ( TRIP_SATURATION_0 and TRIP_SATURATION_1 ) or ( ( TRIP_SATURATION_0 or TRIP_SATURATION_1 ) and ( TRIP_SATURATION_2 or TRIP_SATURATION_3 ) ) or ( TRIP_SATURATION_2 and TRIP_SATURATION_3 ) ) ))))",
+            "diagramVariables": "Response = <b><i>(( ( ( TRIP_SATURATION_0 & TRIP_SATURATION_1 ) | ( ( TRIP_SATURATION_0 | TRIP_SATURATION_1 ) & ( TRIP_SATURATION_2 | TRIP_SATURATION_3 ) ) | ( TRIP_SATURATION_2 & TRIP_SATURATION_3 ) ) => VOTE_TRIP_SATURATION ) & ( VOTE_TRIP_SATURATION => ( ( TRIP_SATURATION_0 & TRIP_SATURATION_1 ) | ( ( TRIP_SATURATION_0 | TRIP_SATURATION_1 ) & ( TRIP_SATURATION_2 | TRIP_SATURATION_3 ) ) | ( TRIP_SATURATION_2 & TRIP_SATURATION_3 ) ) ))</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
+        },
+        "_id": "8ce5a5a0-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "ACTUATION_LOGIC_MANUAL_DEVICE_1",
+        "parent_reqid": "ACTUATION_LOGIC_DEVICE_1",
+        "project": "HARDENS",
+        "rationale": "RFP 6",
+        "comments": "",
+        "fulltext": "Upon SET_MANUAL_ACTUATE_DEVICE_1 Actuation_Logic shall, until UNSET_MANUAL_ACTUATE_DEVICE_1, satisfy MANUAL_ACTUATE_DEVICE_1",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "SET_MANUAL_ACTUATE_DEVICE_1",
+                "UNSET_MANUAL_ACTUATE_DEVICE_1",
+                "MANUAL_ACTUATE_DEVICE_1"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(SET_MANUAL_ACTUATE_DEVICE_1)",
+            "regular_condition": "(SET_MANUAL_ACTUATE_DEVICE_1)",
+            "conditionTextRange": [
+                0,
+                31
+            ],
+            "component_name": "Actuation_Logic",
+            "componentTextRange": [
+                33,
+                47
+            ],
+            "stop_condition": "(UNSET_MANUAL_ACTUATE_DEVICE_1)",
+            "timingTextRange": [
+                54,
+                91
+            ],
+            "post_condition": "(MANUAL_ACTUATE_DEVICE_1)",
+            "responseTextRange": [
+                93,
+                123
+            ],
+            "ft": "((LAST V (((! <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b>) & ((! LAST) & (X <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b>))) -> (X ((<b><i>(UNSET_MANUAL_ACTUATE_DEVICE_1)</i></b> V (<b><i>(MANUAL_ACTUATE_DEVICE_1)</i></b> | <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_1)</i></b>)) | (LAST V <b><i>(MANUAL_ACTUATE_DEVICE_1)</i></b>))))) & (<b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b> -> ((<b><i>(UNSET_MANUAL_ACTUATE_DEVICE_1)</i></b> V (<b><i>(MANUAL_ACTUATE_DEVICE_1)</i></b> | <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_1)</i></b>)) | (LAST V <b><i>(MANUAL_ACTUATE_DEVICE_1)</i></b>))))",
+            "pt": "(H ((H (! <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b>)) | (((! <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_1)</i></b>) S ((! <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_1)</i></b>) & (<b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b> & ((Y (! <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b>)) | FTP)))) -> <b><i>(MANUAL_ACTUATE_DEVICE_1)</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b>) & ((! LAST) & (X <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b>))) -> (X ((<b><i>(UNSET_MANUAL_ACTUATE_DEVICE_1)</i></b> V (<b><i>(MANUAL_ACTUATE_DEVICE_1)</i></b> | <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_1)</i></b>)) | (LAST V <b><i>(MANUAL_ACTUATE_DEVICE_1)</i></b>))))) & (<b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b> -> ((<b><i>(UNSET_MANUAL_ACTUATE_DEVICE_1)</i></b> V (<b><i>(MANUAL_ACTUATE_DEVICE_1)</i></b> | <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_1)</i></b>)) | (LAST V <b><i>(MANUAL_ACTUATE_DEVICE_1)</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b>)) | (((! <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_1)</i></b>) S ((! <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_1)</i></b>) & (<b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b> & ((Y (! <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(MANUAL_ACTUATE_DEVICE_1)</i></b>)))",
+            "component": "<b><i>Actuation_Logic</i></b>",
+            "CoCoSpecCode": "(H((H( not (SET_MANUAL_ACTUATE_DEVICE_1))) or ((SI( ((SET_MANUAL_ACTUATE_DEVICE_1) and ((pre ( not (SET_MANUAL_ACTUATE_DEVICE_1))) or FTP)), ( not (UNSET_MANUAL_ACTUATE_DEVICE_1)) )) => (MANUAL_ACTUATE_DEVICE_1))))",
+            "diagramVariables": "TC = <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b>, SC = <b><i>(UNSET_MANUAL_ACTUATE_DEVICE_1)</i></b>, Response = <b><i>(MANUAL_ACTUATE_DEVICE_1)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b> is true and any point in the interval where <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8ce5f3c0-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "ACTUATION_LOGIC_VOTE_DEVICE_1",
+        "parent_reqid": "ACTUATION_LOGIC_DEVICE_1",
+        "project": "HARDENS",
+        "rationale": "RFP 5",
+        "comments": "",
+        "fulltext": "Upon VOTE_TRIP_SATURATION Actuation_Logic shall always satisfy VOTE_ACTUATE_DEVICE_1",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "always",
+            "response": "satisfaction",
+            "variables": [
+                "VOTE_TRIP_SATURATION",
+                "VOTE_ACTUATE_DEVICE_1"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(VOTE_TRIP_SATURATION)",
+            "regular_condition": "(VOTE_TRIP_SATURATION)",
+            "conditionTextRange": [
+                0,
+                24
+            ],
+            "component_name": "Actuation_Logic",
+            "componentTextRange": [
+                26,
+                40
+            ],
+            "timingTextRange": [
+                48,
+                53
+            ],
+            "post_condition": "(VOTE_ACTUATE_DEVICE_1)",
+            "responseTextRange": [
+                55,
+                83
+            ],
+            "ft": "((LAST V (((! <b><i>(VOTE_TRIP_SATURATION)</i></b>) & ((! LAST) & (X <b><i>(VOTE_TRIP_SATURATION)</i></b>))) -> (X (LAST V <b><i>(VOTE_ACTUATE_DEVICE_1)</i></b>)))) & (<b><i>(VOTE_TRIP_SATURATION)</i></b> -> (LAST V <b><i>(VOTE_ACTUATE_DEVICE_1)</i></b>)))",
+            "pt": "(H ((H (! <b><i>(VOTE_TRIP_SATURATION)</i></b>)) | <b><i>(VOTE_ACTUATE_DEVICE_1)</i></b>))",
+            "ftExpanded": "((LAST V (((! <b><i>(VOTE_TRIP_SATURATION)</i></b>) & ((! LAST) & (X <b><i>(VOTE_TRIP_SATURATION)</i></b>))) -> (X (LAST V <b><i>(VOTE_ACTUATE_DEVICE_1)</i></b>)))) & (<b><i>(VOTE_TRIP_SATURATION)</i></b> -> (LAST V <b><i>(VOTE_ACTUATE_DEVICE_1)</i></b>)))",
+            "ptExpanded": "(H ((H (! <b><i>(VOTE_TRIP_SATURATION)</i></b>)) | <b><i>(VOTE_ACTUATE_DEVICE_1)</i></b>))",
+            "component": "<b><i>Actuation_Logic</i></b>",
+            "CoCoSpecCode": "(H((H( not (VOTE_TRIP_SATURATION))) or (VOTE_ACTUATE_DEVICE_1)))",
+            "diagramVariables": "TC = <b><i>(VOTE_TRIP_SATURATION)</i></b>, Response = <b><i>(VOTE_ACTUATE_DEVICE_1)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(VOTE_TRIP_SATURATION)</i></b> is true and any point in the interval where <b><i>(VOTE_TRIP_SATURATION)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_always_satisfaction.svg"
+        },
+        "_id": "8ce61ad0-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_SET_BYPASS_TEMPERATURE",
+        "parent_reqid": "INSTRUMENTATION_TRIP_TEMPERATURE",
+        "project": "HARDENS",
+        "rationale": "RFP [9]",
+        "comments": "",
+        "fulltext": "Upon MAINTENANCE & TEMPERATURE_MODE = 0 Instrumentation shall, until MAINTENANCE & !(TEMPERATURE_MODE = 0), satisfy !TRIP_TEMPERATURE",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "MAINTENANCE",
+                "TEMPERATURE_MODE",
+                "TRIP_TEMPERATURE"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(MAINTENANCE & TEMPERATURE_MODE = 0)",
+            "regular_condition": "(MAINTENANCE & TEMPERATURE_MODE = 0)",
+            "conditionTextRange": [
+                0,
+                38
+            ],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                40,
+                54
+            ],
+            "stop_condition": "(MAINTENANCE & ! ( TEMPERATURE_MODE = 0 ))",
+            "timingTextRange": [
+                61,
+                106
+            ],
+            "post_condition": "(! TRIP_TEMPERATURE)",
+            "responseTextRange": [
+                108,
+                132
+            ],
+            "ft": "((LAST V (((! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 0 ))</i></b> V (<b><i>(! TRIP_TEMPERATURE)</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 0 ))</i></b>)) | (LAST V <b><i>(! TRIP_TEMPERATURE)</i></b>))))) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b> -> ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 0 ))</i></b> V (<b><i>(! TRIP_TEMPERATURE)</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 0 ))</i></b>)) | (LAST V <b><i>(! TRIP_TEMPERATURE)</i></b>))))",
+            "pt": "(H ((H (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 0 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 0 ))</i></b>) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b> & ((Y (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b>)) | FTP)))) -> <b><i>(! TRIP_TEMPERATURE)</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 0 ))</i></b> V (<b><i>(! TRIP_TEMPERATURE)</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 0 ))</i></b>)) | (LAST V <b><i>(! TRIP_TEMPERATURE)</i></b>))))) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b> -> ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 0 ))</i></b> V (<b><i>(! TRIP_TEMPERATURE)</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 0 ))</i></b>)) | (LAST V <b><i>(! TRIP_TEMPERATURE)</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 0 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 0 ))</i></b>) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b> & ((Y (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(! TRIP_TEMPERATURE)</i></b>)))",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((H( not (MAINTENANCE and TEMPERATURE_MODE = 0))) or ((SI( ((MAINTENANCE and TEMPERATURE_MODE = 0) and ((pre ( not (MAINTENANCE and TEMPERATURE_MODE = 0))) or FTP)), ( not (MAINTENANCE and not ( TEMPERATURE_MODE = 0 ))) )) => (not TRIP_TEMPERATURE))))",
+            "diagramVariables": "TC = <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b>, SC = <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 0 ))</i></b>, Response = <b><i>(! TRIP_TEMPERATURE)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8ce641e0-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_TRIP_PRESSURE",
+        "parent_reqid": "",
+        "project": "HARDENS",
+        "rationale": "RFP [1,10]",
+        "comments": "",
+        "fulltext": "Instrumentation shall always satisfy true",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "null",
+            "timing": "always",
+            "response": "satisfaction",
+            "variables": [],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                0,
+                14
+            ],
+            "timingTextRange": [
+                22,
+                27
+            ],
+            "post_condition": "(true)",
+            "responseTextRange": [
+                29,
+                40
+            ],
+            "ft": "(LAST V <b><i>(true)</i></b>)",
+            "pt": "(H <b><i>(true)</i></b>)",
+            "ftExpanded": "(LAST V <b><i>(true)</i></b>)",
+            "ptExpanded": "(H <b><i>(true)</i></b>)",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((true)))",
+            "diagramVariables": "Response = <b><i>(true)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
+        },
+        "_id": "8ce69000-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "ACTUATION_LOGIC_VOTE_DEVICE_0",
+        "parent_reqid": "ACTUATION_LOGIC_DEVICE_0",
+        "project": "HARDENS",
+        "rationale": "RFP 5",
+        "comments": "",
+        "fulltext": "Upon VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION Actuation_Logic shall always satisfy VOTE_ACTUATE_DEVICE_0",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "always",
+            "response": "satisfaction",
+            "variables": [
+                "VOTE_TRIP_TEMPERATURE",
+                "VOTE_TRIP_SATURATION",
+                "VOTE_ACTUATE_DEVICE_0"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)",
+            "regular_condition": "(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)",
+            "conditionTextRange": [
+                0,
+                48
+            ],
+            "component_name": "Actuation_Logic",
+            "componentTextRange": [
+                50,
+                64
+            ],
+            "timingTextRange": [
+                72,
+                77
+            ],
+            "post_condition": "(VOTE_ACTUATE_DEVICE_0)",
+            "responseTextRange": [
+                79,
+                107
+            ],
+            "ft": "((LAST V (((! <b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b>) & ((! LAST) & (X <b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b>))) -> (X (LAST V <b><i>(VOTE_ACTUATE_DEVICE_0)</i></b>)))) & (<b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b> -> (LAST V <b><i>(VOTE_ACTUATE_DEVICE_0)</i></b>)))",
+            "pt": "(H ((H (! <b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b>)) | <b><i>(VOTE_ACTUATE_DEVICE_0)</i></b>))",
+            "ftExpanded": "((LAST V (((! <b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b>) & ((! LAST) & (X <b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b>))) -> (X (LAST V <b><i>(VOTE_ACTUATE_DEVICE_0)</i></b>)))) & (<b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b> -> (LAST V <b><i>(VOTE_ACTUATE_DEVICE_0)</i></b>)))",
+            "ptExpanded": "(H ((H (! <b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b>)) | <b><i>(VOTE_ACTUATE_DEVICE_0)</i></b>))",
+            "component": "<b><i>Actuation_Logic</i></b>",
+            "CoCoSpecCode": "(H((H( not (VOTE_TRIP_TEMPERATURE or VOTE_TRIP_SATURATION))) or (VOTE_ACTUATE_DEVICE_0)))",
+            "diagramVariables": "TC = <b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b>, Response = <b><i>(VOTE_ACTUATE_DEVICE_0)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b> is true and any point in the interval where <b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_always_satisfaction.svg"
+        },
+        "_id": "8ce6b710-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_SENSOR_TRIP_TEMPERATURE",
+        "parent_reqid": "INSTRUMENTATION_TRIP_TEMPERATURE",
+        "project": "HARDENS",
+        "rationale": "RFP [2]",
+        "comments": "",
+        "fulltext": "Upon MAINTENANCE & TEMPERATURE_MODE = 1 Instrumentation shall, until MAINTENANCE & !(TEMPERATURE_MODE = 1), satisfy (if SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE then TRIP_TEMPERATURE) & (if TRIP_TEMPERATURE then SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE)",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "MAINTENANCE",
+                "TEMPERATURE_MODE",
+                "SENSOR_TEMPERATURE",
+                "SETPOINT_TEMPERATURE",
+                "TRIP_TEMPERATURE"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(MAINTENANCE & TEMPERATURE_MODE = 1)",
+            "regular_condition": "(MAINTENANCE & TEMPERATURE_MODE = 1)",
+            "conditionTextRange": [
+                0,
+                38
+            ],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                40,
+                54
+            ],
+            "stop_condition": "(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))",
+            "timingTextRange": [
+                61,
+                106
+            ],
+            "post_condition": "(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE => TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE => SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))",
+            "responseTextRange": [
+                108,
+                254
+            ],
+            "ft": "((LAST V (((! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b>))))) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> -> ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b>))))",
+            "pt": "(H ((H (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> & ((Y (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>)) | FTP)))) -> <b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>) & ((! LAST) & (X <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>))) -> (X ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b>))))) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> -> ((<b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b> V (<b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b> | <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>)) | (LAST V <b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>)) | (((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>) S ((! <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>) & (<b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> & ((Y (! <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>)) | (! (Y TRUE)))))) -> <b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE -> TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE -> SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b>)))",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((H( not (MAINTENANCE and TEMPERATURE_MODE = 1))) or ((SI( ((MAINTENANCE and TEMPERATURE_MODE = 1) and ((pre ( not (MAINTENANCE and TEMPERATURE_MODE = 1))) or FTP)), ( not (MAINTENANCE and not ( TEMPERATURE_MODE = 1 ))) )) => (( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE => TRIP_TEMPERATURE ) and ( TRIP_TEMPERATURE => SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE )))))",
+            "diagramVariables": "TC = <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b>, SC = <b><i>(MAINTENANCE & ! ( TEMPERATURE_MODE = 1 ))</i></b>, Response = <b><i>(( SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE => TRIP_TEMPERATURE ) & ( TRIP_TEMPERATURE => SENSOR_TEMPERATURE > SETPOINT_TEMPERATURE ))</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8ce70530-5932-11ec-96a3-f79b5f3617de"
+    },
+    {
+        "reqid": "INSTRUMENTATION_SET_SETPOINT_TEMPERATURE",
+        "parent_reqid": "INSTRUMENTATION_TRIP_TEMPERATURE",
+        "project": "HARDENS",
+        "rationale": "RFP [8]",
+        "comments": "",
+        "fulltext": "Upon (MAINTENANCE & SET_SETPOINT_TEMPERATURE) Instrumentation shall, until MAINTENANCE & SET_SETPOINT_TEMPERATURE, satisfy SETPOINT_TEMPERATURE = INPUT_SETPOINT_TEMPERATURE",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "until",
+            "response": "satisfaction",
+            "variables": [
+                "MAINTENANCE",
+                "SET_SETPOINT_TEMPERATURE",
+                "SETPOINT_TEMPERATURE",
+                "INPUT_SETPOINT_TEMPERATURE"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))",
+            "regular_condition": "(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))",
+            "conditionTextRange": [
+                0,
+                44
+            ],
+            "component_name": "Instrumentation",
+            "componentTextRange": [
+                46,
+                60
+            ],
+            "stop_condition": "(MAINTENANCE & SET_SETPOINT_TEMPERATURE)",
+            "timingTextRange": [
+                67,
+                113
+            ],
+            "post_condition": "(SETPOINT_TEMPERATURE = INPUT_SETPOINT_TEMPERATURE)",
+            "responseTextRange": [
+                115,
+                171
+            ],
+            "ft": "((LAST V (((! <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b>) & ((! LAST) & (X <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b>))) -> (X ((<b><i>(MAINTENANCE & SET_SETPOINT_TEMPERATURE)</i></b> V (<b><i>(SETPOINT_TEMPERATURE = INPUT_SETPOINT_TEMPERATURE)</i></b> | <b><i>(MAINTENANCE & SET_SETPOINT_TEMPERATURE)</i></b>)) | (LAST V <b><i>(SETPOINT_TEMPERATURE = INPUT_SETPOINT_TEMPERATURE)</i></b>))))) & (<b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b> -> ((<b><i>(MAINTENANCE & SET_SETPOINT_TEMPERATURE)</i></b> V (<b><i>(SETPOINT_TEMPERATURE = INPUT_SETPOINT_TEMPERATURE)</i></b> | <b><i>(MAINTENANCE & SET_SETPOINT_TEMPERATURE)</i></b>)) | (LAST V <b><i>(SETPOINT_TEMPERATURE = INPUT_SETPOINT_TEMPERATURE)</i></b>))))",
+            "pt": "(H ((H (! <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b>)) | (((! <b><i>(MAINTENANCE & SET_SETPOINT_TEMPERATURE)</i></b>) S ((! <b><i>(MAINTENANCE & SET_SETPOINT_TEMPERATURE)</i></b>) & (<b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b> & ((Y (! <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b>)) | FTP)))) -> <b><i>(SETPOINT_TEMPERATURE = INPUT_SETPOINT_TEMPERATURE)</i></b>)))",
+            "ftExpanded": "((LAST V (((! <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b>) & ((! LAST) & (X <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b>))) -> (X ((<b><i>(MAINTENANCE & SET_SETPOINT_TEMPERATURE)</i></b> V (<b><i>(SETPOINT_TEMPERATURE = INPUT_SETPOINT_TEMPERATURE)</i></b> | <b><i>(MAINTENANCE & SET_SETPOINT_TEMPERATURE)</i></b>)) | (LAST V <b><i>(SETPOINT_TEMPERATURE = INPUT_SETPOINT_TEMPERATURE)</i></b>))))) & (<b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b> -> ((<b><i>(MAINTENANCE & SET_SETPOINT_TEMPERATURE)</i></b> V (<b><i>(SETPOINT_TEMPERATURE = INPUT_SETPOINT_TEMPERATURE)</i></b> | <b><i>(MAINTENANCE & SET_SETPOINT_TEMPERATURE)</i></b>)) | (LAST V <b><i>(SETPOINT_TEMPERATURE = INPUT_SETPOINT_TEMPERATURE)</i></b>))))",
+            "ptExpanded": "(H ((H (! <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b>)) | (((! <b><i>(MAINTENANCE & SET_SETPOINT_TEMPERATURE)</i></b>) S ((! <b><i>(MAINTENANCE & SET_SETPOINT_TEMPERATURE)</i></b>) & (<b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b> & ((Y (! <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b>)) | (! (Y TRUE)))))) -> <b><i>(SETPOINT_TEMPERATURE = INPUT_SETPOINT_TEMPERATURE)</i></b>)))",
+            "component": "<b><i>Instrumentation</i></b>",
+            "CoCoSpecCode": "(H((H( not (( MAINTENANCE and SET_SETPOINT_TEMPERATURE )))) or ((SI( ((( MAINTENANCE and SET_SETPOINT_TEMPERATURE )) and ((pre ( not (( MAINTENANCE and SET_SETPOINT_TEMPERATURE )))) or FTP)), ( not (MAINTENANCE and SET_SETPOINT_TEMPERATURE)) )) => (SETPOINT_TEMPERATURE = INPUT_SETPOINT_TEMPERATURE))))",
+            "diagramVariables": "TC = <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b>, SC = <b><i>(MAINTENANCE & SET_SETPOINT_TEMPERATURE)</i></b>, Response = <b><i>(SETPOINT_TEMPERATURE = INPUT_SETPOINT_TEMPERATURE)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b> is true and any point in the interval where <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
+        },
+        "_id": "8ce75350-5932-11ec-96a3-f79b5f3617de"
+    }
+]

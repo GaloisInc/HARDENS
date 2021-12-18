@@ -1,0 +1,97 @@
+subsystem RTS Implementation Artifacts (Artifacts)
+
+component Cryptol System Specification (CryptolSpec)
+A specification of a model written in the Cryptol domain-specific
+language (DSL), either as Literate Cryptol, which can be Cryptol
+embedded in Markdown or LaTeX, or plain Cryptol. Cryptol is a strongly
+typed, functional DSL for specifying and reasoning about bit-level
+algorithms and their correctness properties and is mainly used to
+specify cryptographic algorithms.  See https://crypto.net/ for more
+information.
+
+component Cryptol Software Compiler (CryptolToC)
+Multiple versions of a Cryptol software compiler exist which can
+compile different subsets of the Cryptol language into implementations
+and test benches written in the C, Java, and LLVM languages.
+
+component Cryptol Hardware Compiler (CryptolToSystemVerilog)
+Multiple versions of a Cryptol hardware compiler exist which can
+compile different subsets of the Cryptol language into implementations
+and test benches written in the VHDL, Verilog, and SystemVerilog.
+
+component Software Implementation (Software)
+@todo kiniry Add an explanation.
+
+component Hand-written Software Implementation (SWImpl)
+inherit Hand-written Software 
+@todo kiniry Add an explanation.
+
+component Synthesized Software Implementation (SynthSW)
+inherit Machine-generated Software 
+@todo kiniry Add an explanation.
+
+component Hardware Implementation (Hardware)
+@todo kiniry Add an explanation.
+
+component Hand-written Hardware Implementation (HWImpl)
+inherit Hand-written Hardware
+@todo kiniry Add an explanation.
+
+component Synthesized Hardware Implementation (SynthHW)
+inherit Machine-generated Hardware
+@todo kiniry Add an explanation.
+
+component COTS High-Assurance RV32I RISC-V CPU (CPU)
+@todo kiniry Add an explanation.
+
+component CompCert Compiler (CompCert)
+@todo kiniry Add an explanation.
+
+component Bluespec Compiler (BSC)
+@todo kiniry Add an explanation.
+
+component SymbiFlow Synthesizer (SymbiFlow)
+@todo kiniry Add an explanation.
+
+component Software Binaries (Binaries)
+@todo kiniry Add an explanation.
+
+component Demonstrator Verilog (RTL)
+@todo kiniry Add an explanation.
+
+component FPGA Bitstream (Bitstream)
+@todo kiniry Add an explanation.
+
+subsystem Dataflow of RTS Implementation Artifacts (Dataflow)
+This specification, which comes from the Galois HARDENS proposal,
+describes the relationships between various levels of specifications,
+implementations, and assurance artifacts for the HARDENS demonstrator.
+indexing
+  proposal_figure: 3
+  figure_name: Dataflow of RTS Implementation Artifacts.
+
+relation CryptolToC client CryptolSpec
+relation CryptolToSystemVerilog client CryptolSpec
+
+relation SynthSW client CryptolToC
+
+relation SynthHW client CryptolToSystemVerilog
+relation SynthHW client BSC
+
+relation CompCert client SynthSoftImpl
+relation CompCert client SoftImpl
+
+relation BSC inherit Compiler
+relation BSC client HWImpl
+
+relation SymbiFlow client SynthHW
+relation SymbiFlow client CPU
+
+relation Binaries client CompCert
+
+relation RTL client SymbiFLow
+relation RTL contains Soft-core RISC-V CPU
+
+relation Bitstream contains SynthHW
+relation Bitstream contains CPU
+relation BitStream client SymbiFlow

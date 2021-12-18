@@ -1,0 +1,122 @@
+// Architecture
+
+subsystem RTS System Architecture (RTS_System_Arch)
+@todo kiniry Add an explanation.
+
+subsystem Root
+@todo kiniry Add an explanation.
+
+component Core Finite State Machine (CFSM)
+inherit FSM
+@todo kiniry Add an explanation.
+
+component Programming I/O (Programming_IO)
+inherit IO
+@todo kiniry Add an explanation.
+
+component UI I/O (UI_IO)
+inherit IO
+@todo kiniry Add an explanation.
+
+component Debugging I/O (Debugging_IO)
+inherit IO
+@todo kiniry Add an explanation.
+
+subsystem Actuation Logic
+@todo kiniry Add an explanation.
+
+component Voting 1
+@todo kiniry Add an explanation.
+
+component Voting 2
+@todo kiniry Add an explanation.
+
+component Actuator 1
+@todo kiniry Add an explanation.
+
+component Actuator 2
+@todo kiniry Add an explanation.
+
+subsystem Computation
+@todo kiniry Add an explanation.
+
+component RISC-V CPU 1
+@todo kiniry Add an explanation.
+
+component RISC-V CPU 2
+@todo kiniry Add an explanation.
+
+component RISC-V CPU 3
+@todo kiniry Add an explanation.
+
+subsystem Hardware
+@todo kiniry Add an explanation.
+
+subsystem FPGA
+@todo kiniry Add an explanation.
+
+component Lattice ECP-5 FGPA Development Board
+@todo kiniry Add an explanation.
+
+subsystem Actuators
+@todo kiniry Add an explanation.
+
+component Actuator 1
+@todo kiniry Add an explanation.
+
+component Actuator 2
+@todo kiniry Add an explanation.
+
+subsystem Sensors
+@todo kiniry Add an explanation.
+
+component Temperature Sensor 1
+@todo kiniry Add an explanation.
+
+component Temperature Sensor 2
+@todo kiniry Add an explanation.
+
+component Pressure Sensor 1
+@todo kiniry Add an explanation.
+
+component Pressure Sensor 2
+@todo kiniry Add an explanation.
+
+subsystem Instrumentation
+@todo kiniry Add an explanation.
+
+component Instrumentation 1
+@todo kiniry Add an explanation.
+
+component Instrumentation 2
+@todo kiniry Add an explanation.
+
+component Instrumentation 3
+@todo kiniry Add an explanation.
+
+component Instrumentation 4
+@todo kiniry Add an explanation.
+
+// Top-level subsystems.
+
+relation RTS_System_Arch contains Root
+relation RTS_System_Arch contains Actuation Logic
+relation RTS_System_Arch contains Computation
+relation RTS_System_Arch contains Hardware
+relation RTS_System_Arch contains Instrumentation
+
+// Nested subsystems.
+relation Hardware contains FPGA
+relation Hardware contains Actuators
+relation Hardware contains Sensors
+
+// Client-supplier relations.
+relation Root client Actuation Logic
+relation Root client Computation
+
+relation Computation client Hardware
+relation Actuation Logic client Hardware
+relation Instrumentation client Hardware
+relation Instrumentation client Actuation Logic
+relation Actuation Logic client Instrumentation
+

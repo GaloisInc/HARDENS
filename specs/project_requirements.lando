@@ -1,0 +1,92 @@
+// All requirements that the RTS system must fulfill, as driven by the
+// IEEE 603-2018 standards and the NRC RFP.
+
+requirements HARDENS Project High-level Requirements
+// The high-level requirements for the project stipulated by the NRC RFP.
+
+NRC Understanding
+Provide to the NRC expert technical services in order to develop a
+better understanding of how Model-Based Systems Engineering (MBSE)
+methods and tools can support regulatory reviews of adequate design
+and design assurance.
+
+Identify Regulatory Gaps
+Identify any barriers or gaps associated with MBSE in a regulatory
+review of Digital Instrumentation and Control Systems for existing
+Nuclear Power Plants.
+
+Demonstrate
+Galois will demonstrate to the Nuclear Regulatory Commission (NRC)
+cutting-edge capabilities in the model-based design, validation, and
+verification of safety-critical, mission-critical, high-assurance
+systems.
+
+Demonstrator Parts
+Our demonstrator includes high-assurance software and hardware,
+includes open source RISC-V Central Processing Units.
+
+Demonstrator Groundwork
+Our demonstrator lays the groundwork for a high-assurance reusable
+product for safety critical Digital Instrumentation and Control
+Systems systems in Nuclear Power Plants.
+
+requirements NRC Characteristics
+// The requirements driven by the IEEE 603-2018 standard for NPP I&C
+// systems.
+
+// Both formal and rigorous consistency checks of the requirements
+// will be accomplished by using false theorem checks and proofs in
+// the Cryptol model and in software and hardware source code;
+Requirements Consistency
+Requirements must be shown to be consistent.
+
+// A rigorous completeness validation of the requirements will be
+// accomplished by demonstrating traceability from the project
+// specification (including the RFP text describing the reactor trip
+// system) to the formal models of the system and its properties.
+Requirements Colloquial Completeness
+The system must be shown to fulfill all requirements.
+
+// A formal verification of completeness of the requirements will be
+// accomplished by using the chosen requirements checking tool
+Requirements Formal Completeness
+Requirements must be shown to be formally complete.
+
+// This characteristic will be demonstrated architecturally via the
+// decoupling of computation across the two RISC-V instrumentation
+// cores and two instrumentation units running on the FPGA.
+Instrumentation Independence
+Independence among the four divisions of instrumentation (inability
+for the behavior of one division to interfere or adversely affect the
+performance of another).
+
+// This characteristic will be demonstrated architecturally by
+// decoupling the compute and I/O channels of the units from one
+// another.
+Channel Independence
+Independence among the two instrumentation channels within a division
+(inability for the behavior of one channel to interfere or adversely
+affect the performance of another).
+
+// This characteristic will be demonstrated architecturally by
+// partitioning the actuation logic across software and hardware
+// units.
+Actuation Independence
+Independence among the two trains of actuation logic (inability for
+the behavior of one train to interfere or adversely affect the
+performance of another).
+
+// This characteristic will be demonstrated by rigorous validation via
+// runtime verification and formal verification of the model and its
+// implementation, as discussed in detail below.
+Actuation Correctness
+Completion of actuation whenever coincidence logic is satisfied or
+manual actuation is initiated.
+
+// This characteristic will be demonstrated architecturally by
+// partitioning the actuation logic across software and hardware
+// units.
+Self-Test/Trip Independence
+Independence between periodic self-test functions and trip functions
+(inability for the behavior of the self-testing to interfere or
+adversely affect the trip functions).

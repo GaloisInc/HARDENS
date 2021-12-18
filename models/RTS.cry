@@ -1,0 +1,283 @@
+// HARDENS Reactor Trip System (RTS)
+// A formal model of RTS behavior written in the Cryptol DSL.
+//
+// @author Alex Bakst <abakst@galois.com>
+// @created November, 2021
+// @refines HARDENS.sysml 
+// @refines RTS.lando
+// @refines 
+
+module RTS where
+
+import RTS::Utils
+import RTS::InstrumentationUnit
+import RTS::InstrumentationUnit as I
+import RTS::ActuationUnit
+import RTS::ActuationUnit as AU
+import RTS::Actuator
+import RTS::Actuator as A
+
+type Device = [1]
+type Division = [2]
+type Logic = [1]
+
+D0, D1: Device
+D0 = 0
+D1 = 1
+
+type EventType = [2]
+// Event Type Values
+EVENT_MAINTENANCE, EVENT_TRIP_MODE, EVENT_SETPOINT, EVENT_ACTUATE : EventType
+EVENT_MAINTENANCE = 0
+EVENT_TRIP_MODE = 1
+EVENT_SETPOINT = 2
+EVENT_ACTUATE = 3
+
+type RTS =
+  { control: Control
+  , instrumentation: Instrumentation
+  , actuation: Actuation
+  , ui: UI
+  }
+
+type UI =
+  { instrumentation_values: [4][NChannels][32]
+  , instrumentation_bypass: [4][NChannels]
+  , instrumentation_trip:   [4][NChannels]
+  }
+
+type Control =
+  { self_test: Bit // Are we running an end-to-end test?
+  , self_test_instrs: [2]Division // Which instrumentation units are we poking?
+  , self_test_channel: Channel // Which channel are we poking?
+  , self_test_logic: Logic // Which actuation logic unit are we observing?
+  , self_test_dev: Device // Which actuator are we observing?
+  , self_test_expect: Bit
+  , self_test_timer: [32]
+  , self_test_fail: Bit
+  }
+
+type Actuation =
+  { units: [2]ActuationUnit
+  , actuators: [2]Actuator
+  }
+
+type Instrumentation =
+  { units: [4]InstrumentationUnit }
+
+type Event =
+  { event: EventType // The event tag
+  , ch: Channel // Which channel
+  , dev: Device // Which device
+  , unit: Division // Which Instrumentation unit
+  , setpoint: [32]
+  , mode: I::Mode
+  , on_off: Bit
+  }
+
+// @refines ControlUnit
+Event_Control: Event -> RTS -> RTS
+Event_Control e rts =
+  if e.event == EVENT_MAINTENANCE then
+    on_instr_units rts (\units -> update units (e.unit) (Set_Maintenance e.on_off (units @ e.unit)))
+  else if (e.event == EVENT_TRIP_MODE) && (ch < `NChannels) && (e.mode < `NModes) then
+    on_instr_units rts (\units -> update units (e.unit) (Set_Mode ch e.mode (units @ e.unit)))
+  else if (e.event == EVENT_SETPOINT) && (ch < `NChannels) then
+    on_instr_units rts (\units -> update units (e.unit) (Set_Setpoint ch e.setpoint (units @ e.unit)))
+  else if (e.event == EVENT_ACTUATE) then
+    {rts| actuation =
+      {rts.actuation | actuators = update rts.actuation.actuators dev (SetManual e.on_off (rts.actuation.actuators @ dev))} }
+  else rts
+  where
+    ch : Channel
+    ch = e.ch
+    dev : Device
+    dev = e.dev
+
+    on_instr_units r f = {r|instrumentation = {units = f r.instrumentation.units }}
+
+
+Sense_Actuate:
+  [4]I::Input ->
+  [4]I::Command ->
+  RTS ->
+  RTS
+Sense_Actuate inputs icmds rts =
+  { rts | control = { rts.control | self_test_fail = test_fail }
+        , instrumentation = { units = instrumentation' }
+        , actuation = { units = actuation_logic', actuators = actuators' }
+        }
+  where
+    // The two instrumentation units under test
+    i0 = rts.control.self_test_instrs @ 0
+    i1 = rts.control.self_test_instrs @ 1
+    test_ch = rts.control.self_test_channel
+    test_dev = rts.control.self_test_dev
+    test_logic = rts.control.self_test_logic
+
+    // Each instrumentation unit runs
+    instrumentation'    = [ I::Step input cmd i | i <- rts.instrumentation.units | input <- inputs | cmd <- icmds ]
+    output_trips: [3][4]TripPort
+    output_trips        = [[ instr.output_trip @ ch | instr <- instrumentation' ] | ch <- [0..2]]
+
+    // Mask trips from the instrs under test at the channel under test. This is passed
+    // to the voting components _not_ under test (so that we do not count any test-generated trips)
+    output_trips_masked, output_trips_test: [3][4]TripPort
+    output_trips_masked = MaskTripFrom (\i ch -> elem i [i0, i1] && (ch == test_ch)) output_trips
+    output_trips_test   = MaskTripFrom (\i ch -> ~ (elem i [i0, i1] && (ch == test_ch))) output_trips
+
+    // Now run the voting logic
+    actuation_logic' : [2]ActuationUnit
+    actuation_logic' = [ AU::TripInput (Select_trips l) logic | logic <- rts.actuation.units | l <- [0..1] ]
+
+    // Mask out the output of the voting unit we are *not* testing, and then use *this* value
+    // for testing device actuation
+    test_actuation_logic : [2]ActuationUnit
+    test_actuation_logic = [ { output = [ if (test_logic == l) && (test_dev == d) then logic.output @ d else 0 | d <- [0..1] ]}
+                             | logic <- actuation_logic' | l <- [0..1]
+                           ]
+
+    Select_trips l = if rts.control.self_test then
+                        (if l == test_logic then output_trips_test else output_trips_masked)
+                     else
+                        output_trips
+
+    // This is the output to the devices
+    actuators' : [2]Actuator
+    actuators' = [ A::SetInput (or [ logic.output @ d | logic <- actuation_logic' ]) a | a <- rts.actuation.actuators | d <- [0...] ]
+
+    actuators_test : [2]Actuator
+    actuators_test = [ A::SetInput (or [ logic.output @ d | logic <- test_actuation_logic ]) a | a <- rts.actuation.actuators | d <- [0...] ]
+
+    test_fail    = rts.control.self_test_expect != (actuators_test @ test_dev).input
+
+MaskTripFrom: {idx} (Integral idx, Literal 0 idx) =>
+  (idx -> Channel -> Bit) -> [3][4][8] -> [3][4][8]
+MaskTripFrom p trips =
+  [ [ if p j ch then 0 else ch_trip | ch_trip <- trip | j <- [0...] ]
+  | trip <- trips
+  | ch <- [0..2]
+  ]
+
+Test_Instrumentation : {n} (fin n) =>
+  [n]([8], [2][32], Channel) -> [2] -> RTS -> RTS
+Test_Instrumentation tests i rts = {rts | control = {rts.control|self_test_fail = ~ (all Run_test tests)}}
+  where
+    Run_test: ([8],[2][32],Channel) -> Bit
+    Run_test (trip,vals,ch) = (rts.instrumentation.units @ i)
+                         >>>> Set_Maintenance True
+                         >>>> Set_Mode ch Operate
+                         >>>> Set_Maintenance False
+                         >>>> (\in -> I::Step vals I::NoCommand in)
+                         >>>> (\in -> trip == (in.output_trip @ ch))
+
+Test_Voting: {n} (fin n) => [n](Bit, [1], AU::Input) -> [1] -> RTS -> RTS
+Test_Voting tests l rts = {rts | control = {rts.control|self_test_fail = ~ (all Run_test tests)}}
+  where
+    Run_test (on,d,trips) = (rts.actuation.units @ l)
+                       >>>> AU::TripInput trips
+                       >>>> \a -> (a.output @ d) == on
+
+private
+    property sense_to_actuate_0 rts (sensors : [4][2][32]) cmds =
+        ~rts.control.self_test ==> (
+           sum [ if Is_Tripped T i then 1 else 0 | i <- rts'.instrumentation.units ] >= 2
+        \/ sum [ if Is_Tripped P i then 1 else 0 | i <- rts'.instrumentation.units ] >= 2
+        \/ or  [ a.output @ D0 | a <- rts.actuation.units ]
+        /* --------------------- */ ==
+        (rts'.actuation.actuators @ D0).input
+      )
+      where
+        rts' = rts >>>> Sense_Actuate sensors cmds
+
+    property sense_to_actuate_1 rts (sensors : [4][2][32]) cmds =
+        ~rts.control.self_test ==> (
+           sum [ if Is_Tripped S i then 1 else 0 | i <- rts'.instrumentation.units ] >= 2
+        \/ or  [ a.output @ D1 | a <- rts.actuation.units ]
+        /* --------------------- */ ==
+        (rts'.actuation.actuators @ D1).input
+      )
+      where
+        rts' = rts >>>> Sense_Actuate sensors cmds
+
+    property end_to_end_test (ch : [2]) rts i1 i2 vote sensors =
+       ( ~rts.control.self_test_fail
+         /\ (i1 != i2)
+         /\ and [ (a.output == 0) | a <- rts.actuation.units ]
+         /\ (ch < 3 /* not provable if ch == S */))// /\ (ch != S) // Add this to make it provable
+      /* ------------------------------------------*/ ==>
+         ~rts'.control.self_test_fail
+     where
+       rts' = RunEndToEnd rts i1 i2 ch vote (repeat sensors)
+
+    property end_to_end_test_non_interference (ch : [2]) rts (sensors: [4][2][32]) =
+      (~ rts.control.self_test_fail
+       // Start in a state where we haven't actuated
+       /\ and [ (a.output == 0) | a <- rts.actuation.units ]
+       /\ ch < 3
+       // Check if enough of the non-tested instrumentation (which may be all of them!) thinks we should
+       // actuate
+       /\ sum [ if (~rts.control.self_test || ~elem i [i1,i2]) && ChShouldTrip ch vs instr then 1 else 0
+              | vs <- sensors
+              | instr <- rts.instrumentation.units
+              | i <- [0...]
+              ] >= 2
+      ) /* ------------------------------------------------------------- */ ==>
+      (rts'.actuation.actuators @ (if ch == S then D1 else D0)).input
+      where
+        i1 = rts.control.self_test_instrs@0
+        i2 = rts.control.self_test_instrs@1
+        rts' = rts >>>> Sense_Actuate sensors (repeat I::NoCommand)
+
+    property test_instrumentation_ok i rts vs (ch : Channel) =
+      ~ (rts.control.self_test_fail) ==> (
+          (ch < 3) ==>
+          (~(Test_Instrumentation [(pass, vs, ch)] i rts).control.self_test_fail)
+        )
+      where
+        pass: [8]
+        pass = if ChShouldTrip ch vs {(rts.instrumentation.units @ i) | mode = repeat Operate} then 1 else 0
+
+    property test_voting_ok d ts l rts =
+      (~rts.control.self_test_fail && and [ a.output == 0 | a <- rts.actuation.units ]) ==>
+      ~ ((Test_Voting [(expect, d, ts)] l rts).control.self_test_fail)
+      where
+        expect =
+          if d == D0 then
+               (sum [ if (t != 0) then 1 else 0 | t <- ts @ T ] >= 2)
+            || (sum [ if (t != 0) then 1 else 0 | t <- ts @ P ] >= 2)
+          else
+               sum [ if (t != 0) then 1 else 0 | t <- ts @ S ] >= 2
+
+    I : ([4]InstrumentationUnit -> [4]InstrumentationUnit) -> RTS -> RTS
+    I f rts = {rts|instrumentation = { units = f rts.instrumentation.units }}
+
+    RunEndToEnd rts i1 i2 ch vote sensors = rts'
+      where
+       mkTestCore : [4]InstrumentationUnit -> Control
+       mkTestCore instrs = {rts.control| self_test = True,
+                                         self_test_instrs = [i1, i2],
+                                         self_test_channel = ch,
+                                         self_test_logic = vote,
+                                         self_test_dev = dev,
+                                         self_test_expect = ShouldTrip ch sensors instrs [i1,i2] }
+       dev = if (ch == T) || (ch == P) then D0 else D1
+       rts' = rts
+         >>>> I (\instrs -> [ if (i == i1) || (i == i2) then Set_Maintenance True instr else instr | instr <- instrs | i <- [0..3] ])
+         >>>> I (\instrs -> [ if (i == i1) || (i == i2) then Set_Mode ch Operate instr else instr | instr <- instrs | i <- [0..3] ])
+         >>>> (\r -> {r | control = (mkTestCore r.instrumentation.units) })
+         >>>> Sense_Actuate sensors cmds
+       cmds = repeat I::NoCommand
+
+    ShouldTrip: Channel -> [4][2][32] -> [4]InstrumentationUnit -> [2][2] -> Bit
+    ShouldTrip ch sensors instrumentation test_instrs =
+       numBits [ ChShouldTrip ch vs instr
+               | vs <- sensors @@ test_instrs | instr <- instrumentation @@ test_instrs ] >= 2
+
+    ChShouldTrip ch vs instr =
+      if In_Mode ch Operate instr then
+        if (ch == T) || (ch == P)
+        then (instr.setpoints @ ch) < (vs @ ch)
+        else (instr.setpoints @ ch) >$ Saturation (vs @ T) (vs @ P)
+      else
+        In_Mode ch Manual instr
