@@ -59,7 +59,9 @@ model-based specifications discussed above, as well as automatically
 synthesized formally verified sub-components, as described in the
 HARDENS proposal, for a small handful of critical sub-components.
 These synthesized components are generated in formally verified C
-source code and in the System Verilog HDL.
+source code and in the System Verilog HDL. The POSIX-based simulation 
+can execute both the generated C components and the generated System Verilog
+components by means of a shim library wrapping the Verilated components.
 
 Finally, we have a formally verified RISC-V CPU, called the `nerv`
 CPU, built and tested on the ECP5-5G board.  We have sketched out
