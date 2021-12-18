@@ -3,27 +3,28 @@
  ## project: High Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS)
  ### copyright (C) 2021 Galois
  ### author: Joe Kiniry <kiniry@galois.com>
+*/
 
- ## Summary
-
- The overall shape of the Reactor Trip System (RTS) is an archetypal
- *sense-compute-actuate* architecture. Sensors are in the `Sensors`
- subsystem. They are read by the `Instrumentation` subsystem, which
- contains four separate and independent `Instrumentation`
- components. The "Compute" part of the architecture is spread across
- the `Actuation Logic` subsystem—which contains the two `Voting`
- components which perform the actuation logic itself—and the `Root`
- subsystem which contains the core computation and I/O components, and
- the two separate and independent devices that drive actuators.
+/**
+ * The overall shape of the Reactor Trip System (RTS) is an archetypal
+ * *sense-compute-actuate* architecture. Sensors are in the `Sensors`
+ * subsystem. They are read by the `Instrumentation` subsystem, which
+ * contains four separate and independent `Instrumentation`
+ * components. The "Compute" part of the architecture is spread across
+ * the `Actuation Logic` subsystem—which contains the two `Voting`
+ * components which perform the actuation logic itself—and the `Root`
+ * subsystem which contains the core computation and I/O components, and
+ * the two separate and independent devices that drive actuators.
  */
-
 package id RTS 'Reactor Trip System' {
-  import 'Semantic Properties'::*;
-
+  private import 'Semantic Properties'::*;
+  
   package id Architecture 'RTS Architecture';
   alias Arch for Architecture;
   package id Hardware 'RTS Hardware Artifacts';
   alias HW for Hardware;
+  package id Artifacts 'RTS Implementation Artifacts';
+  package id Requirements 'RTS Requirements';
   package id Properties 'RTS Properties';
   alias Props for Properties;
   package id Characteristics 'IEEE Std 603-2018 Characteristics';
@@ -378,6 +379,119 @@ package id Architecture 'RTS Architecture' {
   } // package id RTS_System_Arch 'RTS System Architecture'
 } // package id Architecture 'RTS Architecture'
 
+/**
+ * This RTS architecture specification includes all of the core
+ * concepts inherent to NPP Instrumentation and Control systems.
+ * A system architecture specification often includes a software,
+ * hardware, network, and data architecture specifications.
+ */
+package id Architecture 'RTS Architecture' {
+  private import 'Project Glossary'::*;
+
+  /**
+   * Note that this is the *systems* architecture, which is different
+   * than our software, hardware, or data architectures.
+   */
+  package id RTS_System_Arch 'RTS System Architecture' {
+
+    package Sensor {
+      private import Quantities::*;
+
+      /** Generic sensor port */
+      port def SensorOutPort {
+          out value : ScalarQuantityValue;
+      }
+
+      /** Generic sensor */
+      part def GenericSensor :> Sensor {
+        attribute currentValue : ScalarQuantityValue;
+        port output: SensorOutPort;
+      }
+
+      /**
+       * A demultiplexer for sending one sensor signal to multiple
+       * outputs. 
+       */
+      part def Demux {
+        port input: ~SensorOutPort;
+        // Using vector notation doesn't seem to work in connections
+        port output1: SensorOutPort;
+        port output2: SensorOutPort;
+      }
+    }
+
+    /** A generic temperature sensor. */
+    package TempSensor {
+      private import Sensor::*;
+      private import ISQThermodynamics::TemperatureValue;
+
+      /** Temperature port */
+      port def TemperatureOutPort :> SensorOutPort {
+          redefines value: TemperatureValue;
+      }
+
+      /** A sensor that is capable of measuring the temperature of its environment. */
+      part def 'Temperature Sensor' :> GenericSensor {
+        /** What is your temperature reading in Celsius (C)? */
+        redefines currentValue: TemperatureValue;
+        redefines output: TemperatureOutPort;
+      }
+
+      part def TempDemux :> Demux {
+        redefines input: ~TemperatureOutPort;
+        redefines output1: TemperatureOutPort;
+        redefines output2: TemperatureOutPort;
+      }
+    }
+
+    /** A generic pressure sensor. */
+    package PressureSensor {
+      private import Sensor::*;
+      private import ISQMechanics::PressureValue;
+
+      /** Pressure port */
+      port def PressureOutPort :> SensorOutPort {
+          redefines value: PressureValue;
+      }
+
+      /** A sensor that is capable of measuring the air pressure of its environment. */
+      part def 'Pressure Sensor' :> GenericSensor {
+        /** What is your pressure reading in Pascal (P)? */
+        redefines currentValue: PressureValue;
+        redefines output: PressureOutPort;
+      }
+
+      part def PressureDemux :> Demux {
+        redefines input: ~PressureOutPort;
+        redefines output1: PressureOutPort;
+        redefines output2: PressureOutPort;
+      }
+    }
+
+    /**
+     * The Instrumentation subsystem contains all of the sensors for an 
+     * NPP I&C system.
+     */
+    package Instrumentation {
+      private import ScalarValues::Real;
+      private import ScalarValues::Boolean;
+      private import TempSensor::*;
+      private import PressureSensor::*;
+
+      port def TripPort {
+        out trip : Boolean;
+      }
+      package Actuators {
+        part 'Actuator'[2];
+      }
+      package Sensors {
+        part TS: 'Temperature Sensor'[2];
+        part PS: 'Pressure Sensor'[2];
+      }
+    }
+  }
+}
+
 package id Artifacts 'RTS Implementation Artifacts' {
   private import ScalarValues::*;
   private import 'Project Glossary'::*;
@@ -417,12 +531,14 @@ package id Artifacts 'RTS Implementation Artifacts' {
   }
 }
 
-/** The physical hardware components that are a part of the HARDENS RTS
-    demonstrator. */
+/**
+ * The physical hardware components that are a part of the HARDENS RTS
+ * demonstrator. 
+ */
 package 'RTS Hardware Artifacts' {
-  import 'Project Glossary'::*;
+  private import 'Project Glossary'::*;
   //import Architecture::RTS_System_Arch::Hardware::*;
-  import ScalarValues::*;
+  private import ScalarValues::*;
 
   part def 'SERDES Test SMA Connector' :> Connector;
   part def 'Parallel Config Header' :> Header;
@@ -527,4 +643,55 @@ package 'RTS Hardware Artifacts' {
 //    end: PCB;
 //  }
 //    connection: DevMachineToDevBoard connect 'Developer Machine' to Board;
-//}
+}
+
+/**
+ * All requirements that the RTS system must fulfill, as driven by the
+ * IEEE 603-2018 standards and the NRC RFP.
+ */
+package id Requirements 'RTS Requirements' {
+ // Note that we do not specify documentation comments here as they
+ // are specified in the Lando specification.  If we do not include
+ // additional specifications here on the refinement from the higher-level
+ // specification (in this case, SysML refines Lando), then the higher-level
+ // specification's comments/specifications refine too (an hence are 
+ // just copied verbatim).
+ package id Requirements 'HARDENS Project High-level Requirements' {
+   requirement def 'NRC Understanding';
+   requirement def 'Identify Regulatory Gaps';
+   requirement def Demonstrate;
+   requirement def 'Demonstrator Parts';
+   requirement 'Demonstrator Groundwork';
+ }
+ package id Characteristics 'NRC Characteristics' {
+   requirement def 'Requirements Consistency';
+   requirement def 'Requirements Colloquial Completeness';
+   requirement def 'Requirements Formal Completeness';
+   requirement def 'Instrumentation Independence';
+   requirement def 'Channel Independence';
+   requirement def 'Actuation Independence';
+   requirement def 'Actuation Correctness';
+   requirement def 'Self-Test/Trip Independence';
+ }
+}
+
+/**
+ * All correctness and security properties of the RTS system are
+ * specified in this subsystem.
+ */
+package id Properties 'RTS Properties' {
+}
+
+/**
+ * The IEEE 603-2018 requirements (known as "characteristics" in
+ * the standard) which the RTS demonstrator system must fulfill.
+ */
+package id Characteristics 'IEEE Std 603-2018 Characteristics' {
+}
+
+/**
+ * The IEEE 603-2018 requirements (known as "characteristics" in
+ * the standard) which the RTS demonstrator system must fulfill.
+ */
+package id Characteristics 'IEEE Std 603-2018 Characteristics' {
+}

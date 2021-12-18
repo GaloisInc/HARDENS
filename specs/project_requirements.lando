@@ -1,4 +1,8 @@
+// All requirements that the RTS system must fulfill, as driven by the
+// IEEE 603-2018 standards and the NRC RFP.
+
 requirements HARDENS Project High-level Requirements
+// The high-level requirements for the project stipulated by the NRC RFP.
 
 NRC Understanding
 Provide to the NRC expert technical services in order to develop a
@@ -26,9 +30,9 @@ Our demonstrator lays the groundwork for a high-assurance reusable
 product for safety critical Digital Instrumentation and Control
 Systems systems in Nuclear Power Plants.
 
-
-
 requirements NRC Characteristics
+// The requirements driven by the IEEE 603-2018 standard for NPP I&C
+// systems.
 
 // Both formal and rigorous consistency checks of the requirements
 // will be accomplished by using false theorem checks and proofs in
@@ -40,7 +44,7 @@ Requirements must be shown to be consistent.
 // accomplished by demonstrating traceability from the project
 // specification (including the RFP text describing the reactor trip
 // system) to the formal models of the system and its properties.
-Requirements Colloquial Completeness 
+Requirements Colloquial Completeness
 The system must be shown to fulfill all requirements.
 
 // A formal verification of completeness of the requirements will be
