@@ -1,0 +1,88 @@
+module RTS::ActuationUnit where
+
+import RTS::Utils
+import RTS::InstrumentationUnit
+
+type Input            = [3][4]TripPort
+type ActuationPort    = Bit
+type ActuationUnit    = { output: [2]ActuationPort }
+type CoincidenceLogic = [4]TripPort -> Bit
+type OrLogic          = [2]Bit -> Bit
+
+TripInput: [3][4]TripPort -> ActuationUnit -> ActuationUnit
+TripInput trips actuationUnit =
+  { output = [ d0, d1 ] }
+  where
+    d0 = (actuationUnit.output @ 0)
+      || TempPressureTripOut [TemperatureLogic temperatureTrips,
+                              PressureLogic pressureTrips]
+
+    d1 = (actuationUnit.output @ 1)
+      || (SaturationLogic saturationTrips)
+
+    temperatureTrips = trips @ T
+    pressureTrips = trips @ P
+    saturationTrips = trips @ S
+
+TemperatureLogic: CoincidenceLogic
+TemperatureLogic = Coincidence_2_4
+
+PressureLogic: CoincidenceLogic
+PressureLogic = Coincidence_2_4
+
+SaturationLogic: CoincidenceLogic
+SaturationLogic = Coincidence_2_4
+
+TempPressureTripOut: OrLogic
+TempPressureTripOut = or
+
+private
+  Coincidence_2_4 : [4][8] -> Bit
+  Coincidence_2_4 x = (bits != 0) && (bits != 1) && (bits != 2) && (bits != 4) && (bits != 8)
+    where
+      bits = [ b != 0 | b <- x ]
+
+  count : {n} (fin n) => [n] -> Integer
+  count bs = sum [ if b then 1 else 0 | b <- bs ]
+
+  /** @requirements
+        ACTUATION_LOGIC_VOTE_TEMPERATURE
+  */
+  property actuation_logic_vote_temperature (inp: Input) =
+    (count [i != 0 | i <- (inp @ T)] >= 2) == TemperatureLogic (inp @ T)
+
+  /** @requirements
+        ACTUATION_LOGIC_VOTE_PRESSURE
+  */
+  property actuation_logic_vote_pressure (inp: Input) =
+    (count [i != 0 | i <- (inp @ P)] >= 2) == PressureLogic (inp @ P)
+
+  /** @requirements
+        ACTUATION_LOGIC_VOTE_SATURATION
+  */
+  property actuation_logic_vote_saturation (inp: Input) =
+    (count [i != 0 | i <- (inp @ S)] >= 2) == SaturationLogic (inp @ S)
+
+  /** @requirements
+        ACTUATION_LOGIC_DEVICE_0
+        ACTUATION_LOGIC_VOTE_DEVICE_0
+        ACTUATION_LOGIC_VOTE_MANUAL_DEVICE_0
+  */
+  property actuation_logic_device_0 (inp: Input) (act: ActuationUnit) =
+       act.output @ 0
+    \/ TempPressureTripOut [TemperatureLogic (inp @ T), PressureLogic (inp @ P)]
+    == /* ---------------- */
+    act'.output @ 0
+    where act' = TripInput inp act
+
+  /** @requirements
+        ACTUATION_LOGIC_DEVICE_1
+        ACTUATION_LOGIC_VOTE_DEVICE_1
+        ACTUATION_LOGIC_VOTE_MANUAL_DEVICE_1
+  */
+  property actuation_logic_device_1 (inp: Input) (act: ActuationUnit) =
+       act.output @ 1
+    \/ SaturationLogic (inp @ S)
+    == /* ---------------- */
+    act'.output @ 1
+    where act' = TripInput inp act
