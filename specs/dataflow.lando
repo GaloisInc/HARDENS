@@ -68,7 +68,7 @@ describes the relationships between various levels of specifications,
 implementations, and assurance artifacts for the HARDENS demonstrator.
 indexing
   proposal_figure: 3
-  figure_name: Dataflow of RTS Implementation Artifacts
+  figure_name: Dataflow of RTS Implementation Artifacts.
 
 relation CryptolToC client CryptolSpec
 relation CryptolToSystemVerilog client CryptolSpec
