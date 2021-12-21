@@ -7,7 +7,7 @@
 
 // Return whether or not a device with the provided votes should be actuated
 // Bit i = vote by logic unit i
-extern w1 Actuate_Device(w2 vs4801);
+extern w1 ActuateActuator(w2 vs4801);
 
 int actuate_devices(void)
 {
@@ -19,7 +19,7 @@ int actuate_devices(void)
       err |= get_actuation_state(l, d, &this_vote);
       votes |= (this_vote << d);
       // Call out to actuation policy
-      err |= set_actuate_device(d, Actuate_Device(votes));
+      err |= set_actuate_device(d, ActuateActuator(votes));
     }
   }
 

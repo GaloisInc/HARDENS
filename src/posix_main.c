@@ -29,17 +29,17 @@ struct instrumentation_state instrumentation[4];
 struct actuation_logic actuation_logic[2];
 
 static uint32_t sensors[4][2];
-static uint8_t trip_signals[4][NTRIP];
+static uint8_t trip_signals[NTRIP][4];
 struct instrumentation_command *inst_command_buf[4];
 
 static uint8_t actuator_state[NDEV];
 static uint8_t device_actuation_logic[2][NDEV];
 struct actuation_command *act_command_buf[2];
 
-int read_instrumentation_trip_signals(uint8_t arr[4][3]) {
-  for (int div = 0; div < 4; ++div) {
-    for (int i = 0; i < NTRIP; ++i) {
-      arr[div][i] = trip_signals[div][i];
+int read_instrumentation_trip_signals(uint8_t arr[3][4]) {
+  for (int i = 0; i < NTRIP; ++i) {
+    for (int div = 0; div < 4; ++div) {
+      arr[i][div] = trip_signals[i][div];
     }
   }
 
@@ -116,7 +116,7 @@ int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
 }
 
 int set_output_instrumentation_trip(uint8_t div, uint8_t channel, uint8_t val) {
-  trip_signals[div][channel] = val;
+  trip_signals[channel][div] = val;
   return 0;
 }
 

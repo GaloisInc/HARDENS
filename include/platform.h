@@ -26,7 +26,7 @@ int get_actuation_state(uint8_t i, uint8_t device, uint8_t *value);
  * @ensures arr[0..3] set to the current trip input signals
  * @ensures \ret < 0 on error
  */
-int read_instrumentation_trip_signals(uint8_t arr[4][3]);
+int read_instrumentation_trip_signals(uint8_t arr[3][4]);
 
 // @todo move me
 uint32_t saturation(uint32_t temp, uint32_t pressure);

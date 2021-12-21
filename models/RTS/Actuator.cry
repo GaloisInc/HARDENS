@@ -12,7 +12,10 @@ type Actuator =
   }
 
 SetInput: Actuation -> Actuator -> Actuator
-SetInput on actuator = {actuator| input = on}
+SetInput on actuator = {actuator| input = on }
 
 SetManual: Actuation -> Actuator -> Actuator
 SetManual on actuator = {actuator | manualActuatorInput = on}
+
+ActuateActuator : [2]Actuation -> Actuation
+ActuateActuator inputs = (inputs @ (0:[1])) || (inputs @ (1:[1]))

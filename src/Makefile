@@ -4,18 +4,19 @@ MODEL_DIR=../models
 C_GEN_DIR=generated_csrc
 SV_GEN_DIR=generated_vsrc
 
-ACTUATION_CRY=RTS/Actuation.cry
-INSTRUMENTATION_CRY=RTS/Instrumentation.cry
+ACTUATION_CRY=RTS/ActuationUnit.cry
+ACTUATOR_CRY=RTS/Actuator.cry
+INSTRUMENTATION_CRY=RTS/InstrumentationUnit.cry
 
-GEN_VOTE_C=${C_GEN_DIR}/vote.c
-GEN_VOTE_SV=${SV_GEN_DIR}/vote.sv
-GEN_VOTE_INC=${GEN_VOTE_C:.c=.inc.c}
-GEN_VOTE_F=Coincidence_2_4,Voting_Step
+GEN_ACTUATION_UNIT_C=${C_GEN_DIR}/actuation_unit.c
+GEN_ACTUATION_UNIT_SV=${SV_GEN_DIR}/actuation_unit.sv
+GEN_ACTUATION_UNIT_INC=${GEN_ACTUATION_UNIT_C:.c=.inc.c}
+GEN_ACTUATION_UNIT_F=Actuate_D0,Actuate_D1
 
-GEN_ACTUATE_DEVICE_C=${C_GEN_DIR}/actuate_device.c
-GEN_ACTUATE_DEVICE_SV=${SV_GEN_DIR}/actuate_device.sv
-GEN_ACTUATE_DEVICE_INC=${GEN_ACTUATE_DEVICE_C:.c=.inc.c}
-GEN_ACTUATE_DEVICE_F=Actuate_Device
+GEN_ACTUATE_ACTUATOR_C=${C_GEN_DIR}/actuate_actuator.c
+GEN_ACTUATE_ACTUATOR_SV=${SV_GEN_DIR}/actuate_actuator.sv
+GEN_ACTUATE_ACTUATOR_INC=${GEN_ACTUATE_ACTUATOR_C:.c=.inc.c}
+GEN_ACTUATE_ACTUATOR_F=ActuateActuator
 
 GEN_STEP_TRIP_SIGNALS_C=${C_GEN_DIR}/step_trip_signals.c
 GEN_STEP_TRIP_SIGNALS_SV=${SV_GEN_DIR}/step_trip_signals.sv
@@ -23,8 +24,8 @@ GEN_STEP_TRIP_SIGNALS_INC=${GEN_STEP_TRIP_SIGNALS_C:.c=.inc.c}
 GEN_STEP_TRIP_SIGNALS_F=Generate_Sensor_Trips,Is_Ch_Tripped
 
 SRC=core.c sense_actuate.c actuation_logic.c instrumentation.c actuate.c
-C_GEN_SRC=${GEN_VOTE_C} ${GEN_ACTUATE_DEVICE_C} ${GEN_STEP_TRIP_SIGNALS_C}
-SV_GEN_SRC=${GEN_VOTE_SV} ${GEN_ACTUATE_DEVICE_SV} ${GEN_STEP_TRIP_SIGNALS_SV}
+C_GEN_SRC=${GEN_ACTUATION_UNIT_C} ${GEN_ACTUATE_ACTUATOR_C} ${GEN_STEP_TRIP_SIGNALS_C}
+SV_GEN_SRC=${GEN_ACTUATION_UNIT_SV} ${GEN_ACTUATE_ACTUATOR_SV} ${GEN_STEP_TRIP_SIGNALS_SV}
 POSIX_SRC=posix_main.c
 
 OBJ=${SRC:.c=.o}
@@ -66,30 +67,30 @@ linux: rts.posix
 macos: rts.posix
 	mv rts.posix rts.macos
 
-proof: ${GEN_VOTE_INC} ${GEN_STEP_TRIP_SIGNALS_INC}
-	clang -g -emit-llvm -c ${GEN_VOTE_C} -o ${C_GEN_DIR}/vote.bc
+proof: ${GEN_ACTUATION_UNIT_INC} ${GEN_STEP_TRIP_SIGNALS_INC}
+	clang -g -emit-llvm -c ${GEN_ACTUATION_UNIT_C} -o ${C_GEN_DIR}/vote.bc
 	clang -g -emit-llvm -c ${GEN_STEP_TRIP_SIGNALS_C} -o ${C_GEN_DIR}/step_trip_signals.bc
 
 ifeq ($(REGEN_SOURCES),1)
-${GEN_VOTE_INC}: ${MODEL_DIR}/${ACTUATION_CRY}
+${GEN_ACTUATION_UNIT_INC}: ${MODEL_DIR}/${ACTUATION_CRY}
 	cd ${MODEL_DIR} && \
-		crymp -f ${GEN_VOTE_F} ${ACTUATION_CRY} -o ${ROOT_DIR}/${GEN_VOTE_INC}
+		crymp -f ${GEN_ACTUATION_UNIT_F} ${ACTUATION_CRY} -o ${ROOT_DIR}/${GEN_ACTUATION_UNIT_INC}
 
-${GEN_VOTE_SV}: ${MODEL_DIR}/${ACTUATION_CRY}
+${GEN_ACTUATION_UNIT_SV}: ${MODEL_DIR}/${ACTUATION_CRY}
 	CRYPTOLPATH=${MODEL_DIR} \
-    cryptol-verilogc ${MODEL_DIR}/${ACTUATION_CRY} -o ${GEN_VOTE_SV} \
+    cryptol-verilogc ${MODEL_DIR}/${ACTUATION_CRY} -o ${GEN_ACTUATION_UNIT_SV} \
     ${CVERILOG_FLAGS} \
-	--top-level=$(subst $(comma), --top-level=,${GEN_VOTE_F})
+	--top-level=$(subst $(comma), --top-level=,${GEN_ACTUATION_UNIT_F})
 
-${GEN_ACTUATE_DEVICE_INC}: ${MODEL_DIR}/${ACTUATION_CRY}
+${GEN_ACTUATE_ACTUATOR_INC}: ${MODEL_DIR}/${ACTUATOR_CRY}
 	cd ${MODEL_DIR} && \
-		crymp -f ${GEN_ACTUATE_DEVICE_F} ${ACTUATION_CRY} -o ${ROOT_DIR}/${GEN_ACTUATE_DEVICE_INC}
+		crymp -f ${GEN_ACTUATE_ACTUATOR_F} ${ACTUATOR_CRY} -o ${ROOT_DIR}/${GEN_ACTUATE_ACTUATOR_INC}
 
-${GEN_ACTUATE_DEVICE_SV}: ${MODEL_DIR}/${ACTUATION_CRY}
+${GEN_ACTUATE_ACTUATOR_SV}: ${MODEL_DIR}/${ACTUATION_CRY}
 	CRYPTOLPATH=${MODEL_DIR} \
-    cryptol-verilogc ${MODEL_DIR}/${ACTUATION_CRY} -o ${GEN_ACTUATE_DEVICE_SV} \
+    cryptol-verilogc ${MODEL_DIR}/${ACTUATION_CRY} -o ${GEN_ACTUATE_ACTUATOR_SV} \
     ${CVERILOG_FLAGS} \
-	--top-level=$(subst $(comma), --top-level=,${GEN_ACTUATE_DEVICE_F})
+	--top-level=$(subst $(comma), --top-level=,${GEN_ACTUATE_ACTUATOR_F})
 
 ${GEN_STEP_TRIP_SIGNALS_INC}: ${MODEL_DIR}/${INSTRUMENTATION_CRY}
 	cd ${MODEL_DIR} && \
