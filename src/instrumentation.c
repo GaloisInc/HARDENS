@@ -3,8 +3,8 @@
 
 #define TRIP_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
-uint8_t Generate_Sensor_Trips(uint32_t vals[3], uint32_t setpoints[3]);
-uint8_t Is_Ch_Tripped(uint8_t mode, uint8_t trip);
+extern uint8_t Generate_Sensor_Trips(uint32_t vals[3], uint32_t setpoints[3]);
+extern uint8_t Is_Ch_Tripped(uint8_t mode, uint8_t trip);
 
 uint32_t saturation(uint32_t temperature, uint32_t pressure)
 {

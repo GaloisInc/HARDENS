@@ -34,19 +34,24 @@ VERILATED_SRC=$(VERILATED_INC)/verilated.cpp
 CVERILOG_FLAGS=--yosys-defaults --little-endian
 
 SV_LIBS=generated_vsrc/generate_sensor_trips/VGenerate_Sensor_Trips__ALL.a\
-  generated_vsrc/voting_step/VVoting_Step__ALL.a\
+  generated_vsrc/actuate_d0/VActuate_D0__ALL.a\
+  generated_vsrc/actuate_d1/VActuate_D1__ALL.a\
   generated_vsrc/is_ch_tripped/VIs_Ch_Tripped__ALL.a\
-  generated_vsrc/actuate_device/Vactuate_device__ALL.a
+  generated_vsrc/actuate_actuator/VActuateActuator__ALL.a
+
+VERILATOR_SHIM_OBJS=verilator/instrumentation.o verilator/actuate_d0.o verilator/actuate_d1.o verilator/actuate_actuator.o
 
 # Thanks: https://blog.jgc.org/2007/06/escaping-comma-and-space-in-gnu-make.html
 comma := ,
 
-all: rts.posix
+all: rts.posix rts.posix.verilog
 
 clean:
 	rm -f rts.posix rts.macos rts.linux
 	rm -f *.a *.o
+	rm -f verilator/*.o
 	rm -f ${C_GEN_DIR}/*.c ${C_GEN_DIR}/*.o ${C_GEN_DIR}/*.bc
+	find ${SV_GEN_DIR} -regex '${SV_GEN_DIR}/[^\.]*' -type d -prune -exec rm -r "{}" \;
 	rm -f ${SV_GEN_DIR}/*.sv
 
 gen_c: ${C_GEN_SRC}
@@ -55,7 +60,7 @@ gen_vlog: ${SV_GEN_SRC}
 rts.posix: ${OBJ} ${C_GEN_OBJ} ${POSIX_OBJ}
 	clang -fsanitize=address,undefined -g $^ -o rts.posix
 
-rts.posix.verilog: ${OBJ} ${POSIX_OBJ} ${SV_LIBS} generated_vsrc/svlib.o generated_vsrc/generate_sensor_trips/VGenerate_Sensor_Trips__ALL.a
+rts.posix.verilog: ${OBJ} ${POSIX_OBJ} ${VERILATOR_SHIM_OBJS} ${SV_LIBS}
 	clang++ -fsanitize=address,undefined -g $^ -o rts.posix.verilog ${VERILATED_SRC} -I${VERILATED_SRC}/include
 
 linux: rts.posix
@@ -83,9 +88,9 @@ ${GEN_ACTUATE_ACTUATOR_C}: ${MODEL_DIR}/${ACTUATOR_CRY}
 	cd ${MODEL_DIR} && \
 		crymp -f ${GEN_ACTUATE_ACTUATOR_F} ${ACTUATOR_CRY} -o ${ROOT_DIR}/${GEN_ACTUATE_ACTUATOR_C}
 
-${GEN_ACTUATE_ACTUATOR_SV}: ${MODEL_DIR}/${ACTUATION_CRY}
+${GEN_ACTUATE_ACTUATOR_SV}: ${MODEL_DIR}/${ACTUATOR_CRY}
 	CRYPTOLPATH=${MODEL_DIR} \
-    cryptol-verilogc ${MODEL_DIR}/${ACTUATION_CRY} -o ${GEN_ACTUATE_ACTUATOR_SV} \
+    cryptol-verilogc ${MODEL_DIR}/${ACTUATOR_CRY} -o ${GEN_ACTUATE_ACTUATOR_SV} \
     ${CVERILOG_FLAGS} \
 	--top-level=$(subst $(comma), --top-level=,${GEN_ACTUATE_ACTUATOR_F})
 
@@ -93,14 +98,14 @@ ${GEN_STEP_TRIP_SIGNALS_C}: ${MODEL_DIR}/${INSTRUMENTATION_CRY}
 	cd ${MODEL_DIR} && \
 		crymp -f ${GEN_STEP_TRIP_SIGNALS_F} ${INSTRUMENTATION_CRY} -o ${ROOT_DIR}/${GEN_STEP_TRIP_SIGNALS_C}
 
-${GEN_STEP_TRIP_SIGNALS_SV}: ${MODEL_DIR}/${ACTUATION_CRY}
+${GEN_STEP_TRIP_SIGNALS_SV}: ${MODEL_DIR}/${INSTRUMENTATION_CRY}
 	CRYPTOLPATH=${MODEL_DIR} \
-    cryptol-verilogc ${MODEL_DIR}/${ACTUATION_CRY} -o ${GEN_STEP_TRIP_SIGNALS_SV} \
+    cryptol-verilogc ${MODEL_DIR}/${INSTRUMENTATION_CRY} -o ${GEN_STEP_TRIP_SIGNALS_SV} \
     ${CVERILOG_FLAGS} \
 	--top-level=$(subst $(comma), --top-level=,${GEN_STEP_TRIP_SIGNALS_F})
 endif
 
-generated_vsrc/generate_sensor_trips/VGenerate_Sensor_Trips__ALL.a: generated_vsrc/step_trip_signals.sv
+generated_vsrc/generate_sensor_trips/VGenerate_Sensor_Trips__ALL.a: ${GEN_STEP_TRIP_SIGNALS_SV}
 	verilator --cc -Wno-WIDTH -Wno-LITENDIAN --top-module Generate_Sensor_Trips $^ \
       -Mdir generated_vsrc/generate_sensor_trips --build
 
@@ -108,13 +113,20 @@ generated_vsrc/is_ch_tripped/VIs_Ch_Tripped__ALL.a: generated_vsrc/step_trip_sig
 	verilator --cc -Wno-WIDTH -Wno-LITENDIAN --top-module Is_Ch_Tripped $^ \
       -Mdir generated_vsrc/is_ch_tripped --build
 
-generated_vsrc/voting_step/VVoting_Step__ALL.a: generated_vsrc/vote.sv
-	verilator --cc -Wno-WIDTH -Wno-LITENDIAN --top-module Voting_Step $^ \
-      -Mdir generated_vsrc/voting_step --build
+generated_vsrc/actuate_d0/VActuate_D0__ALL.a: generated_vsrc/actuation_unit.sv
+	verilator --cc -Wno-WIDTH -Wno-LITENDIAN --top-module Actuate_D0 $^ \
+      -Mdir generated_vsrc/actuate_d0 --build
 
-generated_vsrc/actuate_device/Vactuate_device__ALL.a: generated_vsrc/actuate_device.sv
-	verilator --cc -Wno-WIDTH -Wno-LITENDIAN --top-module Actuate_Device $^ \
-      -Mdir generated_vsrc/actuate_device --build
+generated_vsrc/actuate_d1/VActuate_D1__ALL.a: generated_vsrc/actuation_unit.sv
+	verilator --cc -Wno-WIDTH -Wno-LITENDIAN --top-module Actuate_D1 $^ \
+      -Mdir generated_vsrc/actuate_d1 --build
+
+generated_vsrc/actuate_actuator/VActuateActuator__ALL.a: generated_vsrc/actuate_actuator.sv
+	verilator --cc -Wno-WIDTH -Wno-LITENDIAN --top-module ActuateActuator $^ \
+      -Mdir generated_vsrc/actuate_actuator --build
+
+verilator/%.o: verilator/%.cpp ${SV_LIBS}
+	clang++ -g -Wall -I../include -Igenerated_vsrc -I${VERILATED_INC} $< -c -o $@
 
 %.o: %.c
 	clang -g $^ -Wall -I../include -Wno-bitwise-op-parentheses -Wno-unused-function -Wno-shift-op-parentheses -c -o $@
@@ -122,5 +134,5 @@ generated_vsrc/actuate_device/Vactuate_device__ALL.a: generated_vsrc/actuate_dev
 # %.o: %.c
 # 	clang -g -Wall -I../include $^ -c -o $@
 
-generated_vsrc/svlib.o: generated_vsrc/svlib.cpp
-	clang++ -g -Wall -I../include -I${VERILATED_INC} $^ -c -o $@
+# generated_vsrc/svlib.o: generated_vsrc/svlib.cpp
+# 	clang++ -g -Wall -I../include -I${VERILATED_INC} $^ -c -o $@

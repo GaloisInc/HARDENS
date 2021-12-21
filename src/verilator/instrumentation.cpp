@@ -1,34 +1,8 @@
-#include "is_ch_tripped/VIs_Ch_Tripped.h"
 #include "generate_sensor_trips/VGenerate_Sensor_Trips.h"
-#include "voting_step/VVoting_Step.h"
-#include "actuate_device/VActuate_Device.h"
-#include <stdint.h>
+#include "is_ch_tripped/VIs_Ch_Tripped.h"
 
 VIs_Ch_Tripped is_tripped;
 VGenerate_Sensor_Trips gen_trips;
-VVoting_Step voting_step;
-VActuate_Device actuate_device;
-
-extern "C"
-uint8_t Actuate_Device(uint8_t vs)
-{
-    actuate_device.vs = vs;
-    actuate_device.eval();
-    return actuate_device.out;
-}
-
-extern "C"
-uint8_t Voting_Step(uint8_t trip_input[4][3])
-{
-    // This needs to be reversed because the Verilog expects
-    // arr[3], arr[2], ...
-    // (this is so that the individual _bytes_ have the right direction)
-    for(int b = 0; b < 12; ++b) {
-        memcpy((uint8_t *)voting_step.inp + b, (uint8_t *)trip_input + (11 - b), 1);
-    }
-    voting_step.eval();
-    return voting_step.out;
-}
 
 extern "C"
 uint8_t Is_Ch_Tripped(uint8_t mode, uint8_t trip)
