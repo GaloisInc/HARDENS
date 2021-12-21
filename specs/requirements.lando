@@ -1,0 +1,11 @@
+subsystem Requirements
+The requirements for the RTS system are specified in the following
+requirements specifications:
+   HARDENS Project High-level Requirements
+   NRC Characteristics.
+
+// At the moment all system requirements are written in FRET.  See the
+// top-level [](../README.md) for more information.
+
+// During Task 2 we will reify those same requirements into our Lando
+// and SysML specifications as well.
