@@ -10,17 +10,14 @@ INSTRUMENTATION_CRY=RTS/InstrumentationUnit.cry
 
 GEN_ACTUATION_UNIT_C=${C_GEN_DIR}/actuation_unit.c
 GEN_ACTUATION_UNIT_SV=${SV_GEN_DIR}/actuation_unit.sv
-GEN_ACTUATION_UNIT_INC=${GEN_ACTUATION_UNIT_C:.c=.inc.c}
 GEN_ACTUATION_UNIT_F=Actuate_D0,Actuate_D1
 
 GEN_ACTUATE_ACTUATOR_C=${C_GEN_DIR}/actuate_actuator.c
 GEN_ACTUATE_ACTUATOR_SV=${SV_GEN_DIR}/actuate_actuator.sv
-GEN_ACTUATE_ACTUATOR_INC=${GEN_ACTUATE_ACTUATOR_C:.c=.inc.c}
 GEN_ACTUATE_ACTUATOR_F=ActuateActuator
 
 GEN_STEP_TRIP_SIGNALS_C=${C_GEN_DIR}/step_trip_signals.c
 GEN_STEP_TRIP_SIGNALS_SV=${SV_GEN_DIR}/step_trip_signals.sv
-GEN_STEP_TRIP_SIGNALS_INC=${GEN_STEP_TRIP_SIGNALS_C:.c=.inc.c}
 GEN_STEP_TRIP_SIGNALS_F=Generate_Sensor_Trips,Is_Ch_Tripped
 
 SRC=core.c sense_actuate.c actuation_logic.c instrumentation.c actuate.c
@@ -49,10 +46,10 @@ all: rts.posix
 clean:
 	rm -f rts.posix rts.macos rts.linux
 	rm -f *.a *.o
-	rm -f ${C_GEN_DIR}/*.inc.c ${C_GEN_DIR}/*.o ${C_GEN_DIR}/*.bc
+	rm -f ${C_GEN_DIR}/*.c ${C_GEN_DIR}/*.o ${C_GEN_DIR}/*.bc
 	rm -f ${SV_GEN_DIR}/*.sv
 
-gen_c: ${C_GEN_SRC:.c=.inc.c}
+gen_c: ${C_GEN_SRC}
 gen_vlog: ${SV_GEN_SRC}
 
 rts.posix: ${OBJ} ${C_GEN_OBJ} ${POSIX_OBJ}
@@ -67,14 +64,14 @@ linux: rts.posix
 macos: rts.posix
 	mv rts.posix rts.macos
 
-proof: ${GEN_ACTUATION_UNIT_INC} ${GEN_STEP_TRIP_SIGNALS_INC}
+proof: ${GEN_ACTUATION_UNIT_GEN} ${GEN_STEP_TRIP_SIGNALS_INC}
 	clang -g -emit-llvm -c ${GEN_ACTUATION_UNIT_C} -o ${C_GEN_DIR}/vote.bc
 	clang -g -emit-llvm -c ${GEN_STEP_TRIP_SIGNALS_C} -o ${C_GEN_DIR}/step_trip_signals.bc
 
 ifeq ($(REGEN_SOURCES),1)
-${GEN_ACTUATION_UNIT_INC}: ${MODEL_DIR}/${ACTUATION_CRY}
+${GEN_ACTUATION_UNIT_C}: ${MODEL_DIR}/${ACTUATION_CRY}
 	cd ${MODEL_DIR} && \
-		crymp -f ${GEN_ACTUATION_UNIT_F} ${ACTUATION_CRY} -o ${ROOT_DIR}/${GEN_ACTUATION_UNIT_INC}
+		crymp -f ${GEN_ACTUATION_UNIT_F} ${ACTUATION_CRY} -o ${ROOT_DIR}/${GEN_ACTUATION_UNIT_C}
 
 ${GEN_ACTUATION_UNIT_SV}: ${MODEL_DIR}/${ACTUATION_CRY}
 	CRYPTOLPATH=${MODEL_DIR} \
@@ -82,9 +79,9 @@ ${GEN_ACTUATION_UNIT_SV}: ${MODEL_DIR}/${ACTUATION_CRY}
     ${CVERILOG_FLAGS} \
 	--top-level=$(subst $(comma), --top-level=,${GEN_ACTUATION_UNIT_F})
 
-${GEN_ACTUATE_ACTUATOR_INC}: ${MODEL_DIR}/${ACTUATOR_CRY}
+${GEN_ACTUATE_ACTUATOR_C}: ${MODEL_DIR}/${ACTUATOR_CRY}
 	cd ${MODEL_DIR} && \
-		crymp -f ${GEN_ACTUATE_ACTUATOR_F} ${ACTUATOR_CRY} -o ${ROOT_DIR}/${GEN_ACTUATE_ACTUATOR_INC}
+		crymp -f ${GEN_ACTUATE_ACTUATOR_F} ${ACTUATOR_CRY} -o ${ROOT_DIR}/${GEN_ACTUATE_ACTUATOR_C}
 
 ${GEN_ACTUATE_ACTUATOR_SV}: ${MODEL_DIR}/${ACTUATION_CRY}
 	CRYPTOLPATH=${MODEL_DIR} \
@@ -92,9 +89,9 @@ ${GEN_ACTUATE_ACTUATOR_SV}: ${MODEL_DIR}/${ACTUATION_CRY}
     ${CVERILOG_FLAGS} \
 	--top-level=$(subst $(comma), --top-level=,${GEN_ACTUATE_ACTUATOR_F})
 
-${GEN_STEP_TRIP_SIGNALS_INC}: ${MODEL_DIR}/${INSTRUMENTATION_CRY}
+${GEN_STEP_TRIP_SIGNALS_C}: ${MODEL_DIR}/${INSTRUMENTATION_CRY}
 	cd ${MODEL_DIR} && \
-		crymp -f ${GEN_STEP_TRIP_SIGNALS_F} ${INSTRUMENTATION_CRY} -o ${ROOT_DIR}/${GEN_STEP_TRIP_SIGNALS_INC}
+		crymp -f ${GEN_STEP_TRIP_SIGNALS_F} ${INSTRUMENTATION_CRY} -o ${ROOT_DIR}/${GEN_STEP_TRIP_SIGNALS_C}
 
 ${GEN_STEP_TRIP_SIGNALS_SV}: ${MODEL_DIR}/${ACTUATION_CRY}
 	CRYPTOLPATH=${MODEL_DIR} \
@@ -119,11 +116,11 @@ generated_vsrc/actuate_device/Vactuate_device__ALL.a: generated_vsrc/actuate_dev
 	verilator --cc -Wno-WIDTH -Wno-LITENDIAN --top-module Actuate_Device $^ \
       -Mdir generated_vsrc/actuate_device --build
 
-%.o: %.inc.c
+%.o: %.c
 	clang -g $^ -Wall -I../include -Wno-bitwise-op-parentheses -Wno-unused-function -Wno-shift-op-parentheses -c -o $@
 
-%.o: %.c
-	clang -g -Wall -I../include $^ -c -o $@
+# %.o: %.c
+# 	clang -g -Wall -I../include $^ -c -o $@
 
 generated_vsrc/svlib.o: generated_vsrc/svlib.cpp
 	clang++ -g -Wall -I../include -I${VERILATED_INC} $^ -c -o $@
