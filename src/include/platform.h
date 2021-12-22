@@ -28,9 +28,6 @@ int get_actuation_state(uint8_t i, uint8_t device, uint8_t *value);
  */
 int read_instrumentation_trip_signals(uint8_t arr[3][4]);
 
-// @todo move me
-uint32_t saturation(uint32_t temp, uint32_t pressure);
-
 /////////////////////////////////////////
 // Setting output signals              //
 /////////////////////////////////////////

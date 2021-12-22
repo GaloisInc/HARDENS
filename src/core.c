@@ -2,6 +2,9 @@
 #include "platform.h"
 #include "stdio.h"
 #include "actuate.h"
+#include "rts.h"
+
+int actuate_devices_generated_C(void);
 
 #define INST_OFFSET 0
 #define ACT_OFFSET 5
@@ -87,7 +90,8 @@ int core_step(struct ui_values *ui) {
   struct rts_command rts;
 
   // Actuate devices if necessary
-  actuate_devices();
+  actuate_devices_generated_C();
+  actuate_devices_generated_C();
 
   int read_cmd = read_rts_command(&rts);
   if (read_cmd < 0) {

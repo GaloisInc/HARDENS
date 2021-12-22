@@ -1,18 +1,16 @@
 #include "instrumentation.h"
 #include "platform.h"
+#include "common.h"
 
 #define TRIP_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
-extern uint8_t Generate_Sensor_Trips(uint32_t vals[3], uint32_t setpoints[3]);
-extern uint8_t Is_Ch_Tripped(uint8_t mode, uint8_t trip);
-
-uint32_t saturation(uint32_t temperature, uint32_t pressure)
+static int saturation(uint32_t x, uint32_t y)
 {
-  return pressure == 0 ? 0 : (temperature / pressure);
-};
+    return y == 0 ? 0 : (x / y);
+}
 
-int instrumentation_step_trip(uint8_t div,
-                              struct instrumentation_state *state) {
+static int instrumentation_step_trip(uint8_t div,
+                                     struct instrumentation_state *state) {
   int err = 0;
   err |= read_instrumentation_channel(div, T, &state->reading[T]);
   err |= read_instrumentation_channel(div, P, &state->reading[P]);
@@ -26,9 +24,9 @@ int instrumentation_step_trip(uint8_t div,
   return err;
 }
 
-int instrumentation_handle_command(uint8_t div,
-                                   struct instrumentation_command *i_cmd,
-                                   struct instrumentation_state *state) {
+static int instrumentation_handle_command(uint8_t div,
+                                          struct instrumentation_command *i_cmd,
+                                          struct instrumentation_state *state) {
   struct set_maintenance set_maint;
   struct set_mode set_mode;
   struct set_setpoint set_setpoint;
@@ -61,8 +59,8 @@ int instrumentation_handle_command(uint8_t div,
   return 0;
 }
 
-int instrumentation_set_output_trips(uint8_t div,
-                                     struct instrumentation_state *state) {
+static int instrumentation_set_output_trips(uint8_t div,
+                                            struct instrumentation_state *state) {
   for (int i = 0; i < NTRIP; ++i) {
     set_output_instrumentation_trip(div, i,
                     Is_Ch_Tripped(state->mode[i], state->sensor_trip[i]));
@@ -87,14 +85,4 @@ int instrumentation_step(uint8_t div, struct instrumentation_state *state) {
   /* Actuate devices based on voting and commands */
   err |= instrumentation_set_output_trips(div, state);
   return err;
-}
-
-void instrumentation_init(struct instrumentation_state *state) {
-  state->maintenance = 1;
-  for (int i = 0; i < NTRIP; ++i) {
-    state->mode[i] = 0;
-    state->reading[i] = 0;
-    state->sensor_trip[i] = 0;
-    state->setpoints[i] = 0;
-  }
 }

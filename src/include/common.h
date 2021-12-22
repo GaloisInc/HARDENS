@@ -84,4 +84,9 @@ struct rts_command {
 #define _ExtInt_32 int
 #define _ExtInt(w) _ExtInt_##w
 
+// Generate names for implementation variants
+#define VARIANT(source,lang,f) VARIANT_IMPL(source,lang,f)
+#define VARIANT_IMPL(source,lang,f) f ## _ ## source ## _ ## lang
+#define VARIANT_IMPL2(source,lang,f) source ## lang ## f
+
 #endif // COMMON_H_

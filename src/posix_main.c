@@ -62,7 +62,7 @@ int read_rts_command(struct rts_command *cmd) {
 
   if (isatty(fileno(stdin))) {
     printf("\e[10;1H\e[2K");
-    set_display_line(9, "> ", 0);
+    set_display_line(9, (char *)"> ", 0);
   }
   linelen = getline(&line, &linecap, stdin);
 
@@ -122,7 +122,7 @@ int set_output_instrumentation_trip(uint8_t div, uint8_t channel, uint8_t val) {
 
 int send_actuation_command(uint8_t id, struct actuation_command *cmd) {
   if (id < 2) {
-    act_command_buf[id] = malloc(sizeof(*act_command_buf[id]));
+    act_command_buf[id] = (struct actuation_command *)malloc(sizeof(*act_command_buf[id]));
     act_command_buf[id]->device = cmd->device;
     act_command_buf[id]->on = cmd->on;
   }
@@ -157,7 +157,7 @@ int read_instrumentation_command(uint8_t div,
 int send_instrumentation_command(uint8_t id,
                                  struct instrumentation_command *cmd) {
   if (id < 4) {
-    inst_command_buf[id] = malloc(sizeof(*inst_command_buf[id]));
+    inst_command_buf[id] = (struct instrumentation_command *)malloc(sizeof(*inst_command_buf[id]));
     inst_command_buf[id]->type = cmd->type;
     inst_command_buf[id]->cmd = cmd->cmd;
     return 1;
@@ -206,7 +206,7 @@ int set_display_line(uint8_t line_number, char *display, uint32_t size) {
 
 int main(int argc, char **argv) {
   struct ui_values ui;
-  struct rts_command *cmd = malloc(sizeof(*cmd));
+  struct rts_command *cmd = (struct rts_command *)malloc(sizeof(*cmd));
 
   sense_actuate_init(0, &instrumentation[0], &actuation_logic[0]);
   sense_actuate_init(1, &instrumentation[2], &actuation_logic[1]);
@@ -218,8 +218,8 @@ int main(int argc, char **argv) {
     sprintf(line, "HW ACTUATORS %s %s", actuator_state[0] ? "ON" : "OFF", actuator_state[1]? "ON" : "OFF");
     set_display_line(8, line, 0);
     core_step(&ui);
-    sense_actuate_step(0, &instrumentation[0], &actuation_logic[0]);
-    sense_actuate_step(1, &instrumentation[2], &actuation_logic[1]);
+    sense_actuate_step_0(&instrumentation[0], &actuation_logic[0]);
+    sense_actuate_step_1(&instrumentation[2], &actuation_logic[1]);
   }
 
   return 0;

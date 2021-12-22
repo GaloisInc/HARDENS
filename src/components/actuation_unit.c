@@ -2,12 +2,9 @@
 #include "common.h"
 #include "platform.h"
 
-uint8_t Actuate_D0(uint8_t trips4822[3][4], uint8_t old4823);
-uint8_t Actuate_D1(uint8_t trips4822[3][4], uint8_t old4823);
-
 #define VOTE_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
-int
+static int
 actuation_logic_vote(struct actuation_logic *state)
 {
     int err = 0;
@@ -16,19 +13,19 @@ actuation_logic_vote(struct actuation_logic *state)
     err |= read_instrumentation_trip_signals(trip);
 
     state->vote_actuate[0] = Actuate_D0(trip, state->vote_actuate[0] != 0);
-    state->vote_actuate[1] = Actuate_D0(trip, state->vote_actuate[1] != 0);
+    state->vote_actuate[1] = Actuate_D1(trip, state->vote_actuate[1] != 0);
 
     return err;
 }
 
-int
+static int
 actuation_handle_command(uint8_t logic_no, struct actuation_command *cmd, struct actuation_logic *state)
 {
     state->manual_actuate[cmd->device] = cmd->on;
     return 0;
 }
 
-int
+static int
 output_actuation_signals(uint8_t logic_no, struct actuation_logic *state)
 {
     int err = 0;
@@ -40,7 +37,7 @@ output_actuation_signals(uint8_t logic_no, struct actuation_logic *state)
     return err;
 }
 
-int actuation_logic_step(uint8_t logic_no, struct actuation_logic *state)
+int actuation_unit_step(uint8_t logic_no, struct actuation_logic *state)
 {
     int err = 0;
     /* Read trip signals & vote */
