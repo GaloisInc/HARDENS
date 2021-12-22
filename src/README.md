@@ -13,7 +13,9 @@ Besides a normal `clang` toolchain, the `Makefile` targets depend on the followi
 
 - `cryptol-verilogc` <https://gitlab-ext.galois.com/cryptol/cryptol-verilog>
 - `crymp` <https://gitlab-ext.galois.com/cryptol/cryptol-codegen/-/tree/hardens-tweaks> 
-- `verilator` <https://www.veripool.org/verilator/>
+- `verilator` <https://www.veripool.org/verilator/> *Note* on macOS (tested on
+  11.6.1) it seems there is an issue with recent versions: version 4.108 seems
+  to work.
 
 ## Implementation status
 
