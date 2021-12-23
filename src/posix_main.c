@@ -97,9 +97,11 @@ int read_rts_command(struct rts_command *cmd) {
     cmd->cmd.instrumentation.cmd.setpoint.channel = ch;
     cmd->cmd.instrumentation.cmd.setpoint.val = val;
     ok = 1;
+#ifndef SIMULATE_SENSORS
   } else if (3 == (ok = sscanf(line, "V %hhd %hhd %d", &div, &ch, &val))) {
     if (div < 4 && ch < 3)
       sensors[div][ch] = val;
+#endif
   } else if (line[0] == 'Q') {
     exit(0);
   }
@@ -110,10 +112,35 @@ int read_rts_command(struct rts_command *cmd) {
   return ok;
 }
 
+#ifndef SIMULATE_SENSORS
 int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
   *val = sensors[div][channel];
   return 0;
 }
+#else
+int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
+  static int initialized[2] = {0};
+  static int last = 0;
+  if (!initialized[channel]) {
+    initialized[channel] = 1;
+    if (channel == 0) {
+      last = rand() % 300;
+    } else {
+      last = rand() % 60;
+    }
+  } else {
+    if (channel == 0) {
+      last += (rand() % 7) - 3;
+    } else {
+      last += (rand() % 3) - 1;
+    }
+  }
+
+  *val = last;
+  return 0;
+}
+
+#endif
 
 int set_output_instrumentation_trip(uint8_t div, uint8_t channel, uint8_t val) {
   trip_signals[channel][div] = val;

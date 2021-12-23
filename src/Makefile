@@ -88,11 +88,17 @@ CC ?= clang
 CXX ?= clang++
 HW ?= Simulated
 
+SENSORS ?=
+
 ifeq ($(HW),Simulated)
 CFLAGS += -DHW_SIMULATOR -I$(VERILATED_INC) -Wno-deprecated
 CC = $(CXX)
 SRC += $(SV_LIBS)
 EXTRA_SRC += $(VERILATED_SRC)
+endif
+
+ifeq ($(SENSORS),Simulated)
+CFLAGS += -DSIMULATE_SENSORS
 endif
 
 $(info BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM))
