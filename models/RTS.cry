@@ -96,7 +96,6 @@ Event_Control e rts =
 
     on_instr_units r f = {r|instrumentation = {units = f r.instrumentation.units }}
 
-
 Sense_Actuate:
   [4]I::Input ->
   [4]I::Command ->
@@ -144,10 +143,10 @@ Sense_Actuate inputs icmds rts =
 
     // This is the output to the devices
     actuators' : [2]Actuator
-    actuators' = [ A::SetInput (or [ logic.output @ d | logic <- actuation_logic' ]) a | a <- rts.actuation.actuators | d <- [0...] ]
+    actuators' = [ A::SetInput (A::ActuateActuator [ logic.output @ d | logic <- actuation_logic' ]) a | a <- rts.actuation.actuators | d <- [0...] ]
 
     actuators_test : [2]Actuator
-    actuators_test = [ A::SetInput (or [ logic.output @ d | logic <- test_actuation_logic ]) a | a <- rts.actuation.actuators | d <- [0...] ]
+    actuators_test = [ A::SetInput (A::ActuateActuator [ logic.output @ d | logic <- test_actuation_logic ]) a | a <- rts.actuation.actuators | d <- [0...] ]
 
     test_fail    = rts.control.self_test_expect != (actuators_test @ test_dev).input
 
