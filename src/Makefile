@@ -73,6 +73,7 @@ SRC+=\
   variants/actuation_unit_generated_SystemVerilog.c \
   variants/actuator_generated_C.c \
   variants/instrumentation_generated_C.c \
+  variants/instrumentation_handwritten_C.c \
   variants/instrumentation_generated_SystemVerilog.c \
   variants/instrumentation_handwritten_SystemVerilog.c \
   components/instrumentation_common.c

@@ -5,6 +5,7 @@
 #include "sense_actuate.h"
 
 int instrumentation_step_generated_C(uint8_t div, struct instrumentation_state *state);
+int instrumentation_step_handwritten_C(uint8_t div, struct instrumentation_state *state);
 int instrumentation_step_generated_SystemVerilog(uint8_t div, struct instrumentation_state *state);
 int instrumentation_step_handwritten_SystemVerilog(uint8_t div, struct instrumentation_state *state);
 int actuation_unit_step_generated_C(uint8_t logic_no, struct actuation_logic *state);
@@ -28,7 +29,7 @@ int sense_actuate_step_0(struct instrumentation_state *instrumentation,
 {
   int err = 0;
   err |= instrumentation_step_generated_C(0,&instrumentation[0]);
-  err |= instrumentation_step_generated_C(1,&instrumentation[1]);
+  err |= instrumentation_step_handwritten_C(1,&instrumentation[1]);
   // Do we think the devices should be actuated?
   err |= actuation_unit_step_generated_C(0,actuation);
 
