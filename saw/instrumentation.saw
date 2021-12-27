@@ -1,0 +1,22 @@
+include "common.saw";
+
+cryptol_add_path "../models";
+
+instrumentation_cryp <- cryptol_load "../models/RTS/InstrumentationUnit.cry";
+instrumentation_gen  <- llvm_load_module "generated/instrumentation_impl.bc";
+instrumentation_hand <- llvm_load_module "handwritten/instrumentation_impl.bc";
+
+let is_ch_tripped_ref = {{ instrumentation_cryp::Is_Ch_Tripped }};
+
+let is_ch_tripped_spec = do {
+    mode           <- llvm_fresh_var "mode" (llvm_int 8);
+    sensor_tripped <- llvm_fresh_var "sensor_tripped" (llvm_int 8);
+    llvm_precond {{ elem mode [0, 1, 2] }};
+    llvm_precond {{ elem sensor_tripped [0, 1] }};
+    llvm_execute_func [llvm_term mode, llvm_term sensor_tripped];
+    let expected = {{ (zero # [is_ch_tripped_ref (drop mode) (0 != sensor_tripped)]) : [8] }};
+    llvm_return (llvm_term expected);
+};
+
+llvm_verify instrumentation_gen "Is_Ch_Tripped" [] false is_ch_tripped_spec z3;
+llvm_verify instrumentation_hand "Is_Ch_Tripped" [] false is_ch_tripped_spec z3;
