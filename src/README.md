@@ -21,14 +21,14 @@ Besides a normal `clang` toolchain, the `Makefile` targets depend on the followi
 
 ### Simulation Targets
 The `Makefile` in this directory can generate simulation builds of the `RTS`
-that execute on the host system, controllable via the command-line/stdin. The two targets of interest are:
+that execute on the host system, controllable via the command-line/stdin. 
 
-- `rts.posix`: which is built using implementations from the generated `C` sources; and
-- `rts.posix.verilog`: which builds the simulator against verilator
+The simulation build can be configured to accept user input for sensor values (see [](tests/sense_actuate_0) or to generate a "random walk" of sensor values. This is controlled via the `SENSORS` build flag:
 
-Currently the simulator uses `getline` to retrieve user input: since this is
-blocking, it might appear that the system does not respond immediately to user
-input. Hitting `return` will cause the UI to update.
+- `make SENSORS=Simulated rts` will build a simulator that generates random
+  temperature/pressure data;
+- `make SENSORS= rts` will build a simulator that allows the user to provide
+  sensor values (`V #I #C #V`) sets channel `#C` of division `#I` to `#V`
 
 An example of how to script the system is given in [](tests/sense_actuate_0); you can execute
 
