@@ -1,0 +1,24 @@
+include "common.saw";
+
+cryptol_add_path "../models";
+
+actuate_unit_cryp <- cryptol_load "../models/RTS/ActuationUnit.cry";
+actuate_unit_gen  <- llvm_load_module "generated/actuation_unit_impl.bc";
+
+let actuate_d0_ref = {{ actuate_unit_cryp::Actuate_D0 }};
+let actuate_d1_ref = {{ actuate_unit_cryp::Actuate_D1 }};
+
+let actuate_d_spec f = do {
+    (trips, ptr_trips) <- ptr_to_fresh "trips" (llvm_array 3 (llvm_array 4 (llvm_int 8)));
+    old_trip           <- llvm_fresh_var "old" (llvm_int 8);
+    llvm_precond {{ (old_trip == 0) || (old_trip == 1) }};
+    llvm_execute_func [ptr_trips, llvm_term old_trip];
+    let expected = {{ (zero # [f trips (0 != old_trip)]) : [8] }};
+    llvm_return (llvm_term expected);
+};
+
+let actuate_d0 = actuate_d_spec actuate_d0_ref;
+let actuate_d1 = actuate_d_spec actuate_d1_ref;
+
+llvm_verify actuate_unit_gen "Actuate_D0" [] false actuate_d0 z3;
+llvm_verify actuate_unit_gen "Actuate_D1" [] false actuate_d1 z3;
