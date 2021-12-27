@@ -4,26 +4,17 @@
 #include "instrumentation.h"
 #include "platform.h"
 #include <assert.h>
-
+#include <poll.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <termios.h>
 #include <unistd.h>
-
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/select.h>
-
-/* const char *rts_format = */
-/*   "{core = {ui = {instrumentation_values = [[0x%x, 0x%x, 0x%x], [0x%x, 0x%x, 0x%x], [0x%x, 0x%x, 0x%x], [0x%x, 0x%x, 0x%x]], instrumentation_bypass = [0x%x, 0x%x, 0x%x, 0x%x], instrumentation_trip = [0x%x, 0x%x, 0x%x, 0x%x]}}, instr = [{setpoints = [0x%x, 0x%x, 0x%x], reading = [0x%x, 0x%x, 0x%x], mode = [0x%x, 0x%x, 0x%x], sensor_trip = 0x%x, maintenance = False}, {setpoints = [0x%x, 0x%x, 0x%x], reading = [0x%x, 0x%x, 0x%x], mode = [0x%x, 0x%x, 0x%x], sensor_trip = 0x%x, maintenance = False}, {setpoints = [0x%x, 0x%x, 0x%x], reading = [0x%x, 0x%x, 0x%x], mode = [0x%x, 0x%x, 0x%x], sensor_trip = 0x%x, maintenance = %s}, {setpoints = [0x%x, 0x%x, 0x%x], reading = [0x%x, 0x%x, 0x%x], mode = [0x%x, 0x%x, 0x%x], sensor_trip = %x, maintenance = %s}], act = [{vote_actuate = 0x%x, manual_actuate = 0x%x}, {vote_actuate = 0x%x, manual_actuate = 0x%x}]}"; */
-
-/* void read_testcase(char *test) */
-/* { */
-/*   sscanf(test, rts_format, */
-/* } */
 
 struct instrumentation_state instrumentation[4];
 struct actuation_logic actuation_logic[2];
@@ -61,8 +52,14 @@ int read_rts_command(struct rts_command *cmd) {
   ssize_t linelen;
 
   if (isatty(fileno(stdin))) {
-    printf("\e[10;1H\e[2K");
     set_display_line(9, (char *)"> ", 0);
+  }
+  struct pollfd fds;
+  fds.fd = STDIN_FILENO;
+  fds.events = POLLIN;
+  fds.revents = POLLIN;
+  if(poll(&fds, 1, 500) < 1) {
+    return 0;
   }
   linelen = getline(&line, &linecap, stdin);
 
@@ -72,6 +69,8 @@ int read_rts_command(struct rts_command *cmd) {
   if (linelen < 0)
     return 0;
 
+  if (isatty(fileno(stdin)))
+      printf("\e[10;3H\e[2K");
   if (2 == (ok = sscanf(line, "A %hhd %hhd", &device, &on))) {
     cmd->type = ACTUATION_COMMAND;
     cmd->cmd.act.device = device;
@@ -225,8 +224,9 @@ int get_actuation_state(uint8_t i, uint8_t device, uint8_t *value) {
 }
 
 int set_display_line(uint8_t line_number, char *display, uint32_t size) {
-  if (isatty(fileno(stdin)))
-    return printf("\e[%d;1H%s", line_number + 1, display);
+  if (isatty(fileno(stdin))) {
+    return printf("\e[s\e[%d;1H%s\e[u", line_number + 1, display);
+  }
   else
     return printf("%s\n", display);
 }
@@ -239,10 +239,11 @@ int main(int argc, char **argv) {
   sense_actuate_init(1, &instrumentation[2], &actuation_logic[1]);
 
   if (isatty(fileno(stdin))) printf("\e[1;1H\e[2J");
+  if (isatty(fileno(stdin))) printf("\e[10;3H\e[2K");
   while (1) {
     char line[256];
-    if (isatty(fileno(stdin))) printf("\e[9;1H\e[2K");
-    sprintf(line, "HW ACTUATORS %s %s", actuator_state[0] ? "ON" : "OFF", actuator_state[1]? "ON" : "OFF");
+    fflush(stdout);
+    sprintf(line, "HW ACTUATORS %s %s", actuator_state[0] ? "ON " : "OFF", actuator_state[1]? "ON " : "OFF");
     set_display_line(8, line, 0);
     core_step(&ui);
     sense_actuate_step_0(&instrumentation[0], &actuation_logic[0]);
