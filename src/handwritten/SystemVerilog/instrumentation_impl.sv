@@ -18,7 +18,9 @@ module Generate_Sensor_Trips
       localparam rev_ch = NChannels - ch - 1;
       logic [31:0]v  = vals[(rev_ch*32) + 31 -: 32];
       logic [31:0]sp = setpoints[(rev_ch*32) + 31 -: 32];
-      if (rev_ch == 2) begin
+      // SAW caught a bug here, originally used
+      // `rev_ch` in the conditional
+      if (ch == 2) begin
          assign out[rev_ch] = $signed(v) < $signed(sp);
       end else begin
          assign out[rev_ch] = sp < v;
