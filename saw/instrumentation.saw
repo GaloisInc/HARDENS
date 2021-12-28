@@ -1,4 +1,5 @@
 include "common.saw";
+enable_experimental;
 
 cryptol_add_path "../models";
 
@@ -7,6 +8,10 @@ instrumentation_gen  <- llvm_load_module "generated/instrumentation_impl.bc";
 instrumentation_hand <- llvm_load_module "handwritten/instrumentation_impl.bc";
 
 let is_ch_tripped_ref = {{ instrumentation_cryp::Is_Ch_Tripped }};
+write_verilog "Is_Ch_Tripped.v" is_ch_tripped_ref;
+
+let generate_sensor_trips_ref = {{ instrumentation_cryp::Generate_Sensor_Trips }};
+write_verilog "Generate_Sensor_Trips.v" generate_sensor_trips_ref;
 
 let is_ch_tripped_spec = do {
     mode           <- llvm_fresh_var "mode" (llvm_int 8);
@@ -18,5 +23,17 @@ let is_ch_tripped_spec = do {
     llvm_return (llvm_term expected);
 };
 
+let generate_sensor_trips_spec = do {
+    (vals, ptr_vals)            <- ptr_to_fresh "vals" (llvm_array 3 (llvm_int 32));
+    (setpoints, ptr_setpoints)  <- ptr_to_fresh "setpoints" (llvm_array 3 (llvm_int 32));
+    llvm_precond {{ (vals @ instrumentation_cryp::S) < 0x80000000 }};
+    llvm_execute_func [ptr_vals, ptr_setpoints];
+    let reference_val = {{ generate_sensor_trips_ref vals setpoints }};
+    let expected      = {{ (zero # reverse reference_val) : [8] }};
+    llvm_return (llvm_term expected);
+};
+
 llvm_verify instrumentation_gen "Is_Ch_Tripped" [] false is_ch_tripped_spec z3;
 llvm_verify instrumentation_hand "Is_Ch_Tripped" [] false is_ch_tripped_spec z3;
+llvm_verify instrumentation_gen "Generate_Sensor_Trips" [] false generate_sensor_trips_spec z3;
+llvm_verify instrumentation_hand "Generate_Sensor_Trips" [] false generate_sensor_trips_spec z3;
