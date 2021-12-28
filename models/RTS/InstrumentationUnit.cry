@@ -207,16 +207,16 @@ PressureTable temp = sat_pressure
              5775200
             ]
 
-private
+Generate_Sensor_Trips : [NChannels][32] -> [NChannels][32] -> [NChannels]
+Generate_Sensor_Trips vals setpoints =
+  [ trp ch | ch <- [0..NChannels-1] : [3][2] ]
+  where
+    // 2 should be S, but this causes problems for crymp
+    trp ch = if ch == 2 then v <$ sp else sp < v
+               where v  = vals @ ch
+                     sp = setpoints @ ch
 
-  Generate_Sensor_Trips : [NChannels][32] -> [NChannels][32] -> [NChannels]
-  Generate_Sensor_Trips vals setpoints =
-    [ trp ch | ch <- [0..NChannels-1] : [3][2] ]
-    where
-      // 2 should be S, but this causes problems for crymp
-      trp ch = if ch == 2 then v <$ sp else sp < v
-                 where v  = vals @ ch
-                       sp = setpoints @ ch
+private
 
   /** @requirements
         INSTRUMENTATION_RESET
