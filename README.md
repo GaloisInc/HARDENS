@@ -80,6 +80,8 @@ The repository is structured as follows:
   (`*.sysml`).
 - [models](./models) contains the executable Cryptol model
 - [assets](./assets) and [docs](./docs) contain project and device documentation
+- [saw](./saw) contains SAW-based proofs of correctness of specific model-derived
+  components
 
 ## Submodules
 
