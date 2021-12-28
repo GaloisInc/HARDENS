@@ -6,11 +6,14 @@ space :=
 
 MODEL_DIR=../models
 GEN_DIR=generated
+HAND_DIR=handwritten
 C_DIR=C
 SV_DIR=SystemVerilog
 
 C_GEN_DIR=${GEN_DIR}/${C_DIR}
+C_HAND_DIR=${HAND_DIR}/${C_DIR}
 SV_GEN_DIR=${GEN_DIR}/${SV_DIR}
+SV_HAND_DIR=${HAND_DIR}/${SV_DIR}
 
 ACTUATION_CRY=RTS/ActuationUnit.cry
 ACTUATOR_CRY=RTS/Actuator.cry
@@ -44,10 +47,13 @@ VERILATED_INC=$(shell verilator --getenv VERILATOR_ROOT)/include
 VERILATED_SRC=$(VERILATED_INC)/verilated.cpp
 CVERILOG_FLAGS=--yosys-defaults --little-endian
 
-SV_LIBS=${SV_GEN_DIR}/verilator/generate_sensor_trips/VGenerate_Sensor_Trips__ALL.a\
+SV_LIBS=\
+  ${SV_GEN_DIR}/verilator/generate_sensor_trips/VGenerate_Sensor_Trips__ALL.a\
+  ${SV_GEN_DIR}/verilator/is_ch_tripped/VIs_Ch_Tripped__ALL.a\
+  ${SV_HAND_DIR}/verilator/generate_sensor_trips/VGenerate_Sensor_Trips__ALL.a\
+  ${SV_HAND_DIR}/verilator/is_ch_tripped/VIs_Ch_Tripped__ALL.a\
   ${SV_GEN_DIR}/verilator/actuate_d0/VActuate_D0__ALL.a\
   ${SV_GEN_DIR}/verilator/actuate_d1/VActuate_D1__ALL.a\
-  ${SV_GEN_DIR}/verilator/is_ch_tripped/VIs_Ch_Tripped__ALL.a\
   ${SV_GEN_DIR}/verilator/actuate_actuator/VActuateActuator__ALL.a
 
 VERILATOR_SHIM_OBJS=\
@@ -67,7 +73,9 @@ SRC+=\
   variants/actuation_unit_generated_SystemVerilog.c \
   variants/actuator_generated_C.c \
   variants/instrumentation_generated_C.c \
+  variants/instrumentation_handwritten_C.c \
   variants/instrumentation_generated_SystemVerilog.c \
+  variants/instrumentation_handwritten_SystemVerilog.c \
   components/instrumentation_common.c
 
 ifeq ($(PLATFORM),Host)
