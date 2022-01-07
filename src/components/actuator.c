@@ -1,4 +1,5 @@
 #include "common.h"
+#include "actuate.h"
 #include "actuation_logic.h"
 #include "platform.h"
 
