@@ -91,7 +91,6 @@ int core_step(struct ui_values *ui) {
 
   // Actuate devices if necessary
   actuate_devices_generated_C();
-  actuate_devices_generated_C();
 
   int read_cmd = read_rts_command(&rts);
   if (read_cmd < 0) {
@@ -114,8 +113,6 @@ int core_step(struct ui_values *ui) {
   }
 
   err |= update_ui(ui);
-
-  // Self Test
 
   return err;
 }
