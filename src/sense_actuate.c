@@ -43,7 +43,7 @@ int sense_actuate_step_1(struct instrumentation_state *instrumentation,
   err |= instrumentation_step_handwritten_SystemVerilog(2,&instrumentation[0]);
   err |= instrumentation_step_generated_SystemVerilog(3,&instrumentation[1]);
   // Do we think the devices should be actuated?
-  err |= actuation_unit_step_generated_C(1,actuation);
+  err |= actuation_unit_step_generated_SystemVerilog(1,actuation);
 
   return err;
 }
