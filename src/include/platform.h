@@ -8,8 +8,15 @@
 // Reading signals and values          //
 /////////////////////////////////////////
 
-/* Read the value of channel `channel`, setting *val on success;
- * @return < 0 on error
+/* @requires \valid(val);
+   @requires div <= 3;
+   @requires channel <= 2;
+   @assigns *val;
+behavior ok:
+   @ensures \result == 0;
+   @ensures *val <= 0x80000000;
+behavior err:
+   @ensures \result < 0;
  */
 int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val);
 
@@ -19,13 +26,22 @@ int get_instrumentation_mode(uint8_t division, uint8_t ch, uint8_t *value);
 int get_instrumentation_maintenance(uint8_t division, uint8_t *value);
 
 // Reading actuation signals
+/*@ requires i <= 1;
+  @ requires device <= 1;
+  @ requires \valid(value);
+  @ assigns *value;
+behavior ok:
+  @ensures \result == 0;
+  @ensures *value == 0 || *value == 1;
+behavior error:
+  @ensures \result != 0;
+  @ensures *value == \old(*value);
+*/
 int get_actuation_state(uint8_t i, uint8_t device, uint8_t *value);
 
-/* Read trip signals
- * @requires arr is NTRIP elements
- * @ensures arr[0..3] set to the current trip input signals
- * @ensures \ret < 0 on error
- */
+/*@requires \valid(arr);
+  @assigns *(arr[0..2]+(0..3));
+*/
 int read_instrumentation_trip_signals(uint8_t arr[3][4]);
 
 /////////////////////////////////////////
@@ -37,6 +53,10 @@ int read_instrumentation_trip_signals(uint8_t arr[3][4]);
  */
 int set_output_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t on);
 int set_output_instrumentation_trip(uint8_t division, uint8_t channel, uint8_t val);
+
+/*@ requires device_no <= 1;
+  @ assigns \nothing;
+*/
 int set_actuate_device(uint8_t device_no, uint8_t on);
 
 /////////////////////////////////////////
