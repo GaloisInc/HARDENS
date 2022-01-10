@@ -1,0 +1,12 @@
+[ { "prover": "Z3:4.8.8", "verdict": "timeout", "time": 10. },
+  { "prover": "Alt-Ergo:2.4.1", "verdict": "timeout", "time": 10. },
+  { "prover": "script", "verdict": "valid" },
+  { "header": "Split", "tactic": "Wp.split", "params": {},
+    "select": { "select": "inside-step", "at": 19, "kind": "have",
+                "occur": 0, "target": "(tmp_0=0) \\/ (tmp_0=1)",
+                "pattern": "|==$tmp0$tmp1" },
+    "children": { "True": [ { "prover": "Z3:4.8.8", "verdict": "valid",
+                              "time": 0.04, "steps": 96385 },
+                            { "prover": "Alt-Ergo:2.4.1", "verdict": "valid",
+                              "time": 0.0181, "steps": 86 } ],
+                  "False": [ { "prover": "qed", "verdict": "valid" } ] } } ]
