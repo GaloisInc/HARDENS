@@ -11,7 +11,6 @@ int instrumentation_step_handwritten_SystemVerilog(uint8_t div, struct instrumen
 int actuation_unit_step_generated_C(uint8_t logic_no, struct actuation_logic *state);
 int actuation_unit_step_generated_SystemVerilog(uint8_t logic_no, struct actuation_logic *state);
 
-
 int sense_actuate_init(int core_id,
                        struct instrumentation_state *instrumentation,
                        struct actuation_logic *actuation)

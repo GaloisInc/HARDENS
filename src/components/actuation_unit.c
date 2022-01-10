@@ -6,7 +6,7 @@
 
 /*@requires \valid(state);
   @requires \valid(state->vote_actuate+(0..1));
-  @assigns *state;
+  @assigns state->vote_actuate[0..1];
 */
 static int
 actuation_logic_vote(struct actuation_logic *state)
@@ -22,17 +22,33 @@ actuation_logic_vote(struct actuation_logic *state)
     return err;
 }
 
+
+/*@requires \valid(cmd);
+  @requires \valid(state);
+  @assigns state->manual_actuate[0..1];
+  @ensures -1 <= \result <= 0;
+*/
 static int
 actuation_handle_command(uint8_t logic_no, struct actuation_command *cmd, struct actuation_logic *state)
 {
-    state->manual_actuate[cmd->device] = cmd->on;
+    if (cmd->device <= 1)
+        state->manual_actuate[cmd->device] = cmd->on;
     return 0;
 }
 
+/*@requires \valid(state);
+  @requires logic_no <= 1;
+  @assigns \nothing;
+  @ensures -1 <= \result <= 0;
+*/
 static int
 output_actuation_signals(uint8_t logic_no, struct actuation_logic *state)
 {
     int err = 0;
+    /*@ loop invariant 0 <= d <= NDEV;
+      @ loop invariant -1 <= err <= 0;
+      @ loop assigns d, err;
+    */
     for (int d = 0; d < NDEV; ++d) {
         uint8_t on = state->vote_actuate[d] || state->manual_actuate[d];
         err |= set_output_actuation_logic(logic_no, d, on);

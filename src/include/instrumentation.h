@@ -30,16 +30,9 @@ uint8_t Generate_Sensor_Trips(uint32_t vals[3], uint32_t setpoints[3]);
 uint8_t Trip(uint32_t vals[3], uint32_t setpoints[3], uint8_t ch);
 
 /*@requires mode <= 2;
+  @requires trip <= 1;
   @assigns \nothing;
-behavior manual_trip:
-  @requires (mode == 2);
-  @ensures  (\result != 0);
-behavior bypass_trip:
-  @requires (mode == 0);
-  @ensures (\result == 0);
-behavior normal:
-  @requires (trip == 0 || trip == 1);
-  @ensures (\result == 0) <==> (trip == 0);
+  @ensures (\result != 0) <==> ((mode == 2) || (mode == 1 && trip != 0));
 */
 uint8_t Is_Ch_Tripped(uint8_t mode, uint8_t trip);
 
@@ -52,5 +45,23 @@ struct instrumentation_state {
 };
 
 void instrumentation_init(struct instrumentation_state *state);
+
+/*@requires \valid(state);
+  @requires \valid(state->reading + (0..2));
+  @requires \valid(state->setpoints + (0..2));
+  @requires \valid(state->sensor_trip + (0..2));
+  @requires state->mode[0] \in {0,1,2};
+  @requires state->mode[1] \in {0,1,2};
+  @requires state->mode[2] \in {0,1,2};
+  @requires div <= 3;
+  @assigns state->reading[0..2];
+  @assigns state->setpoints[0..2];
+  @assigns state->sensor_trip[0..2];
+  @assigns state->maintenance;
+  @assigns state->mode[0..2];
+  @ensures state->mode[0] \in {0,1,2};
+  @ensures state->mode[1] \in {0,1,2};
+  @ensures state->mode[2] \in {0,1,2};
+*/
 int instrumentation_step(uint8_t div, struct instrumentation_state *state);
 #endif // INSTRUMENTATION_H_

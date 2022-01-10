@@ -4,12 +4,14 @@
 
 #define TRIP_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
-/*@requires \valid(state);
+/*@requires div <= 3;
+  @requires \valid(state);
   @requires \valid(state->reading + (0..2));
   @requires \valid(state->setpoints + (0..2));
   @requires \valid(state->sensor_trip + (0..2));
   @assigns state->reading[0..2];
   @assigns state->sensor_trip[0..2];
+  @ensures -1 <= \result <= 0;
 */
 static int instrumentation_step_trip(uint8_t div,
                                      struct instrumentation_state *state) {
@@ -30,6 +32,17 @@ static int instrumentation_step_trip(uint8_t div,
   return err;
 }
 
+/*@requires \valid(i_cmd);
+  @requires \valid(state);
+  @requires state->mode[0] \in {0,1,2};
+  @requires state->mode[1] \in {0,1,2};
+  @requires state->mode[2] \in {0,1,2};
+  @assigns state->maintenance, state->mode[0..2], state->setpoints[0..2];
+  @ensures -1 <= \result <= 0;
+  @ensures state->mode[0] \in {0,1,2};
+  @ensures state->mode[1] \in {0,1,2};
+  @ensures state->mode[2] \in {0,1,2};
+*/
 static int instrumentation_handle_command(uint8_t div,
                                           struct instrumentation_command *i_cmd,
                                           struct instrumentation_state *state) {
@@ -65,11 +78,22 @@ static int instrumentation_handle_command(uint8_t div,
   return 0;
 }
 
+/*@ requires div <= 3;
+  @ requires \valid(state);
+  @ requires state->mode[0] \in {0,1,2};
+  @ requires state->mode[1] \in {0,1,2};
+  @ requires state->mode[2] \in {0,1,2};
+  @ assigns \nothing;
+  @ ensures \result <= 0;
+*/
 static int instrumentation_set_output_trips(uint8_t div,
                                             struct instrumentation_state *state) {
+  /*@ loop invariant 0 <= i <= NTRIP;
+    @ loop assigns i;
+  */
   for (int i = 0; i < NTRIP; ++i) {
     set_output_instrumentation_trip(div, i,
-                    Is_Ch_Tripped(state->mode[i], state->sensor_trip[i]));
+                    0 != Is_Ch_Tripped(state->mode[i], 0 != state->sensor_trip[i]));
   }
   return 0;
 }

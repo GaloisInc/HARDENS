@@ -38,6 +38,11 @@ struct actuation_logic {
 };
 
 /* The main logic of the actuation unit */
+/*@requires \valid(state);
+  @requires logic_no <= 1;
+  @assigns state->manual_actuate[0..1];
+  @assigns state->vote_actuate[0..1];
+*/
 int actuation_unit_step(uint8_t logic_no, struct actuation_logic *state);
 
 #endif // ACTUATION_H_
