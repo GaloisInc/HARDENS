@@ -1,9 +1,13 @@
-#include "actuation_logic.h"
 #include "common.h"
 #include "platform.h"
+#include "actuation_logic.h"
 
 #define VOTE_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
+/*@requires \valid(state);
+  @requires \valid(state->vote_actuate+(0..1));
+  @assigns *state;
+*/
 static int
 actuation_logic_vote(struct actuation_logic *state)
 {

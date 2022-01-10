@@ -4,6 +4,13 @@
 
 #define TRIP_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
+/*@requires \valid(state);
+  @requires \valid(state->reading + (0..2));
+  @requires \valid(state->setpoints + (0..2));
+  @requires \valid(state->sensor_trip + (0..2));
+  @assigns state->reading[0..2];
+  @assigns state->sensor_trip[0..2];
+*/
 static int instrumentation_step_trip(uint8_t div,
                                      struct instrumentation_state *state) {
   int err = 0;
@@ -12,6 +19,10 @@ static int instrumentation_step_trip(uint8_t div,
   state->reading[S] = Saturation(state->reading[T], state->reading[P]);
 
   uint8_t new_trips = Generate_Sensor_Trips(state->reading, state->setpoints);
+  /*@loop invariant 0 <= i && i <= 3;
+    @loop assigns i;
+    @loop assigns state->sensor_trip[0..2];
+  */
   for (int i = 0; i < NTRIP; ++i) {
     state->sensor_trip[i] = TRIP_I(new_trips, i);
   }
