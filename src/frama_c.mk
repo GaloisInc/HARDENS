@@ -20,6 +20,15 @@ EXCLUDE_INSTR=$(addprefix -wp-skip-fct , rotl1 rotl2 rotl3 rotl32 rotr1 rotr2 ro
 
 proofs: actuator_proof actuation_unit_proof instrumentation_proof
 
+report:
+	$(FRAMAC) \
+      variants/actuator_generated_C.c \
+      variants/actuation_unit_generated_C.c \
+      variants/instrumentation_generated_C.c \
+      variants/instrumentation_handwritten_C.c \
+      $(EXCLUDE_ACT) $(EXCLUDE_ACTU) $(EXCLUDE_INSTR) \
+      -then -report
+
 actuator_proof:
 	$(FRAMAC) variants/actuator_generated_C.c $(EXCLUDE_ACT)
 
