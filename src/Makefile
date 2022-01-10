@@ -21,7 +21,7 @@ INSTRUMENTATION_CRY=RTS/InstrumentationUnit.cry
 
 GEN_ACTUATION_UNIT_C=${C_GEN_DIR}/actuation_unit_impl.c
 GEN_ACTUATION_UNIT_SV=${SV_GEN_DIR}/actuation_unit_impl.sv
-GEN_ACTUATION_UNIT_F=Actuate_D0,Actuate_D1
+GEN_ACTUATION_UNIT_F=Actuate_D0,Actuate_D1,Coincidence_2_4
 GEN_ACTUATION_UNIT_F_LIST=$(subst $(comma), $(space), $(GEN_ACTUATION_UNIT_F))
 
 GEN_ACTUATE_ACTUATOR_C=${C_GEN_DIR}/actuator_impl.c
@@ -31,7 +31,7 @@ GEN_ACTUATE_ACTUATOR_F_LIST=$(subst $(comma), $(space), $(GEN_ACTUATE_ACTUATOR_F
 
 GEN_INSTRUMENTATION_C=${C_GEN_DIR}/instrumentation_impl.c
 GEN_INSTRUMENTATION_SV=${SV_GEN_DIR}/instrumentation_impl.sv
-GEN_INSTRUMENTATION_F=Generate_Sensor_Trips,Is_Ch_Tripped
+GEN_INSTRUMENTATION_F=Generate_Sensor_Trips,Is_Ch_Tripped,Trip
 
 GEN_INSTRUMENTATION_F_LIST=$(subst $(comma), $(space), $(GEN_INSTRUMENTATION_F))
 

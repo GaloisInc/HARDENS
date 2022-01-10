@@ -5,7 +5,31 @@
 #include "common.h"
 #include "instrumentation.h"
 
+#define CoincidenceL(trips)                                          \
+((trips[0] != 0 && trips[1] != 0) ||                            \
+     ((trips[0]  != 0|| trips[1] != 0) && (trips[2]  != 0|| trips[3] != 0)) || \
+     (trips[2] != 0 && trips[3] != 0))
+
+#define Coincidence(ch, trips) CoincidenceL(trips[ch])
+
+/*@requires \valid(trips + (0..3));
+  @assigns \nothing;
+  @ensures (\result != 0) <==> CoincidenceL(trips);
+*/
+uint8_t Coincidence_2_4(uint8_t trips[4]);
+
+/*@requires \valid(trips + (0..2));
+  @requires \valid(trips[0..2] + (0..3));
+  @assigns \nothing;
+  @ensures (\result != 0) <==> (old || Coincidence(0,trips) || Coincidence(1,trips));
+*/
 uint8_t Actuate_D0(uint8_t trips[3][4], uint8_t old);
+
+/*@requires \valid(trips + (0..2));
+  @requires \valid(trips[0..2] + (0..3));
+  @assigns \nothing;
+  @ensures (Coincidence(2,trips)) ==> (\result != 0);
+*/
 uint8_t Actuate_D1(uint8_t trips[3][4], uint8_t old);
 
 struct actuation_logic {
