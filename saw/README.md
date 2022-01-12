@@ -7,6 +7,7 @@ source directories.
 
 Currently, these scripts establish correctness of implementations of:
 
+- `RTS::Actuator::ActuateActuator` (C)
 - `RTS::ActuationUnit::Actuate_D0` (C)
 - `RTS::ActuationUnit::Actuate_D1` (C)
 - `RTS::InstrumentationUnit::Is_Ch_Tripped` (C and SystemVerilog)
