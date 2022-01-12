@@ -16,3 +16,10 @@ Currently, these scripts establish correctness of implementations of:
 The C proofs are entirely within SAW. The SystemVerilog proofs use SAW to
 extract a Verilog implementation from the Cryptol model, and then use a `yosys`
 to establish equivalence (e.g. see [](generated/Is_Ch_Tripped.yosys)).
+
+To run the proofs, just run `make proofs`.
+
+SAW depends on `clang 9` (`10` _may_ work, but is untested). If `clang` your
+path is a different version, you will need to install `clang 9` and supply the
+executable in the `CLANG9` environment variable, i.e.
+`CLANG9=/path/to/bin/clang9 make proofs`.
