@@ -1,5 +1,5 @@
 CLANG9 ?= clang
-CFLAGS = -g -O1 -I../src/include -Wno-shift-op-precedence
+CFLAGS = -g -O1 -I../src/include -Wno-bitwise-op-parentheses -Wno-shift-op-parentheses
 
 ACTUATOR_IMPLS=generated/actuator_impl.bc
 ACTUATION_UNIT_IMPLS=generated/actuation_unit_impl.bc
