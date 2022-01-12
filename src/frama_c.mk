@@ -29,6 +29,9 @@ report:
       $(EXCLUDE_ACT) $(EXCLUDE_ACTU) $(EXCLUDE_INSTR) \
       -then -report
 
+metrics:
+	frama-c $(SRC) -metrics -cpp-extra-args="-I include" -c11
+
 actuator_proof:
 	$(FRAMAC) variants/actuator_generated_C.c $(EXCLUDE_ACT)
 
