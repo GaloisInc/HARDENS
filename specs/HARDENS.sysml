@@ -643,7 +643,7 @@ package 'RTS Hardware Artifacts' {
 //    end: PCB;
 //  }
 //    connection: DevMachineToDevBoard connect 'Developer Machine' to Board;
-}
+//}
 
 /**
  * All requirements that the RTS system must fulfill, as driven by the
