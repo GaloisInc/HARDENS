@@ -1,0 +1,17 @@
+include "common.saw";
+
+cryptol_add_path "../models";
+
+actuator_cryp <- cryptol_load "../models/RTS/Actuator.cry";
+actuator_gen  <- llvm_load_module "generated/actuator_impl.bc";
+
+let actuate_actuator_ref = {{ actuator_cryp::ActuateActuator }};
+
+let actuate_actuator_spec = do {
+  input <- llvm_fresh_var "inp" (llvm_int 8);
+  let expected = {{ (zero # [actuate_actuator_ref (take (reverse input))]) : [8] }};
+  llvm_execute_func [llvm_term input];
+  llvm_return (llvm_term expected);
+};
+
+llvm_verify actuator_gen "ActuateActuator" [] false actuate_actuator_spec z3;
