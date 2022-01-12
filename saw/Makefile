@@ -1,6 +1,7 @@
 CLANG9 ?= clang
 CFLAGS = -g -O1 -I../src/include -Wno-shift-op-precedence
 
+ACTUATOR_IMPLS=generated/actuator_impl.bc
 ACTUATION_UNIT_IMPLS=generated/actuation_unit_impl.bc
 INSTRUMENTATION_IMPLS=\
   ../src/generated/SystemVerilog/instrumentation_impl.sv\
@@ -10,7 +11,10 @@ INSTRUMENTATION_IMPLS=\
 
 all: proofs
 
-proofs: instrumentation_proofs actuation_unit_proofs
+proofs: instrumentation_proofs actuation_unit_proofs actuator_proofs
+
+actuator_proofs: actuator.saw $(ACTUATOR_IMPLS)
+	saw $<
 
 actuation_unit_proofs: actuation_unit.saw $(ACTUATION_UNIT_IMPLS)
 	saw $<
