@@ -16,5 +16,28 @@ struct ui_values {
   uint8_t actuators[2][NDEV];
 };
 
-int core_step(struct ui_values *ui);
+struct test_state {
+  uint32_t test_timer;
+  uint8_t self_test_running;
+  uint8_t self_test_expect;
+  uint8_t test_device_result[2];
+
+  uint8_t test_instrumentation[2];
+  uint8_t test_actuation_unit;
+  uint8_t test_device;
+
+  uint8_t test_instrumentation_done[4];
+  uint8_t test_actuation_unit_done[2];
+  uint8_t test_device_done[2];
+
+  uint32_t test_setpoints[4][3];
+  uint32_t test_inputs[4][2];
+};
+
+struct core_state {
+  struct ui_values ui;
+  struct test_state test;
+};
+
+int core_step(struct core_state *core);
 #endif // CORE_H_
