@@ -11,6 +11,11 @@ int actuate_devices_generated_C(void);
 char INSTR_LINE_FMT[] = "#I %d (%c): T[%5d %c %d] P[%5d %c %d] S[%5d %c %d]";
 char ACT_LINE_FMT[] = "#A %d [%d %d]";
 
+const char self_test_running[]     = "SELF TEST:     RUNNING";
+const char self_test_not_running[] = "SELF TEST: NOT RUNNING";
+const char pass[] = "LAST TEST: PASS";
+const char fail[] = "LAST TEST: FAIL";
+
 char mode_char(uint8_t mode) {
   switch (mode) {
   case BYPASS:
@@ -85,7 +90,52 @@ int update_ui(struct ui_values *ui) {
   return err;
 }
 
-int core_step(struct ui_values *ui) {
+int end_test(struct test_state *test) {
+    // Reset state
+    test->test_actuation_unit_done[0] = 0;
+    test->test_actuation_unit_done[1] = 0;
+    test->test_instrumentation_done[0] = 0;
+    test->test_instrumentation_done[1] = 0;
+    test->test_instrumentation_done[2] = 0;
+    test->test_instrumentation_done[3] = 0;
+    test->test_device_done[0] = 0;
+    test->test_device_done[1] = 0;
+    reset_actuation_logic(test->test_actuation_unit, 0, 0);
+    reset_actuation_logic(test->test_actuation_unit, 1, 0);
+    set_output_actuation_logic(test->test_actuation_unit, 0, 0);
+    set_output_actuation_logic(test->test_actuation_unit, 1, 0);
+    test->self_test_running = 0;
+
+    int passed = test->self_test_expect == test->test_device_result[test->test_device];
+
+    if (passed) {
+      set_display_line(16, pass, 0);
+      test->test_timer = 10;
+    } else {
+      set_display_line(16, fail, 0);
+    }
+
+    return passed;
+}
+
+int test_step(struct test_state *test) {
+  int err = 0;
+  // Run exactly once
+  if(test->test_timer == 0 && !test->self_test_running) {
+    test->self_test_running = 1;
+    set_display_line(15, self_test_running, 0);
+  } else if (test->self_test_running && test->test_device_done[test->test_device]) {
+    int passed = end_test(test);
+    if(!passed) err = -1;
+  } else {
+    set_display_line(15, self_test_not_running, 0);
+    test->test_timer--;
+  }
+
+  return err;
+}
+
+int core_step(struct core_state *core) {
   int err = 0;
   struct rts_command rts;
 
@@ -112,7 +162,8 @@ int core_step(struct ui_values *ui) {
     }
   }
 
-  err |= update_ui(ui);
+  err |= test_step(&core->test);
+  err |= update_ui(&core->ui);
 
   return err;
 }

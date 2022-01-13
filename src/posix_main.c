@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/select.h>
+struct core_state core = {0};
 
 struct instrumentation_state instrumentation[4];
 struct actuation_logic actuation_logic[2];
@@ -191,6 +192,11 @@ int send_instrumentation_command(uint8_t id,
   return 0;
 }
 
+int reset_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t reset_val) {
+  actuation_logic[logic_no].vote_actuate[device_no] = reset_val;
+  return 0;
+}
+
 int set_output_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t on) {
   assert(logic_no < 2);
   assert(device_no < 2);
@@ -223,7 +229,7 @@ int get_actuation_state(uint8_t i, uint8_t device, uint8_t *value) {
   return 0;
 }
 
-int set_display_line(uint8_t line_number, char *display, uint32_t size) {
+int set_display_line(uint8_t line_number, const char *display, uint32_t size) {
   if (isatty(fileno(stdin))) {
     return printf("\e[s\e[%d;1H%s\e[u", line_number + 1, display);
   }
@@ -231,12 +237,91 @@ int set_display_line(uint8_t line_number, char *display, uint32_t size) {
     return printf("%s\n", display);
 }
 
+
+uint8_t get_test_device()
+{
+  return core.test.test_device;
+}
+
+void get_test_instrumentation(uint8_t *id)
+{
+  id[0] = core.test.test_instrumentation[0];
+  id[1] = core.test.test_instrumentation[1];
+}
+
+int get_instrumentation_test_setpoints(uint8_t id, uint32_t *setpoints)
+{
+  setpoints[0] = core.test.test_setpoints[id][0];
+  setpoints[1] = core.test.test_setpoints[id][1];
+  setpoints[2] = core.test.test_setpoints[id][2];
+  return 0;
+}
+
+void set_instrumentation_test_complete(uint8_t div)
+{
+  core.test.test_instrumentation_done[div] = 1;
+}
+
+int is_instrumentation_test_complete(uint8_t id)
+{
+  return core.test.test_instrumentation_done[id];
+}
+
+uint8_t get_test_actuation_unit()
+{
+  return core.test.test_actuation_unit;
+}
+
+void set_actuation_unit_test_complete(uint8_t div)
+{
+  core.test.test_actuation_unit_done[div] = 1;
+}
+
+int is_actuation_unit_test_complete(uint8_t id)
+{
+  return core.test.test_actuation_unit_done[id];
+}
+
+void set_actuate_test_result(uint8_t dev, uint8_t result)
+{
+  core.test.test_device_result[dev] = result;
+}
+
+void set_actuate_test_complete(uint8_t dev)
+{
+  core.test.test_device_done[dev] = 1;
+}
+
+int is_actuate_test_complete(uint8_t dev)
+{
+  return core.test.test_device_done[dev];
+}
+
+int read_test_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val)
+{
+  *val = core.test.test_inputs[div][channel];
+  return 0;
+}
+
+uint8_t is_test_running() {
+  return core.test.self_test_running;
+}
+
 int main(int argc, char **argv) {
-  struct ui_values ui;
   struct rts_command *cmd = (struct rts_command *)malloc(sizeof(*cmd));
 
   sense_actuate_init(0, &instrumentation[0], &actuation_logic[0]);
   sense_actuate_init(1, &instrumentation[2], &actuation_logic[1]);
+
+
+  core.test.test_timer = 0x00000002;
+  core.test.test_instrumentation[0] = 0;
+  core.test.test_instrumentation[1] = 1;
+  core.test.test_actuation_unit = 0;
+  core.test.test_device = 0;
+  core.test.self_test_expect = 1;
+  memcpy(core.test.test_inputs, (uint32_t[4][2]){{30,0}, {30,0}, {0,0}, {0,0}}, 8*sizeof(uint32_t));;
+  memcpy(core.test.test_setpoints, (uint32_t[4][3]){{10,10,10}, {10,10,10}, {10,10,10}, {10,10,10}}, 12*sizeof(uint32_t));;
 
   if (isatty(fileno(stdin))) printf("\e[1;1H\e[2J");
   if (isatty(fileno(stdin))) printf("\e[10;3H\e[2K");
@@ -245,7 +330,7 @@ int main(int argc, char **argv) {
     fflush(stdout);
     sprintf(line, "HW ACTUATORS %s %s", actuator_state[0] ? "ON " : "OFF", actuator_state[1]? "ON " : "OFF");
     set_display_line(8, line, 0);
-    core_step(&ui);
+    core_step(&core);
     sense_actuate_step_0(&instrumentation[0], &actuation_logic[0]);
     sense_actuate_step_1(&instrumentation[2], &actuation_logic[1]);
   }

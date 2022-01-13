@@ -9,6 +9,7 @@
 
 // Instrumentation
 // Trip modes:
+#define NINSTR 4
 #define NMODES 3
 #define BYPASS 0
 #define OPERATE 1
