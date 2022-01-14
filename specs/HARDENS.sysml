@@ -650,28 +650,50 @@ package 'RTS Hardware Artifacts' {
  * IEEE 603-2018 standards and the NRC RFP.
  */
 package id Requirements 'RTS Requirements' {
- // Note that we do not specify documentation comments here as they
- // are specified in the Lando specification.  If we do not include
- // additional specifications here on the refinement from the higher-level
- // specification (in this case, SysML refines Lando), then the higher-level
- // specification's comments/specifications refine too (an hence are 
- // just copied verbatim).
- package id Requirements 'HARDENS Project High-level Requirements' {
-   requirement def 'NRC Understanding';
-   requirement def 'Identify Regulatory Gaps';
-   requirement def Demonstrate;
-   requirement def 'Demonstrator Parts';
-   requirement 'Demonstrator Groundwork';
+  // Note that we do not specify documentation comments here as they
+  // are specified in the Lando specification.  If we do not include
+  // additional specifications here on the refinement from the higher-level
+  // specification (in this case, SysML refines Lando), then the higher-level
+  // specification's comments/specifications refine too (an hence are 
+  // just copied verbatim).
+  package id Requirements 'HARDENS Project High-level Requirements' {
+    import 'Project Glossary'::*;
+    
+    requirement def 'Project Requirements' {
+      subject 'NRC staff' : NRC;
+    }
+    requirement 'NRC Understanding' : 'Project Requirements';
+    requirement 'Identify Regulatory Gaps' : 'Project Requirements';
+    requirement Demonstrate : 'Project Requirements';
+    requirement 'Demonstrator Parts' : 'Project Requirements';
+    requirement 'Demonstrator Groundwork' : 'Project Requirements';
  }
  package id Characteristics 'NRC Characteristics' {
-   requirement def 'Requirements Consistency';
-   requirement def 'Requirements Colloquial Completeness';
-   requirement def 'Requirements Formal Completeness';
-   requirement def 'Instrumentation Independence';
-   requirement def 'Channel Independence';
-   requirement def 'Actuation Independence';
-   requirement def 'Actuation Correctness';
-   requirement def 'Self-Test/Trip Independence';
+   import 'Project Glossary'::*;
+   requirement def 'NRC Characteristic' {
+     subject regulation: 'NRC Certification Regulations';
+   }
+   requirement 'Requirements Consistency' : 'NRC Characteristic';
+   requirement 'Requirements Colloquial Completeness' : 'NRC Characteristic';
+   requirement 'Requirements Formal Completeness' : 'NRC Characteristic';
+   requirement 'Instrumentation Independence' : 'NRC Characteristic';
+   requirement 'Channel Independence' : 'NRC Characteristic';
+   requirement 'Actuation Independence' : 'NRC Characteristic';
+   requirement 'Actuation Correctness' : 'NRC Characteristic';
+   requirement 'Self-Test/Trip Independence' : 'NRC Characteristic';
+ }
+ // Note that formal requirements expressed externally must be traceable
+ // to this system model, but need not be repeated in whole here.  Model
+ // elements that are expressed in both the SysML and FRET models must
+ // be in a refinement relationship with each other (e.g,, in this case study,
+ // SysML ⊑ FRET.
+ package 'Formal Requirements' {
+   import 'Project Glossary'::*;
+   requirement def id FRET 'FRET Requirements' {
+     doc /* RTS requirements formalized in the FRET tool. */     
+   }
+   // @todo kiniry Complete remaining FRET requirements.
+   requirement ACTUATION_ACTUATOR_0 : FRET;
  }
 }
 
