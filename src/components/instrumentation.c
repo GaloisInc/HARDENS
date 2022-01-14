@@ -24,16 +24,11 @@ static int instrumentation_step_trip(uint8_t div,
     uint32_t setpoints[3];
     err |= get_instrumentation_test_setpoints(div, &setpoints[0]);
     new_trips = Generate_Sensor_Trips(state->reading, setpoints);
-    assert(state->reading[T] == 30);
   } else {
     new_trips = Generate_Sensor_Trips(state->reading, state->setpoints);
   }
 
   for (int i = 0; i < NTRIP; ++i) {
-    if (do_test && i == 0)
-      assert(TRIP_I(new_trips, i));
-    else
-      assert(!TRIP_I(new_trips, i));
     state->sensor_trip[i] = TRIP_I(new_trips, i);
   }
 
@@ -89,8 +84,6 @@ static int instrumentation_set_output_trips(uint8_t div,
   }
 
   if (do_test) {
-    assert(state->sensor_trip[0]);
-    assert(state->reading[0] == 30);
     set_instrumentation_test_complete(div, 1);
   } else {
     set_instrumentation_output_valid(div, 1);

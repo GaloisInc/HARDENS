@@ -29,11 +29,6 @@ int actuate_devices(void)
       uint8_t this_vote = 0;
       uint8_t valid = get_actuation_unit_output_valid(l);
       err   |= get_actuation_state(l, d, &this_vote);
-      if (!do_test && valid)
-        assert(this_vote == 0);
-      if (do_test && l == 0 && d == 0) {
-        assert(this_vote != 0);
-      }
       if (do_test && l == get_test_actuation_unit())
         test_votes |= (this_vote << d);
       else if(valid)
@@ -42,13 +37,13 @@ int actuate_devices(void)
 
     if (do_test && d == get_test_device()) {
       if (!is_actuate_test_complete(get_test_device())) {
-        assert(ActuateActuator(test_votes));
         set_actuate_test_result(d, ActuateActuator(test_votes));
         set_actuate_test_complete(d, 1);
       }
     }
 
     // Call out to actuation policy
+    assert(ActuateActuator(votes) == 0);
     err |= set_actuate_device(d, ActuateActuator(votes));
   }
 
