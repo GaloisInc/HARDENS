@@ -35,6 +35,10 @@
 #define INSTRUMENTATION_COMMAND 0
 #define ACTUATION_COMMAND 1
 
+
+#define BIT(_test, _value) ((_test) ? (0x8 | (_value)) : _value)
+#define VALID(_value) (!(0x8 & (_value)))
+
 //////////////////////////////////////////////////////////////
 // RTS Command Definitions                                  //
 //////////////////////////////////////////////////////////////
