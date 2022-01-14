@@ -69,6 +69,7 @@ SRC=
 EXTRA_SRC=
 
 PLATFORM ?= Host
+EXECUTION ?= Parallel
 
 SRC+=\
   core.c \
@@ -106,12 +107,19 @@ ifeq ($(SENSORS),Simulated)
 CFLAGS += -DSIMULATE_SENSORS
 endif
 
-$(info BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM))
+
+ifeq ($(EXECUTION),Parallel)
+CFLAGS += -DUSE_PTHREADS
+LIBS   += -lpthread
+endif
+
+
+$(info BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION))
 
 all: rts
 
 rts: $(SRC:.c=.o) $(EXTRA_SRC)
-	$(CC) $(CFLAGS) -o $@ $^ -lpthread
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
 
 variants/%_generated_C.o: variants/%_generated_C.c generated/C/%_impl.c
 	$(CC) -c $(CFLAGS) -o $@ $<
