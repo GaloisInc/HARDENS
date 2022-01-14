@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "actuate.h"
 #include "rts.h"
+#include <string.h>
 
 int actuate_devices_generated_C(void);
 
@@ -15,6 +16,20 @@ const char self_test_running[]     = "SELF TEST:     RUNNING";
 const char self_test_not_running[] = "SELF TEST: NOT RUNNING";
 const char pass[] = "LAST TEST: PASS";
 const char fail[] = "LAST TEST: FAIL";
+
+struct testcase {
+  uint32_t input[4][2];
+  uint32_t setpoints[4][3];
+  uint8_t instrumentation[2];
+  uint8_t actuation_unit;
+  uint8_t device;
+  uint8_t expect;
+} tests[] = {
+  { {{30, 0}, {30, 0}, {30, 0}, {30, 0}}, {{10, 10, 0}, {10, 10, 0}, {10, 10, 0}, {10, 10, 0}}, {0, 1}, 0, 0, 1 },
+  { {{20, 0}, {20, 0}, {30, 0}, {30, 0}}, {{10, 10, 0}, {10, 10, 0}, {10, 10, 0}, {10, 10, 0}}, {0, 1}, 0, 1, 0 },
+  { {{25, 0}, {25, 0}, {30, 0}, {30, 0}}, {{10, 10, 0}, {10, 10, 0}, {10, 10, 0}, {10, 10, 0}}, {0, 1}, 1, 0, 1 },
+  { {{13, 0}, {13, 0}, {30, 0}, {30, 0}}, {{10, 10, 0}, {10, 10, 0}, {10, 10, 0}, {10, 10, 0}}, {0, 1}, 1, 1, 0 }
+};
 
 char mode_char(uint8_t mode) {
   switch (mode) {
@@ -93,15 +108,17 @@ int update_ui(struct ui_values *ui) {
 int end_test(struct test_state *test) {
     int passed = test->self_test_expect == test->test_device_result[test->test_device];
     // Reset state
-    /* reset_actuation_logic(test->test_actuation_unit, 0, 0); */
-    /* reset_actuation_logic(test->test_actuation_unit, 1, 0); */
-    /* set_output_actuation_logic(test->test_actuation_unit, 0, 0); */
-    /* set_output_actuation_logic(test->test_actuation_unit, 1, 0); */
     set_test_running(0);
 
     if (passed) {
       set_display_line(16, pass, 0);
-      test->test_timer = 3;
+      test->test++;
+      if (test->test < sizeof(tests)/sizeof(struct testcase)) {
+        test->test_timer = 1;
+      } else {
+        test->test = 0;
+        test->test_timer = 20;
+      }
     } else {
       set_display_line(16, fail, 0);
       set_display_line(20, "A TEST FAILED", 0);
@@ -121,7 +138,16 @@ int test_step(struct test_state *test) {
         !is_actuation_unit_test_complete(0) &&
         !is_actuation_unit_test_complete(1) &&
         !is_actuate_test_complete(0) &&
-        !is_actuate_test_complete(1)) {
+        !is_actuate_test_complete(1))
+    {
+      struct testcase *next = &tests[test->test];
+      test->self_test_expect = next->expect;
+      test->test_device = next->device;
+      test->test_actuation_unit = next->actuation_unit;
+      memcpy(test->test_instrumentation, next->instrumentation, 2);
+      memcpy(test->test_inputs, next->input, 2*4*sizeof(uint32_t));
+      memcpy(test->test_setpoints, next->setpoints, 3*4*sizeof(uint32_t));
+
       set_test_running(1);
     }
     set_display_line(15, self_test_running, 0);
