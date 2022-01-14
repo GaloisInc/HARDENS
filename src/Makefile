@@ -87,7 +87,7 @@ ifeq ($(PLATFORM),Host)
 SRC+=posix_main.c
 endif
 
-CFLAGS=-Iinclude -g -Wno-shift-op-parentheses -Wno-shift-count-overflow
+CFLAGS=-Iinclude -g -Wno-shift-op-parentheses -Wno-shift-count-overflow -fsanitize=address
 
 CC ?= clang
 CXX ?= clang++
@@ -111,7 +111,7 @@ $(info BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM))
 all: rts
 
 rts: $(SRC:.c=.o) $(EXTRA_SRC)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ -lpthread
 
 rts_bottom: bottom.o
 	$(CC) $(CFLAGS) -o $@ $^

@@ -2,6 +2,8 @@
 #include "common.h"
 #include "platform.h"
 
+#include <assert.h>
+
 #define VOTE_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
 static int
@@ -14,25 +16,45 @@ actuation_logic_vote(uint8_t logic_no, int do_test, struct actuation_logic *stat
 
     get_test_instrumentation(test_div);
 
-    err |= read_instrumentation_trip_signals(trip);
+    int valid[4];
     for (int i = 0; i < NINSTR; ++i) {
+        valid[i] = get_instrumentation_output_valid(i);
+    }
+
+    err |= read_instrumentation_trip_signals(trip);
+
+    if (do_test && get_test_device() == 0) {
+        if (!is_actuation_unit_test_complete(logic_no)) {
+            assert(trip[0][0]);
+            assert(trip[0][1]);
+        }
+    }
+
+    for (int i = 0; i < NINSTR; ++i) {
+        uint8_t test_signal = (i == test_div[0] || i == test_div[1]);
         for (int c = 0; c < NTRIP; ++c) {
-            uint8_t test_signal = i == test_div[0] || i == test_div[1];
-            trip_test[c][i] = trip[c][i] & test_signal;
-            trip[c][i]     &= !test_signal;
+            if (do_test) {
+                trip_test[c][i] = trip[c][i] & test_signal;
+                trip[c][i] &= !test_signal;
+            } else {
+                trip[c][i] &= valid[i];
+            }
         }
     }
 
     if (do_test && get_test_device() == 0) {
-        if (!is_actuate_test_complete(0)) {
+        if (!is_actuation_unit_test_complete(logic_no)) {
+            assert(trip_test[0][0]);
+            assert(trip_test[0][1]);
             state->vote_actuate[0] = Actuate_D0(trip_test, state->vote_actuate[0] != 0);
+            assert(state->vote_actuate[0]);
         }
     } else {
         state->vote_actuate[0] = Actuate_D0(trip, state->vote_actuate[0] != 0);
     }
 
     if (do_test && get_test_device() == 1) {
-        if (!is_actuate_test_complete(1)) {
+        if (!is_actuation_unit_test_complete(logic_no)) {
             state->vote_actuate[1] = Actuate_D1(trip_test, state->vote_actuate[1] != 0);
         }
     } else {
@@ -53,13 +75,32 @@ static int
 output_actuation_signals(uint8_t logic_no, int do_test, struct actuation_logic *state)
 {
     int err = 0;
+    if (do_test) {
+        set_actuation_unit_output_valid(logic_no, 0);
+    }
     for (int d = 0; d < NDEV; ++d) {
         uint8_t on = state->vote_actuate[d] || state->manual_actuate[d];
-        err |= set_output_actuation_logic(logic_no, d, on);
+        if (!do_test || !is_actuation_unit_test_complete(logic_no)) {
+            if (do_test && logic_no == get_test_actuation_unit()) {
+                assert(on || (d != 0));
+            }
+            if (!do_test) {
+                assert(!on);
+            }
+            err |= set_output_actuation_logic(logic_no, d, on);
+        }
     }
-
-    if (do_test) {
-        set_actuation_unit_test_complete(logic_no);
+    if (do_test && !is_actuation_unit_test_complete(logic_no)) {
+        // Reset internal state
+        state->vote_actuate[0] = 0;
+        state->vote_actuate[1] = 0;
+        uint8_t this_vote;
+        get_actuation_state(logic_no, 0, &this_vote);
+        assert(this_vote != 0);
+        set_actuation_unit_test_complete(logic_no, 1);
+    }
+    if (!do_test) {
+        set_actuation_unit_output_valid(logic_no, 1);
     }
 
     return err;
@@ -75,6 +116,14 @@ int actuation_unit_step(uint8_t logic_no, struct actuation_logic *state)
                   is_instrumentation_test_complete(test_div[0]) &&
                   is_instrumentation_test_complete(test_div[1]) &&
                   is_test_running();
+
+    if (do_test && is_actuation_unit_test_complete(logic_no))
+        return 0;
+
+    if (!do_test && is_actuation_unit_test_complete(logic_no)) {
+        set_actuation_unit_test_complete(logic_no, 0);
+        return 0;
+    }
 
     /* Read trip signals & vote */
     err |= actuation_logic_vote(logic_no, do_test, state);
