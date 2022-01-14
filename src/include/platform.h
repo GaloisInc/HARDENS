@@ -68,22 +68,29 @@ int set_display_line(uint8_t line_number, const char *display, uint32_t size);
 // Self Test state                         //
 /////////////////////////////////////////////
 uint8_t is_test_running();
+void set_test_running(int val);
 uint8_t get_test_device();
 
 void get_test_instrumentation(uint8_t *id);
 int is_instrumentation_under_test(uint8_t id);
 int get_instrumentation_test_setpoints(uint8_t id, uint32_t *setpoints);
-void set_instrumentation_test_complete(uint8_t div);
+void set_instrumentation_test_complete(uint8_t div, int v);
 int is_instrumentation_test_complete(uint8_t id);
 int read_test_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val);
 
+int get_instrumentation_output_valid(uint8_t div);
+void set_instrumentation_output_valid(uint8_t div, uint8_t valid);
+
 uint8_t get_test_actuation_unit();
 int is_actuation_unit_under_test(uint8_t id);
-void set_actuation_unit_test_complete(uint8_t div);
+void set_actuation_unit_test_complete(uint8_t div, int v);
 int is_actuation_unit_test_complete(uint8_t id);
 
+int get_actuation_unit_output_valid(uint8_t id);
+void set_actuation_unit_output_valid(uint8_t id, uint8_t valid);
+
 void set_actuate_test_result(uint8_t dev, uint8_t result);
-void set_actuate_test_complete(uint8_t dev);
+void set_actuate_test_complete(uint8_t dev, int v);
 int is_actuate_test_complete(uint8_t dev);
 
 #endif // PLATFORM_H_
