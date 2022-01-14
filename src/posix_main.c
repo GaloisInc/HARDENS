@@ -23,17 +23,15 @@ static pthread_mutex_t mem_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct core_state core = {0};
 
-static uint8_t instrumentation_valid[4];
-static uint8_t actuation_valid[2];
 struct instrumentation_state instrumentation[4];
 struct actuation_logic actuation_logic[2];
 
-static uint32_t sensors[4][2];
+uint32_t sensors[4][2];
 uint8_t trip_signals[NTRIP][4];
 struct instrumentation_command *inst_command_buf[4];
 
-static uint8_t actuator_state[NDEV];
-static uint8_t device_actuation_logic[2][NDEV];
+uint8_t actuator_state[NDEV];
+uint8_t device_actuation_logic[2][NDEV];
 struct actuation_command *act_command_buf[2];
 
 int read_instrumentation_trip_signals(uint8_t arr[3][4]) {
@@ -376,37 +374,6 @@ void set_test_running(int val)
 {
   pthread_mutex_lock(&mem_mutex);
   core.test.self_test_running = val;
-  pthread_mutex_unlock(&mem_mutex);
-}
-
-
-int get_instrumentation_output_valid(uint8_t div)
-{
-  pthread_mutex_lock(&mem_mutex);
-  int ret = instrumentation_valid[div] != 0;
-  pthread_mutex_unlock(&mem_mutex);
-  return ret;
-}
-
-void set_instrumentation_output_valid(uint8_t div, uint8_t valid)
-{
-  pthread_mutex_lock(&mem_mutex);
-  instrumentation_valid[div] = valid;
-  pthread_mutex_unlock(&mem_mutex);
-}
-
-int get_actuation_unit_output_valid(uint8_t div)
-{
-  pthread_mutex_lock(&mem_mutex);
-  int ret = actuation_valid[div] != 0;
-  pthread_mutex_unlock(&mem_mutex);
-  return ret;
-}
-
-void set_actuation_unit_output_valid(uint8_t div, uint8_t valid)
-{
-  pthread_mutex_lock(&mem_mutex);
-  instrumentation_valid[div] = valid;
   pthread_mutex_unlock(&mem_mutex);
 }
 

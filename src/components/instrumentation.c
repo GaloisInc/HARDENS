@@ -1,7 +1,7 @@
 #include "instrumentation.h"
 #include "platform.h"
 #include "common.h"
-#include <assert.h>
+#include <string.h>
 
 #define TRIP_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
@@ -70,23 +70,17 @@ static int instrumentation_handle_command(uint8_t div,
   return 0;
 }
 
-extern uint8_t trip_signals[3][4];
-
 static int instrumentation_set_output_trips(uint8_t div,
                                             int do_test,
-                                            struct instrumentation_state *state) {
-  if (do_test)
-      set_instrumentation_output_valid(div, 0);
-
+                                            struct instrumentation_state *state)
+{
   for (int i = 0; i < NTRIP; ++i) {
     uint8_t mode = do_test ? 1 : state->mode[i];
-    set_output_instrumentation_trip(div, i, Is_Ch_Tripped(mode, state->sensor_trip[i]));
+    set_output_instrumentation_trip(div, i, BIT(do_test, Is_Ch_Tripped(mode, state->sensor_trip[i])));
   }
 
   if (do_test) {
     set_instrumentation_test_complete(div, 1);
-  } else {
-    set_instrumentation_output_valid(div, 1);
   }
 
   return 0;
