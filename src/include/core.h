@@ -17,9 +17,11 @@ struct ui_values {
 };
 
 struct test_state {
+  uint32_t test;
   uint32_t test_timer;
   uint8_t self_test_running;
   uint8_t self_test_expect;
+
   uint8_t test_device_result[2];
 
   uint8_t test_instrumentation[2];

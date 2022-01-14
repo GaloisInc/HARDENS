@@ -50,7 +50,6 @@ int read_instrumentation_trip_signals(uint8_t arr[3][4]) {
 
 int set_actuate_device(uint8_t device_no, uint8_t on)
 {
-  assert(!on);
   pthread_mutex_lock(&mem_mutex);
   actuator_state[device_no] = on;
   pthread_mutex_unlock(&mem_mutex);
@@ -337,7 +336,6 @@ int is_actuation_unit_test_complete(uint8_t id)
 
 void set_actuate_test_result(uint8_t dev, uint8_t result)
 {
-  assert(core.test.self_test_running);
   pthread_mutex_lock(&mem_mutex);
   core.test.test_device_result[dev] = result;
   pthread_mutex_unlock(&mem_mutex);
@@ -445,8 +443,8 @@ int main(int argc, char **argv) {
   pthread_attr_t attr;
   pthread_t sense_actuate_0, sense_actuate_1;
   pthread_attr_init(&attr);
-  /* pthread_create(&sense_actuate_0, &attr, start0, NULL); */
-  /* pthread_create(&sense_actuate_1, &attr, start1, NULL); */
+  pthread_create(&sense_actuate_0, &attr, start0, NULL);
+  pthread_create(&sense_actuate_1, &attr, start1, NULL);
 
   while (1) {
     char line[256];
@@ -456,7 +454,7 @@ int main(int argc, char **argv) {
     pthread_mutex_unlock(&display_mutex);
     set_display_line(8, line, 0);
     core_step(&core);
-    sense_actuate_step_0(&instrumentation[0], &actuation_logic[0]);
+    /* sense_actuate_step_0(&instrumentation[0], &actuation_logic[0]); */
     /* sense_actuate_step_1(&instrumentation[2], &actuation_logic[1]); */
   }
 
