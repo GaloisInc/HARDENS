@@ -2,7 +2,6 @@
 #include "actuate.h"
 #include "actuation_logic.h"
 #include "platform.h"
-#include <assert.h>
 
 #define w1 uint8_t
 #define w2 uint8_t
@@ -15,8 +14,7 @@ int actuate_devices(void)
 {
   int err = 0;
   int do_test = is_test_running() && is_actuation_unit_test_complete(get_test_actuation_unit());
-  if (do_test && is_actuate_test_complete(get_test_device()))
-    return 0;
+
   if (!do_test) {
     set_actuate_test_complete(0, 0);
     set_actuate_test_complete(1, 0);
@@ -27,11 +25,10 @@ int actuate_devices(void)
     uint8_t test_votes = 0;
     for (int l = 0; l < NVOTE_LOGIC; ++l) {
       uint8_t this_vote = 0;
-      uint8_t valid = get_actuation_unit_output_valid(l);
       err   |= get_actuation_state(l, d, &this_vote);
       if (do_test && l == get_test_actuation_unit())
-        test_votes |= (this_vote << d);
-      else if(valid)
+        test_votes |= ((this_vote & 0x1) << d);
+      else if (VALID(this_vote))
         votes |= (this_vote << d);
     }
 
@@ -43,7 +40,6 @@ int actuate_devices(void)
     }
 
     // Call out to actuation policy
-    assert(ActuateActuator(votes) == 0);
     err |= set_actuate_device(d, ActuateActuator(votes));
   }
 
