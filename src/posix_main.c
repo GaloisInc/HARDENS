@@ -17,9 +17,14 @@
 #include <string.h>
 #include <sys/select.h>
 
+#ifdef USE_PTHREADS
 #include <pthread.h>
-static pthread_mutex_t display_mutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t mem_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t display_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mem_mutex = PTHREAD_MUTEX_INITIALIZER;
+#else
+#define pthread_mutex_lock(x)
+#define pthread_mutex_unlock(x)
+#endif
 
 struct core_state core = {0};
 
@@ -396,22 +401,17 @@ int main(int argc, char **argv) {
 
 
   core.test.test_timer = 0x00000002;
-  core.test.test_instrumentation[0] = 0;
-  core.test.test_instrumentation[1] = 1;
-  core.test.test_actuation_unit = 0;
-  core.test.test_device = 0;
-  core.test.self_test_expect = 1;
-  memcpy(core.test.test_inputs, (uint32_t[4][2]){{30,0}, {30,0}, {0,0}, {0,0}}, 8*sizeof(uint32_t));;
-  memcpy(core.test.test_setpoints, (uint32_t[4][3]){{10,10,0}, {10,10,0}, {10,10,0}, {10,10,0}}, 12*sizeof(uint32_t));;
 
   if (isatty(fileno(stdin))) printf("\e[1;1H\e[2J");
   if (isatty(fileno(stdin))) printf("\e[10;3H\e[2K");
 
+#ifdef USE_PTHREADS
   pthread_attr_t attr;
   pthread_t sense_actuate_0, sense_actuate_1;
   pthread_attr_init(&attr);
   pthread_create(&sense_actuate_0, &attr, start0, NULL);
   pthread_create(&sense_actuate_1, &attr, start1, NULL);
+#endif
 
   while (1) {
     char line[256];
@@ -421,8 +421,10 @@ int main(int argc, char **argv) {
     pthread_mutex_unlock(&display_mutex);
     set_display_line(8, line, 0);
     core_step(&core);
-    /* sense_actuate_step_0(&instrumentation[0], &actuation_logic[0]); */
-    /* sense_actuate_step_1(&instrumentation[2], &actuation_logic[1]); */
+#ifndef USE_PTHREADS
+    sense_actuate_step_0(&instrumentation[0], &actuation_logic[0]);
+    sense_actuate_step_1(&instrumentation[2], &actuation_logic[1]);
+#endif
   }
 
   return 0;
