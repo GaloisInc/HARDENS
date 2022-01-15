@@ -744,8 +744,98 @@ package id Characteristics 'IEEE Std 603-2018 Characteristics' {
 }
 
 /**
- * The IEEE 603-2018 requirements (known as "characteristics" in
- * the standard) which the RTS demonstrator system must fulfill.
+ * The set of all atomic external or internal actions that the RTS
+ * system can take.  Note that every scenario must be describable by
+ * a sequence of actions. 
  */
-package id Characteristics 'IEEE Std 603-2018 Characteristics' {
+package id Actions 'RTS Actions' {
+  package id Internal 'RTS Internal Actions' {
+    
+  } 
+  package id External 'RTS External Actions' {
+    package 'UI Actions' {
+      action def id UIA 'UI Action' {
+        doc /* Actions exhibited by the RTS UI, either inbound or outbound. */
+      }
+      // @design kiniry These should both be specializations of UIA, but I
+      // don't know how to write that in SysML yet.
+      action def id UI_IA 'UI Input Action';
+      action def id UI_OA 'UI Output Action';
+      
+      // Input actions.
+      // @todo kiniry Add features to correspond to UI parameters.
+      action id A Actuate : UI_IA {
+        
+      }
+      action id M 'Set Maintenance Mode' :  UI_IA {
+        
+      }
+      action id B 'Set Mode' : UI_IA {
+        
+      } 
+      action id S 'Set Setpoint' : UI_IA {
+        
+      }
+      action id V 'Sensor Value' : UIA {
+        // d : Division;
+        // c : Channel;
+        // m : Mode;
+      }
+      action id Q 'Quit' : UI_IA;
+      
+      // Output actions.
+      action id 'Display Pressure' : UI_OA;
+      action id 'Display Temperature' : UI_OA;
+      // @todo kiniry Complete set of UI outputs as specified in `events.lando`
+      // and as implemented in `posix_main.c`. 
+    }
+  }
+} 
+
+/**
+ * The set of all scenarios that describe interesting end-to-end executions
+ * of the RTS system.  The full set of scenarios must include all normal
+ * behavior (online and during sefl-test) and exceptional behavior.  
+ */
+package id Scenarios 'RTS Scenarios' {
+  package id Normal 'RTS Normal Behavior Scenarios' {
+    import 'RTS Architecture'::'RTS System Architecture'::RTS;
+    
+    item def 'RTS User';
+    use case def id NB 'Normal Behavior' {
+      subject RTS;
+      actor user : 'RTS User';
+      objective {
+        doc /* @see test_scenarios.lando */
+      }
+    }
+    // @design kiniry Actually, ST should specialize NB.  I don't know how
+    // to express that in SysML yet.
+    use case def id ST 'Normal Behavior Under Self-Test' {
+        subject RTS;
+        actor tester : 'RTS User';
+    }
+    package 'Self-test Scenarios' {
+      import Normal::ST;
+      use case '1a - Trip on Mock High Pressure Reading from that Pressure Sensor' : NB;
+      use case '1b - Trip on Environmental High Pressure Reading from that Pressure Sensor' : NB;
+      // @todo kiniry Add remaining scenarios.
+      use case 'Full Self-Test';
+    } 
+    package 'RTS Scenarios' {
+      // @todo Still need to enumerate these.      
+    }
+  } 
+  package id Exceptional 'RTS Exceptional Behavior Scenarios' {
+    use case def id EB 'Exceptional Behavior' {
+      subject RTS;
+      objective {
+        doc /* @see test_scenarios.lando */
+      }
+    }
+    use case '1a - Cause Actuator 1 to Fail' : EB;
+    // @todo kiniry Add remaining scenarios.  
+  }
 }
+
+)

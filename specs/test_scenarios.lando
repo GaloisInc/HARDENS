@@ -69,3 +69,69 @@ Normal Behavior 14 - Demonstrate Periodic Continual Self-test of Safety Signal P
 Normal Behavior Full Self-Test
 @todo TBD.
 
+// Exceptional behaviors are *predictable* system behaviors triggered
+// by external environment affects.  Examples include a CPU, OS,
+// device, or network total or partial failure.  E.g., CPU deadlock,
+// out-of-memory errors, permanent store partial and total failures,
+// lack of space in permanent store, partial and total network
+// failures, device driver partial or total failures, etc.
+
+// In our architecture, every part of the RTS system, and particularly
+// every part of the intrumentation and sensing subsystem and every
+// part of the actuation subsystem must be able to fail and the sysetm
+// must respond appropriately.
+
+Exceptional Behavior 1a - Cause Actuator 1 to Fail
+@todo TBD
+
+Exceptional Behavior 1b - Cause Actuator 2 to Fail
+@todo TBD
+
+Exceptional Behavior 1c - Non-determinisitically Cause an Actuator to Eventually Fail
+@todo TBD
+
+Exceptional Behavior 2a - Cause Temperature Sensor 1 to Fail
+@todo TBD
+
+Exceptional Behavior 2b - Cause Temperature Sensor 2 to Fail
+@todo TBD
+
+Exceptional Behavior 2c - Non-deterministically Cause a Temperature Sensor to Eventually Fail
+@todo TBD
+
+Exceptional Behavior 3a - Cause Pressure Sensor 1 to Fail
+@todo TBD
+
+Exceptional Behavior 3b - Cause Pressure Sensor 2 to Fail
+@todo TBD
+
+Exceptional Behavior 3c - Non-deterministically Cause a Pressure Sensor to Eventually Fail
+@todo TBD
+
+Exceptional Behavior 4a - Cause Instrumentation Unit 1 to Fail
+@todo TBD
+
+Exceptional Behavior 4b - Cause Instrumentation Unit 2 to Fail
+@todo TBD
+
+Exceptional Behavior 4c - Cause Instrumentation Unit 3 to Fail
+@todo TBD
+
+Exceptional Behavior 4d - Cause Instrumentation Unit 4 to Fail
+@todo TBD
+
+Exceptional Behavior 4e - Non-Deterministically Cause Instrumentation Unit to Eventually Fail
+@todo TBD
+
+// @review kiniry I actually don't know if we are fault tolerant to
+// failure in these components.  Please review @abakst.
+
+Exceptional Behavior 5a - Cause Temperature Demultiplexor 1 to Fail
+@todo TBD
+
+Exceptional Behavior 5b - Cause Temperature Demultiplexor 2 to Fail
+@todo TBD
+
+Exceptional Behavior 5b - Cause a Temperature Demultiplexor to Eventualy Fail
+@todo TBD
+
