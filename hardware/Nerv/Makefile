@@ -5,6 +5,7 @@ all:	 compile  link  simulate
 # Dependencies on other directories
 
 # Example: NERV_REPO ?= $(HOME)/Git/nerv
+NERV_REPO ?= ../../nerv
 
 ifndef NERV_REPO
   $(error ERROR: please define NERV_REPO, i.e., path to clone of https://github.com/YosysHQ/nerv)
@@ -13,6 +14,7 @@ else
 endif
 
 # Example: BLUESPEC_HOME ?= $(HOME)/NoBak/bsc-2021.07-ubuntu-20.04
+BLUESPEC_HOME ?= /tools/bsc-2021.07-ubuntu-20.04
 
 ifndef BLUESPEC_HOME
   $(error ERROR: please define BLUESPEC_HOME, i.e., path to B-Lang installation bsc/inst)
