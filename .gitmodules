@@ -1,0 +1,3 @@
+[submodule "hardware/Nerv/bsc-contrib"]
+	path = hardware/Nerv/bsc-contrib
+	url = https://github.com/B-Lang-org/bsc-contrib.git
