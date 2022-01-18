@@ -52,40 +52,49 @@ The user selects 'maintenance' for each instrumentation division, the user confi
 a subset of channels to place in active trip output.
 
 Normal Behavior 5a - Automatically Actuate All Mock Devices in Sequence
-@todo TBD.
+The user selects 'maintenance' for each instrumentation division, the user places enough channels
+in 'active trip' to actuate a mock device.
 
-Normal Behavior 5b - Automatically Actuate All Mock Devices in Sequence
-@todo TBD.
+Normal Behavior 5b - Automatically Actuate All Hardware Devices in Sequence
+The user selects 'maintenance' for each instrumentation division, the user places enough channels
+in 'active trip' to actuate a hardware device.
 
 Normal Behavior 6 - Manually Actuate Each Device in Sequence
-@todo TBD.
+The user manually actuates each device.
 
 Normal Behavior 7a - Select Maintenance Operating Mode for each Division
-@todo TBD.
+The user selects 'maintenance' mode for each instrumentation division in sequence.
 
 Normal Behavior 7b - Select Normal Operating Mode for each Division
-@todo TBD.
+The user exits 'maintenance' mode for each instrumentation division in sequence.
 
 Normal Behavior 8 - Perform Each Kind of Setpoint Adjustment
-@todo TBD.
+For each instrumentation division, the user provides a setpoint for temperature,
+then the user provides a setpoint for pressure, then the user provides a setpoint for
+saturation margin.
 
 Normal Behavior 9 - Configure Bypass of Each Instrument Channel in Sequence
-@todo TBD.
+For each instrumentation division, the user puts each channel in 'normal' and then 'bypass' mode.
 
 Normal Behavior 10 - Configure Active Trip Output State of Each Instrument Channel in Sequence
-@todo TBD.
+For each instrumentation division, the user puts each channel in 'trip' and then 'normal' mode.
 
 Normal Behavior 11 - Display Pressure, Temperature, and Saturation Margin
-@todo TBD.
+The user provides inputs for an instrumnetation division, then the UI displays
+the updated pressure, temperature and saturation margin.
 
 Normal Behavior 12 - Display Every Trip Output Signal State in Sequence
-@todo TBD.
+The user configures an instrumentation division in 'maintenance', selects a channel
+and places it in 'trip', the UI displays the trip state, the user places the channel in 'normal'
+mode, the UI displays the trip state.
 
 Normal Behavior 13 - Display Indication of Every Channel in Bypass in Sequence
-@todo TBD.
+The user configures an instrumentation division in 'maintenance', the
+user selects a channel and places it in bypass, the UI displays the bypass state,
+the user places the chanenl in normal mode, the UI displays the updated state.
 
 Normal Behavior 14 - Demonstrate Periodic Continual Self-test of Safety Signal Path
-@todo TBD.
+The system starts, eventually the UI displays that self test has run.
 
 Normal Behavior Full Self-Test
 @todo TBD.
@@ -103,46 +112,53 @@ Normal Behavior Full Self-Test
 // must respond appropriately.
 
 Exceptional Behavior 1a - Cause Actuator 1 to Fail
-@todo TBD
+Manually actuate Actuator 1, the actuator fails, an error is indicated.
 
 Exceptional Behavior 1b - Cause Actuator 2 to Fail
-@todo TBD
+Manually actuate Actuator 2, the actuator fails, an error is indicated.
 
 Exceptional Behavior 1c - Non-determinisitically Cause an Actuator to Eventually Fail
-@todo TBD
+Repeatedly manually actuate/unactuate an Actuator, the actuator fails, an error is indicated.
 
 Exceptional Behavior 2a - Cause Temperature Sensor 1 to Fail
-@todo TBD
+Temperature Sensor 1 reports readings that are inconsistent with Temperature Sensor 2, the
+discrepancy is indicated on the UI.
 
 Exceptional Behavior 2b - Cause Temperature Sensor 2 to Fail
-@todo TBD
+Temperature Sensor 2 reports readings that are inconsistent with Temperature Sensor 1, the
+discrepancy is indicated on the UI.
 
 Exceptional Behavior 2c - Non-deterministically Cause a Temperature Sensor to Eventually Fail
-@todo TBD
+Temperature Sensor 1 or Temperature Sensor 2 report inconsistent values,
+discrepancy is indicated on the UI.
 
 Exceptional Behavior 3a - Cause Pressure Sensor 1 to Fail
-@todo TBD
+Pressure Sensor 1 reports readings that are inconsistent with Pressure Sensor 2, the
+discrepancy is indicated on the UI.
 
 Exceptional Behavior 3b - Cause Pressure Sensor 2 to Fail
-@todo TBD
+Pressure Sensor 2 reports readings that are inconsistent with Pressure Sensor 1, the
+discrepancy is indicated on the UI.
 
 Exceptional Behavior 3c - Non-deterministically Cause a Pressure Sensor to Eventually Fail
-@todo TBD
+Temperature Sensor 1 or Temperature Sensor 2 report inconsistent values,
+discrepancy is indicated on the UI.
 
 Exceptional Behavior 4a - Cause Instrumentation Unit 1 to Fail
-@todo TBD
+A channel input exceeds its setpoint, Instrumentation Unit 1 does not generate a trip signal.
 
 Exceptional Behavior 4b - Cause Instrumentation Unit 2 to Fail
-@todo TBD
+A channel input exceeds its setpoint, Instrumentation Unit 2 does not generate a trip signal.
 
 Exceptional Behavior 4c - Cause Instrumentation Unit 3 to Fail
-@todo TBD
+A channel input exceeds its setpoint, Instrumentation Unit 3 does not generate a trip signal.
 
 Exceptional Behavior 4d - Cause Instrumentation Unit 4 to Fail
-@todo TBD
+A channel input exceeds its setpoint, Instrumentation Unit 4 does not generate a trip signal.
 
 Exceptional Behavior 4e - Non-Deterministically Cause Instrumentation Unit to Eventually Fail
-@todo TBD
+A channel input exceeds its setpoint, an Instrumentation unit reading the input non-deterministically
+does not output a trip signal.
 
 // @review kiniry I actually don't know if we are fault tolerant to
 // failure in these components.  Please review @abakst.
