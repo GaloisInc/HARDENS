@@ -750,7 +750,21 @@ package id Characteristics 'IEEE Std 603-2018 Characteristics' {
  */
 package id Actions 'RTS Actions' {
   package id Internal 'RTS Internal Actions' {
-    
+    action def id IA 'Intenral Action' {
+      doc /* Actions internal to the RTS */
+    }
+    action id Trip 'Signal Trip' : IA {
+    	in item division;
+    	in item channel;
+    }
+    action id Vote 'Vote on Like Trips using Two-out-of-four Coincidence' : IA {
+    	in item divisions[2];
+    	in item channel;
+    }
+    action id A 'Automatically Actuate Device' : IA {
+    	in item device;
+    }
+    action id T 'Self-test of Safety Signal Path' : IA;
   } 
   package id External 'RTS External Actions' {
     package 'UI Actions' {
@@ -765,29 +779,37 @@ package id Actions 'RTS Actions' {
       // Input actions.
       // @todo kiniry Add features to correspond to UI parameters.
       action id A Actuate : UI_IA {
-        
+        in item actuator;
+        in item on_off;
       }
       action id M 'Set Maintenance Mode' :  UI_IA {
-        
+        in item division;
+        in item on_off;
       }
       action id B 'Set Mode' : UI_IA {
-        
+        in item division;
+        in item trip_mode; 
       } 
       action id S 'Set Setpoint' : UI_IA {
-        
+        in item division;
+        in item channel;
+        in item value;
       }
-      action id V 'Sensor Value' : UIA {
-        // d : Division;
-        // c : Channel;
-        // m : Mode;
+      action id V 'Sensor Value' : UI_IA {
+      	doc /* Simulate a sensor reading */
+      	in item division;
+      	in item channel;
+      	in item value;
       }
       action id Q 'Quit' : UI_IA;
       
       // Output actions.
       action id 'Display Pressure' : UI_OA;
       action id 'Display Temperature' : UI_OA;
-      // @todo kiniry Complete set of UI outputs as specified in `events.lando`
-      // and as implemented in `posix_main.c`. 
+      action id 'Display Saturation Margin': UI_OA;
+      action id 'Display Trip Ouput Signal State': UI_OA;
+      action id 'Display Indication Of Channel in Bypass': UI_OA;
+      action id 'Display Actuation State': UI_OA;
     }
   }
 } 
@@ -819,9 +841,24 @@ package id Scenarios 'RTS Scenarios' {
       import Normal::ST;
       use case '1a - Trip on Mock High Pressure Reading from that Pressure Sensor' : NB;
       use case '1b - Trip on Environmental High Pressure Reading from that Pressure Sensor' : NB;
-      // @todo kiniry Add remaining scenarios.
-      use case 'Full Self-Test';
-    } 
+      use case '2a - Trip on Mock High Temperature Reading from that Temperature Sensor' : NB;
+      use case '2a - Trip on Environmental High Temperature Reading from that Temperature Sensor' : NB;
+      use case '3a - Trip on Mock Low Saturation Margin' : NB;
+      use case '3a - Trip on Environmental Low Saturation Margin' : NB;
+      use case '4 - Vote on Every Possible Like Trip' : NB;
+      use case '5a - Automatically Actuate All Mock Devices in Sequence' : NB;
+      use case '5b - Automatically Actuate All Mock Devices in Sequence' : NB;
+      use case '6 - Manually Actuate Each Device in Sequence' : NB;
+      use case '7a - Select Maintenance Operating Mode for each Division' : NB;
+      use case '7b - Select Normal Operating Mode for each Division' : NB;
+      use case '8 - Perform Each Kind of Setpoint Adjustment' : NB;
+      use case '9 - Configure Bypass of Each Instrument Channel in Sequence' : NB;
+      use case '10 - Configure Active Trip Output State of Each Instrument Channel in Sequence' : NB;
+      use case '11 - Display Pressure, Temperature, and Saturation Margin' : NB;
+      use case '13 - Display Indication of Every Channel in Bypass in Sequence' : NB;
+      use case '14 - Demonstrate Periodic Continual Self-test of Safety Signal Path' : NB;
+      use case 'Full Self-Test' : NB;
+    }
     package 'RTS Scenarios' {
       // @todo Still need to enumerate these.      
     }
@@ -834,7 +871,24 @@ package id Scenarios 'RTS Scenarios' {
       }
     }
     use case '1a - Cause Actuator 1 to Fail' : EB;
-    // @todo kiniry Add remaining scenarios.  
+    use case '1b - Cause Actuator 2 to Fail' : EB;
+    use case '1c - Non-determinisitically Cause an Actuator to Eventually Fail' : EB;
+    use case '2a - Cause Temperature Sensor 1 to Fail' : EB;
+    use case '2b - Cause Temperature Sensor 2 to Fail' : EB;
+    use case '2c - Non-deterministically Cause a Temperature Sensor to Eventually Fail' : EB;
+    use case '3a - Cause Pressure Sensor 1 to Fail' : EB;
+    use case '3b - Cause Pressure Sensor 2 to Fail' : EB;
+    use case '3c - Non-deterministically Cause a Pressure Sensor to Eventually Fail' : EB;
+    use case '4a - Cause Instrumentation Unit 1 to Fail' : EB;
+    use case '4b - Cause Instrumentation Unit 2 to Fail' : EB;
+    use case '4c - Cause Instrumentation Unit 3 to Fail' : EB;
+    use case '4d - Cause Instrumentation Unit 4 to Fail' : EB;
+    use case '4e - Non-Deterministically Cause Instrumentation Unit to Eventually Fail' : EB;
+    // @review kiniry I actually don't know if we are fault tolerant to' : EB;
+    // failure in these components.  Please review @abakst.
+    use case '5a - Cause Temperature Demultiplexor 1 to Fail' : EB;
+    use case '5b - Cause Temperature Demultiplexor 2 to Fail' : EB;
+    use case '5b - Cause a Temperature Demultiplexor to Eventualy Fail' : EB;
   }
 }
 
