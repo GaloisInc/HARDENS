@@ -10,25 +10,46 @@
 requirements Test Scenarios
 
 Normal Behavior 1a - Trip on Mock High Pressure Reading from that Pressure Sensor
-@todo TBD.
+The user selects 'maintenance' for an instrumentation division, the division's pressure channel is
+set to 'normal' mode, the pressure setpoint is set to a value v, the user
+simulates a pressure input to that division exceeding v, the division generates
+a pressure trip.
 
 Normal Behavior 1b - Trip on Environmental High Pressure Reading from that Pressure Sensor
-@todo TBD.
+The user selects 'maintenance' for an instrumentation division, the division's pressure channel is
+set to 'normal' mode, the pressure setpoint is set to a value v, the divison
+reads a pressure sensor value division exceeding v, the division generates a
+pressure trip.
 
 Normal Behavior 2a - Trip on Mock High Temperature Reading from that Temperature Sensor
-@todo TBD.
+The user selects 'maintenance' for an instrumentation division, the division's temperature channel is
+set to 'normal' mode, the temperature setpoint is set to a value v, the user
+simulates a temperature input to that division exceeding v, the division generates
+a temperature trip.
 
 Normal Behavior 2a - Trip on Environmental High Temperature Reading from that Temperature Sensor
-@todo TBD.
+The user selects 'maintenance' for an instrumentation division, the division's temperature channel is
+set to 'normal' mode, the temperature setpoint is set to a value v, the divison
+reads a temperature sensor value division exceeding v, the division generates a
+temperature trip.
 
 Normal Behavior 3a - Trip on Mock Low Saturation Margin
-@todo TBD.
+The user selects 'maintenance' for an instrumentation division, the division's
+saturation channel is set to 'normal' mode, the saturation margin setpoint is
+set to a value v, the user simulates pressure and temperature inputs to
+that division such that the saturation margin is below v, the division generates
+a saturation margin trip.
 
 Normal Behavior 3a - Trip on Environmental Low Saturation Margin
-@todo TBD.
+The user selects 'maintenance' for an instrumentation division, the division's
+saturation channel is set to 'normal' mode, the saturation margin setpoint is
+set to a value v, the divison reads pressure and temperature sensor values in
+that division such that the saturation margin is below v, the division generates
+a saturation margin trip.
 
 Normal Behavior 4 - Vote on Every Possible Like Trip
-@todo TBD.
+The user selects 'maintenance' for each instrumentation division, the user configures
+a subset of channels to place in active trip output.
 
 Normal Behavior 5a - Automatically Actuate All Mock Devices in Sequence
 @todo TBD.
