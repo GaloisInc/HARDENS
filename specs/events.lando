@@ -8,20 +8,19 @@
 events Demonstrator External Input Actions
 
 Manually Actuate Device
-@todo TBD.
+The user manually actuates a device.
 
 Select Operating Mode
-@todo TBD.
+The user puts an instrumentation division in or takes a division out of 'maintenance' mode.
 
 Perform Setpoint Adjustment
-@todo TBD.
+The user adjusts the setpoint for a particular channel in a particular division in maintenance mode.
 
 Configure Bypass of an Instrument Channel
-@todo TBD.
+The user sets the mode of the channel of an instrumentation division to either bypass or normal mode.
 
 Configure Active Trip Output State of an Instrument Channel
-@todo TBD.
-
+The user sets the mode of the channel of an instrumentation division to either trip or normal mode.
 
 // External output actions are those that are triggered by internal
 // state change, which is, in turn, sometimes prompted by external input
@@ -29,37 +28,39 @@ Configure Active Trip Output State of an Instrument Channel
 events Demonstrator External Output Actions
 
 Display Pressure
-@todo TBD.
+The UI displays the current pressure reading for an instrumentation division.
 
 Display Temperature
-@todo TBD.
+The UI displays the current temperature reading for an instrumentation division.
 
 Display Saturation Margin
-@todo TBD.
+The UI displays the current saturation margin reading for an instrumentation division.
 
 Display Trip Output Signal State
-@todo TBD.
+The UI displays the current trip signal output for a particular channel and instrumentation division.
 
 Display Indication of Channel in Bypass
-@todo TBD.
+The UI displays the current bypass mode for a particular channel and instrumentation division.
 
 // Internal actions are those that are not triggered by external input on UI.
 events Demonstrator Internal Actions
 
 Trip on High Pressure
-@todo TBD.
+An instrumentation division reads a pressure sensor value that exceeds its setpoint and generates a trip output.
 
 Trip on High Temperature
-@todo TBD.
+An instrumentation division reads a temperature sensor value that exceeds its setpoint and generates a trip output.
 
 Trip on Low Saturation Margin
-@todo TBD.
+An instrumentation division reads temperature and pressure values such that the
+saturation margin is below its setpoint and generates a trip output.
 
 Vote on Like Trips using Two-out-of-four Coincidence
-@todo TBD.
+An actuation unit reads two like trip inputs and generates the corresponding automatic actuation signal.
 
 Automatically Actuate Device
-@todo TBD.
+An actuation unit generates an automatic actuation signal and sends it to the corresponding device.
 
 Self-test of Safety Signal Path
-@todo TBD.
+The RTS simulates inputs to all pairs of
+instrumentation divisions and checks the corresponding actuation signals.
