@@ -62,5 +62,4 @@ Automatically Actuate Device
 An actuation unit generates an automatic actuation signal and sends it to the corresponding device.
 
 Self-test of Safety Signal Path
-The RTS simulates inputs to all pairs of
-instrumentation divisions and checks the corresponding actuation signals.
+The RTS simulates inputs to a pair of instrumentation divisions and checks the corresponding actuation signals.
