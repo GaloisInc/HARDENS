@@ -121,6 +121,18 @@ RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 #RUN udevadm control --reload-rules && sudo udevadm trigger
 #RUN usermod -a $USER -G plugdev
 
+# elf2hex
+ARG TOOL=elf2hex
+ARG TAG=v20.08.00.00
+ARG REPO=https://github.com/sifive/elf2hex.git
+RUN git clone ${REPO} /tools/${TOOL}
+WORKDIR /tools/${TOOL}
+RUN autoreconf -i
+RUN ./configure --target=riscv64-unknown-elf
+RUN make
+RUN make install
+RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
 RUN cat ${VERSION_LOG}
 
 WORKDIR /
