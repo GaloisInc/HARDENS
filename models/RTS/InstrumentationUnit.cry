@@ -301,7 +301,9 @@ private
       /\ instr.maintenance == instr'.maintenance
       where instr' = Handle_Input inp instr >>>> Step_Trip_Signals
 
-  // Not connected to a high level requirement
+  // Not connected to a high level requirement because this simply establishes
+  // the connection between `Is_Tripped` and `Is_Ch_Tripped` (which is more
+  // convenient for synthesis)
   property is_ch_trip_correct instr =
        Is_Tripped T instr == Is_Ch_Tripped (instr.mode @ T) (instr.sensor_trip @ T)
     /\ Is_Tripped P instr == Is_Ch_Tripped (instr.mode @ P) (instr.sensor_trip @ P)
