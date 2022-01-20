@@ -152,18 +152,22 @@ int end_test(struct test_state *test) {
     return passed;
 }
 
+int components_ready() {
+  return !is_instrumentation_test_complete(0)
+         && !is_instrumentation_test_complete(1)
+         && !is_instrumentation_test_complete(2)
+         && !is_instrumentation_test_complete(3)
+         && !is_actuation_unit_test_complete(0)
+         && !is_actuation_unit_test_complete(1)
+         && !is_actuate_test_complete(0)
+         && !is_actuate_test_complete(1);
+}
+
 int test_step(struct test_state *test) {
   int err = 0;
   // Run exactly once
   if(test->test_timer == 0 && !test->self_test_running) {
-    if (!is_instrumentation_test_complete(0) &&
-        !is_instrumentation_test_complete(1) &&
-        !is_instrumentation_test_complete(2) &&
-        !is_instrumentation_test_complete(3) &&
-        !is_actuation_unit_test_complete(0)  &&
-        !is_actuation_unit_test_complete(1)  &&
-        !is_actuate_test_complete(0) &&
-        !is_actuate_test_complete(1))
+    if (components_ready())
     {
       struct testcase *next = &tests[test->test];
       test->self_test_expect = next->expect;
