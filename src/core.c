@@ -131,7 +131,10 @@ int update_ui(struct ui_values *ui) {
 }
 
 int end_test(struct test_state *test) {
-    int passed = test->self_test_expect == test->test_device_result[test->test_device];
+    int passed =
+         test->test_device_result[test->test_device]
+      == (test->self_test_expect || test->actuation_old_vote);
+
     // Reset state
     set_test_running(0);
 
