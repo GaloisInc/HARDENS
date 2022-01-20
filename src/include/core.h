@@ -5,6 +5,10 @@
 #include "instrumentation.h"
 #include "actuation_logic.h"
 
+#ifndef SELF_TEST_PERIOD
+#define SELF_TEST_PERIOD 20
+#endif
+
 #define NDIVISIONS 4
 
 struct ui_values {
@@ -41,5 +45,6 @@ struct core_state {
   struct test_state test;
 };
 
+void core_init(struct core_state *core);
 int core_step(struct core_state *core);
 #endif // CORE_H_

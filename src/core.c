@@ -142,7 +142,7 @@ int end_test(struct test_state *test) {
         test->test_timer = 1;
       } else {
         test->test = 0;
-        test->test_timer = 20;
+        test->test_timer = SELF_TEST_PERIOD;
       }
     } else {
       set_display_line(16, fail, 0);
@@ -185,6 +185,10 @@ int test_step(struct test_state *test) {
   }
 
   return err;
+}
+
+void core_init(struct core_state *core) {
+  core->test.test_timer = SELF_TEST_PERIOD;
 }
 
 int core_step(struct core_state *core) {
