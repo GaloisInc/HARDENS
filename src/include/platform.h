@@ -81,6 +81,7 @@ int read_test_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *va
 uint8_t get_test_actuation_unit();
 int is_actuation_unit_under_test(uint8_t id);
 void set_actuation_unit_test_complete(uint8_t div, int v);
+void set_actuation_unit_test_input_vote(uint8_t id, int v);
 int is_actuation_unit_test_complete(uint8_t id);
 
 void set_actuate_test_result(uint8_t dev, uint8_t result);

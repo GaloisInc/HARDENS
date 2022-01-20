@@ -44,6 +44,7 @@ actuation_logic_vote_trips(uint8_t logic_no, int do_test, uint8_t device, uint8_
 {
     if (do_test && get_test_device() == device) {
         if (!is_actuation_unit_test_complete(logic_no)) {
+            set_actuation_unit_test_input_vote(logic_no, state->vote_actuate[device] != 0);
             state->vote_actuate[device] = actuate_device(device, trip_test, state->vote_actuate[device] != 0);
         }
     } else {
