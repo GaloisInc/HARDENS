@@ -116,12 +116,15 @@ ifneq ($(SELF_TEST_PERIOD),)
 CFLAGS += -DSELF_TEST_PERIOD=$(SELF_TEST_PERIOD)
 endif
 
-$(info BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION))
+BUILD_MSG = BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) SELF_TEST_PERIOD=$(SELF_TEST_PERIOD)
 
 all: rts
 
 rts: $(SRC:.c=.o) $(EXTRA_SRC)
 	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	@echo "***"
+	@echo $(BUILD_MSG)
+	@echo "***"
 
 rts_bottom: bottom.o
 	$(CC) $(CFLAGS) -o $@ $^
