@@ -107,12 +107,14 @@ ifeq ($(SENSORS),Simulated)
 CFLAGS += -DSIMULATE_SENSORS
 endif
 
-
 ifeq ($(EXECUTION),Parallel)
 CFLAGS += -DUSE_PTHREADS
 LIBS   += -lpthread
 endif
 
+ifneq ($(SELF_TEST_PERIOD),)
+CFLAGS += -DSELF_TEST_PERIOD=$(SELF_TEST_PERIOD)
+endif
 
 $(info BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION))
 

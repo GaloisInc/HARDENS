@@ -396,11 +396,9 @@ void* start1(void *arg) {
 int main(int argc, char **argv) {
   struct rts_command *cmd = (struct rts_command *)malloc(sizeof(*cmd));
 
+  core_init(&core);
   sense_actuate_init(0, &instrumentation[0], &actuation_logic[0]);
   sense_actuate_init(1, &instrumentation[2], &actuation_logic[1]);
-
-
-  core.test.test_timer = 0x00000002;
 
   if (isatty(fileno(stdin))) printf("\e[1;1H\e[2J");
   if (isatty(fileno(stdin))) printf("\e[10;3H\e[2K");
