@@ -38,6 +38,8 @@ struct test_state {
 
   uint32_t test_setpoints[4][3];
   uint32_t test_inputs[4][2];
+
+  uint8_t actuation_old_vote;
 };
 
 struct core_state {

@@ -329,6 +329,13 @@ void set_actuation_unit_test_complete(uint8_t div, int v)
   pthread_mutex_unlock(&mem_mutex);
 }
 
+void set_actuation_unit_test_input_vote(uint8_t id, int v)
+{
+  pthread_mutex_lock(&mem_mutex);
+  core.test.actuation_old_vote = v != 0;
+  pthread_mutex_unlock(&mem_mutex);
+}
+
 int is_actuation_unit_test_complete(uint8_t id)
 {
   pthread_mutex_lock(&mem_mutex);
