@@ -63,6 +63,7 @@ RUN apt-get install -y autoconf automake autotools-dev curl libmpc-dev \
     libtool patchutils bc zlib1g-dev libexpat-dev
 RUN git clone --recursive ${REPO} /tools/${TOOL}
 WORKDIR /tools/${TOOL}
+RUN git checkout ${TAG}
 RUN  ./configure --prefix=/opt/riscv --enable-multilib
 RUN export MAKEFLAGS="-j$(nproc)"
 RUN make
@@ -77,6 +78,7 @@ ARG REPO=https://github.com/gregdavill/ecpprog
 RUN apt-get install -y libftdi-dev
 RUN git clone ${REPO} /tools/${TOOL}
 WORKDIR /tools/${TOOL}/ecpprog
+RUN git checkout ${TAG}
 RUN make -j$(nproc)
 RUN make install
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
@@ -108,6 +110,7 @@ ARG REPO=https://github.com/trabucayre/openFPGALoader.git
 RUN apt-get install -y libftdi1-2 libftdi1-dev libhidapi-libusb0 libhidapi-dev libudev-dev cmake pkg-config make g++
 RUN git clone ${REPO} /tools/${TOOL}
 WORKDIR /tools/${TOOL}
+RUN git checkout ${TAG}
 RUN mkdir build
 WORKDIR /tools/${TOOL}/build
 RUN cmake ../
@@ -127,10 +130,21 @@ ARG TAG=v20.08.00.00
 ARG REPO=https://github.com/sifive/elf2hex.git
 RUN git clone ${REPO} /tools/${TOOL}
 WORKDIR /tools/${TOOL}
+RUN git checkout ${TAG}
 RUN autoreconf -i
 RUN ./configure --target=riscv64-unknown-elf
 RUN make
 RUN make install
+RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
+# Bluespec libraries
+ARG TOOL=bsc-contrib
+ARG TAG=aa205330885f6955e24fd99a0319e2733b5353f1
+ARG REPO=https://github.com/B-Lang-org/bsc-contrib.git
+RUN git clone ${REPO} /tools/${TOOL}
+WORKDIR /tools/${TOOL}
+RUN git checkout ${TAG}
+RUN make PREFIX=/tools/bsc-2021.07-ubuntu-20.04/
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 RUN cat ${VERSION_LOG}

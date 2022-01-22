@@ -1,6 +1,3 @@
-default: compile  link
-all:	 compile  link  simulate
-
 # ================================================================
 # Dependencies on other directories
 
@@ -61,20 +58,31 @@ build_v:
 verilog:
 	mkdir -p $@
 
-.PHONY: compile_Verilog
-compile_Verilog: build_v verilog
+FIRMWARE_DIR = Tests/icebreaker
+imem_contents.memhex32:
+	@make -C $(FIRMWARE_DIR) clean
+	@make -C $(FIRMWARE_DIR) firmware.elf
+	@make -C $(FIRMWARE_DIR) firmware.asm
+	@riscv64-unknown-elf-elf2hex --bit-width 32 --input $(FIRMWARE_DIR)/firmware.elf --output $(FIRMWARE_DIR)/intermediate.hex
+	@./pyhex2memhex.py --input $(FIRMWARE_DIR)/intermediate.hex --output $(FIRMWARE_DIR)/firmware.memhex32
+	@mv $(FIRMWARE_DIR)/firmware.memhex32 $@
+	@mv $(FIRMWARE_DIR)/firmware.asm .
+	@rm $(FIRMWARE_DIR)/intermediate.hex
+
+.PHONY: compile_verilog
+compile_verilog: build_v verilog imem_contents.memhex32
 	@echo INFO: Verilog generation ...
-	bsc -u -elab -verilog  $(BSCDIRS_V)  $(BSCFLAGS)  -p $(BSCPATH_V)  $(TOPFILE)
+	bsc -u -elab -verilog  $(BSCDIRS_V)  $(BSCFLAGS) -p +:%/Libraries/FPGA/Misc -p $(BSCPATH_V) $(TOPFILE)
 	@echo INFO: Finished Verilog generation
 
 # ================================================================
 # FOR VERILATOR
 
 
-EXEFILE_VERILATOR  ?= exe_Verilator
+EXEFILE_VERILATOR  ?= exe_verilator
 
-.PHONY: all_Verilator
-all_Verilator:  compile_Verilog  link_Verilator  exe_Verilator
+.PHONY: all_verilator
+all_verilator:  compile_verilog  link_verilator  exe_verilator
 
 # Boilerplate stuff
 VERILATOR_RESOURCES = Verilator_Resources
@@ -94,17 +102,15 @@ VERILATOR_FLAGS += -CFLAGS -O3
 VERILATOR_FLAGS += -CFLAGS -DVL_DEBUG
 VERILATOR_FLAGS += -LDFLAGS -static
 
-.PHONY: link_Verilator
-link_Verilator:
+.PHONY: link_verilator
+link_verilator: compile_verilog
 	@echo INFO: Link for Verilator ...
 	@echo "INFO: For convenience (single -I flag to verilator) copy all Verilog files into $(VERILATOR_RTL_DIR)/"
 	mkdir -p $(VERILATOR_RTL_DIR)
 	cp -p  $(VERILATOR_RESOURCES)/verilator_wrapper.v    $(VERILATOR_RTL_DIR)/
 	cp -p  verilog/*.v                                   $(VERILATOR_RTL_DIR)/
 	cp -p  $(NERV_REPO)/nerv.sv                          $(VERILATOR_RTL_DIR)/
-	cp -p  $(BLUESPEC_HOME)/lib/Verilog/RegFile.v        $(VERILATOR_RTL_DIR)/
-	cp -p  $(BLUESPEC_HOME)/lib/Verilog/RegFileLoad.v    $(VERILATOR_RTL_DIR)/
-	cp -p  $(BLUESPEC_HOME)/lib/Verilog/ResetInverter.v  $(VERILATOR_RTL_DIR)/
+	cp -p  $(BLUESPEC_HOME)/lib/Verilog/*.v  $(VERILATOR_RTL_DIR)/
 	@echo "INFO: Generating sim_main.cpp for TOPMODULE = $(TOPMODULE)"
 	sed  's/TOPMODULE/mkTop/g' \
 		$(VERILATOR_RESOURCES)/sim_main_template.cpp \
@@ -119,21 +125,19 @@ link_Verilator:
 	mv  $(VERILATOR_MAKE_DIR)/$(EXEFILE_VERILATOR)  .
 	@echo INFO: Finished Link for Verilator
 
-.PHONY: exe_Verilator
-exe_Verilator:
+.PHONY: exe_verilator
+exe_verilator: link_verilator
 	@echo INFO: Verilator Simulation ...
 	./$(EXEFILE_VERILATOR)
 	@echo INFO: Finished Verilator Simulation
 
 # ================================================================
 
+
 .PHONY: clean
 clean:
 	rm -r -f  *~   */*~  build*  obj_dir \
-		$(VERILATOR_RTL_DIR)  $(VERILATOR_MAKE_DIR)  Verilator_Resources/sim_main.cpp
-
-.PHONY: full_clean
-full_clean: clean
-	rm -r -f  verilog  exe_*
+		$(VERILATOR_RTL_DIR)  $(VERILATOR_MAKE_DIR)  Verilator_Resources/sim_main.cpp imem_contents.memhex32 firmware.asm \
+		verilog  exe_*
 
 # ================================================================
