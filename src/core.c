@@ -5,6 +5,8 @@
 #include "rts.h"
 #include <string.h>
 
+#include <string.h>
+
 int actuate_devices_generated_C(void);
 
 #define INST_OFFSET 0
@@ -72,7 +74,7 @@ int update_ui_instr(struct ui_values *ui) {
              mode_char(ui->bypass[i][P]), ui->trip[i][P], ui->values[i][S],
              mode_char(ui->bypass[i][S]), ui->trip[i][S]);
 
-    set_display_line(i, line, sizeof(line));
+    set_display_line(ui, i, line, sizeof(line));
   }
 
   return err;
@@ -89,7 +91,7 @@ int update_ui_actuation(struct ui_values *ui) {
     }
     snprintf(line, sizeof(line), ACT_LINE_FMT, i, ui->actuators[i][0],
              ui->actuators[i][1]);
-    set_display_line(ACT_OFFSET + i, line, sizeof(line));
+    set_display_line(ui, ACT_OFFSET + i, line, sizeof(line));
   }
 
   return err;
@@ -103,7 +105,12 @@ int update_ui(struct ui_values *ui) {
   return err;
 }
 
-int end_test(struct test_state *test) {
+int set_display_line(struct ui_values *ui, uint8_t line_number, char *display, uint32_t size) {
+  strncpy(ui->display[line_number], (const char*)display, LINELENGTH);
+  return 0;
+}
+
+int end_test(struct test_state *test, struct ui_values *ui) {
     int passed =
          test->test_device_result[test->test_device]
       == (test->self_test_expect || test->actuation_old_vote);
@@ -113,15 +120,15 @@ int end_test(struct test_state *test) {
     set_test_running(0);
 
     if (passed) {
-      set_display_line(16, pass, 0);
+      set_display_line(ui, 16, (char*)pass, 0);
       test->test++;
       if (test->test >= sizeof(tests)/sizeof(struct testcase)) {
         test->test = 0;
         test->test_timer_start = time_in_s();
       }
     } else {
-      set_display_line(16, fail, 0);
-      set_display_line(20, "A TEST FAILED", 0);
+      set_display_line(ui, 16, (char*)fail, 0);
+      set_display_line(ui, 20, (char*)"A TEST FAILED", 0);
     }
 
     return passed;
@@ -149,7 +156,7 @@ int should_start_self_test(struct test_state *test) {
   return (!is_test_running()) && (self_test_timer_expired(test) || (test->test != 0));
 }
 
-int test_step(struct test_state *test) {
+int test_step(struct test_state *test, struct ui_values *ui) {
   int err = 0;
 
   if(!test->failed && should_start_self_test(test)) {
@@ -164,13 +171,13 @@ int test_step(struct test_state *test) {
       memcpy(test->test_setpoints, next->setpoints, 3*4*sizeof(uint32_t));
 
       set_test_running(1);
-      set_display_line(15, self_test_running, 0);
+      set_display_line(ui, 15, (char *)self_test_running, 0);
     }
   } else if (is_test_running() && test->test_device_done[test->test_device]) {
-    int passed = end_test(test);
+    int passed = end_test(test, ui);
     if(!passed) err = -1;
   } else if (!is_test_running()) {
-    set_display_line(15, self_test_not_running, 0);
+    set_display_line(ui, 15, (char *)self_test_not_running, 0);
   }
 
   return err;
@@ -208,7 +215,7 @@ int core_step(struct core_state *core) {
     }
   }
 
-  err |= test_step(&core->test);
+  err |= test_step(&core->test, &core->ui);
   err |= update_ui(&core->ui);
 
   return err;

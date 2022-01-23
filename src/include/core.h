@@ -14,6 +14,7 @@ struct ui_values {
   uint8_t bypass[NDIVISIONS][NTRIP];
   uint8_t trip[NDIVISIONS][NTRIP];
   uint8_t maintenance[NDIVISIONS];
+  char display[NLINES][LINELENGTH+1];
 
   uint8_t actuators[2][NDEV];
 };
@@ -45,6 +46,8 @@ struct core_state {
   struct ui_values ui;
   struct test_state test;
 };
+
+int set_display_line(struct ui_values *ui, uint8_t line_number, char *display, uint32_t size);
 
 void core_init(struct core_state *core);
 int core_step(struct core_state *core);

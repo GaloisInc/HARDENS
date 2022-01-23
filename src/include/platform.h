@@ -97,9 +97,6 @@ int send_actuation_command(uint8_t actuator,
                            struct actuation_command *cmd);
 
 
-int set_display_line(uint8_t line_number, const char *display, uint32_t size);
-
-
 /////////////////////////////////////////////
 // Self Test state                         //
 /////////////////////////////////////////////

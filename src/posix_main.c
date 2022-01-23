@@ -64,6 +64,18 @@ uint8_t actuator_state[NDEV];
 uint8_t device_actuation_logic[2][NDEV];
 struct actuation_command *act_command_buf[2];
 
+void update_display() {
+  if (isatty(fileno(stdin))) {
+    printf("\e[s\e[1;1H");//\e[2J");
+  }
+  for (int line = 0; line < NLINES; ++line) {
+    printf("%s%s", core.ui.display[line], line == NLINES-1 ? "" : "\n");
+  }
+  /* if (isatty(fileno(stdin))) printf("\e[%d;1H\e[2K>\e[u",NLINES+1); */
+  if (isatty(fileno(stdin))) printf("\e[u");
+}
+
+
 int read_instrumentation_trip_signals(uint8_t arr[3][4]) {
   for (int i = 0; i < NTRIP; ++i) {
     for (int div = 0; div < 4; ++div) {
@@ -92,9 +104,9 @@ int read_rts_command(struct rts_command *cmd) {
   size_t linecap = 0;
   ssize_t linelen;
 
-  if (isatty(fileno(stdin))) {
-    set_display_line(9, (char *)"> ", 0);
-  }
+  /* if (isatty(fileno(stdin))) { */
+  /*   set_display_line(&ui, 9, (char *)"> ", 0); */
+  /* } */
   struct pollfd fds;
   fds.fd = STDIN_FILENO;
   fds.events = POLLIN;
@@ -112,8 +124,9 @@ int read_rts_command(struct rts_command *cmd) {
 
   pthread_mutex_lock(&display_mutex);
   if (isatty(fileno(stdin)))
-      printf("\e[10;3H\e[2K");
+      printf("\e[%d;1H\e[2K> ", NLINES+1);
   pthread_mutex_unlock(&display_mutex);
+
   if (2 == (ok = sscanf(line, "A %hhd %hhd", &device, &on))) {
     cmd->type = ACTUATION_COMMAND;
     cmd->cmd.act.device = device;
@@ -146,6 +159,8 @@ int read_rts_command(struct rts_command *cmd) {
 #endif
   } else if (line[0] == 'Q') {
     exit(0);
+  } else if (line[0] == 'D') {
+    update_display();
   }
 
   if (line)
@@ -310,19 +325,6 @@ int get_actuation_state(uint8_t i, uint8_t device, uint8_t *value) {
   return 0;
 }
 
-int set_display_line(uint8_t line_number, const char *display, uint32_t size) {
-  int ret;
-  pthread_mutex_lock(&display_mutex);
-  if (isatty(fileno(stdin))) {
-    ret = printf("\e[s\e[%d;1H%s\e[u", line_number + 1, display);
-  } else {
-    ret = printf("%s\n", display);
-  }
-  pthread_mutex_unlock(&display_mutex);
-  return ret;
-}
-
-
 uint8_t get_test_device()
 {
   return core.test.test_device;
@@ -461,7 +463,7 @@ int main(int argc, char **argv) {
   sense_actuate_init(1, &instrumentation[2], &actuation_logic[1]);
 
   if (isatty(fileno(stdin))) printf("\e[1;1H\e[2J");
-  if (isatty(fileno(stdin))) printf("\e[10;3H\e[2K");
+  if (isatty(fileno(stdin))) printf("\e[%d;3H\e[2K> ", NLINES+1);
 
 #ifdef USE_PTHREADS
   pthread_attr_t attr;
@@ -476,13 +478,16 @@ int main(int argc, char **argv) {
     fflush(stdout);
     pthread_mutex_lock(&display_mutex);
     sprintf(line, "HW ACTUATORS %s %s", actuator_state[0] ? "ON " : "OFF", actuator_state[1]? "ON " : "OFF");
+    set_display_line(&core.ui, 8, line, 0);
     pthread_mutex_unlock(&display_mutex);
-    set_display_line(8, line, 0);
     core_step(&core);
 #ifndef USE_PTHREADS
     sense_actuate_step_0(&instrumentation[0], &actuation_logic[0]);
     sense_actuate_step_1(&instrumentation[2], &actuation_logic[1]);
 #endif
+    if (isatty(fileno(stdin))) {
+      update_display();
+    }
   }
 
   return 0;
