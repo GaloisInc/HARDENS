@@ -26,8 +26,7 @@ def run_script(p, cmds):
             p.sendline('')
     return True
 
-def main():
-    script = sys.argv[1]
+def run(script, args):
     p = pexpect.spawn("../src/rts")
     with open(script) as f:
         cmds = f.readlines()
@@ -35,20 +34,24 @@ def main():
         params = {}
         if fst[0] == '{' and fst[-1] == '}':
             pnames = [x.strip() for x in fst[1:-1].split(',')]
-            if len(sys.argv) - 2 < len(pnames):
-                print(f"Test expects parameters: {pnames}")
-                sys.exit(1)
-            for (var, val) in zip(pnames, sys.argv[2:]):
+            if len(args) != len(pnames):
+                return False
+            for (var, val) in zip(pnames, args):
                 params[var] = val
-
-
 
         formatted = [cmd.format(**params) for cmd in cmds[1:]]
 
-        if run_script(p, formatted):
-            print("PASS")
-        else:
-            print("FAIL")
+        return run_script(p, formatted)
+
+def main():
+    script = sys.argv[1]
+    args = sys.argv[2:] if len(sys.argv) > 2 else []
+    if run(script, args):
+        print("PASS")
+        sys.exit(0)
+    else:
+        print("FAIL")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
