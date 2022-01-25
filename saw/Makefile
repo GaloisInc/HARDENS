@@ -8,15 +8,19 @@ INSTRUMENTATION_IMPLS=\
   ../src/handwritten/SystemVerilog/instrumentation_impl.sv\
   generated/instrumentation_impl.bc \
   handwritten/instrumentation_impl.bc
+SATURATION_IMPLS=generated/saturation_impl.bc
 
 all: proofs
 
-proofs: instrumentation_proofs actuation_unit_proofs actuator_proofs
+proofs: saturation_proofs instrumentation_proofs actuation_unit_proofs actuator_proofs
 
 actuator_proofs: actuator.saw $(ACTUATOR_IMPLS)
 	saw $<
 
 actuation_unit_proofs: actuation_unit.saw $(ACTUATION_UNIT_IMPLS)
+	saw $<
+
+saturation_proofs: saturation.saw $(SATURATION_IMPLS)
 	saw $<
 
 instrumentation_proofs: instrumentation.saw $(INSTRUMENTATION_IMPLS)
