@@ -113,6 +113,9 @@ all: rts
 rts: $(SRC:.c=.o) $(EXTRA_SRC)
 	$(CC) $(CFLAGS) -o $@ $^
 
+rts_bottom: bottom.o
+	$(CC) $(CFLAGS) -o $@ $^
+
 variants/%_generated_C.o: variants/%_generated_C.c generated/C/%_impl.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
@@ -130,6 +133,7 @@ clean:
 	rm -f ${C_GEN_DIR}/*.c ${C_GEN_DIR}/*.o ${C_GEN_DIR}/*.bc
 	find ${SV_GEN_DIR} -regex '${SV_GEN_DIR}/[^\.]*' -type d -prune -exec rm -r "{}" \;
 	rm -f ${SV_GEN_DIR}/*.sv
+	rm -f bottom.o rts_bottom
 
 rts.posix: ${OBJ} ${POSIX_OBJ}
 	clang -fsanitize=address,undefined -g ${CFLAGS} $^ -o rts.posix
