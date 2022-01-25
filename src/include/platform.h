@@ -12,11 +12,8 @@
   @requires div <= 3;
   @requires channel <= 2;
   @assigns *val;
-behavior ok:
-  @ensures \result == 0;
-  @ensures *val <= 0x80000000;
-behavior err:
-  @ensures \result < 0;
+  @ensures \result <= 0;
+  @ensures \result == 0 ==>  *val <= 0x80000000;
  */
 int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val);
 
@@ -30,12 +27,8 @@ int get_instrumentation_maintenance(uint8_t division, uint8_t *value);
   @ requires device <= 1;
   @ requires \valid(value);
   @ assigns *value;
-behavior ok:
-  @ensures \result == 0;
-  @ensures *value == 0 || *value == 1;
-behavior error:
-  @ensures \result != 0;
-  @ensures *value == \old(*value);
+  @ ensures (\result == 0) ==> (*value == 0 || *value == 1);
+  @ ensures (\result != 0) ==> (*value == \old(*value));
 */
 int get_actuation_state(uint8_t i, uint8_t device, uint8_t *value);
 
