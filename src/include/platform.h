@@ -12,7 +12,7 @@
   @requires div <= 3;
   @requires channel <= 2;
   @assigns *val;
-  @ensures \result <= 0;
+  @ensures -1 <= \result <= 0;
   @ensures \result == 0 ==>  *val <= 0x80000000;
  */
 int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val);
