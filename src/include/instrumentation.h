@@ -8,6 +8,7 @@
    ||  (_ch == 1 && _vals[1] > _setpoints[1])          \
    ||  (_ch == 2 && (int)_vals[2] < (int)_setpoints[2]))
 
+/*@ assigns \nothing; */
 uint32_t Saturation(uint32_t x, uint32_t y);
 
 /*@requires \valid(vals + (0..2));
