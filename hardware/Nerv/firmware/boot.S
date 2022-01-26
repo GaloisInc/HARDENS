@@ -59,28 +59,41 @@ la a1, _sdata
 la a2, _edata
 bge a1, a2, end_init_data
 loop_init_data:
-lw a3, 0(a0)
-sw a3, 0(a1)
-addi a0, a0, 4
-addi a1, a1, 4
-blt a1, a2, loop_init_data
+    lw a3, 0(a0)
+    sw a3, 0(a1)
+    addi a0, a0, 4
+    addi a1, a1, 4
+    blt a1, a2, loop_init_data
 end_init_data:
 
-# zero-init bss section
-la a0, _sbss
-la a1, _ebss
-bge a0, a1, end_init_bss
-loop_init_bss:
-sw zero, 0(a0)
-addi a0, a0, 4
-blt a0, a1, loop_init_bss
-end_init_bss:
+init_bss:
+    /* init bss section */
+    la	a0, _sbss
+    la	a1, (_ebss-4) /* section end is actually the start of the next section */
+    li	a2, 0x0
+    jal	fill_block
 
-# place SP at the end of RAM
-li sp, 0x00001000
+# write_stack_pattern:
+write_stack_pattern:
+    la	a0, _stack_end  /* note the stack grows from top to bottom */
+    la	a1, (__stack-4)   /* section end is actually the start of the next section */
+    li	a2, 0xABABABAB
+    jal	fill_block
+
+# initialize SP
+la	sp, _stack
 
 # call main
 call main
 
 # halt
 ebreak
+
+/* Fills memory blocks */
+fill_block:
+    sw		a2, 0(a0)
+    bgeu	a0, a1, fb_end
+    addi	a0, a0, 4
+    j		fill_block
+fb_end:
+    ret

@@ -3,8 +3,6 @@
 #include <sys/times.h>
 #include <sys/time.h>
 
-volatile uint32_t *uart_tx = (void*)0x02000000;
-
 void *_sbrk(int nbytes);
 int _write(int file, char *ptr, int len);
 int _close(int fd);
@@ -30,12 +28,18 @@ void *_sbrk(int nbytes)
     return (void *)-1;
 }
 
-
+#define UART_TX_REG 0x02000000
+#define MIN_PRINT_DELAY_TICKS 1000
 int _write(int file, char *ptr, int len)
 {
+    volatile uint32_t *uart_tx = (void*) UART_TX_REG;
     (void)file;
     for (int i=0;i<len;i++) {
-    	*uart_tx = ptr[len];
+    	*uart_tx = ptr[i];
+        uint32_t count = MIN_PRINT_DELAY_TICKS;
+        while(count-->0) {
+            __asm__ volatile ("nop");
+        }
 	}
     return len;
 }

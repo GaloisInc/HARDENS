@@ -19,6 +19,8 @@ else
   $(info  INFO: BLUESPEC_HOME is $(BLUESPEC_HOME))
 endif
 
+MEMORY_SIZE ?= 0x40000
+
 # ================================================================
 
 TOPFILE   ?= src_BSV/Top.bsv
@@ -58,13 +60,13 @@ build_v:
 verilog:
 	mkdir -p $@
 
-FIRMWARE_DIR = Tests/icebreaker
+FIRMWARE_DIR = firmware
 imem_contents.memhex32:
 	@make -C $(FIRMWARE_DIR) clean
 	@make -C $(FIRMWARE_DIR) firmware.elf
-	@make -C $(FIRMWARE_DIR) firmware.asm
 	@riscv64-unknown-elf-elf2hex --bit-width 32 --input $(FIRMWARE_DIR)/firmware.elf --output $(FIRMWARE_DIR)/intermediate.hex
-	@./pyhex2memhex.py --input $(FIRMWARE_DIR)/intermediate.hex --output $(FIRMWARE_DIR)/firmware.memhex32
+#	@riscv64-unknown-elf-objcopy -O ihex $(FIRMWARE_DIR)/firmware.elf $(FIRMWARE_DIR)/intermediate.hex
+	@./pyhex2memhex.py --input $(FIRMWARE_DIR)/intermediate.hex --output $(FIRMWARE_DIR)/firmware.memhex32 --maxlen $(MEMORY_SIZE)
 	@mv $(FIRMWARE_DIR)/firmware.memhex32 $@
 	@mv $(FIRMWARE_DIR)/firmware.asm .
 	@rm $(FIRMWARE_DIR)/intermediate.hex

@@ -30,10 +30,12 @@ endinterface
 
 (* synthesize *)
 module mkNervSoC (NervSoC_IFC);
+   //0x001000
+   Bit#(30) memory_size = 'h40000;
 
    // For debugging only
    Bool show_exec_trace = False;
-   Bool show_load_store = True;
+   Bool show_load_store = False;
    Reg #(Bit #(64)) rg_tick <- mkReg (0);
    Reg #(Bit #(32)) rg_uart       <- mkRegU;
    Reg #(Bit #(32)) rg_i2c       <- mkRegU;
@@ -46,8 +48,11 @@ module mkNervSoC (NervSoC_IFC);
    // Instantiate the nerv CPU
    Nerv_IFC nerv <- mkNerv;
 
-   RegFile #(Bit #(30), Bit #(32)) imem <- mkRegFileLoad ("imem_contents.memhex32", 0, 1023);
-   RegFile #(Bit #(30), Bit #(32)) dmem <- mkRegFile (0, 1023);
+   // Nerv has Harward architecture (separate data and instruction memory),
+   // so in order to properly initialize global symbols, we need to load
+   // the hex file into *both* memories
+   RegFile #(Bit #(30), Bit #(32)) imem <- mkRegFileLoad ("imem_contents.memhex32", 0, memory_size);
+   RegFile #(Bit #(30), Bit #(32)) dmem <- mkRegFileLoad ("imem_contents.memhex32", 0, memory_size);
 
    Reg #(Bit #(32)) rg_leds       <- mkRegU;
    Reg #(Bit #(32)) rg_imem_addr  <- mkReg (0);
@@ -85,13 +90,14 @@ module mkNervSoC (NervSoC_IFC);
       let dmw      = nerv.m_get_dmem;
       let wstrb    = dmw.wstrb;
       let wdata    = dmw.wdata;
-      if (show_load_store)
-         $display ("DMem addr 0x%0h  wstrb 0x%0h  wdata 0x%0h" , d_addr, wstrb, wdata);
 
       let mask  = {strb2byte (wstrb [3]),
            strb2byte (wstrb [2]),
            strb2byte (wstrb [1]),
-           strb2byte (wstrb [3])};
+           strb2byte (wstrb [0])};
+      
+      if (show_load_store)
+         $display ("DMem addr 0x%0h  wstrb 0x%0h  wdata 0x%0h mask 0x%0h" , d_addr, wstrb, wdata, mask);
 
       Bit #(32) led_GPIO_addr = 32'h 0100_0000;
       Bit #(32) i2c_reg_addr = 32'h 0300_0000;
@@ -106,10 +112,11 @@ module mkNervSoC (NervSoC_IFC);
             end
          uart_reg_addr_tx:
             begin
-               let newval = ((rg_uart & (~ mask)) | (wdata & mask))[8:1];
+               let newval = ((rg_uart & (~ mask)) | (wdata & mask));
+               rg_uart <= newval;
                // Accept only first 8 bits
-               $display("Writing to uart: 0x%0h",newval);
-               uart.rx.put(newval);
+               $display("Writing to uart: 0x%0h, %c",newval, newval);
+               uart.rx.put(newval[8:1]);
             end
          uart_reg_addr_rx:
             begin
@@ -129,10 +136,14 @@ module mkNervSoC (NervSoC_IFC);
             begin
                // Regular memory read
                dmem.upd (d_addr [31:2], ((mem_data & (~ mask)) | (wdata & mask)));
-               $display("mem_data 0x%0h",mem_data);
                rg_dmem_rdata <= mem_data;
             end
       endcase
+   endrule
+
+   rule trap;
+      if (nerv.m_trap)
+         $finish(0);
    endrule
 
    // ================================================================

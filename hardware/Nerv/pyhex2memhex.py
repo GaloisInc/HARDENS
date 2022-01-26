@@ -1,7 +1,11 @@
 #!/usr/bin/python3
 import argparse
 
-def int2hex(val):
+def int2hex(val: int) -> str:
+    """
+    Convert a decimal number to a hexadecimal one
+    in the proper memhex32 format
+    """
     hexval = hex(val)[2:]
     desired_len = 8
     retval = ''
@@ -11,6 +15,18 @@ def int2hex(val):
         rem -= 1
     retval += hexval
     return retval
+
+def str2int(val: str) -> int:
+    """
+    Convert the input string in hexadecimal or decimal
+    representation into an integer
+    """
+    if val[:2] == '0x':
+        # hexadecimal number
+        return int(val[2:],16)
+    else:
+        # decimal number
+        return int(val)
 
 def mem2memhex(args):
     in_file = args.input
@@ -23,7 +39,7 @@ def mem2memhex(args):
                 line = line.replace('\n','    ')
                 fout.write(f"{line}// {int2hex(counter)}\n")
                 counter += 4
-            fout.write(f"@{args.maxlen}\n")
+            fout.write(f"@{int2hex(str2int(args.maxlen))}\n")
             fout.write("0\n")
 
 def main():

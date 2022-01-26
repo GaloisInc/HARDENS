@@ -1,6 +1,6 @@
 TARGET=riscv64-unknown-elf
 
-ARCH 		= -march=rv32im
+ARCH 		= -march=rv32i
 ABI 		= -mabi=ilp32
 
 CC		= $(TARGET)-gcc
@@ -13,6 +13,8 @@ COMPILER_FLAGS = -mcmodel=medany
 # Use main_blinky as demo source and target file name if not specified
 PROG 	?= firmware
 CRT0	= boot.S
+# No optimization for now
+OPT = -O0
 
 WARNINGS = -Wextra -Wshadow -Wpointer-arith -Wcast-align -Wsign-compare \
 		-Waggregate-return -Wmissing-declarations -Wunused $(WERROR) 
@@ -25,7 +27,7 @@ APP_SRC = syscalls.c
 
 ASFLAGS  += -g $(ARCH) $(ABI) -Wa,-Ilegacy
 CFLAGS += $(OPT) -g3 $(ARCH) $(ABI) $(COMPILER_FLAGS) $(WARNINGS) $(C_WARNINGS) $(INCLUDES)
-LDFLAGS	 += -T sections.lds -nostartfiles -nostdlib $(ARCH) $(ABI)
+LDFLAGS	 += -Wl,-Bstatic,-T,sections.ld,--strip-debug -nostartfiles -nostdlib $(ARCH) $(ABI)
 #
 # Define all object files.
 #
@@ -52,7 +54,7 @@ all: $(PROG).elf
 $(PROG).elf  : $(OBJS) Makefile 
 	@echo Linking....
 	@$(CC) -o $@ $(LDFLAGS) $(OBJS) $(LDLIBS)
-	@$(OBJDUMP) -S $(PROG).elf > $(PROG).asm	
+	@$(OBJDUMP) -S -D $(PROG).elf > $(PROG).asm	
 	@echo Completed $@
 
 clean :
