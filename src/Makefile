@@ -118,6 +118,8 @@ endif
 
 BUILD_MSG = BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) SELF_TEST_PERIOD=$(SELF_TEST_PERIOD)
 
+.PHONY: all rts clean linux macos proof generate_sources generate_c generate_sv
+
 all: rts
 
 rts: $(SRC:.c=.o) $(EXTRA_SRC)
@@ -146,6 +148,8 @@ clean:
 
 rts.posix: ${OBJ} ${POSIX_OBJ}
 	clang -fsanitize=address,undefined -g ${CFLAGS} $^ -o rts.posix
+
+# @review kiniry Why aren't these non-phony rules, a la `rts.linux` and `rts.macos`?
 
 linux: rts.posix
 	mv rts.posix rts.linux
