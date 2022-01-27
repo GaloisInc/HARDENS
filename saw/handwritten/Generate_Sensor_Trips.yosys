@@ -2,6 +2,10 @@ read_verilog Generate_Sensor_Trips.v
 rename \f \Generate_Sensor_Trips_spec
 select -module \Generate_Sensor_Trips_spec
 splitnets -ports
+
+
+# See the counterpart for the generated component
+# for an explanation of the below
 rename var0[0] vals[64]
 rename var0[1] vals[65]
 rename var0[2] vals[66]

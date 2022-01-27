@@ -2,6 +2,13 @@ read_verilog Generate_Sensor_Trips.v
 rename \f \Generate_Sensor_Trips_spec
 select -module \Generate_Sensor_Trips_spec
 splitnets -ports
+
+# These unfortunate renamings are due to SAW's
+# Verilog extraction + limitations of yosys (which we use for synthesis):
+# (1) The input cryptol model has 2D arrays, i.e. logic [2:0][31:0] vals;
+# (2) The SAW-extracted module blows this out into 3 separate logic [31:0] inputs;
+# (3) The cryptol-verilog module _flattens_ this to logic [95:0]vals
+# The renaming below achieves the mapping between (2) and (3)
 rename var0[0] vals[64]
 rename var0[1] vals[65]
 rename var0[2] vals[66]
