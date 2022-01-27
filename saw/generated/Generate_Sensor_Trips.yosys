@@ -1,6 +1,6 @@
 read_verilog Generate_Sensor_Trips.v
-rename \f \f1
-select -module \f1
+rename \f \Generate_Sensor_Trips_spec
+select -module \Generate_Sensor_Trips_spec
 splitnets -ports
 rename var0[0] vals[64]
 rename var0[1] vals[65]
@@ -197,12 +197,11 @@ rename var1_5[31] setpoints[31]
 select -clear
 
 read_verilog -sv ../src/generated/SystemVerilog/instrumentation_impl.sv
-rename \Generate_Sensor_Trips \f2
-select -module \f2
+select -module \Generate_Sensor_Trips
 splitnets -ports
 select -clear
 
-equiv_make \f1 \f2 equiv
+equiv_make \Generate_Sensor_Trips_spec \Generate_Sensor_Trips equiv
 prep -top equiv
 equiv_induct
 equiv_status -assert
