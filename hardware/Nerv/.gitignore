@@ -1,0 +1,7 @@
+imem_contents.memhex32
+Verilator_Make/
+Verilator_RTL/
+Verilator_Resources/sim_main.cpp
+build_v/
+verilog/
+exe_verilator
