@@ -4,17 +4,12 @@
 
 #define TRIP_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
-static int saturation(uint32_t x, uint32_t y)
-{
-    return y == 0 ? 0 : (x / y);
-}
-
 static int instrumentation_step_trip(uint8_t div,
                                      struct instrumentation_state *state) {
   int err = 0;
   err |= read_instrumentation_channel(div, T, &state->reading[T]);
   err |= read_instrumentation_channel(div, P, &state->reading[P]);
-  state->reading[S] = saturation(state->reading[T], state->reading[P]);
+  state->reading[S] = Saturation(state->reading[T], state->reading[P]);
 
   uint8_t new_trips = Generate_Sensor_Trips(state->reading, state->setpoints);
   for (int i = 0; i < NTRIP; ++i) {

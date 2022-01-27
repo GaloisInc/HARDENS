@@ -4,6 +4,7 @@
 #include "common.h"
 
 
+uint32_t Saturation(uint32_t x, uint32_t y);
 uint8_t Generate_Sensor_Trips(uint32_t vals[3], uint32_t setpoints[3]);
 uint8_t Is_Ch_Tripped(uint8_t mode, uint8_t trip);
 

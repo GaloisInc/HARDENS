@@ -32,9 +32,13 @@ GEN_ACTUATE_ACTUATOR_F_LIST=$(subst $(comma), $(space), $(GEN_ACTUATE_ACTUATOR_F
 GEN_INSTRUMENTATION_C=${C_GEN_DIR}/instrumentation_impl.c
 GEN_INSTRUMENTATION_SV=${SV_GEN_DIR}/instrumentation_impl.sv
 GEN_INSTRUMENTATION_F=Generate_Sensor_Trips,Is_Ch_Tripped
+
 GEN_INSTRUMENTATION_F_LIST=$(subst $(comma), $(space), $(GEN_INSTRUMENTATION_F))
 
-SRC=core.c sense_actuate.c actuation_logic.c instrumentation.c actuate.c
+GEN_SATURATION_C=${C_GEN_DIR}/saturation_impl.c
+GEN_SATURATION_F=Saturation
+GEN_SATURATION_F_LIST=$(subst $(comma), $(space), $(GEN_INSTRUMENTATION_F))
+
 C_GEN_SRC=${GEN_ACTUATION_UNIT_C} ${GEN_ACTUATE_ACTUATOR_C} ${GEN_INSTRUMENTATION_C}
 SV_GEN_SRC=${GEN_ACTUATION_UNIT_SV} ${GEN_ACTUATE_ACTUATOR_SV} ${GEN_INSTRUMENTATION_SV}
 POSIX_SRC=posix_main.c
@@ -76,6 +80,7 @@ SRC+=\
   variants/instrumentation_handwritten_C.c \
   variants/instrumentation_generated_SystemVerilog.c \
   variants/instrumentation_handwritten_SystemVerilog.c \
+  variants/saturation_generated_C.c \
   components/instrumentation_common.c
 
 ifeq ($(PLATFORM),Host)
@@ -148,6 +153,11 @@ generate_sources: generate_c generate_sv
 
 generate_c: ${GEN_ACTUATION_UNIT_C} ${GEN_ACTUATE_ACTUATOR_C} ${GEN_INSTRUMENTATION_C}
 generate_sv: ${GEN_ASVTUATION_UNIT_SV} ${GEN_ASVTUATE_ASVTUATOR_SV} ${GEN_INSTRUMENTATION_SV}
+
+${GEN_SATURATION_C}: ${MODEL_DIR}/${INSTRUMENTATION_CRY}
+	mkdir -p $(dir $@)
+	cd ${MODEL_DIR} && \
+		crymp -f ${GEN_SATURATION_F} ${INSTRUMENTATION_CRY} -o ${ROOT_DIR}/${GEN_SATURATION_C}
 
 ${GEN_ACTUATION_UNIT_C}: ${MODEL_DIR}/${ACTUATION_CRY}
 	mkdir -p $(dir $@)
