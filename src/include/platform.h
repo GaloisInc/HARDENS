@@ -88,4 +88,9 @@ void set_actuate_test_result(uint8_t dev, uint8_t result);
 void set_actuate_test_complete(uint8_t dev, int v);
 int is_actuate_test_complete(uint8_t dev);
 
+////////////////////////////////////////////
+// General Utilities                      //
+////////////////////////////////////////////
+uint32_t time_in_ms();
+
 #endif // PLATFORM_H_
