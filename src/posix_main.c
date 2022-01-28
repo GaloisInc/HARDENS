@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/select.h>
+#include <time.h>
 
 #ifdef USE_PTHREADS
 #include <pthread.h>
@@ -398,6 +399,16 @@ void* start1(void *arg) {
   while(1) {
     sense_actuate_step_1(&instrumentation[2], &actuation_logic[1]);
   }
+}
+
+uint32_t time_in_ms()
+{
+  struct timespec tp;
+  clock_gettime(CLOCK_REALTIME, &tp);
+
+  time_t total = tp.tv_sec + tp.tv_nsec/1000000;
+
+  return (uint32_t)total;
 }
 
 int main(int argc, char **argv) {
