@@ -11,9 +11,7 @@ package NervSoC;
 // Import from BSV library
 
 import RegFile :: *;
-import I2C :: *;
-import RS232 :: *;
-import GetPut::*;
+
 // ================================================================
 // Local imports
 
@@ -24,26 +22,23 @@ import Nerv :: *;
 
 interface NervSoC_IFC;
    method Bit #(32) leds;
+   // TX -> a byte to be send
+   method ActionValue#(Bit #(8)) get_uart_tx_byte;
+   // RX -> a byte to be received
+   method Action set_uart_rx_byte(Bit #(8) rx);
 endinterface
 
 // ================================================================
 
 (* synthesize *)
 module mkNervSoC (NervSoC_IFC);
-   //0x001000
+
    Bit#(30) memory_size = 'h40000;
 
    // For debugging only
    Bool show_exec_trace = False;
    Bool show_load_store = False;
-   Reg #(Bit #(64)) rg_tick <- mkReg (0);
-   Reg #(Bit #(32)) rg_uart       <- mkRegU;
-   Reg #(Bit #(32)) rg_i2c       <- mkRegU;
-
-   // I/O peripherals
-   // @podhrmic TODO: check the prescalers
-   I2C i2c <- mkI2C(16);
-   UART #(4) uart <- mkUART(8, NONE, STOP_1, 16);
+   Reg #(Bit #(64)) rg_tick    <- mkReg (0);
 
    // Instantiate the nerv CPU
    Nerv_IFC nerv <- mkNerv;
@@ -54,12 +49,26 @@ module mkNervSoC (NervSoC_IFC);
    RegFile #(Bit #(30), Bit #(32)) imem <- mkRegFileLoad ("imem_contents.memhex32", 0, memory_size);
    RegFile #(Bit #(30), Bit #(32)) dmem <- mkRegFileLoad ("imem_contents.memhex32", 0, memory_size);
 
-   Reg #(Bit #(32)) rg_leds       <- mkRegU;
    Reg #(Bit #(32)) rg_imem_addr  <- mkReg (0);
    Reg #(Bit #(32)) rg_imem_data  <- mkRegU;
    Reg #(Bit #(32)) rg_dmem_rdata <- mkRegU;
 
    function Bit #(8) strb2byte (Bit #(1) b) = signExtend (b);
+
+   // IO addresses
+   Bit #(32) led_GPIO_addr = 32'h 0100_0000;
+   Bit #(32) i2c_reg_addr = 32'h 0300_0000;
+
+   Bit #(32) uart_reg_addr_tx = 32'h 0200_0000;
+   Bit #(32) uart_reg_addr_rx = 32'h 0200_0004;
+   Bit #(32) uart_reg_addr_data_ready = 32'h 0200_0008;
+
+   // IO registers
+   Reg #(Bit #(32)) rg_leds       <- mkRegU;
+   Reg #(Bit #(8)) rg_uart_tx <- mkReg(0);
+   Reg #(Bit #(8)) rg_uart_rx <- mkReg(0);
+   Reg #(Bool) rg_uart_rx_data_ready <- mkReg(False);
+   Reg #(Bool) rg_uart_tx_data_ready <- mkReg(False);
 
    // This rule deals with instruction fetch and D-Mem read results
    (* fire_when_enabled, no_implicit_conditions *)
@@ -99,12 +108,6 @@ module mkNervSoC (NervSoC_IFC);
       if (show_load_store)
          $display ("DMem addr 0x%0h  wstrb 0x%0h  wdata 0x%0h mask 0x%0h" , d_addr, wstrb, wdata, mask);
 
-      Bit #(32) led_GPIO_addr = 32'h 0100_0000;
-      Bit #(32) i2c_reg_addr = 32'h 0300_0000;
-
-      Bit #(32) uart_reg_addr_tx = 32'h 0200_0000;
-      Bit #(32) uart_reg_addr_rx = 32'h 0200_0004;
-
       case (d_addr)
          led_GPIO_addr:
             begin
@@ -112,21 +115,31 @@ module mkNervSoC (NervSoC_IFC);
             end
          uart_reg_addr_tx:
             begin
-               let newval = ((rg_uart & (~ mask)) | (wdata & mask));
-               rg_uart <= newval;
+               //let newval = ((rg_uart_tx & (~ mask)) | (wdata & mask));
+               //rg_uart_tx <= newval[8:1];
+               rg_uart_tx <= wdata[7:0];
+               rg_uart_tx_data_ready <= True;
                // Accept only first 8 bits
-               $display("Writing to uart: 0x%0h, %c",newval, newval);
-               uart.rx.put(newval[8:1]);
+               //$display("Writing to uart: 0x%0h, %c",newval, newval);
+               //uart.rx.put(newval[8:1]);
             end
          uart_reg_addr_rx:
             begin
                // We requested a read from the UART FIFO
                // Return the first value from FIFO
                // @podhrmic: What to do if the fifo is empty?
-               let val <- uart.tx.get();
-               $display("Reading from uart 0x%0h", val);
-               let extended_val = signExtend(val);
-               rg_dmem_rdata <= extended_val;
+               //let val <- uart.tx.get();
+               //$display("Reading from uart 0x%0h", val);
+               rg_dmem_rdata <= signExtend(rg_uart_rx);
+               rg_uart_rx_data_ready <= False;
+            end
+         uart_reg_addr_data_ready:
+            begin
+               //$display("Uart data ready? 0x%0h", rg_uart_rx_data_ready);
+               if (rg_uart_rx_data_ready)
+                  rg_dmem_rdata <= 1;
+               else
+               rg_dmem_rdata <= 0;
             end
          i2c_reg_addr:
             begin
@@ -150,6 +163,20 @@ module mkNervSoC (NervSoC_IFC);
    // INTERFACE
 
    method Bit #(32) leds = rg_leds;
+   // TX -> a byte to be send
+   method ActionValue#(Bit #(8)) get_uart_tx_byte () if (rg_uart_tx_data_ready);
+      begin
+         rg_uart_tx_data_ready <= False;
+         return rg_uart_tx;
+      end
+   endmethod
+   // Rx -> a byte to be received
+   method Action set_uart_rx_byte(Bit #(8) rx);
+      begin
+         rg_uart_rx_data_ready <= True;
+         rg_uart_rx <= rx;
+      end
+   endmethod
 
 endmodule
 

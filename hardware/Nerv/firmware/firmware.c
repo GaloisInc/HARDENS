@@ -12,7 +12,7 @@ void delay(uint32_t count)
 						  
 int main(void)
 {
-	printf("Hello world!");
+	printf("Hello world!\n");
 
 	// // Uncomment for a loop print
 	// volatile uint32_t *leds = (void*)0x01000000;
