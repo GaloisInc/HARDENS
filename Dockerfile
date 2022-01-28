@@ -147,6 +147,17 @@ RUN git checkout ${TAG}
 RUN make PREFIX=/tools/bsc-2021.07-ubuntu-20.04/
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
+ARG TOOL=cryptol
+ARG TAG=cryptol-2.12.0-Linux-x86_64-with-solvers
+ARG REPO=https://github.com/GaloisInc/cryptol
+
+WORKDIR /tmp
+RUN wget ${TAG}.tar.gz
+RUN tar -xf ${TAG}.tar.gz
+RUN mv ${TAG} /tools/
+ENV PATH="/tools/${TAG}/bin:${PATH}"
+RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
 RUN cat ${VERSION_LOG}
 
 WORKDIR /
