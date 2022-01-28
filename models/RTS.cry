@@ -178,6 +178,25 @@ Test_Voting tests l rts = {rts | control = {rts.control|self_test_fail = ~ (all 
                        >>>> AU::TripInput trips
                        >>>> \a -> (a.output @ d) == on
 
+
+SelfTestOracle: [4]I::Input -> [4][3][32] -> [2][2] -> [2]
+SelfTestOracle inputs setpoints [i0,i1] = [(ts || ps) == 0b11, ss == 0b11]
+  where
+     ts,ps,ss:[2]
+     ts = [ValueShouldTrip T i s | i <- inputs @@ [i0,i1] | s <- setpoints @@ [i0,i1]]
+     ps = [ValueShouldTrip P i s | i <- inputs @@ [i0,i1] | s <- setpoints @@ [i0,i1]]
+     ss = [ValueShouldTrip S i s | i <- inputs @@ [i0,i1] | s <- setpoints @@ [i0,i1]]
+
+// Helpful for testcase generation. The `off` parameter is used
+// to generate a second instrumentation division ID that's guaranteed
+// to be different from the first one (i1)
+SelfTestOracleHalf: [4][2][16] -> [4][3][16] -> [2] -> [2] -> [2]
+SelfTestOracleHalf inputs setpoints i1 off =
+  SelfTestOracle (map (map extend) inputs) (map (map extend) setpoints) [i1, i2]
+  where
+    i2 = i1 + 1 + (off % 3)
+    extend v = zero # v
+
 private
     property sense_to_actuate_0 rts (sensors : [4][2][32]) cmds =
         ~rts.control.self_test ==> (
@@ -275,8 +294,11 @@ private
 
     ChShouldTrip ch vs instr =
       if In_Mode ch Operate instr then
-        if (ch == T) || (ch == P)
-        then (instr.setpoints @ ch) < (vs @ ch)
-        else (instr.setpoints @ ch) >$ Saturation (vs @ T) (vs @ P)
+        ValueShouldTrip ch vs (instr.setpoints)
       else
         In_Mode ch Manual instr
+
+    ValueShouldTrip ch vs sp =
+        if (ch == T) || (ch == P)
+        then (sp @ ch) < (vs @ ch)
+        else (sp @ ch) >$ Saturation (vs @ T) (vs @ P)
