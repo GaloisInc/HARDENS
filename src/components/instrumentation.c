@@ -1,17 +1,33 @@
 #include "instrumentation.h"
 #include "platform.h"
 #include "common.h"
+#include <string.h>
 
 #define TRIP_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
 static int instrumentation_step_trip(uint8_t div,
+                                     int do_test,
                                      struct instrumentation_state *state) {
   int err = 0;
-  err |= read_instrumentation_channel(div, T, &state->reading[T]);
-  err |= read_instrumentation_channel(div, P, &state->reading[P]);
+
+  if (do_test) {
+    err |= read_test_instrumentation_channel(div, T, &state->reading[T]);
+    err |= read_test_instrumentation_channel(div, P, &state->reading[P]);
+  } else {
+    err |= read_instrumentation_channel(div, T, &state->reading[T]);
+    err |= read_instrumentation_channel(div, P, &state->reading[P]);
+  }
   state->reading[S] = Saturation(state->reading[T], state->reading[P]);
 
-  uint8_t new_trips = Generate_Sensor_Trips(state->reading, state->setpoints);
+  uint8_t new_trips;
+  if (do_test) {
+    uint32_t setpoints[3];
+    err |= get_instrumentation_test_setpoints(div, &setpoints[0]);
+    new_trips = Generate_Sensor_Trips(state->reading, setpoints);
+  } else {
+    new_trips = Generate_Sensor_Trips(state->reading, state->setpoints);
+  }
+
   for (int i = 0; i < NTRIP; ++i) {
     state->sensor_trip[i] = TRIP_I(new_trips, i);
   }
@@ -55,18 +71,37 @@ static int instrumentation_handle_command(uint8_t div,
 }
 
 static int instrumentation_set_output_trips(uint8_t div,
-                                            struct instrumentation_state *state) {
+                                            int do_test,
+                                            struct instrumentation_state *state)
+{
   for (int i = 0; i < NTRIP; ++i) {
-    set_output_instrumentation_trip(div, i,
-                    Is_Ch_Tripped(state->mode[i], state->sensor_trip[i]));
+    uint8_t mode = do_test ? 1 : state->mode[i];
+    set_output_instrumentation_trip(div, i, BIT(do_test, Is_Ch_Tripped(mode, state->sensor_trip[i])));
   }
+
+  if (do_test) {
+    set_instrumentation_test_complete(div, 1);
+  }
+
   return 0;
 }
 
 int instrumentation_step(uint8_t div, struct instrumentation_state *state) {
   int err = 0;
+
+  uint8_t test_div[2];
+  get_test_instrumentation(test_div);
+  int do_test = (div == test_div[0] || div == test_div[1]) && is_test_running();
+
+  if (do_test && is_instrumentation_test_complete(div))
+    return 0;
+
+  if (!do_test && is_instrumentation_test_complete(div)) {
+    set_instrumentation_test_complete(div, 0);
+  }
+
   /* Read trip signals & vote */
-  err |= instrumentation_step_trip(div, state);
+  err |= instrumentation_step_trip(div, do_test, state);
 
   /* Handle any external commands */
   struct instrumentation_command i_cmd;
@@ -78,6 +113,6 @@ int instrumentation_step(uint8_t div, struct instrumentation_state *state) {
   }
 
   /* Actuate devices based on voting and commands */
-  err |= instrumentation_set_output_trips(div, state);
+  err |= instrumentation_set_output_trips(div, do_test, state);
   return err;
 }

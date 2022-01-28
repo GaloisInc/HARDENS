@@ -117,7 +117,7 @@ w3 Generate_Sensor_Trips(w32 vals4788[3], w32 setpoints4789[3])
     }
     return return_4097;
 }
-w1 Is_Ch_Tripped(w2 mode4758, w1 sensor_tripped4759)
+w1 Is_Ch_Tripped(w2 mode4757, w1 sensor_tripped4758)
 {
     w1 app_4114;
     w1 app_4115;
@@ -125,9 +125,9 @@ w1 Is_Ch_Tripped(w2 mode4758, w1 sensor_tripped4759)
     w1 app_4117;
     w1 return_4113;
     return_4113 = 0;
-    app_4114 = mode4758 == (w2) 2;
-    app_4115 = mode4758 == (w2) 1;
-    app_4116 = app_4115 & sensor_tripped4759;
+    app_4114 = mode4757 == (w2) 2;
+    app_4115 = mode4757 == (w2) 1;
+    app_4116 = app_4115 & sensor_tripped4758;
     app_4117 = app_4114 | app_4116;
     return_4113 = app_4117;
     return return_4113;

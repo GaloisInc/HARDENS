@@ -69,6 +69,7 @@ SRC=
 EXTRA_SRC=
 
 PLATFORM ?= Host
+EXECUTION ?= Parallel
 
 SRC+=\
   core.c \
@@ -87,7 +88,7 @@ ifeq ($(PLATFORM),Host)
 SRC+=posix_main.c
 endif
 
-CFLAGS=-Iinclude -g -Wno-shift-op-parentheses -Wno-shift-count-overflow
+CFLAGS=-Iinclude -g -Wno-shift-op-parentheses -Wno-shift-count-overflow -fsanitize=address
 
 CC ?= clang
 CXX ?= clang++
@@ -106,12 +107,26 @@ ifeq ($(SENSORS),Simulated)
 CFLAGS += -DSIMULATE_SENSORS
 endif
 
-$(info BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM))
+ifeq ($(EXECUTION),Parallel)
+CFLAGS += -DUSE_PTHREADS
+LIBS   += -lpthread
+endif
+
+ifneq ($(SELF_TEST_PERIOD),)
+CFLAGS += -DSELF_TEST_PERIOD=$(SELF_TEST_PERIOD)
+endif
+
+BUILD_MSG = BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) SELF_TEST_PERIOD=$(SELF_TEST_PERIOD)
+
+.PHONY: all rts clean linux macos proof generate_sources generate_c generate_sv
 
 all: rts
 
 rts: $(SRC:.c=.o) $(EXTRA_SRC)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	@echo "***"
+	@echo $(BUILD_MSG)
+	@echo "***"
 
 variants/%_generated_C.o: variants/%_generated_C.c generated/C/%_impl.c
 	$(CC) -c $(CFLAGS) -o $@ $<
@@ -133,6 +148,8 @@ clean:
 
 rts.posix: ${OBJ} ${POSIX_OBJ}
 	clang -fsanitize=address,undefined -g ${CFLAGS} $^ -o rts.posix
+
+# @review kiniry Why aren't these non-phony rules, a la `rts.linux` and `rts.macos`?
 
 linux: rts.posix
 	mv rts.posix rts.linux
