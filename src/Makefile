@@ -118,7 +118,7 @@ endif
 
 BUILD_MSG = BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) SELF_TEST_PERIOD=$(SELF_TEST_PERIOD)
 
-.PHONY: all rts clean linux macos proof generate_sources generate_c generate_sv
+.PHONY: all rts clean linux macos proof generate_sources generate_c generate_sv self_test_data/tests.inc.c
 
 all: rts
 
@@ -128,8 +128,10 @@ rts: $(SRC:.c=.o) $(EXTRA_SRC)
 	@echo $(BUILD_MSG)
 	@echo "***"
 
-rts_bottom: bottom.o
-	$(CC) $(CFLAGS) -o $@ $^
+self_test_data/tests.inc.c:
+	cd self_test_data && \
+    CRYPTOLPATH=../${MODEL_DIR} cryptol -b generate_tests.icry && \
+    ./test_to_c.py test.csv > tests.inc.c
 
 variants/%_generated_C.o: variants/%_generated_C.c generated/C/%_impl.c
 	$(CC) -c $(CFLAGS) -o $@ $<
