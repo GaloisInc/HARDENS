@@ -180,7 +180,7 @@ Test_Voting tests l rts = {rts | control = {rts.control|self_test_fail = ~ (all 
 
 
 SelfTestOracle: [4]I::Input -> [4][3][32] -> [2][2] -> [2]
-SelfTestOracle inputs setpoints [i0,i1] = [(ts || ps) == 0b11, ss == 0b11]
+SelfTestOracle inputs setpoints [i0,i1] = [(ts == 0b11) || (ps == 0b11), ss == 0b11]
   where
      ts,ps,ss:[2]
      ts = [ValueShouldTrip T i s | i <- inputs @@ [i0,i1] | s <- setpoints @@ [i0,i1]]
