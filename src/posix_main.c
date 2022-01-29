@@ -401,12 +401,12 @@ void* start1(void *arg) {
   }
 }
 
-uint32_t time_in_ms()
+uint32_t time_in_s()
 {
   struct timespec tp;
   clock_gettime(CLOCK_REALTIME, &tp);
 
-  time_t total = tp.tv_sec + tp.tv_nsec/1000000;
+  time_t total = tp.tv_sec;
 
   return (uint32_t)total;
 }
