@@ -88,7 +88,7 @@ ifeq ($(PLATFORM),Host)
 SRC+=posix_main.c
 endif
 
-CFLAGS=-Iinclude -g -Wno-shift-op-parentheses -Wno-shift-count-overflow -fsanitize=address
+CFLAGS=-Iinclude -g -Wno-shift-op-parentheses -Wno-shift-count-overflow
 
 CC ?= clang
 CXX ?= clang++
