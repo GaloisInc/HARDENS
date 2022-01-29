@@ -5,8 +5,8 @@
 #include "instrumentation.h"
 #include "actuation_logic.h"
 
-#ifndef SELF_TEST_PERIOD
-#define SELF_TEST_PERIOD 20
+#ifndef SELF_TEST_PERIOD_SEC
+#define SELF_TEST_PERIOD_SEC 20
 #endif
 
 #define NDIVISIONS 4
@@ -22,9 +22,10 @@ struct ui_values {
 
 struct test_state {
   uint32_t test;
-  uint32_t test_timer;
+  uint32_t test_timer_start;
   uint8_t self_test_running;
   uint8_t self_test_expect;
+  uint8_t failed;
 
   uint8_t test_device_result[2];
 

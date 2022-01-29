@@ -106,6 +106,7 @@ int end_test(struct test_state *test) {
     int passed =
          test->test_device_result[test->test_device]
       == (test->self_test_expect || test->actuation_old_vote);
+    test->failed = !passed;
 
     // Reset state
     set_test_running(0);
@@ -113,11 +114,9 @@ int end_test(struct test_state *test) {
     if (passed) {
       set_display_line(16, pass, 0);
       test->test++;
-      if (test->test < sizeof(tests)/sizeof(struct testcase)) {
-        test->test_timer = 1;
-      } else {
+      if (test->test >= sizeof(tests)/sizeof(struct testcase)) {
         test->test = 0;
-        test->test_timer = SELF_TEST_PERIOD;
+        test->test_timer_start = time_in_s();
       }
     } else {
       set_display_line(16, fail, 0);
@@ -138,10 +137,21 @@ int components_ready() {
          && !is_actuate_test_complete(1);
 }
 
+int self_test_timer_expired(struct test_state *test) {
+  uint32_t t    = time_in_s();
+  uint32_t diff = t - test->test_timer_start;
+
+  return SELF_TEST_PERIOD_SEC < diff;
+}
+
+int should_start_self_test(struct test_state *test) {
+  return (!test->self_test_running) && (self_test_timer_expired(test) || (test->test != 0));
+}
+
 int test_step(struct test_state *test) {
   int err = 0;
-  // Run exactly once
-  if(test->test_timer == 0 && !test->self_test_running) {
+
+  if(!test->failed && should_start_self_test(test)) {
     if (components_ready())
     {
       struct testcase *next = &tests[test->test];
@@ -153,21 +163,21 @@ int test_step(struct test_state *test) {
       memcpy(test->test_setpoints, next->setpoints, 3*4*sizeof(uint32_t));
 
       set_test_running(1);
+      set_display_line(15, self_test_running, 0);
     }
-    set_display_line(15, self_test_running, 0);
   } else if (test->self_test_running && test->test_device_done[test->test_device]) {
     int passed = end_test(test);
     if(!passed) err = -1;
-  } else if (!test->self_test_running && test->test_timer > 0) {
+  } else if (!test->self_test_running) {
     set_display_line(15, self_test_not_running, 0);
-    test->test_timer--;
   }
 
   return err;
 }
 
 void core_init(struct core_state *core) {
-  core->test.test_timer = SELF_TEST_PERIOD;
+  core->test.test_timer_start = time_in_s();
+  core->test.failed = 0;
 }
 
 int core_step(struct core_state *core) {
