@@ -20,8 +20,23 @@ Besides a normal `clang` toolchain, the `Makefile` targets depend on the followi
 ## Implementation status
 
 ### Simulation Targets
+
 The `Makefile` in this directory can generate simulation builds of the `RTS`
 that execute on the host system, controllable via the command-line/stdin. 
+
+#### Execution
+
+The `PLATFORM` variable controls whether or not we are building for the Soc:
+
+- `PLATFORM=Host` builds the rts for a POSIX system
+  * When `Platform=Host`, the build system can be configured to simulate the concurrency of the
+    NERV-SoC using `pthreads` by setting `EXECUTION=Parallel` (set by default). `Execution=Sequential` 
+    simulates the system with a single thread of execution and single fixed schedule of task interleavings.
+- `Platform=NERV` builds the rts for the NERV-based SoC (not yet implemented)
+
+
+
+#### Sensors
 
 The simulation build can be configured to accept user input for sensor values (see [](tests/sense_actuate_0) or to generate a "random walk" of sensor values. This is controlled via the `SENSORS` build flag:
 

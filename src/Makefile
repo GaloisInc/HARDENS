@@ -68,7 +68,12 @@ VERILATOR_SHIM_OBJS=\
 SRC=
 EXTRA_SRC=
 
+## Are we running on a (POSIX) Host or the SoC
 PLATFORM ?= Host
+
+## On the Host plaform,
+## Parallel: pthread-based implementation to simulate the concurrency SoC
+## Sequential:  a single-threaded implementation
 EXECUTION ?= Parallel
 
 SRC+=\
