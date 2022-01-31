@@ -35,8 +35,8 @@ int get_instrumentation_maintenance(uint8_t division, uint8_t *value);
 */
 int get_actuation_state(uint8_t i, uint8_t device, uint8_t *value);
 
-/*@requires \valid(&arr[0..2][0..3]);
-  @assigns *(arr[0..2]+(0..3));
+/*@requires \valid(&arr[0.. NTRIP-1][0.. NINSTR-1]);
+  @assigns *(arr[0.. NTRIP-1]+(0.. NINSTR-1));
 */
 int read_instrumentation_trip_signals(uint8_t arr[3][4]);
 
