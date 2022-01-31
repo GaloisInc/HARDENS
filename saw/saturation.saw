@@ -1,0 +1,18 @@
+include "common.saw";
+enable_experimental;
+
+cryptol_add_path "../models";
+
+instrumentation_cryp <- cryptol_load "../models/RTS/InstrumentationUnit.cry";
+saturation_gen  <- llvm_load_module "generated/saturation_impl.bc";
+
+let saturation_ref = {{ instrumentation_cryp::Saturation }};
+
+let saturation_spec = do {
+    t <- llvm_fresh_var "t" (llvm_int 32);
+    p <- llvm_fresh_var "p" (llvm_int 32);
+    llvm_execute_func [llvm_term t, llvm_term p];
+    llvm_return (llvm_term {{ saturation_ref t p }});
+};
+
+llvm_verify saturation_gen "Saturation" [] false saturation_spec z3;

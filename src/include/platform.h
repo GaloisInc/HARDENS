@@ -47,6 +47,7 @@ int read_instrumentation_trip_signals(uint8_t arr[3][4]);
   @assigns \nothing; // Not entirely true, but we'll never mention that state
   @ensures -1 <= \result <= 0;
  */
+int reset_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t reset_val);
 int set_output_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t on);
 
 /*@requires division <= 3;
@@ -88,6 +89,36 @@ int send_actuation_command(uint8_t actuator,
                            struct actuation_command *cmd);
 
 
-int set_display_line(uint8_t line_number, char *display, uint32_t size);
+int set_display_line(uint8_t line_number, const char *display, uint32_t size);
+
+
+/////////////////////////////////////////////
+// Self Test state                         //
+/////////////////////////////////////////////
+uint8_t is_test_running();
+void set_test_running(int val);
+uint8_t get_test_device();
+
+void get_test_instrumentation(uint8_t *id);
+int is_instrumentation_under_test(uint8_t id);
+int get_instrumentation_test_setpoints(uint8_t id, uint32_t *setpoints);
+void set_instrumentation_test_complete(uint8_t div, int v);
+int is_instrumentation_test_complete(uint8_t id);
+int read_test_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val);
+
+uint8_t get_test_actuation_unit();
+int is_actuation_unit_under_test(uint8_t id);
+void set_actuation_unit_test_complete(uint8_t div, int v);
+void set_actuation_unit_test_input_vote(uint8_t id, int v);
+int is_actuation_unit_test_complete(uint8_t id);
+
+void set_actuate_test_result(uint8_t dev, uint8_t result);
+void set_actuate_test_complete(uint8_t dev, int v);
+int is_actuate_test_complete(uint8_t dev);
+
+////////////////////////////////////////////
+// General Utilities                      //
+////////////////////////////////////////////
+uint32_t time_in_s();
 
 #endif // PLATFORM_H_

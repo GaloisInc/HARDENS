@@ -19,9 +19,26 @@ Besides a normal `clang` toolchain, the `Makefile` targets depend on the followi
 
 ## Implementation status
 
+The RTS can be built for simulation on a macOS or Linux host, or (not yet
+implemented) on a NERV-based SoC.
+
 ### Simulation Targets
+
 The `Makefile` in this directory can generate simulation builds of the `RTS`
 that execute on the host system, controllable via the command-line/stdin. 
+
+#### Execution
+
+The `PLATFORM` variable controls whether or not we are building for the Soc:
+
+- `PLATFORM=Host` builds the rts for a POSIX system
+  * When `Platform=Host`, the build system can be configured to simulate the concurrency of the
+    NERV-SoC using `pthreads` by setting `EXECUTION=Parallel` (set by default). `Execution=Sequential` 
+    simulates the system with a single thread of execution and single fixed schedule of task interleavings.
+- `Platform=NERV` builds the rts for the NERV-based SoC (not yet implemented)
+
+
+#### Sensors
 
 The simulation build can be configured to accept user input for sensor values (see [](tests/sense_actuate_0) or to generate a "random walk" of sensor values. This is controlled via the `SENSORS` build flag:
 
@@ -52,3 +69,15 @@ Run `make rts.posix{.verilog}` to generate an executable simulator. To regenerat
 `SystemVerilog` or `C` functions after an update to the Cryptol model, you can
 run `REGEN_SOURCES=1 make <target>`; by default, the checked-in existing
 generated code will be used.
+
+## Concurrency
+
+The RTS implementation is a concurrent system comprising two instrumentation +
+actuation logic modules plus a core logic controller.
+
+Consulting the SysMLv2 architecture, the principal ways in which processes
+communicate is via input and output values (e.g. passing trip signal values from
+the instrumentation divisions to the actuation unit. Each writable memory
+location has a unique writer, and system states inbetween individual writes are
+consistent. Therefore, it is only necessary to guarantee that individual writes
+(to shared locations) are made atomically.

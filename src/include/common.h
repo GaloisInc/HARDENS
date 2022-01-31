@@ -9,6 +9,7 @@
 
 // Instrumentation
 // Trip modes:
+#define NINSTR 4
 #define NMODES 3
 #define BYPASS 0
 #define OPERATE 1
@@ -33,6 +34,10 @@
 // Command Types
 #define INSTRUMENTATION_COMMAND 0
 #define ACTUATION_COMMAND 1
+
+
+#define BIT(_test, _value) ((_test) ? (0x8 | (_value)) : _value)
+#define VALID(_value) (!(0x8 & (_value)))
 
 //////////////////////////////////////////////////////////////
 // RTS Command Definitions                                  //

@@ -30,9 +30,9 @@ P = 1 // Pressure
 S = 2 // Saturation
 
 Bypass,Operate,Manual: Mode
-Bypass = 0 // Do not generate a "trip"
-Operate = 1 // generate "trip" on setpoint violation
-Manual = 2 // Force "trip" generation
+Bypass = 0  // Do not generate a "trip"
+Operate = 1 // Generate "trip" on setpoint violation
+Manual = 2  // Force "trip" generation
 
 type InstrumentationUnit =
   { setpoints: [NChannels][32]
@@ -127,8 +127,8 @@ Is_Tripped ch instr = In_Mode ch Manual instr
 
 Is_Ch_Tripped : Mode -> Bit -> Bit
 Is_Ch_Tripped mode sensor_tripped =
-  // Constants should be replaced, but this causes problems for crymp
-  // 2 = Manual, 1 = Operate
+  // @bug abakst Constants should be replaced, but this causes
+  // problems for crymp: 2 = Manual, 1 = Operate
   (mode == 2) || ((mode == 1) && sensor_tripped)
 
 Step_Trip_Signals:
@@ -207,8 +207,17 @@ PressureTable temp = sat_pressure
              5775200
             ]
 
-private
+Generate_Sensor_Trips : [NChannels][32] -> [NChannels][32] -> [NChannels]
+Generate_Sensor_Trips vals setpoints =
+  [ trp ch | ch <- [0..NChannels-1] : [3][2] ]
+  where
+    // @bug abakst `2` should be `S`, but this causes problems for crymp
+    // See `Is_Ch_Tripped` above as well.
+    trp ch = if ch == 2 then v <$ sp else sp < v
+               where v  = vals @ ch
+                     sp = setpoints @ ch
 
+<<<<<<< HEAD
   Generate_Sensor_Trips : [NChannels][32] -> [NChannels][32] -> [NChannels]
   Generate_Sensor_Trips vals setpoints = [t, p, s]
     where
@@ -221,6 +230,9 @@ private
   Trip vals setpoints ch = if ch == 2 then v <$ sp else sp < v
     where v  = vals @ ch
           sp = setpoints @ ch
+=======
+private
+>>>>>>> develop
 
   /** @requirements
         INSTRUMENTATION_RESET

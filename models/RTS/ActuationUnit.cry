@@ -16,6 +16,20 @@ TripInput trips actuationUnit =
     d0 = Actuate_D0 trips (actuationUnit.output @ 0)
     d1 = Actuate_D1 trips (actuationUnit.output @ 1)
 
+Actuate_D0: Input -> Bit -> Bit
+Actuate_D0 trips old = d0 || old
+  where
+    d0 = TempPressureTripOut [TemperatureLogic temperatureTrips,
+                              PressureLogic pressureTrips]
+    temperatureTrips = trips @ (0:[2])
+    pressureTrips = trips @ (1:[2])
+
+Actuate_D1: Input -> Bit -> Bit
+Actuate_D1 trips old = d1 || old
+  where
+    d1 = SaturationLogic saturationTrips
+    saturationTrips = trips @ (2:[2])
+
 TemperatureLogic: [4]TripPort -> Bit
 TemperatureLogic ts = Coincidence_2_4 ts
 
@@ -82,17 +96,3 @@ private
     == /* ---------------- */
     act'.output @ 1
     where act' = TripInput inp act
-
-  Actuate_D0: Input -> Bit -> Bit
-  Actuate_D0 trips old = d0 || old
-    where
-      d0 = TempPressureTripOut [TemperatureLogic temperatureTrips,
-                                PressureLogic pressureTrips]
-      temperatureTrips = trips @ (0:[2])
-      pressureTrips = trips @ (1:[2])
-
-  Actuate_D1: Input -> Bit -> Bit
-  Actuate_D1 trips old = d1 || old
-    where
-      d1 = SaturationLogic saturationTrips
-      saturationTrips = trips @ (2:[2])

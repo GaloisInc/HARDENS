@@ -7,6 +7,17 @@
 
 Repository for the HARDENS project for the [Nuclear Regulatory Commission](https://www.nrc.gov/about-nrc.html).
 
+```
+This work is supported by the U.S. Nuclear Regulatory Commission (NRC), 
+Office of Nuclear Regulatory Research, under contract/order number 31310021C0014.
+
+All material is considered in development and not a finalized product. 
+
+Any opinions, findings, conclusions or recommendations expressed in
+this material are those of the author(s) and do not necessarily
+reflect the views of the NRC.
+```
+
 ## Overview
 
 The goal of HARDENS is to provide to the NRC expert technical services
@@ -80,6 +91,8 @@ The repository is structured as follows:
   (`*.sysml`).
 - [models](./models) contains the executable Cryptol model
 - [assets](./assets) and [docs](./docs) contain project and device documentation
+- [saw](./saw) contains SAW-based proofs of correctness of specific model-derived
+  components
 
 ## Submodules
 

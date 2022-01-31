@@ -68,7 +68,13 @@ VERILATOR_SHIM_OBJS=\
 SRC=
 EXTRA_SRC=
 
+## Are we running on a (POSIX) Host or the SoC
 PLATFORM ?= Host
+
+## On the Host plaform,
+## Parallel: pthread-based implementation to simulate the concurrency SoC
+## Sequential:  a single-threaded implementation
+EXECUTION ?= Parallel
 
 SRC+=\
   core.c \
@@ -106,15 +112,34 @@ ifeq ($(SENSORS),Simulated)
 CFLAGS += -DSIMULATE_SENSORS
 endif
 
-$(info BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM))
+ifeq ($(EXECUTION),Parallel)
+CFLAGS += -DUSE_PTHREADS
+LIBS   += -lpthread
+endif
+
+ifneq ($(SELF_TEST_PERIOD_SEC),)
+CFLAGS += -DSELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC)
+endif
+
+BUILD_MSG = BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) SELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC)
+
+.PHONY: all rts clean linux macos proof generate_sources generate_c generate_sv self_test_data/tests.inc.c
 
 all: rts
 
 rts: $(SRC:.c=.o) $(EXTRA_SRC)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	@echo "***"
+	@echo $(BUILD_MSG)
+	@echo "***"
 
-rts_bottom: bottom.o
-	$(CC) $(CFLAGS) -o $@ $^
+rts_bottom: bottom.c
+	$(CC) $(CFLAGS) -o $@ bottom.c
+
+self_test_data/tests.inc.c:
+	cd self_test_data && \
+    CRYPTOLPATH=../${MODEL_DIR} cryptol -b generate_tests.icry && \
+    ./test_to_c.py test.csv > tests.inc.c
 
 variants/%_generated_C.o: variants/%_generated_C.c generated/C/%_impl.c
 	$(CC) -c $(CFLAGS) -o $@ $<
@@ -137,6 +162,8 @@ clean:
 
 rts.posix: ${OBJ} ${POSIX_OBJ}
 	clang -fsanitize=address,undefined -g ${CFLAGS} $^ -o rts.posix
+
+# @review kiniry Why aren't these non-phony rules, a la `rts.linux` and `rts.macos`?
 
 linux: rts.posix
 	mv rts.posix rts.linux

@@ -43,6 +43,7 @@ struct instrumentation_state {
   uint8_t sensor_trip[NTRIP];
   uint8_t mode[NTRIP];
   uint8_t maintenance;
+  uint8_t test_complete;
 };
 
 void instrumentation_init(struct instrumentation_state *state);

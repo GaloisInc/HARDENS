@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "actuate.h"
 #include "rts.h"
+#include <string.h>
 
 int actuate_devices_generated_C(void);
 
@@ -10,6 +11,23 @@ int actuate_devices_generated_C(void);
 #define ACT_OFFSET 5
 char INSTR_LINE_FMT[] = "#I %d (%c): T[%5d %c %d] P[%5d %c %d] S[%5d %c %d]";
 char ACT_LINE_FMT[] = "#A %d [%d %d]";
+
+const char self_test_running[]     = "SELF TEST:     RUNNING";
+const char self_test_not_running[] = "SELF TEST: NOT RUNNING";
+const char pass[] = "LAST TEST: PASS";
+const char fail[] = "LAST TEST: FAIL";
+
+struct testcase {
+  uint32_t input[4][2];
+  uint32_t setpoints[4][3];
+  uint8_t instrumentation[2];
+  uint8_t actuation_unit;
+  uint8_t device;
+  uint8_t expect;
+} tests[] = {
+// Test data generated from Cryptol RTS::SelfTestOracleHalf
+#include "self_test_data/tests.inc.c"
+};
 
 char mode_char(uint8_t mode) {
   switch (mode) {
@@ -85,7 +103,85 @@ int update_ui(struct ui_values *ui) {
   return err;
 }
 
-int core_step(struct ui_values *ui) {
+int end_test(struct test_state *test) {
+    int passed =
+         test->test_device_result[test->test_device]
+      == (test->self_test_expect || test->actuation_old_vote);
+    test->failed = !passed;
+
+    // Reset state
+    set_test_running(0);
+
+    if (passed) {
+      set_display_line(16, pass, 0);
+      test->test++;
+      if (test->test >= sizeof(tests)/sizeof(struct testcase)) {
+        test->test = 0;
+        test->test_timer_start = time_in_s();
+      }
+    } else {
+      set_display_line(16, fail, 0);
+      set_display_line(20, "A TEST FAILED", 0);
+    }
+
+    return passed;
+}
+
+int components_ready() {
+  return !is_instrumentation_test_complete(0)
+         && !is_instrumentation_test_complete(1)
+         && !is_instrumentation_test_complete(2)
+         && !is_instrumentation_test_complete(3)
+         && !is_actuation_unit_test_complete(0)
+         && !is_actuation_unit_test_complete(1)
+         && !is_actuate_test_complete(0)
+         && !is_actuate_test_complete(1);
+}
+
+int self_test_timer_expired(struct test_state *test) {
+  uint32_t t    = time_in_s();
+  uint32_t diff = t - test->test_timer_start;
+
+  return SELF_TEST_PERIOD_SEC < diff;
+}
+
+int should_start_self_test(struct test_state *test) {
+  return (!test->self_test_running) && (self_test_timer_expired(test) || (test->test != 0));
+}
+
+int test_step(struct test_state *test) {
+  int err = 0;
+
+  if(!test->failed && should_start_self_test(test)) {
+    if (components_ready())
+    {
+      struct testcase *next = &tests[test->test];
+      test->self_test_expect = next->expect;
+      test->test_device = next->device;
+      test->test_actuation_unit = next->actuation_unit;
+      memcpy(test->test_instrumentation, next->instrumentation, 2);
+      memcpy(test->test_inputs, next->input, 2*4*sizeof(uint32_t));
+      memcpy(test->test_setpoints, next->setpoints, 3*4*sizeof(uint32_t));
+
+      set_test_running(1);
+      set_display_line(15, self_test_running, 0);
+    }
+  } else if (test->self_test_running && test->test_device_done[test->test_device]) {
+    int passed = end_test(test);
+    if(!passed) err = -1;
+  } else if (!test->self_test_running) {
+    set_display_line(15, self_test_not_running, 0);
+  }
+
+  return err;
+}
+
+void core_init(struct core_state *core) {
+  core->test.test_timer_start = time_in_s();
+  core->test.failed = 0;
+}
+
+int core_step(struct core_state *core) {
   int err = 0;
   struct rts_command rts;
 
@@ -112,7 +208,8 @@ int core_step(struct ui_values *ui) {
     }
   }
 
-  err |= update_ui(ui);
+  err |= test_step(&core->test);
+  err |= update_ui(&core->ui);
 
   return err;
 }
