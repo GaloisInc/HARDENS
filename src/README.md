@@ -19,6 +19,9 @@ Besides a normal `clang` toolchain, the `Makefile` targets depend on the followi
 
 ## Implementation status
 
+The RTS can be built for simulation on a macOS or Linux host, or (not yet
+implemented) on a NERV-based SoC.
+
 ### Simulation Targets
 
 The `Makefile` in this directory can generate simulation builds of the `RTS`
@@ -33,7 +36,6 @@ The `PLATFORM` variable controls whether or not we are building for the Soc:
     NERV-SoC using `pthreads` by setting `EXECUTION=Parallel` (set by default). `Execution=Sequential` 
     simulates the system with a single thread of execution and single fixed schedule of task interleavings.
 - `Platform=NERV` builds the rts for the NERV-based SoC (not yet implemented)
-
 
 
 #### Sensors
