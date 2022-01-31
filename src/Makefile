@@ -31,7 +31,7 @@ GEN_ACTUATE_ACTUATOR_F_LIST=$(subst $(comma), $(space), $(GEN_ACTUATE_ACTUATOR_F
 
 GEN_INSTRUMENTATION_C=${C_GEN_DIR}/instrumentation_impl.c
 GEN_INSTRUMENTATION_SV=${SV_GEN_DIR}/instrumentation_impl.sv
-GEN_INSTRUMENTATION_F=Generate_Sensor_Trips,Is_Ch_Tripped
+GEN_INSTRUMENTATION_F=Generate_Sensor_Trips,Is_Ch_Tripped,Trip
 
 GEN_INSTRUMENTATION_F_LIST=$(subst $(comma), $(space), $(GEN_INSTRUMENTATION_F))
 

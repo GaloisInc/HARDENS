@@ -208,18 +208,15 @@ PressureTable temp = sat_pressure
             ]
 
 Generate_Sensor_Trips : [NChannels][32] -> [NChannels][32] -> [NChannels]
-Generate_Sensor_Trips vals setpoints = [ trp_tp 0, trp_tp 1, trp_s ]
-  where
+Generate_Sensor_Trips vals setpoints =
     // @bug abakst `2` should be `S`, but this causes problems for crymp
     // See `Is_Ch_Tripped` above as well.
-    trp_tp: Channel -> Bit
-    trp_tp ch = sp < v
-      where v  = vals @ ch
-            sp = setpoints @ ch
-    trp_s: Bit
-    trp_s = v <$ sp
-      where v  = vals @ (2:Channel)
-            sp = setpoints @ (2:Channel)
+    [ Trip vals setpoints 0, Trip vals setpoints 1, Trip vals setpoints 2 ]
+
+Trip: [NChannels][32] -> [NChannels][32] -> Channel -> Bit
+Trip vals setpoints ch = if ch == 2 then v <$ sp else sp < v
+  where v  = vals @ ch
+        sp = setpoints @ ch
 
 private
   /** @requirements
