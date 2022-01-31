@@ -38,6 +38,7 @@
 
 #define BIT(_test, _value) ((_test) ? (0x8 | (_value)) : _value)
 #define VALID(_value) (!(0x8 & (_value)))
+#define VAL(_value) (0x1 & value)
 
 //////////////////////////////////////////////////////////////
 // RTS Command Definitions                                  //

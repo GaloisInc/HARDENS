@@ -22,14 +22,14 @@ uint8_t Coincidence_2_4(uint8_t trips[4]);
 /*@requires \valid(&trips[0.. NTRIP - 1][0.. NINSTR - 1]);
   @requires \valid(trips + (0.. NTRIP-1));
   @assigns \nothing;
-  @ensures (\result != 0) <==> (old || Coincidence(0,trips) || Coincidence(1,trips));
+  @ensures (\result != 0) <==> (old || Coincidence(T,trips) || Coincidence(P,trips));
 */
 uint8_t Actuate_D0(uint8_t trips[3][4], uint8_t old);
 
 /*@requires \valid(&trips[0.. NTRIP-1][0.. NINSTR-1]);
   @requires \valid(trips + (0.. NTRIP-1));
   @assigns \nothing;
-  @ensures (Coincidence(2,trips)) ==> (\result != 0);
+  @ensures (Coincidence(S,trips)) ==> (\result != 0);
 */
 uint8_t Actuate_D1(uint8_t trips[3][4], uint8_t old);
 
