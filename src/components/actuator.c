@@ -1,13 +1,13 @@
-#include "common.h"
+#include "platform.h"
 #include "actuate.h"
 #include "actuation_logic.h"
-#include "platform.h"
 
 #define w1 uint8_t
 #define w2 uint8_t
 
 /*@ requires \true;
-  @ assigns \nothing;
+  @ assigns core.test.test_device_done[0..2];
+  @ assigns core.test.test_device_result[0..2];
   @ ensures \true;
 */
 int actuate_devices(void)
@@ -21,12 +21,15 @@ int actuate_devices(void)
   }
 
   /*@ loop invariant 0 <= d && d <= NDEV;
-    @ loop assigns d, err;
+    @ loop assigns d, err, core.test.test_device_done[0..2], core.test.test_device_result[0..2];
     */
   for (int d = 0; d < NDEV; ++d) {
     uint8_t votes = 0;
     uint8_t test_votes = 0;
 
+    /*@ loop invariant 0 <= l && l <= NVOTE_LOGIC;
+      @ loop assigns l, err, test_votes, votes;
+    */
     for (int l = 0; l < NVOTE_LOGIC; ++l) {
       uint8_t this_vote = 0;
       err   |= get_actuation_state(l, d, &this_vote);

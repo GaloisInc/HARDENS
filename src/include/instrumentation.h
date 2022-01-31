@@ -1,6 +1,7 @@
 #ifndef INSTRUMENTATION_H_
 #define INSTRUMENTATION_H_
 
+#include "platform.h"
 #include "common.h"
 
 #define ShouldTrip(_vals, _setpoints, _ch) \
@@ -61,6 +62,7 @@ void instrumentation_init(struct instrumentation_state *state);
   @assigns state->sensor_trip[0..2];
   @assigns state->maintenance;
   @assigns state->mode[0..2];
+  @assigns core.test.test_instrumentation_done[div];
   @ensures state->mode[0] \in {0,1,2};
   @ensures state->mode[1] \in {0,1,2};
   @ensures state->mode[2] \in {0,1,2};

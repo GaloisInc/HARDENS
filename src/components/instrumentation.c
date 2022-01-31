@@ -5,13 +5,13 @@
 
 #define TRIP_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
-/*@requires div <= 3;
+/*@requires div < NINSTR;
   @requires \valid(state);
-  @requires \valid(state->reading + (0..2));
-  @requires \valid(state->setpoints + (0..2));
-  @requires \valid(state->sensor_trip + (0..2));
-  @assigns state->reading[0..2];
-  @assigns state->sensor_trip[0..2];
+  @requires \valid(state->reading + (0.. NTRIP-1));
+  @requires \valid(state->setpoints + (0.. NTRIP-1));
+  @requires \valid(state->sensor_trip + (0.. NTRIP-1));
+  @assigns state->reading[0.. NTRIP-1];
+  @assigns state->sensor_trip[0.. NTRIP-1];
   @ensures -1 <= \result <= 0;
 */
 static int instrumentation_step_trip(uint8_t div,
@@ -38,9 +38,9 @@ static int instrumentation_step_trip(uint8_t div,
     new_trips = Generate_Sensor_Trips(state->reading, state->setpoints);
   }
 
-  /*@loop invariant 0 <= i && i <= 3;
+  /*@loop invariant 0 <= i && i <= NTRIP;
     @loop assigns i;
-    @loop assigns state->sensor_trip[0..2];
+    @loop assigns state->sensor_trip[0.. NTRIP-1];
   */
   for (int i = 0; i < NTRIP; ++i) {
     state->sensor_trip[i] = TRIP_I(new_trips, i);
@@ -95,12 +95,12 @@ static int instrumentation_handle_command(uint8_t div,
   return 0;
 }
 
-/*@ requires div <= 3;
+/*@ requires div < NINSTR;
   @ requires \valid(state);
   @ requires state->mode[0] \in {0,1,2};
   @ requires state->mode[1] \in {0,1,2};
   @ requires state->mode[2] \in {0,1,2};
-  @ assigns \nothing;
+  @ assigns core.test.test_instrumentation_done[div];
   @ ensures \result <= 0;
 */
 static int instrumentation_set_output_trips(uint8_t div,
@@ -112,7 +112,7 @@ static int instrumentation_set_output_trips(uint8_t div,
   */
   for (int i = 0; i < NTRIP; ++i) {
     uint8_t mode = do_test ? 1 : state->mode[i];
-    set_output_instrumentation_trip(div, i, BIT(do_test, Is_Ch_Tripped(mode, state->sensor_trip[i])));
+    set_output_instrumentation_trip(div, i, BIT(do_test, Is_Ch_Tripped(mode, 0 != state->sensor_trip[i])));
   }
 
   if (do_test) {

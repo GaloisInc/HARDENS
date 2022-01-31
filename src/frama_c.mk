@@ -1,8 +1,8 @@
 F ?=
-FRAMAC_FLAGS= -cpp-extra-args="-I include" -c11 -wp-split -wp-session wp-session -wp-cache update $(F) -wp-smoke-tests
+FRAMAC_FLAGS= -cpp-extra-args="-I include" -c11 -wp-split -wp-split-depth 4 -wp-session wp-session -wp-cache update $(F) # -wp-smoke-tests
 WP=frama-c $(FRAMAC_FLAGS)
 FRAMAC=frama-c $(FRAMAC_FLAGS) -wp-rte -wp $(FRAMAC_FLAGS) -wp-prover tip,alt-ergo,z3
-GUI=frama-c-gui $(FRAMAC_FLAGS) -wp-rte -wp -wp-prover tip
+GUI=frama-c-gui $(FRAMAC_FLAGS) -wp-rte -wp-prover tip
 
 SRC=actuation_logic.c core.c sense_actuate.c\
     variants/actuation_unit_generated_C.c\

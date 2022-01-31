@@ -2,8 +2,6 @@
 #define CORE_H_
 
 #include "common.h"
-#include "instrumentation.h"
-#include "actuation_logic.h"
 
 #ifndef SELF_TEST_PERIOD_SEC
 #define SELF_TEST_PERIOD_SEC 20
