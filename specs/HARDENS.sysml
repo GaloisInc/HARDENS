@@ -273,8 +273,8 @@ package id Architecture 'RTS Architecture' {
 
         // Pressure sensor 2
         connect pressureSensor2.output to pressureDemux2.input;
-        connect pressureDemux1.output1 to instrumentationUnit3.pressureInput;
-        connect pressureDemux1.output2 to instrumentationUnit4.pressureInput;
+        connect pressureDemux2.output1 to instrumentationUnit3.pressureInput;
+        connect pressureDemux2.output2 to instrumentationUnit4.pressureInput;
       }
 
 
