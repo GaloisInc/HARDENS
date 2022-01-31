@@ -163,7 +163,7 @@ int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
 
 int set_output_instrumentation_trip(uint8_t div, uint8_t channel, uint8_t val) {
   pthread_mutex_lock(&mem_mutex);
-  trip_signals[channel][div] = 0x1 & val;
+  trip_signals[channel][div] = val;
   pthread_mutex_unlock(&mem_mutex);
   return 0;
 }
@@ -227,7 +227,7 @@ int set_output_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t on) 
   /* assert(!(logic_no == 1 && on)); */
 
   pthread_mutex_lock(&mem_mutex);
-  device_actuation_logic[logic_no][device_no] = (0x1 & on);
+  device_actuation_logic[logic_no][device_no] = on;
   pthread_mutex_unlock(&mem_mutex);
   return 0;
 }
