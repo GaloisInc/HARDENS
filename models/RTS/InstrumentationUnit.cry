@@ -217,23 +217,7 @@ Generate_Sensor_Trips vals setpoints =
                where v  = vals @ ch
                      sp = setpoints @ ch
 
-<<<<<<< HEAD
-  Generate_Sensor_Trips : [NChannels][32] -> [NChannels][32] -> [NChannels]
-  Generate_Sensor_Trips vals setpoints = [t, p, s]
-    where
-      t = Trip vals setpoints 0
-      p = Trip vals setpoints 1
-      s = Trip vals setpoints 2
-
-  // 2 should be S, but this causes problems for crymp
-  Trip : [NChannels][32] -> [NChannels][32] -> Channel -> Bit
-  Trip vals setpoints ch = if ch == 2 then v <$ sp else sp < v
-    where v  = vals @ ch
-          sp = setpoints @ ch
-=======
 private
->>>>>>> develop
-
   /** @requirements
         INSTRUMENTATION_RESET
   */

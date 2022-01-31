@@ -28,14 +28,8 @@ static int instrumentation_step_trip(uint8_t div,
   }
   state->reading[S] = Saturation(state->reading[T], state->reading[P]);
 
-<<<<<<< HEAD
-  uint8_t new_trips = Generate_Sensor_Trips(state->reading, state->setpoints);
-  /*@loop invariant 0 <= i && i <= 3;
-    @loop assigns i;
-    @loop assigns state->sensor_trip[0..2];
-  */
-=======
   uint8_t new_trips;
+
   if (do_test) {
     uint32_t setpoints[3];
     err |= get_instrumentation_test_setpoints(div, &setpoints[0]);
@@ -44,7 +38,10 @@ static int instrumentation_step_trip(uint8_t div,
     new_trips = Generate_Sensor_Trips(state->reading, state->setpoints);
   }
 
->>>>>>> develop
+  /*@loop invariant 0 <= i && i <= 3;
+    @loop assigns i;
+    @loop assigns state->sensor_trip[0..2];
+  */
   for (int i = 0; i < NTRIP; ++i) {
     state->sensor_trip[i] = TRIP_I(new_trips, i);
   }
