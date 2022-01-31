@@ -1,5 +1,5 @@
 F ?=
-FRAMAC_FLAGS= -cpp-extra-args="-I include" -c11 -wp-split -wp-split-depth 4 -wp-session wp-session -wp-cache update $(F) # -wp-smoke-tests
+FRAMAC_FLAGS= -cpp-extra-args="-I include" -c11 -wp-split -wp-session wp-session -wp-cache update -wp-smoke-tests $(F)
 WP=frama-c $(FRAMAC_FLAGS)
 FRAMAC=frama-c $(FRAMAC_FLAGS) -wp-rte -wp $(FRAMAC_FLAGS) -wp-prover tip,alt-ergo,z3
 GUI=frama-c-gui $(FRAMAC_FLAGS) -wp-rte -wp-prover tip
