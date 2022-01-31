@@ -133,6 +133,9 @@ rts: $(SRC:.c=.o) $(EXTRA_SRC)
 	@echo $(BUILD_MSG)
 	@echo "***"
 
+rts_bottom: bottom.c
+	$(CC) $(CFLAGS) -o $@ bottom.c
+
 self_test_data/tests.inc.c:
 	cd self_test_data && \
     CRYPTOLPATH=../${MODEL_DIR} cryptol -b generate_tests.icry && \
