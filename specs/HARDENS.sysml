@@ -145,7 +145,7 @@ package id Architecture 'RTS Architecture' {
       	out mode: TripModeCommand;
       }
       
-       part def SaturationTable {
+       part def PressureTable {
         	doc /* The saturation table gives us the saturation pressure margin given
         	     * the current temperature and pressure, hence the output is pressure
         	     */
@@ -260,10 +260,10 @@ package id Architecture 'RTS Architecture' {
         part instrumentationUnit3 : InstrumentationUnit;
         part instrumentationUnit4 : InstrumentationUnit;
         
-        part table1 : SaturationTable;
-        part table2 : SaturationTable;
-        part table3 : SaturationTable;
-        part table4 : SaturationTable;
+        part table1 : PressureTable;
+        part table2 : PressureTable;
+        part table3 : PressureTable;
+        part table4 : PressureTable;
         
         part tempDemux1 : TempSensor::Demux;
         part tempDemux2 : TempSensor::Demux;
