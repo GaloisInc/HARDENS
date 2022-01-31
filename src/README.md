@@ -69,3 +69,15 @@ Run `make rts.posix{.verilog}` to generate an executable simulator. To regenerat
 `SystemVerilog` or `C` functions after an update to the Cryptol model, you can
 run `REGEN_SOURCES=1 make <target>`; by default, the checked-in existing
 generated code will be used.
+
+## Concurrency
+
+The RTS implementation is a concurrent system comprising two instrumentation +
+actuation logic modules plus a core logic controller.
+
+Consulting the SysMLv2 architecture, the principal ways in which processes
+communicate is via input and output values (e.g. passing trip signal values from
+the instrumentation divisions to the actuation unit. Each writable memory
+location has a unique writer, and system states inbetween individual writes are
+consistent. Therefore, it is only necessary to guarantee that individual writes
+(to shared locations) are made atomically.
