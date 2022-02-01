@@ -18,6 +18,9 @@
 #include <sys/select.h>
 #include <time.h>
 
+#define min(_a, _b) ((_a) < (_b) ? (_a) : (_b))
+#define max(_a, _b) ((_a) > (_b) ? (_a) : (_b))
+
 #ifdef USE_PTHREADS
 #include <pthread.h>
 pthread_mutex_t display_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -25,6 +28,28 @@ pthread_mutex_t mem_mutex = PTHREAD_MUTEX_INITIALIZER;
 #else
 #define pthread_mutex_lock(x)
 #define pthread_mutex_unlock(x)
+#endif
+
+#ifndef T0
+#define T0 200
+#endif
+
+#ifndef P0
+#define P0 1152600
+#endif
+
+// Bias to simulated sensor readings in degrees F
+#ifndef T_BIAS
+#define T_BIAS 0
+#endif
+
+// Bias to simulated sensor readings in 10^-5 lb/in2
+#ifndef P_BIAS
+#define P_BIAS 0
+#endif
+
+#ifndef SENSOR_UPDATE_MS
+#define SENSOR_UPDATE_MS 500
 #endif
 
 struct core_state core = {0};
@@ -139,24 +164,42 @@ int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
 }
 #else
 int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
-  static int initialized[2] = {0};
-  static int last = 0;
-  if (!initialized[channel]) {
-    initialized[channel] = 1;
-    if (channel == 0) {
-      last = rand() % 300;
-    } else {
-      last = rand() % 60;
-    }
-  } else {
-    if (channel == 0) {
-      last += (rand() % 7) - 3;
-    } else {
-      last += (rand() % 3) - 1;
-    }
-  }
+  pthread_mutex_lock(&mem_mutex);
+  static int initialized[4][2] = {0};
+  static uint32_t last[4][2] = {0};
+  static uint32_t last_update[4][2] = {0};
 
-  *val = last;
+  struct timespec tp;
+  clock_gettime(CLOCK_REALTIME, &tp);
+  uint32_t t0 = last_update[div][channel];
+  uint32_t t = tp.tv_sec*1000 + tp.tv_nsec/1000000;
+
+  if (!initialized[div][channel]) {
+    last_update[div][channel] = t;
+    initialized[div][channel] = 1;
+    // Saturation values taken from pressure table
+    if (channel == T) {
+      last[div][channel] = T0;
+    } else {
+      last[div][channel] = P0;
+    }
+  } else if (t - t0 > SENSOR_UPDATE_MS) {
+    if (channel == T) {
+      last[div][channel] += (rand() % 7) - 3 + T_BIAS;
+      // Don't stray too far from our steam table
+      last[div][channel] = min(last[div][channel], 300);
+      last[div][channel] = max(last[div][channel], 25);
+    } else {
+      last[div][channel] += (rand() % 7) - 3 + P_BIAS;
+      // Don't stray too far from our steam table
+      last[div][channel] = min(last[div][channel], 5775200);
+      last[div][channel] = max(last[div][channel], 8000);
+    }
+    last_update[div][channel] = t;
+  }
+  pthread_mutex_unlock(&mem_mutex);
+
+  *val = last[div][channel];
   return 0;
 }
 

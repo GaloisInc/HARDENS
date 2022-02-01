@@ -9,7 +9,7 @@ int actuate_devices_generated_C(void);
 
 #define INST_OFFSET 0
 #define ACT_OFFSET 5
-char INSTR_LINE_FMT[] = "#I %d (%c): T[%5d %c %d] P[%5d %c %d] S[%5d %c %d]";
+char INSTR_LINE_FMT[] = "#I %d (%c): T[%10d %c %d] P[%10d %c %d] S[%10d %c %d]";
 char ACT_LINE_FMT[] = "#A %d [%d %d]";
 
 const char self_test_running[]     = "SELF TEST:     RUNNING";

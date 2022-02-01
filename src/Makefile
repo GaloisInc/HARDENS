@@ -100,6 +100,12 @@ CXX ?= clang++
 HW ?= Simulated
 
 SENSORS ?=
+# Simulated sensor parameters:
+T0 ?= 200 # Initial temperature reading (deg. F)
+P0 ?= 1152600 # Initial pressure reading (10^-5 lb/in^2)
+T_BIAS ?= 0 # Bias in temp random walk (deg F)
+P_BIAS ?= 0 # Bias in pressure random walk
+SENSOR_UPDATE_MS ?= 500 # How fast sensors change values
 
 ifeq ($(HW),Simulated)
 CFLAGS += -DHW_SIMULATOR -I$(VERILATED_INC) -Wno-deprecated
@@ -109,7 +115,9 @@ EXTRA_SRC += $(VERILATED_SRC)
 endif
 
 ifeq ($(SENSORS),Simulated)
-CFLAGS += -DSIMULATE_SENSORS
+CFLAGS += -DSIMULATE_SENSORS -DT_BIAS=$(T_BIAS) -DP_BIAS=$(P_BIAS)
+CFLAGS += -DT0=$(T0) -DP0=$(P0)
+CFLAGS += -DSENSOR_UPDATE_MS=$(SENSOR_UPDATE_MS)
 endif
 
 ifeq ($(EXECUTION),Parallel)
