@@ -44,6 +44,14 @@ The simulation build can be configured to accept user input for sensor values (s
 
 - `make SENSORS=Simulated rts` will build a simulator that generates random
   temperature/pressure data;
+
+  There are a number of parameters that can control this simulation that are
+  documented in the `Makefile`:
+  
+  - `T0`,`P0`: initial temperature and pressure readings
+  - `T_BIAS`,`P_BIAS`: bias the direction of the random walk
+  - `SENSOR_UPDATE_MS`: period in ms of sensor value updates
+
 - `make SENSORS= rts` will build a simulator that allows the user to provide
   sensor values (`V #I #C #V`) sets channel `#C` of division `#I` to `#V`
 
