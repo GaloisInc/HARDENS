@@ -16,6 +16,9 @@ Besides a normal `clang` toolchain, the `Makefile` targets depend on the followi
 - `verilator` <https://www.veripool.org/verilator/> *Note* on macOS (tested on
   11.6.1) it seems there is an issue with recent versions: version 4.108 seems
   to work.
+  
+Verification with `frama-c` additionally requires `frama-c` version 24.0
+<https://frama-c.com>.
 
 ## Implementation status
 
@@ -69,6 +72,13 @@ Run `make rts.posix{.verilog}` to generate an executable simulator. To regenerat
 `SystemVerilog` or `C` functions after an update to the Cryptol model, you can
 run `REGEN_SOURCES=1 make <target>`; by default, the checked-in existing
 generated code will be used.
+
+## Verification with Frama-c 
+
+ACSL contracts are provided for the components implemented under `generated` and
+`handwritten` and their callers. To verify that implementations satisfy their contracts, run
+
+`make -f frama_c.mk`
 
 ## Concurrency
 
