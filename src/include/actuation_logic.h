@@ -5,31 +5,25 @@
 #include "common.h"
 #include "instrumentation.h"
 #include "core.h"
-
-#define CoincidenceL(trips)                                          \
-((trips[0] != 0 && trips[1] != 0) ||                            \
-     ((trips[0]  != 0|| trips[1] != 0) && (trips[2]  != 0|| trips[3] != 0)) || \
-     (trips[2] != 0 && trips[3] != 0))
-
-#define Coincidence(ch, trips) CoincidenceL(trips[ch])
+#include "models.acsl"
 
 /*@requires \valid(&trips[0.. NINSTR -1]);
   @assigns \nothing;
-  @ensures (\result != 0) <==> CoincidenceL(trips);
+  @ensures (\result != 0) <==> Coincidence_2_4(trips);
 */
 uint8_t Coincidence_2_4(uint8_t trips[4]);
 
 /*@requires \valid(&trips[0.. NTRIP - 1][0.. NINSTR - 1]);
   @requires \valid(trips + (0.. NTRIP-1));
   @assigns \nothing;
-  @ensures (\result != 0) <==> (old || Coincidence(T,trips) || Coincidence(P,trips));
+  @ensures (\result != 0) <==> Actuate_D0(&trips[T][0], &trips[P][0], &trips[S][0], old != 0);
 */
 uint8_t Actuate_D0(uint8_t trips[3][4], uint8_t old);
 
 /*@requires \valid(&trips[0.. NTRIP-1][0.. NINSTR-1]);
   @requires \valid(trips + (0.. NTRIP-1));
   @assigns \nothing;
-  @ensures (Coincidence(S,trips)) ==> (\result != 0);
+  @ensures (\result != 0) <==> Actuate_D1(&trips[T][0], &trips[P][0], &trips[S][0], old != 0);
 */
 uint8_t Actuate_D1(uint8_t trips[3][4], uint8_t old);
 

@@ -3,6 +3,7 @@
 
 #include "platform.h"
 #include "common.h"
+#include "models.acsl"
 
 #define ShouldTrip(_vals, _setpoints, _ch) \
   ((_ch == T && _vals[T] > _setpoints[T])     \
@@ -15,9 +16,7 @@ uint32_t Saturation(uint32_t x, uint32_t y);
 /*@requires \valid(vals + (0.. NTRIP-1));
   @requires \valid(setpoints + (0.. NTRIP-1));
   @assigns \nothing;
-  @ensures ((\result & 0x1) != 0) <==> ShouldTrip(vals, setpoints, T);
-  @ensures ((\result & 0x2) != 0) <==> ShouldTrip(vals, setpoints, P);
-  @ensures ((\result & 0x4) != 0) <==> ShouldTrip(vals, setpoints, S);
+  @ensures \result == (uint8_t)Generate_Sensor_Trips(vals, setpoints);
 */
 uint8_t Generate_Sensor_Trips(uint32_t vals[3], uint32_t setpoints[3]);
 
@@ -26,15 +25,14 @@ uint8_t Generate_Sensor_Trips(uint32_t vals[3], uint32_t setpoints[3]);
   @requires ch < NTRIP;
   @assigns \nothing;
   @ensures \result == 0 || \result == 1;
-  @ensures (\result == 1) ==> ShouldTrip(vals, setpoints, ch);
-  @ensures (\result == 0) ==> !ShouldTrip(vals, setpoints, ch);
+  @ensures (\result == 1) <==> Trip(vals, setpoints, ch);
 */
 uint8_t Trip(uint32_t vals[3], uint32_t setpoints[3], uint8_t ch);
 
 /*@requires mode < NMODES;
   @requires trip <= 1;
   @assigns \nothing;
-  @ensures (\result != 0) <==> ((mode == TRIP) || (mode == OPERATE && trip != 0));
+  @ensures (\result != 0) <==> Is_Ch_Tripped(mode, trip != 0);
 */
 uint8_t Is_Ch_Tripped(uint8_t mode, uint8_t trip);
 

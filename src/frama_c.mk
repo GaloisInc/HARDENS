@@ -2,7 +2,7 @@ F ?=
 FRAMAC_FLAGS= -cpp-extra-args="-I include" -c11 -wp-split -wp-session wp-session -wp-cache update -wp-smoke-tests $(F)
 WP=frama-c $(FRAMAC_FLAGS)
 FRAMAC=frama-c $(FRAMAC_FLAGS) -wp-rte -wp $(FRAMAC_FLAGS) -wp-prover tip,alt-ergo,z3
-GUI=frama-c-gui $(FRAMAC_FLAGS) -wp-rte -wp-prover tip
+GUI=frama-c-gui $(FRAMAC_FLAGS) -wp-rte -wp-prover tip,alt-ergo-z3
 
 SRC=actuation_logic.c core.c sense_actuate.c\
     variants/actuation_unit_generated_C.c\
@@ -33,13 +33,26 @@ metrics:
 	frama-c $(SRC) -metrics -cpp-extra-args="-I include" -c11
 
 actuator_proof:
-	$(FRAMAC) variants/actuator_generated_C.c $(EXCLUDE_ACT)
+	$(FRAMAC) components/actuator.c
+	$(FRAMAC) -cpp-extra-args='-include "common.h" -include "actuate.h"' generated/C/actuator_impl.c $(EXCLUDE_ACT)
 
 actuation_unit_proof:
-	$(FRAMAC) variants/actuation_unit_generated_C.c $(EXCLUDE_ACTU)
+	$(FRAMAC) components/actuation_unit.c
+	$(FRAMAC) -cpp-extra-args='-include "common.h" -include "actuation_logic.h"'  generated/C/actuation_unit_impl.c $(EXCLUDE_ACTU)
 
 instrumentation_proof:
-	$(FRAMAC) variants/instrumentation_generated_C.c variants/instrumentation_handwritten_C.c $(EXCLUDE_INSTR)
+	$(FRAMAC) components/instrumentation.c
+	$(FRAMAC) -cpp-extra-args='-include "common.h" -include "instrumentation.h"' generated/C/instrumentation_impl.c $(EXCLUDE_INSTR)
+	$(FRAMAC) -cpp-extra-args='-include "common.h" -include "instrumentation.h"' handwritten/C/instrumentation_impl.c
 
-gui:
-	$(GUI) $(SRC)
+actuator_gui:
+	$(GUI) -cpp-extra-args='-include "common.h" -include "actuate.h"'  generated/C/actuator_impl.c $(EXCLUDE_ACTU)
+
+actuation_unit_gui:
+	$(GUI) -cpp-extra-args='-include "common.h" -include "actuation_logic.h"'  generated/C/actuation_unit_impl.c $(EXCLUDE_ACTU)
+
+instrumentation_gui_generated:
+	$(GUI) -cpp-extra-args='-include "common.h" -include "instrumentation.h"' generated/C/instrumentation_impl.c $(EXCLUDE_INSTR)
+
+instrumentation_gui_handwritten:
+	$(GUI) -cpp-extra-args='-include "common.h" -include "instrumentation.h"' handwritten/C/instrumentation_impl.c $(EXCLUDE_INSTR)
