@@ -1,3 +1,13 @@
+// HARDENS Reactor Trip System (RTS) Instrumentation Unit
+// A formal model of RTS Instrumentation behavior written in the
+// Cryptol DSL.
+//
+// @author Alex Bakst <abakst@galois.com>
+// @created November, 2021
+// @refines HARDENS.sysml
+// @refines RTS.lando
+// @refines RTS_Requirements.json
+
 module RTS::InstrumentationUnit where
 
 import RTS::Utils
