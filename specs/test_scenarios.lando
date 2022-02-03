@@ -1,5 +1,5 @@
-// Scenarios are sequences of events.  Scenarios document normal and abnormal
-// traces of system execution.
+// Scenarios are sequences of events.  Scenarios document normal and
+// abnormal traces of system execution.
 
 // Test scenarios are scenarios that validate a system conforms to its
 // requirements through runtime verification (testing).  Each scenario
@@ -7,102 +7,102 @@
 // property.  If a testbench is complete, then every path of a
 // system's state machine should be covered by the its set of scenarios.
 
-requirements Test Scenarios
+scenarios Self-Test Scenarios
 
-Normal Behavior 1a - Trip on Mock High Pressure Reading from that Pressure Sensor
+Normal Self-Test Behavior 1a - Trip on Mock High Pressure Reading from that Pressure Sensor
 The user selects 'maintenance' for an instrumentation division, the
 division's pressure channel is set to 'normal' mode, the pressure
 setpoint is set to a value v, the user simulates a pressure input to
 that division exceeding v, the division generates a pressure trip.
 
-Normal Behavior 1b - Trip on Environmental High Pressure Reading from that Pressure Sensor
+Normal Self-Test Behavior 1b - Trip on Environmental High Pressure Reading from that Pressure Sensor
 The user selects 'maintenance' for an instrumentation division, the
 division's pressure channel is set to 'normal' mode, the pressure
-setpoint is set to a value v, the divison reads a pressure sensor
+setpoint is set to a value v, the division reads a pressure sensor
 value division exceeding v, the division generates a pressure trip.
 
-Normal Behavior 2a - Trip on Mock High Temperature Reading from that Temperature Sensor
+Normal Self-Test Behavior 2a - Trip on Mock High Temperature Reading from that Temperature Sensor
 The user selects 'maintenance' for an instrumentation division, the
 division's temperature channel is set to 'normal' mode, the
 temperature setpoint is set to a value v, the user simulates a
 temperature input to that division exceeding v, the division generates
 a temperature trip.
 
-Normal Behavior 2a - Trip on Environmental High Temperature Reading from that Temperature Sensor
+Normal Self-Test Behavior 2a - Trip on Environmental High Temperature Reading from that Temperature Sensor
 The user selects 'maintenance' for an instrumentation division, the
 division's temperature channel is set to 'normal' mode, the
-temperature setpoint is set to a value v, the divison reads a
+temperature setpoint is set to a value v, the division reads a
 temperature sensor value division exceeding v, the division generates
 a temperature trip.
 
-Normal Behavior 3a - Trip on Mock Low Saturation Margin
+Normal Self-Test Behavior 3a - Trip on Mock Low Saturation Margin
 The user selects 'maintenance' for an instrumentation division, the
 division's saturation channel is set to 'normal' mode, the saturation
 margin setpoint is set to a value v, the user simulates pressure and
 temperature inputs to that division such that the saturation margin is
 below v, the division generates a saturation margin trip.
 
-Normal Behavior 3a - Trip on Environmental Low Saturation Margin
+Normal Self-Test Behavior 3a - Trip on Environmental Low Saturation Margin
 The user selects 'maintenance' for an instrumentation division, the
 division's saturation channel is set to 'normal' mode, the saturation
-margin setpoint is set to a value v, the divison reads pressure and
+margin setpoint is set to a value v, the division reads pressure and
 temperature sensor values in that division such that the saturation
 margin is below v, the division generates a saturation margin trip.
 
-Normal Behavior 4 - Vote on Every Possible Like Trip
+Normal Self-Test Behavior 4 - Vote on Every Possible Like Trip
 The user selects 'maintenance' for each instrumentation division, the
 user configures a subset of channels to place in active trip output.
 
-Normal Behavior 5a - Automatically Actuate All Mock Devices in Sequence
+Normal Self-Test Behavior 5a - Automatically Actuate All Mock Devices in Sequence
 The user selects 'maintenance' for each instrumentation division, the
 user places enough channels in 'active trip' to actuate a mock device.
 
-Normal Behavior 5b - Automatically Actuate All Hardware Devices in Sequence
+Normal Self-Test Behavior 5b - Automatically Actuate All Hardware Devices in Sequence
 The user selects 'maintenance' for each instrumentation division, the
 user places enough channels in 'active trip' to actuate a hardware
 device.
 
-Normal Behavior 6 - Manually Actuate Each Device in Sequence
+Normal Self-Test Behavior 6 - Manually Actuate Each Device in Sequence
 The user manually actuates each device.
 
-Normal Behavior 7a - Select Maintenance Operating Mode for each Division
+Normal Self-Test Behavior 7a - Select Maintenance Operating Mode for each Division
 The user selects 'maintenance' mode for each instrumentation division
 in sequence.
 
-Normal Behavior 7b - Select Normal Operating Mode for each Division
+Normal Self-Test Behavior 7b - Select Normal Operating Mode for each Division
 The user exits 'maintenance' mode for each instrumentation division in
 sequence.
 
-Normal Behavior 8 - Perform Each Kind of Setpoint Adjustment
+Normal Self-Test Behavior 8 - Perform Each Kind of Setpoint Adjustment
 For each instrumentation division, the user provides a setpoint for
 temperature, then the user provides a setpoint for pressure, then the
 user provides a setpoint for saturation margin.
 
-Normal Behavior 9 - Configure Bypass of Each Instrument Channel in Sequence
+Normal Self-Test Behavior 9 - Configure Bypass of Each Instrument Channel in Sequence
 For each instrumentation division, the user puts each channel in
 'normal' and then 'bypass' mode.
 
-Normal Behavior 10 - Configure Active Trip Output State of Each Instrument Channel in Sequence
+Normal Self-Test Behavior 10 - Configure Active Trip Output State of Each Instrument Channel in Sequence
 For each instrumentation division, the user puts each channel in
 'trip' and then 'normal' mode.
 
-Normal Behavior 11 - Display Pressure, Temperature, and Saturation Margin
-The user provides inputs for an instrumnetation division, then the UI
+Normal Self-Test Behavior 11 - Display Pressure, Temperature, and Saturation Margin
+The user provides inputs for an instrumentation division, then the UI
 displays the updated pressure, temperature and saturation margin.
 
-Normal Behavior 12 - Display Every Trip Output Signal State in Sequence
+Normal Self-Test Behavior 12 - Display Every Trip Output Signal State in Sequence
 The user configures an instrumentation division in 'maintenance',
 selects a channel and places it in 'trip', the UI displays the trip
 state, the user places the channel in 'normal' mode, the UI displays
 the trip state.
 
-Normal Behavior 13 - Display Indication of Every Channel in Bypass in Sequence
+Normal Self-Test Behavior 13 - Display Indication of Every Channel in Bypass in Sequence
 The user configures an instrumentation division in 'maintenance', the
 user selects a channel and places it in bypass, the UI displays the
-bypass state, the user places the chanenl in normal mode, the UI
+bypass state, the user places the channel in normal mode, the UI
 displays the updated state.
 
-Normal Behavior 14 - Demonstrate Periodic Continual Self-test of Safety Signal Path
+Normal Self-Test Behavior 14 - Demonstrate Periodic Continual Self-test of Safety Signal Path
 The system starts, eventually the UI displays that self test has run.
 
 Normal Behavior Full Self-Test
@@ -118,8 +118,8 @@ that the correct actuation signal would be sent to the selected device.
 // failures, device driver partial or total failures, etc.
 
 // In our architecture, every part of the RTS system, and particularly
-// every part of the intrumentation and sensing subsystem and every
-// part of the actuation subsystem must be able to fail and the sysetm
+// every part of the instrumentation and sensing subsystem and every
+// part of the actuation subsystem must be able to fail and the system
 // must respond appropriately.
 
 // This is not detectable
