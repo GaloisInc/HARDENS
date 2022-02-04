@@ -1,5 +1,9 @@
-Version: 2022-01-07  13:38:00 EST
-Author: Rishiyur Nikhil
+# BSV SoC Wrapper for the NERV RISC-V CPU
+
+## Version: 2022-01-07  13:38:00 EST
+## Author: Rishiyur Nikhil
+
+## Overview
 
 Ref. "NERV" ("Naive Educational RISC-V Processor") found at:
 
@@ -33,8 +37,7 @@ Source files are in `src_BSV/`
 - `Top.bsv` is a testbench that instantiates `NervSoC` and just prints
   the LED values output from `NervSoc` whenever they change to the UART.
 
->================================================================
-Building it with Verilator
+## Building it with Verilator
 
     $ make compile_verilog
 
@@ -49,8 +52,7 @@ together with `nerv.sv` from the NERV repo, into a simulation
 executable `exe_verilator`.  Please see the `Makefile` for the
 detailed steps.
 
->================================================================
-Preparing a RISC-V program to run on the simulator
+## Preparing a RISC-V program to run on the simulator
 
 Objective: a memhex32 file `imem_contents.memhex32`, to be loaded into
 NERV'S instruction memory.
@@ -102,8 +104,7 @@ Note:
 
     In NERV, memory word addresses go from 0 to 1023 (0x0 to 0x3FF).
 
->================================================================
-Running a RISC-V program on the simulator
+## Running a RISC-V program on the simulator
 
 In the top-level of the repo, create/change the file
 `imem_contents.memhex32` to be a copy of our memhex32 file, or a
@@ -129,4 +130,3 @@ Run it:
 A transcript of about the first 100 lines is found in
 `transcript_exe_Verilator`.
 
->================================================================
