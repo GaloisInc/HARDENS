@@ -1,4 +1,4 @@
-  /** Semantic properties are annotation to model and system artifacts
+/** Semantic properties are annotation to model and system artifacts
     used to semantically markup those artifacts for documentation,
     traceability, and more. */
 package 'Semantic Properties' {

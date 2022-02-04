@@ -1,7 +1,7 @@
 /**
  * The set of all scenarios that describe interesting end-to-end executions
  * of the RTS system.  The full set of scenarios must include all normal
- * behavior (online and during sefl-test) and exceptional behavior.  
+ * behavior (online and during self-test) and exceptional behavior.  
  */
 package id Scenarios 'RTS Scenarios' {
   package id Normal 'RTS Normal Behavior Scenarios' {
