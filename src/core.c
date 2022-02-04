@@ -146,7 +146,7 @@ int self_test_timer_expired(struct test_state *test) {
 }
 
 int should_start_self_test(struct test_state *test) {
-  return (!test->self_test_running) && (self_test_timer_expired(test) || (test->test != 0));
+  return (!is_test_running()) && (self_test_timer_expired(test) || (test->test != 0));
 }
 
 int test_step(struct test_state *test) {
@@ -166,10 +166,10 @@ int test_step(struct test_state *test) {
       set_test_running(1);
       set_display_line(15, self_test_running, 0);
     }
-  } else if (test->self_test_running && test->test_device_done[test->test_device]) {
+  } else if (is_test_running() && test->test_device_done[test->test_device]) {
     int passed = end_test(test);
     if(!passed) err = -1;
-  } else if (!test->self_test_running) {
+  } else if (!is_test_running()) {
     set_display_line(15, self_test_not_running, 0);
   }
 

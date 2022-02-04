@@ -28,7 +28,6 @@ pthread_mutex_t mem_mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 struct core_state core = {0};
-
 struct instrumentation_state instrumentation[4];
 struct actuation_logic actuation_logic[2];
 

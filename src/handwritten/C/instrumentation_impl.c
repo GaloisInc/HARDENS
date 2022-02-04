@@ -4,16 +4,22 @@
 uint8_t Generate_Sensor_Trips(uint32_t vals[3], uint32_t setpoints[3])
 {
     uint8_t trips_out = 0;
-    for (int i = 0; i < 2; ++i) {
-        /* Identified by SAW: bug in first version:
-         * trips_out |= setpoints[i] < vals[i];
-         * trips_out << i;
-         */
-        trips_out |= ((setpoints[i] < vals[i]) << i);
-    }
-    trips_out |= ((int32_t)vals[2] < (int32_t)setpoints[2]) << 2;
+    trips_out |= Trip(vals, setpoints, 0);
+    //@ assert trips_out <= 0x1;
+    trips_out |= (Trip(vals, setpoints, 1) << 1);
+    //@ assert trips_out <= 0x3;
+    trips_out |= (Trip(vals, setpoints, 2) << 2);
 
     return trips_out;
+}
+
+uint8_t Trip(uint32_t vals[3], uint32_t setpoints[3], uint8_t ch)
+{
+    if (ch <= 1) {
+        return (setpoints[ch] < vals[ch]);
+    } else {
+        return ((int32_t)vals[ch] < (int32_t)setpoints[ch]);
+    }
 }
 
 uint8_t Is_Ch_Tripped(uint8_t mode, uint8_t sensor_tripped)

@@ -1,20 +1,34 @@
-#include "actuation_logic.h"
 #include "common.h"
 #include "platform.h"
+#include "actuation_logic.h"
 
 #define VOTE_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
+/*@requires \valid(&trip[0..2][0..3]);
+  @requires \valid(&trip_test[0..2][0..3]);
+  @assigns (trip[0..2][0..3]);
+  @assigns (trip_test[0..2][0..3]);
+*/
 static int
 actuation_logic_collect_trips(uint8_t logic_no, int do_test, uint8_t trip[3][4], uint8_t trip_test[3][4])
 {
     int err = 0;
-    int valid[4];
     uint8_t test_div[2];
     get_test_instrumentation(test_div);
 
     err |= read_instrumentation_trip_signals(trip);
 
+    /*@ loop invariant 0 <= i <= NINSTR;
+      @ loop assigns i;
+      @ loop assigns trip[0..2][0..3];
+      @ loop assigns trip_test[0..2][0..3];
+    */
     for (int i = 0; i < NINSTR; ++i) {
+        /*@ loop invariant 0 <= c <= NTRIP;
+          @ loop assigns c;
+          @ loop assigns trip[0..2][i];
+          @ loop assigns trip_test[0..2][i];
+        */
         for(int c = 0; c < NTRIP; ++c) {
             uint8_t test_signal = (i == test_div[0] || i == test_div[1]);
             if (do_test) {
@@ -29,6 +43,11 @@ actuation_logic_collect_trips(uint8_t logic_no, int do_test, uint8_t trip[3][4],
     return err;
 }
 
+
+/*@ requires \valid(&trips[0..2][0..3]);
+  @ requires \valid(trips + (0..2));
+  @ assigns \nothing;
+*/
 static uint8_t
 actuate_device(uint8_t device, uint8_t trips[3][4], int old)
 {
@@ -39,6 +58,17 @@ actuate_device(uint8_t device, uint8_t trips[3][4], int old)
     }
 }
 
+/*@requires \valid(state);
+  @requires logic_no < NVOTE_LOGIC;
+  @requires device < NDEV;
+  @requires \valid(trip + (0..2));
+  @requires \valid(trip_test + (0..2));
+  @requires \valid(&trip[0..2][0..3]);
+  @requires \valid(&trip_test[0..2][0..3]);
+  @assigns state->vote_actuate[device];
+  @assigns core.test.actuation_old_vote;
+  @assigns core.test.test_actuation_unit_done[logic_no];
+*/
 static void
 actuation_logic_vote_trips(uint8_t logic_no, int do_test, uint8_t device, uint8_t trip[3][4], uint8_t trip_test[3][4], struct actuation_logic *state)
 {
@@ -52,6 +82,13 @@ actuation_logic_vote_trips(uint8_t logic_no, int do_test, uint8_t device, uint8_
     }
 }
 
+/*@ requires logic_no < NVOTE_LOGIC;
+  @ requires \valid(state);
+  @ assigns state->vote_actuate[0..1];
+
+  @ assigns core.test.actuation_old_vote;
+  @ assigns core.test.test_actuation_unit_done[logic_no];
+*/
 static int
 actuation_logic_vote(uint8_t logic_no, int do_test, struct actuation_logic *state)
 {
@@ -67,18 +104,35 @@ actuation_logic_vote(uint8_t logic_no, int do_test, struct actuation_logic *stat
     return err;
 }
 
+
+/*@requires \valid(cmd);
+  @requires \valid(state);
+  @assigns state->manual_actuate[0..1];
+  @ensures -1 <= \result <= 0;
+*/
 static int
 actuation_handle_command(uint8_t logic_no, struct actuation_command *cmd, struct actuation_logic *state)
 {
-    state->manual_actuate[cmd->device] = cmd->on;
+    if (cmd->device <= 1)
+        state->manual_actuate[cmd->device] = cmd->on;
     return 0;
 }
 
+/*@requires \valid(state);
+  @requires logic_no < NVOTE_LOGIC;
+  @assigns state->vote_actuate[0..1];
+  @assigns core.test.test_actuation_unit_done[logic_no];
+  @ensures -1 <= \result <= 0;
+*/
 static int
 output_actuation_signals(uint8_t logic_no, int do_test, struct actuation_logic *state)
 {
     int err = 0;
 
+    /*@ loop invariant 0 <= d <= NDEV;
+      @ loop invariant -1 <= err <= 0;
+      @ loop assigns d, err;
+    */
     for (int d = 0; d < NDEV; ++d) {
         uint8_t on = state->vote_actuate[d] || state->manual_actuate[d];
         if (!do_test || !is_actuation_unit_test_complete(logic_no)) {

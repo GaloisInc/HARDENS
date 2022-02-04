@@ -38,6 +38,7 @@
 
 #define BIT(_test, _value) ((_test) ? (0x8 | (_value)) : _value)
 #define VALID(_value) (!(0x8 & (_value)))
+#define VAL(_value) (0x1 & value)
 
 //////////////////////////////////////////////////////////////
 // RTS Command Definitions                                  //
@@ -85,6 +86,7 @@ struct rts_command {
 #define _ExtInt_2 char
 #define _ExtInt_3 char
 #define _ExtInt_4 char
+#define _ExtInt_6 char
 #define _ExtInt_8 char
 #define _ExtInt_32 int
 #define _ExtInt(w) _ExtInt_##w

@@ -44,11 +44,15 @@ TempPressureTripOut ts = (ts @ (0:[1])) || (ts @ (1:[1]))
 
 private
   Coincidence_2_4 : [4]TripPort -> Bit
-  Coincidence_2_4 x = (bits != 0) && (bits != 1) && (bits != 2) && (bits != 4) && (bits != 8)
+  Coincidence_2_4 x =
+    (a&&b) || ((a||b) && (c||d)) || (c&&d)
     where
-      bits = [ b != 0 | b <- x ]
+      a = (x @ (0:[2])) != 0
+      b = (x @ (1:[2])) != 0
+      c = (x @ (2:[2])) != 0
+      d = (x @ (3:[2])) != 0
 
-  count : {n} (fin n) => [n] -> Integer
+  count : {n} (fin n, n >= 1) => [n] -> [width n]
   count bs = sum [ if b then 1 else 0 | b <- bs ]
 
   /** @requirements

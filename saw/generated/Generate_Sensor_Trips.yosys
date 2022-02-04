@@ -1,6 +1,7 @@
 read_verilog Generate_Sensor_Trips.v
 rename \f \Generate_Sensor_Trips_spec
 select -module \Generate_Sensor_Trips_spec
+flatten
 splitnets -ports
 
 # These unfortunate renamings are due to SAW's
@@ -205,6 +206,7 @@ select -clear
 
 read_verilog -sv ../src/generated/SystemVerilog/instrumentation_impl.sv
 select -module \Generate_Sensor_Trips
+flatten
 splitnets -ports
 select -clear
 

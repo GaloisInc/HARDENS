@@ -41,7 +41,6 @@ handwritten/%.bc: handwritten/%.c ../src/handwritten/C/%.c
 	make -C ../src generated/SystemVerilog/$*.sv
 
 ../src/%.c:
-	echo "HERE"
 	make -C ../src/ $*.c
 
 ../src/generated/%.sv:
