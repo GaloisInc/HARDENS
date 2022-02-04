@@ -3,7 +3,7 @@
 package Nerv_BVI;
 
 // ================================================================
-// Module mkNerv_BVI imports the SystemVerilg module nerv.sv so that
+// Module mkNerv_BVI imports the SystemVerilog module nerv.sv so that
 // it can be used in BSV.
 // nerv.sv is from:    https://github.com/YosysHQ/nerv
 
@@ -61,7 +61,7 @@ module mkNerv_BVI (Nerv_BVI_IFC);
    method m_dmem_rdata (dmem_rdata) enable ((*inhigh*) EN2);    // BSV -> Verilog
 
    // Declaring each method conflict-free with each method.
-   // This is ok if everthing is registered, but dicey if there are
+   // This is ok if everything is registered, but dicey if there are
    // combinational paths weaving in and out of the module.
       schedule
       (m_stall,

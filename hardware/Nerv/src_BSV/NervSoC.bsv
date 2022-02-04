@@ -45,7 +45,7 @@ module mkNervSoC (NervSoC_IFC);
 
    // Nerv has Harward architecture (separate data and instruction memory),
    // so in order to properly initialize global symbols, we need to load
-   // the hex file into *both* memories
+   // the hex file into *both* memories.
    RegFile #(Bit #(30), Bit #(32)) imem <- mkRegFileLoad ("imem_contents.memhex32", 0, memory_size);
    RegFile #(Bit #(30), Bit #(32)) dmem <- mkRegFileLoad ("imem_contents.memhex32", 0, memory_size);
 
