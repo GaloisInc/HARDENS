@@ -64,6 +64,12 @@ uint8_t actuator_state[NDEV];
 uint8_t device_actuation_logic[2][NDEV];
 struct actuation_command *act_command_buf[2];
 
+uint8_t error_instrumentation[NINSTR];
+// Simulate sensor failure and demux failure, i.e.:
+// error_sensor[T][0] simulates temperature demux 1 failure, while
+// error_sensor[T][0] && error_sensor[T][1] simulates temperature 1 failure
+uint8_t error_sensor[2][NINSTR];
+
 void update_display() {
   if (isatty(fileno(stdin))) {
     printf("\e[s\e[1;1H");//\e[2J");
@@ -161,6 +167,9 @@ int read_rts_command(struct rts_command *cmd) {
     exit(0);
   } else if (line[0] == 'D') {
     update_display();
+  } else if (4 == (ok = sscanf(line, "ES %hhd %hhd %hhd", &ch, &div, &mode))) {
+    error_sensor[ch][div] = mode;
+    // Error Sensor
   }
 
   if (line)
@@ -172,7 +181,9 @@ int read_rts_command(struct rts_command *cmd) {
 #ifndef SIMULATE_SENSORS
 int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
   pthread_mutex_lock(&mem_mutex);
-  *val = sensors[div][channel];
+  if (!error_sensor[channel][div]) {
+    *val = sensors[div][channel];
+  }
   pthread_mutex_unlock(&mem_mutex);
   return 0;
 }
@@ -221,7 +232,8 @@ int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
 
 int set_output_instrumentation_trip(uint8_t div, uint8_t channel, uint8_t val) {
   pthread_mutex_lock(&mem_mutex);
-  trip_signals[channel][div] = val;
+  if (!error_instrumentation[div])
+    trip_signals[channel][div] = val;
   pthread_mutex_unlock(&mem_mutex);
   return 0;
 }
@@ -292,28 +304,32 @@ int set_output_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t on) 
 
 int get_instrumentation_value(uint8_t division, uint8_t ch, uint32_t *value) {
   pthread_mutex_lock(&mem_mutex);
-  *value = instrumentation[division].reading[ch];
+  if (!error_instrumentation[division])
+    *value = instrumentation[division].reading[ch];
   pthread_mutex_unlock(&mem_mutex);
   return 0;
 }
 
 int get_instrumentation_trip(uint8_t division, uint8_t ch, uint8_t *value) {
   pthread_mutex_lock(&mem_mutex);
-  *value = instrumentation[division].sensor_trip[ch];
+  if (!error_instrumentation[division])
+    *value = instrumentation[division].sensor_trip[ch];
   pthread_mutex_unlock(&mem_mutex);
   return 0;
 }
 
 int get_instrumentation_mode(uint8_t division, uint8_t ch, uint8_t *value) {
   pthread_mutex_lock(&mem_mutex);
-  *value = instrumentation[division].mode[ch];
+  if (!error_instrumentation[division])
+    *value = instrumentation[division].mode[ch];
   pthread_mutex_unlock(&mem_mutex);
   return 0;
 }
 
 int get_instrumentation_maintenance(uint8_t division, uint8_t *value) {
   pthread_mutex_lock(&mem_mutex);
-  *value = instrumentation[division].maintenance;
+  if (!error_instrumentation[division])
+    *value = instrumentation[division].maintenance;
   pthread_mutex_unlock(&mem_mutex);
   return 0;
 }
