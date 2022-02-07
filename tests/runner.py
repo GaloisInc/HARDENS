@@ -2,7 +2,7 @@
 import pexpect
 import sys
 
-def try_expect(p,expected,timeout=1,retries=3):
+def try_expect(p,expected,timeout=30,retries=3):
     expected = expected.strip()
     while retries > 0:
         p.sendline('D')
