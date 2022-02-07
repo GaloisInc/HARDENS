@@ -2,7 +2,7 @@
 # Dependencies on other directories
 
 # Example: NERV_REPO ?= $(HOME)/Git/nerv
-NERV_REPO ?= ../../nerv
+NERV_REPO ?= ../nerv
 
 ifndef NERV_REPO
   $(error ERROR: please define NERV_REPO, i.e., path to clone of https://github.com/YosysHQ/nerv)
