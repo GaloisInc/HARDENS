@@ -167,7 +167,7 @@ int read_rts_command(struct rts_command *cmd) {
     exit(0);
   } else if (line[0] == 'D') {
     update_display();
-  } else if (4 == (ok = sscanf(line, "ES %hhd %hhd %hhd", &ch, &div, &mode))) {
+  } else if (3 == (ok = sscanf(line, "ES %hhd %hhd %hhd", &ch, &div, &mode))) {
     error_sensor[ch][div] = mode;
     // Error Sensor
   }
