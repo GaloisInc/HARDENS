@@ -80,7 +80,6 @@ compile_verilog: build_v verilog imem_contents.memhex32
 # ================================================================
 # FOR VERILATOR
 
-
 EXEFILE_VERILATOR  ?= exe_verilator
 
 .PHONY: all_verilator
@@ -106,10 +105,12 @@ VERILATOR_FLAGS += -LDFLAGS -static
 
 .PHONY: link_verilator
 link_verilator: compile_verilog
-	@echo INFO: Link for Verilator ...
+	@echo "INFO: Link for Verilator ..."
 	@echo "INFO: For convenience (single -I flag to verilator) copy all Verilog files into $(VERILATOR_RTL_DIR)/"
 	mkdir -p $(VERILATOR_RTL_DIR)
 	cp -p  $(VERILATOR_RESOURCES)/verilator_wrapper.v    $(VERILATOR_RTL_DIR)/
+	cp -p  $(VERILATOR_RESOURCES)/*.c    $(VERILATOR_RTL_DIR)/
+	cp -p  $(VERILATOR_RESOURCES)/*.h    $(VERILATOR_RTL_DIR)/
 	cp -p  verilog/*.v                                   $(VERILATOR_RTL_DIR)/
 	cp -p  $(NERV_REPO)/nerv.sv                          $(VERILATOR_RTL_DIR)/
 	cp -p  $(BLUESPEC_HOME)/lib/Verilog/*.v  $(VERILATOR_RTL_DIR)/
@@ -117,13 +118,18 @@ link_verilator: compile_verilog
 	sed  's/TOPMODULE/mkTop/g' \
 		$(VERILATOR_RESOURCES)/sim_main_template.cpp \
 		> $(VERILATOR_RESOURCES)/sim_main.cpp
+	@echo "INFO: Generating C interfaces"
+	sed  -f $(VERILATOR_RESOURCES)/sed_script.txt  $(VERILATOR_RTL_DIR)/$(TOPMODULE).v > tmp1.v
+	cat $(VERILATOR_RESOURCES)/import_DPI_C_decls.v tmp1.v > $(VERILATOR_RTL_DIR)/$(TOPMODULE).v
+	rm   -f  tmp1.v
 	@echo "INFO: Verilating Verilog files (in $(VERILATOR_MAKE_DIR))"
 	verilator \
 		-I$(VERILATOR_RTL_DIR) \
 		$(VERILATOR_FLAGS) \
 		--cc  --exe --build -j 4 -o $(EXEFILE_VERILATOR)  verilator_wrapper.v \
 		--top-module $(TOPMODULE) \
-		$(VERILATOR_RESOURCES)/sim_main.cpp
+		$(VERILATOR_RESOURCES)/sim_main.cpp \
+		$(VERILATOR_RESOURCES)/C_Imported_Functions.c
 	mv  $(VERILATOR_MAKE_DIR)/$(EXEFILE_VERILATOR)  .
 	@echo INFO: Finished Link for Verilator
 
@@ -140,6 +146,6 @@ exe_verilator: link_verilator
 clean:
 	rm -r -f  *~   */*~  build*  obj_dir \
 		$(VERILATOR_RTL_DIR)  $(VERILATOR_MAKE_DIR)  Verilator_Resources/sim_main.cpp imem_contents.memhex32 firmware.asm \
-		verilog  exe_*
+		verilog  exe_* *.o *.sft ./*.so
 
 # ================================================================
