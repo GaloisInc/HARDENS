@@ -40,7 +40,8 @@ module mkTop (Empty);
 
    // I/O peripherals
    // @podhrmic TODO: check the prescalers
-   //I2C i2c <- mkI2C(16);
+   // and look into proper use of I2C module
+   // I2CController #(1) i2c_controller <- mkI2CController();
    UART #(4) uart <- mkUART(8, NONE, STOP_1, 16);
 
    // ================================================================
@@ -75,7 +76,6 @@ module mkTop (Empty);
    endrule
    end
 `endif
-
 
    rule uart_tx;
       let val <-  nerv_soc.get_uart_tx_byte();

@@ -57,7 +57,10 @@ module mkNervSoC (NervSoC_IFC);
 
    // IO addresses
    Bit #(32) led_GPIO_addr = 32'h 0100_0000;
+   // 7bits addr, 1bit RW
    Bit #(32) i2c_reg_addr = 32'h 0300_0000;
+   // I2C fifo has up to 16 bytes (4 registers)
+   // Bit #(32) i2c_reg_data_1 = 32'h 0300_0004;
 
    Bit #(32) uart_reg_addr_tx = 32'h 0200_0000;
    Bit #(32) uart_reg_addr_rx = 32'h 0200_0004;
@@ -109,33 +112,27 @@ module mkNervSoC (NervSoC_IFC);
          $display ("DMem addr 0x%0h  wstrb 0x%0h  wdata 0x%0h mask 0x%0h" , d_addr, wstrb, wdata, mask);
 
       case (d_addr)
+         // Write to GPIO LED pins
+         // TODO: repurpose for generic actuator IO
          led_GPIO_addr:
             begin
                rg_leds <= ((rg_leds & (~ mask)) | (wdata & mask));
             end
+         // Write a byte to serial port
          uart_reg_addr_tx:
             begin
-               //let newval = ((rg_uart_tx & (~ mask)) | (wdata & mask));
-               //rg_uart_tx <= newval[8:1];
                rg_uart_tx <= wdata[7:0];
                rg_uart_tx_data_ready <= True;
-               // Accept only first 8 bits
-               //$display("Writing to uart: 0x%0h, %c",newval, newval);
-               //uart.rx.put(newval[8:1]);
             end
+         // Receive data from serial port
+         // Note: might be 0 or stale, check uart_reg_addr_data_ready first
          uart_reg_addr_rx:
             begin
-               // We requested a read from the UART FIFO
-               // Return the first value from FIFO
-               // @podhrmic: What to do if the fifo is empty?
-               //let val <- uart.tx.get();
-               //$display("Reading from uart 0x%0h", val);
                rg_dmem_rdata <= signExtend(rg_uart_rx);
                rg_uart_rx_data_ready <= False;
             end
          uart_reg_addr_data_ready:
             begin
-               //$display("Uart data ready? 0x%0h", rg_uart_rx_data_ready);
                if (rg_uart_rx_data_ready)
                   rg_dmem_rdata <= 1;
                else
