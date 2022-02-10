@@ -39,7 +39,7 @@
 #define VALID(_value) (!(0x8 & (_value)))
 #define VAL(_value) (0x1 & value)
 
-#define NLINES 20
+#define NLINES 21
 #define LINELENGTH 64
 //////////////////////////////////////////////////////////////
 // RTS Command Definitions                                  //
