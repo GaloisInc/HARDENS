@@ -5,9 +5,9 @@ import glob
 import sys
 import os
 
-for test in glob.glob("scripts/*"):
+for test in glob.glob("scenarios/*"):
     fn, ext = os.path.splitext(test)
-    if ext == "cases":
+    if ext == ".cases":
         continue
     print(f"{fn}:")
     if os.path.exists(fn + ".cases"):

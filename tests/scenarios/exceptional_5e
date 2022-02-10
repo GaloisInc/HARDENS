@@ -1,11 +1,10 @@
-{Dir}
-
 // Set temperature
 V 0 0 100
 V 1 0 100
 
-// Set temperature, sensor 1 demux failure (1 or 2)
-ES 0 0 {Dir}
+// Set temperature, all demuxes to nondet failure
+ES 0 0 5
+ES 1 0 5
 
 M 0 0
 M 1 0

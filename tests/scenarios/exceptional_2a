@@ -1,14 +1,13 @@
-// Introduce error sensor 1 both demux outputs to simulate sensor failure
-ES 0 0 1
-ES 0 1 1
+// Introduce error in sensor 1
+ES 0 0 3
 
 // Set temperature
 V 0 0 100
 V 1 0 100
-V 2 0 100
-V 3 0 100
 
-?#I 0 \(.\): T\[ *0 . .\] P\[ *\d+ . .\] S\[ *-?\d+ . .\]
-?#I 1 \(.\): T\[ *0 . .\] P\[ *\d+ . .\] S\[ *-?\d+ . .\]
-?#I 2 \(.\): T\[ *100 . .\] P\[ *\d+ . .\] S\[ *-?\d+ . .\]
-?#I 3 \(.\): T\[ *100 . .\] P\[ *\d+ . .\] S\[ *-?\d+ . .\]
+M 0 0
+M 1 0
+M 2 0
+M 3 0
+
+?WARNING: LARGE SENSOR DIFFERENTIAL

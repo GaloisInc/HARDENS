@@ -2,7 +2,7 @@
 import pexpect
 import sys
 
-def try_expect(p,expected,timeout=30,retries=3):
+def try_expect(p,expected,timeout=5,retries=10):
     expected = expected.strip()
     while retries > 0:
         p.sendline('D')
@@ -15,8 +15,30 @@ def try_expect(p,expected,timeout=30,retries=3):
     return False
 
 def run_script(p, cmds):
-    for c in cmds:
-        if c[0] == '?':
+    in_block = False
+    block = ''
+    for i,c in enumerate(cmds):
+        if len(c) == 0:
+            continue
+
+        if c.strip() == '???':
+            if in_block:
+                in_block = False
+                if try_expect(p, block):
+                    block = ''
+                    continue
+                else:
+                    return False
+            else:
+                in_block = True
+            continue
+
+        if in_block:
+            if block != '':
+                block += "\\r\\n"
+            block += c.strip()
+
+        elif c[0] == '?':
             if try_expect(p,c[1:]):
                 continue
             else:
@@ -38,8 +60,9 @@ def run(script, args):
                 return False
             for (var, val) in zip(pnames, args):
                 params[var] = val
+            cmds = cmds[1:]
 
-        formatted = [cmd.format(**params) for cmd in cmds[1:]]
+        formatted = [cmd.format(**params) for cmd in cmds]
 
         return run_script(p, formatted)
 
