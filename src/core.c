@@ -133,6 +133,7 @@ int update_ui(struct ui_values *ui) {
 }
 
 int set_display_line(struct ui_values *ui, uint8_t line_number, char *display, uint32_t size) {
+  memset(ui->display[line_number], ' ', LINELENGTH);
   strncpy(ui->display[line_number], (const char*)display, LINELENGTH);
   return 0;
 }
@@ -219,9 +220,13 @@ int core_step(struct core_state *core) {
   int err = 0;
   struct rts_command rts;
 
-  // Actuate devices if necessary
-  actuate_devices_generated_C();
+  if (!core->error)
+    // Actuate devices if necessary
+    actuate_devices_generated_C();
 
+  // Let's allow command processing even if an error is detected.
+  // In a real system, we would probably want to disconnect the device
+  // and perform maintenance.
   int read_cmd = read_rts_command(&rts);
   if (read_cmd < 0) {
     err |= -read_cmd;
@@ -245,5 +250,6 @@ int core_step(struct core_state *core) {
   err |= test_step(&core->test, &core->ui);
   err |= update_ui(&core->ui);
 
+  core->error = err;
   return err;
 }

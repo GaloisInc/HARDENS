@@ -53,6 +53,7 @@ struct test_state {
 struct core_state {
   struct ui_values ui;
   struct test_state test;
+  uint8_t error;
 };
 
 int set_display_line(struct ui_values *ui, uint8_t line_number, char *display, uint32_t size);
