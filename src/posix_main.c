@@ -56,7 +56,11 @@ struct core_state core = {0};
 struct instrumentation_state instrumentation[4];
 struct actuation_logic actuation_logic[2];
 
-uint32_t sensors[4][2];
+// channel -> sensor # -> val
+uint32_t sensors[2][2];
+// channel -> sensor # -> demux output # -> val
+uint32_t sensors_demux[2][2][2];
+
 uint8_t trip_signals[NTRIP][4];
 struct instrumentation_command *inst_command_buf[4];
 
@@ -64,11 +68,22 @@ uint8_t actuator_state[NDEV];
 uint8_t device_actuation_logic[2][NDEV];
 struct actuation_command *act_command_buf[2];
 
+//EI mode:
+//  mode = 0 => no error
+//  mode = 1 => error
+//  mode = 2 => nondet error
+uint8_t error_instrumentation_mode[NINSTR];
 uint8_t error_instrumentation[NINSTR];
-// Simulate sensor failure and demux failure, i.e.:
-// error_sensor[T][0] simulates temperature demux 1 failure, while
-// error_sensor[T][0] && error_sensor[T][1] simulates temperature 1 failure
-uint8_t error_sensor[2][NINSTR];
+// ES ch mode:
+//   mode = 0 => no error
+//   mode = 1 => demux error (out 0)
+//   mode = 2 => demux error (out 1)
+//   mode = 3 => sensor error (error in both demux outs)
+//   mode = 4 => nondet sensor error
+//   mode = 5 => nondet demux error
+uint8_t error_sensor_mode[2][2];
+uint8_t error_sensor[2][2];
+uint8_t error_sensor_demux[2][2][2];
 
 int clear_screen() {
   return (isatty(fileno(stdin)) && (NULL == getenv("RTS_NOCLEAR")));
@@ -84,7 +99,6 @@ void update_display() {
   }
   if (clear_screen()) printf("\e[u");
 }
-
 
 int read_instrumentation_trip_signals(uint8_t arr[3][4]) {
   for (int i = 0; i < NTRIP; ++i) {
@@ -108,7 +122,7 @@ int set_actuate_device(uint8_t device_no, uint8_t on)
 
 int read_rts_command(struct rts_command *cmd) {
   int ok = 0;
-  uint8_t device, on, div, ch, mode;
+  uint8_t device, on, div, ch, mode, sensor;
   uint32_t val;
   char *line = NULL;
   size_t linecap = 0;
@@ -149,6 +163,7 @@ int read_rts_command(struct rts_command *cmd) {
     cmd->instrumentation_division = div;
     cmd->cmd.instrumentation.type = SET_MAINTENANCE;
     cmd->cmd.instrumentation.cmd.maintenance.on = on;
+    assert(on == 0 || on == 1);
     ok = 1;
   } else if (3 == (ok = sscanf(line, "B %hhd %hhd %hhd", &div, &ch, &mode))) {
     cmd->type = INSTRUMENTATION_COMMAND;
@@ -165,17 +180,18 @@ int read_rts_command(struct rts_command *cmd) {
     cmd->cmd.instrumentation.cmd.setpoint.val = val;
     ok = 1;
 #ifndef SIMULATE_SENSORS
-  } else if (3 == (ok = sscanf(line, "V %hhd %hhd %d", &div, &ch, &val))) {
-    if (div < 4 && ch < 3)
-      sensors[div][ch] = val;
+  } else if (3 == (ok = sscanf(line, "V %hhd %hhd %d", &sensor, &ch, &val))) {
+    if (sensor < 2 && ch < 2)
+      sensors[ch][sensor] = val;
 #endif
   } else if (line[0] == 'Q') {
     exit(0);
   } else if (line[0] == 'D') {
     update_display();
-  } else if (3 == (ok = sscanf(line, "ES %hhd %hhd %hhd", &ch, &div, &mode))) {
-    error_sensor[ch][div] = mode;
-    // Error Sensor
+  } else if (3 == (ok = sscanf(line, "ES %hhd %hhd %hhd", &sensor, &ch, &mode))) {
+    error_sensor_mode[ch][sensor] = mode;
+  } else if (2 == (ok = sscanf(line, "EI %hhd %hhd", &div, &mode))) {
+    error_instrumentation_mode[div] = mode;
   }
 
   if (line)
@@ -184,15 +200,91 @@ int read_rts_command(struct rts_command *cmd) {
   return ok;
 }
 
-#ifndef SIMULATE_SENSORS
+void update_instrumentation_errors(void) {
+  for (int i = 0; i < NINSTR; ++i) {
+    if(error_instrumentation_mode[i] == 2) {
+      error_instrumentation[i] |= rand() % 2;
+    } else {
+      error_instrumentation[i] = error_instrumentation_mode[i];
+    }
+  }
+}
+
+void update_sensor_errors(void) {
+  for (int c = 0; c < 2; ++c) {
+    for (int s = 0; s < 2; ++s) {
+      switch (error_sensor_mode[c][s]) {
+        case 0:
+          error_sensor[c][s] = 0;
+          error_sensor_demux[c][s][0] = 0;
+          error_sensor_demux[c][s][1] = 0;
+          break;
+        case 1:
+          error_sensor[c][s] = 0;
+          error_sensor_demux[c][s][0] = 1;
+          error_sensor_demux[c][s][1] = 0;
+          break;
+        case 2:
+          error_sensor[c][s] = 0;
+          error_sensor_demux[c][s][0] = 0;
+          error_sensor_demux[c][s][1] = 1;
+          break;
+        case 3:
+          error_sensor[c][s] = 1;
+          error_sensor_demux[c][s][0] = 0;
+          error_sensor_demux[c][s][1] = 0;
+          break;
+        case 4:
+        {
+          int fail = rand() % 2;
+          error_sensor[c][s] |= fail;
+          error_sensor_demux[c][s][0] = 0;
+          error_sensor_demux[c][s][1] = 0;
+        }
+        break;
+        case 5:
+        {
+          error_sensor[c][s] = 0;
+          error_sensor_demux[c][s][0] |= (rand() % 2);
+          error_sensor_demux[c][s][1] |= (rand() % 2);
+        }
+        break;
+        default:
+          assert("Invalid sensor fail mode" && 0);
+      }
+    }
+  }
+}
+
 int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
   pthread_mutex_lock(&mem_mutex);
-  if (!error_sensor[channel][div]) {
-    *val = sensors[div][channel];
-  }
+  int sensor = div/2;
+  int demux_out = div%2;
+  *val = sensors_demux[channel][sensor][demux_out];
   pthread_mutex_unlock(&mem_mutex);
   return 0;
 }
+
+#ifndef SIMULATE_SENSORS
+void update_sensors(void) {
+  update_sensor_errors();
+  for (int c = 0; c < 2; ++c) {
+    for (int s = 0; s < 2; ++s) {
+      if (error_sensor[c][s]) {
+        sensors[c][s] = rand();
+      }
+
+      sensors_demux[c][s][0] = sensors[c][s];
+      sensors_demux[c][s][1] = sensors[c][s];
+
+      for (int d = 0; d < 2; ++d) {
+        if(error_sensor_demux[c][s][d])
+          sensors_demux[c][s][d] = rand();
+      }
+    }
+  }
+}
+
 #else
 int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
   pthread_mutex_lock(&mem_mutex);
@@ -300,8 +392,6 @@ int reset_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t reset_val
 int set_output_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t on) {
   assert(logic_no < 2);
   assert(device_no < 2);
-
-  /* assert(!(logic_no == 1 && on)); */
 
   pthread_mutex_lock(&mem_mutex);
   device_actuation_logic[logic_no][device_no] = on;
@@ -503,6 +593,8 @@ int main(int argc, char **argv) {
     sprintf(line, "HW ACTUATORS %s %s", actuator_state[0] ? "ON " : "OFF", actuator_state[1]? "ON " : "OFF");
     set_display_line(&core.ui, 8, line, 0);
     pthread_mutex_unlock(&display_mutex);
+    update_instrumentation_errors();
+    update_sensors();
     core_step(&core);
 #ifndef USE_PTHREADS
     sense_actuate_step_0(&instrumentation[0], &actuation_logic[0]);
