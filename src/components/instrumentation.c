@@ -20,20 +20,21 @@ static int instrumentation_step_trip(uint8_t div,
   int err = 0;
 
   if (do_test) {
-    err |= read_test_instrumentation_channel(div, T, &state->reading[T]);
-    err |= read_test_instrumentation_channel(div, P, &state->reading[P]);
+    err |= read_test_instrumentation_channel(div, T, &state->test_reading[T]);
+    err |= read_test_instrumentation_channel(div, P, &state->test_reading[P]);
+    state->test_reading[S] = Saturation(state->test_reading[T], state->test_reading[P]);
   } else {
     err |= read_instrumentation_channel(div, T, &state->reading[T]);
     err |= read_instrumentation_channel(div, P, &state->reading[P]);
+    state->reading[S] = Saturation(state->reading[T], state->reading[P]);
   }
-  state->reading[S] = Saturation(state->reading[T], state->reading[P]);
 
   uint8_t new_trips;
 
   if (do_test) {
     uint32_t setpoints[3];
     err |= get_instrumentation_test_setpoints(div, &setpoints[0]);
-    new_trips = Generate_Sensor_Trips(state->reading, setpoints);
+    new_trips = Generate_Sensor_Trips(state->test_reading, setpoints);
   } else {
     new_trips = Generate_Sensor_Trips(state->reading, state->setpoints);
   }

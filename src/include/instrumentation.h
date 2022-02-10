@@ -38,6 +38,7 @@ uint8_t Is_Ch_Tripped(uint8_t mode, uint8_t trip);
 
 struct instrumentation_state {
   uint32_t reading[NTRIP];
+  uint32_t test_reading[NTRIP];
   uint32_t setpoints[NTRIP];
   uint8_t sensor_trip[NTRIP];
   uint8_t mode[NTRIP];
