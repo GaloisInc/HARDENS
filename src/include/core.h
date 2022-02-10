@@ -9,6 +9,14 @@
 
 #define NDIVISIONS 4
 
+#ifndef T_THRESHOLD // degrees F
+#define T_THRESHOLD 3
+#endif
+
+#ifndef P_THRESHOLD // 10^-5 lb/ft
+#define P_THRESHOLD 100
+#endif
+
 struct ui_values {
   uint32_t values[NDIVISIONS][NTRIP];
   uint8_t bypass[NDIVISIONS][NTRIP];

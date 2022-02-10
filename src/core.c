@@ -5,8 +5,6 @@
 #include "rts.h"
 #include <string.h>
 
-#include <string.h>
-
 int actuate_devices_generated_C(void);
 
 #define INST_OFFSET 0
@@ -18,6 +16,9 @@ const char self_test_running[]     = "SELF TEST:     RUNNING";
 const char self_test_not_running[] = "SELF TEST: NOT RUNNING";
 const char pass[] = "LAST TEST: PASS";
 const char fail[] = "LAST TEST: FAIL";
+
+char sensor_warning[] = "WARNING: LARGE SENSOR DIFFERENTIAL";
+char sensor_ok[] = "SENSORS OK";
 
 struct testcase {
   uint32_t input[4][2];
@@ -53,6 +54,7 @@ char maint_char(uint8_t mode) {
 
 int update_ui_instr(struct ui_values *ui) {
   int err = 0;
+  int sensor_differential = 0;
 
   char line[256];
 
@@ -70,12 +72,37 @@ int update_ui_instr(struct ui_values *ui) {
 
     snprintf(line, sizeof(line), INSTR_LINE_FMT, INST_OFFSET + i,
              maint_char(ui->maintenance[i]), ui->values[i][T],
-             mode_char(ui->bypass[i][T]), ui->trip[i][T], ui->values[i][P],
-             mode_char(ui->bypass[i][P]), ui->trip[i][P], ui->values[i][S],
-             mode_char(ui->bypass[i][S]), ui->trip[i][S]);
+             mode_char(ui->bypass[i][T]), 0 != ui->trip[i][T], ui->values[i][P],
+             mode_char(ui->bypass[i][P]), 0 != ui->trip[i][P], ui->values[i][S],
+             mode_char(ui->bypass[i][S]), 0 != ui->trip[i][S]);
 
     set_display_line(ui, i, line, sizeof(line));
   }
+
+  // Flag any sensor differences that exceed thresholds
+  for (uint8_t i = 0; i < NDIVISIONS; ++i) {
+
+    if (ui->maintenance[i])
+      continue;
+
+    for (uint8_t j = 0; j < NDIVISIONS; ++j) {
+
+      if (ui->maintenance[j])
+        continue;
+
+      sensor_differential |=
+        (ui->values[i][T] > ui->values[j][T] &&
+         ui->values[i][T] - ui->values[j][T] > T_THRESHOLD);
+      sensor_differential |=
+        (ui->values[i][P] > ui->values[j][P] &&
+         ui->values[i][P] - ui->values[j][P] > P_THRESHOLD);
+    }
+  }
+
+  if (sensor_differential)
+    set_display_line(ui, 14, sensor_warning, sizeof(sensor_warning));
+  else
+    set_display_line(ui, 14, sensor_ok, sizeof(sensor_ok));
 
   return err;
 }
