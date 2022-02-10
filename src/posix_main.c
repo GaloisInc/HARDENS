@@ -70,15 +70,19 @@ uint8_t error_instrumentation[NINSTR];
 // error_sensor[T][0] && error_sensor[T][1] simulates temperature 1 failure
 uint8_t error_sensor[2][NINSTR];
 
+int clear_screen() {
+  return (isatty(fileno(stdin)) && (NULL == getenv("RTS_NOCLEAR")));
+}
+
 void update_display() {
-  if (isatty(fileno(stdin))) {
+  if (clear_screen()) {
     printf("\e[s\e[1;1H");//\e[2J");
   }
   for (int line = 0; line < NLINES; ++line) {
+    printf("\e[0K");
     printf("%s%s", core.ui.display[line], line == NLINES-1 ? "" : "\n");
   }
-  /* if (isatty(fileno(stdin))) printf("\e[%d;1H\e[2K>\e[u",NLINES+1); */
-  if (isatty(fileno(stdin))) printf("\e[u");
+  if (clear_screen()) printf("\e[u");
 }
 
 
@@ -129,8 +133,10 @@ int read_rts_command(struct rts_command *cmd) {
     return 0;
 
   pthread_mutex_lock(&display_mutex);
-  if (isatty(fileno(stdin)))
+
+  if (clear_screen())
       printf("\e[%d;1H\e[2K> ", NLINES+1);
+
   pthread_mutex_unlock(&display_mutex);
 
   if (2 == (ok = sscanf(line, "A %hhd %hhd", &device, &on))) {
@@ -502,9 +508,7 @@ int main(int argc, char **argv) {
     sense_actuate_step_0(&instrumentation[0], &actuation_logic[0]);
     sense_actuate_step_1(&instrumentation[2], &actuation_logic[1]);
 #endif
-    if (isatty(fileno(stdin))) {
-      update_display();
-    }
+    update_display();
   }
 
   return 0;
