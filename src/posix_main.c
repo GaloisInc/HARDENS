@@ -265,68 +265,72 @@ int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
   return 0;
 }
 
-#ifndef SIMULATE_SENSORS
+int update_sensor_simulation(void) {
+  static int initialized = 0;
+  static uint32_t last_update = 0;
+  static uint32_t last[2][2] = {0};
+
+  struct timespec tp;
+  clock_gettime(CLOCK_REALTIME, &tp);
+  uint32_t t0 = last_update;
+  uint32_t t = tp.tv_sec*1000 + tp.tv_nsec/1000000;
+
+  if (!initialized) {
+    last_update = t;
+    last[0][T] = T0;
+    last[1][T] = T0;
+    last[0][P] = P0;
+    last[1][P] = P0;
+    initialized = 1;
+  } else if (t - t0 > SENSOR_UPDATE_MS) {
+    for (int s = 0; s < 2; ++s) {
+      last[s][T] += (rand() % 7) - 3 + T_BIAS;
+      // Don't stray too far from our steam table
+      last[s][T] = min(last[s][T], 300);
+      last[s][T] = max(last[s][T], 25);
+
+      last[s][P] += (rand() % 7) - 3 + P_BIAS;
+      // Don't stray too far from our steam table
+      last[s][P] = min(last[s][P], 5775200);
+      last[s][P] = max(last[s][P], 8000);
+    }
+  }
+  sensors[0][T] = last[0][T];
+  sensors[1][T] = last[1][T];
+  sensors[0][P] = last[0][P];
+  sensors[1][P] = last[1][P];
+
+  return 0;
+}
 void update_sensors(void) {
   update_sensor_errors();
+#ifdef SIMULATE_SENSORS
+  update_sensor_simulation();
+#endif
   for (int c = 0; c < 2; ++c) {
     for (int s = 0; s < 2; ++s) {
       if (error_sensor[c][s]) {
         sensors[c][s] = rand();
       }
 
+      pthread_mutex_lock(&mem_mutex);
       sensors_demux[c][s][0] = sensors[c][s];
+      pthread_mutex_unlock(&mem_mutex);
+
+      pthread_mutex_lock(&mem_mutex);
       sensors_demux[c][s][1] = sensors[c][s];
+      pthread_mutex_unlock(&mem_mutex);
 
       for (int d = 0; d < 2; ++d) {
-        if(error_sensor_demux[c][s][d])
+        if(error_sensor_demux[c][s][d]) {
+          pthread_mutex_lock(&mem_mutex);
           sensors_demux[c][s][d] = rand();
+          pthread_mutex_unlock(&mem_mutex);
+        }
       }
     }
   }
 }
-
-#else
-int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
-  pthread_mutex_lock(&mem_mutex);
-  static int initialized[4][2] = {0};
-  static uint32_t last[4][2] = {0};
-  static uint32_t last_update[4][2] = {0};
-
-  struct timespec tp;
-  clock_gettime(CLOCK_REALTIME, &tp);
-  uint32_t t0 = last_update[div][channel];
-  uint32_t t = tp.tv_sec*1000 + tp.tv_nsec/1000000;
-
-  if (!initialized[div][channel]) {
-    last_update[div][channel] = t;
-    initialized[div][channel] = 1;
-    // Saturation values taken from pressure table
-    if (channel == T) {
-      last[div][channel] = T0;
-    } else {
-      last[div][channel] = P0;
-    }
-  } else if (t - t0 > SENSOR_UPDATE_MS) {
-    if (channel == T) {
-      last[div][channel] += (rand() % 7) - 3 + T_BIAS;
-      // Don't stray too far from our steam table
-      last[div][channel] = min(last[div][channel], 300);
-      last[div][channel] = max(last[div][channel], 25);
-    } else {
-      last[div][channel] += (rand() % 7) - 3 + P_BIAS;
-      // Don't stray too far from our steam table
-      last[div][channel] = min(last[div][channel], 5775200);
-      last[div][channel] = max(last[div][channel], 8000);
-    }
-    last_update[div][channel] = t;
-  }
-  pthread_mutex_unlock(&mem_mutex);
-
-  *val = last[div][channel];
-  return 0;
-}
-
-#endif
 
 int set_output_instrumentation_trip(uint8_t div, uint8_t channel, uint8_t val) {
   pthread_mutex_lock(&mem_mutex);
