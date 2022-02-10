@@ -81,7 +81,7 @@ int read_instrumentation_command(uint8_t division, struct instrumentation_comman
 /*@requires division < NINSTR;
   @requires \valid(cmd);
   @assigns cmd->type, cmd->cmd;
-  @ensures -1 <= \result <= 1;
+  @ensures -1 <= \result <= 0;
 */
 int send_instrumentation_command(uint8_t division, struct instrumentation_command *cmd);
 

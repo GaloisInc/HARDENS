@@ -243,8 +243,9 @@ int send_actuation_command(uint8_t id, struct actuation_command *cmd) {
     act_command_buf[id] = (struct actuation_command *)malloc(sizeof(*act_command_buf[id]));
     act_command_buf[id]->device = cmd->device;
     act_command_buf[id]->on = cmd->on;
+    return 0;
   }
-  return 0;
+  return -1;
 }
 
 int read_actuation_command(uint8_t id, struct actuation_command *cmd) {
@@ -278,9 +279,9 @@ int send_instrumentation_command(uint8_t id,
     inst_command_buf[id] = (struct instrumentation_command *)malloc(sizeof(*inst_command_buf[id]));
     inst_command_buf[id]->type = cmd->type;
     inst_command_buf[id]->cmd = cmd->cmd;
-    return 1;
+    return 0;
   }
-  return 0;
+  return -1;
 }
 
 int reset_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t reset_val) {
