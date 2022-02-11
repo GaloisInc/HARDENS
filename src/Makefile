@@ -107,6 +107,13 @@ T_BIAS ?= 0 # Bias in temp random walk (deg F)
 P_BIAS ?= 0 # Bias in pressure random walk
 SENSOR_UPDATE_MS ?= 500 # How fast sensors change values
 
+# Indicate in UI if two sensor readings differ by more than the thresholds below:
+T_THRESHOLD ?= 3 # (deg. F)
+P_THRESHOLD ?= 100 # (10^-5 lb/in^2)
+
+CFLAGS += -DT_THRESHOLD=$(T_THRESHOLD)
+CFLAGS += -DP_THRESHOLD=$(P_THRESHOLD)
+
 ifeq ($(HW),Simulated)
 CFLAGS += -DHW_SIMULATOR -I$(VERILATED_INC) -Wno-deprecated
 CC = $(CXX)

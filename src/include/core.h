@@ -13,7 +13,7 @@
 #define T_THRESHOLD 3
 #endif
 
-#ifndef P_THRESHOLD // 10^-5 lb/ft
+#ifndef P_THRESHOLD // 10^-5 lb/in^2
 #define P_THRESHOLD 100
 #endif
 
