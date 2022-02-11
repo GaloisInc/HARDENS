@@ -82,7 +82,7 @@ to run the script.
 
 ## Building
 
-Run `make rts.posix{.verilog}` to generate an executable simulator. To regenerate
+Run `make rts` to generate an executable simulator. To regenerate
 `SystemVerilog` or `C` functions after an update to the Cryptol model, you can
 run `REGEN_SOURCES=1 make <target>`; by default, the checked-in existing
 generated code will be used.
