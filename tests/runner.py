@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+# Run a test on a single input
+
 import pexpect
 import sys
 

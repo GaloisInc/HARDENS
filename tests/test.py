@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
+
+# Runs all of the testcases for a given test script:
+# ./test.py scenario
+# or
+# ./test.py scenario scenario.cases
+
 import sys
 import os
 from runner import run
 
+# Some tests are quite long. For sanity checking we can just
+# run the first few test cases.
 QUICK = os.environ.get("QUICK")
 
 def main():
