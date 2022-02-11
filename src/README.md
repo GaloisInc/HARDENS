@@ -43,7 +43,9 @@ The `PLATFORM` variable controls whether or not we are building for the Soc:
 
 #### Sensors
 
-The simulation build can be configured to accept user input for sensor values (see [](tests/sense_actuate_0) or to generate a "random walk" of sensor values. This is controlled via the `SENSORS` build flag:
+The simulation build can be configured to accept user input for sensor values
+(see [](tests/sense_actuate_0) or to generate a "random walk" of sensor values.
+This is controlled via the `SENSORS` build flag:
 
 - `make SENSORS=Simulated rts` will build a simulator that generates random
   temperature/pressure data;
@@ -58,7 +60,14 @@ The simulation build can be configured to accept user input for sensor values (s
 - `make SENSORS= rts` will build a simulator that allows the user to provide
   sensor values (`V #I #C #V`) sets channel `#C` of division `#I` to `#V`
 
-An example of how to script the system is given in [](tests/sense_actuate_0); you can execute
+- `make SENSORS=Simulated rts` will build a simulator that generates
+  random temperature/pressure data;
+- `make SENSORS=rts` will build a simulator that allows the user to
+  provide sensor values (`V #I #C #V`) sets channel `#C` of division
+  `#I` to `#V`
+
+An example of how to script the system is given in
+[](tests/sense_actuate_0); you can execute
 
 ``` sh
 cat tests/sense_actuate_0 | ./rts.posix
@@ -68,11 +77,8 @@ to run the script.
 
 ### Notes and Current Limitations
 
-- Currently the simulator build does *not* model failure or other exceptional conditions.
-- The self-test functionality is not yet implemented.
-- Hand-written equivalents of the generated `C` and `SystemVerilog` are not yet included.
-- The build system does not yet support mixing implementations of different components.
-
+- The build system does not yet support mixing implementations of
+  different components.
 
 ## Building
 
