@@ -11,11 +11,13 @@ This directory contains the source (both hand-written and generated, `C` and
 
 Besides a normal `clang` toolchain, the `Makefile` targets depend on the following tools:
 
-- `cryptol-verilogc` <https://gitlab-ext.galois.com/cryptol/cryptol-verilog>
+- `cryptol-verilogc`
+  <https://gitlab-ext.galois.com/cryptol/cryptol-verilog/-/tree/signed-compare>
 - `crymp` <https://gitlab-ext.galois.com/cryptol/cryptol-codegen/-/tree/hardens-tweaks> 
 - `verilator` <https://www.veripool.org/verilator/> *Note* on macOS (tested on
   11.6.1) it seems there is an issue with recent versions: version 4.108 seems
   to work.
+- `Cryptol` 2.11 <https://cryptol.net>
   
 Verification with `frama-c` additionally requires `frama-c` version 24.0
 <https://frama-c.com>.
