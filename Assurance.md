@@ -54,11 +54,16 @@ three complementary strategies:
 
 We generate both C and SystemVerilog implementations of key functions directly
 from the Cryptol model. For each such function, we use SAW to prove that the
-generated component (either at the Verilog level or the LLVM bitcode level)
-exactly matches its specification. It is worth mentioning here that this is not
-limited to C functions or SystemVerilog modules. For example, the
-self-test functionality executes a series of testcases mechnically extracted
-directly from the Cryptol model.
+generated component exactly matches its specification. It is worth mentioning
+here that this is not limited to C functions or SystemVerilog modules. For
+example, the self-test functionality executes a series of testcases mechnically
+extracted directly from the Cryptol model.
+
+In particular, for C implementations, we use SAW to prove correctness between
+the Cryptol model and the LLVM bitcode. For SystemVerilog implementations, we
+use SAW to extract a Verilog module from the Cryptol specification, and then use
+yosys to prove equivalence between the extracted Verilog module and the
+generated or hand-written SystemVerilog module.
 
 Not only does this establish the functional correctness of the component in
 question, but writing such specification (that can be precisely checked) ensures
