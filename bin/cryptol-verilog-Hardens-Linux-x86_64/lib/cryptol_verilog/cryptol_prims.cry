@@ -1,0 +1,21 @@
+module cryptol_verilog::cryptol_prims where
+
+// Grabbed from Cryptol::Reference and tweaked to get rid of 'inf'
+pmod : {u, v} (fin u, fin v) => [u] -> [1 + v] -> [v]
+pmod x y = if y == 0 then zero else last zs
+  where
+    degree : [width v]
+    degree = last (ds : [2 + v]_)
+      where ds = [zero] # [if yi then i else d | yi <- reverse y | i <- [0..v] | d <- ds ]
+
+    reduce : [1 + v] -> [1 + v]
+    reduce u = if u ! degree then u ^ y else u
+
+    powers : [1 + u][1 + v]
+    powers = [reduce 1] # [ reduce (p << 1) | p <- take powers ]
+
+    zs = [zero] # [ z ^ (if xi then tail p else 0) | xi <- reverse x | p <- powers | z <- zs ]
+
+foldl : {n, a, b} (fin n) => (a -> b -> a) -> a -> [n]b -> a
+foldl f acc0 bs = accs ! 0
+  where accs = [acc0] # [f acc b | b <- bs | acc <- accs ]

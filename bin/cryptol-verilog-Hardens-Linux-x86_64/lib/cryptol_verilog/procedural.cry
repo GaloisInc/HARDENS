@@ -1,0 +1,93 @@
+module cryptol_verilog::procedural where
+
+import cryptol_verilog::Incremental
+
+type IncrementalProc s block a =
+  Procedural (IncrementalProcInput s block)
+             { store_en: Bit, algState: s, cur_blk: block, block_out: block, out: a}
+             { block_out: block, out: a }
+
+type IncrementalProcInput s block =
+  { ready : Bit, reset : Bit, blk: block, initState: s}
+
+/**
+"Compile" an IncrementalAlgorithm to a Procedural
+
+NB we're merely exploiting Cryptol as an IR for the translation to Verilog.
+Thus, the translation is loosely tuned to the sorts of expressions that appear
+(or, more importantly, do not appear) below.
+*/
+incremental : {s, block, a} (Zero a, Zero block) =>
+              IncrementalAlgorithm s block a ->
+              IncrementalProc s block a
+incremental alg =
+  Procedural
+     { go = \inp st ->
+                if ~ inp.reset then
+                  // On reset, re-initialize all values
+                  { next_state   = { st | algState = inp.initState
+                                        , store_en = 0
+                                   }
+
+                  , answer       = { block_out = zero
+                                   , out       = zero }
+                  }
+                else
+                  ({ next_state = { st | // On the next cycle, store the updated answers
+                                         store_en  = inp.ready
+                                         // If there is new input, store it in cur_blk
+                                       , cur_blk   = if inp.ready   then inp.blk  else skip st.cur_blk
+                                         // On the last cycle we saw a new block, so we need to update
+                                         // the output block and state
+                                       , block_out = if st.store_en then blk_step else skip st.block_out
+                                       , out       = if st.store_en then out_step else skip st.out
+                                         // On the last cycle we saw a new block, so we need to update
+                                         // the output state
+                                       , algState  = if st.store_en then algState_step else skip st.algState
+                                  }
+
+                   , answer     = { // On the last cycle we saw a new block, so we need to update
+                                    // the output block/answer
+                                    block_out = if st.store_en then blk_step else skip st.block_out
+                                  , out       = if st.store_en then out_step else skip st.out
+                                  }
+                   }
+                      where
+                        (algState_step, blk_step) = alg.next st.algState st.cur_blk
+                        out_step = alg.finish algState_step)
+     }
+
+incrementalProcInput : {l,s,block} (Zero block, Zero s, fin l) => s -> [l]block -> [l+2](IncrementalProcInput s block)
+incrementalProcInput s0 bs =
+   ([{ ready = 0, reset = 0, blk = zero, initState = s0 }] #
+    [{ ready = 1, reset = 1, blk = b, initState = zero } | b <- bs ] #
+    [{ ready = 0, reset = 1, blk = zero, initState = zero } ])
+
+
+incrementalInput s0 blks = out # [ {ready = 0, reset = 1, blk = zero, initState = s0} ]
+  where out = [{ready = 0, reset = 0, blk = zero, initState = s0 }]
+              # [ {l|reset=1, ready=1, blk=b} | l <- out | b <- blks ]
+
+type Pr inp s a = Procedural inp s a
+
+runPr : {a,s,n,inp} (fin n, n >= 1, Zero s, Zero a) => [n]inp -> Pr inp s a -> a
+runPr inp p = observePr inp p ! 0
+
+observePr : {a,s,n,inp} (fin n, n >= 1, Zero s, Zero a) =>
+            [n]inp ->
+            Pr inp s a ->
+            [n]a
+observePr inp p = [ o.answer | o <- drop out ]
+  where
+    out : [n+1]_
+    out = [{ next_state = zero, answer = zero }] # [ p.go i s.next_state | i <- inp | s <- out ]
+
+private
+  /** This is effectively a compiler internal but written in Cryptol. We will be controlling
+      precisely how these terms are constructed, and relying on those invariants in Verilog genration.
+      Hence this is private.
+  */
+  newtype Procedural inp s a = { go : inp -> s -> { next_state: s, answer:a } }
+
+  skip : {a} a -> a
+  skip x = x

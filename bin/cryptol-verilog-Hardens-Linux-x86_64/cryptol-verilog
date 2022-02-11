@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+BIN="$(basename ${BASH_SOURCE[0]})"
+
+cryptol_verilog_datadir="$DIR/lib" \
+    "$DIR/bin/$BIN" "$@"

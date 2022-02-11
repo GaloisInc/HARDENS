@@ -1,0 +1,19 @@
+module Cryptol::Overrides where
+
+import cryptol_verilog::cryptol_prims as Prims
+import Cryptol::Reference as Ref
+
+pmult : {u, v} (fin u, fin v) => [1 + u] -> [1 + v] -> [1 + u + v]
+pmult = Ref::pmult
+
+pdiv : {u, v} (fin u, fin v) => [u] -> [v] -> [u]
+pdiv = Ref::pdiv
+
+pmod : {u, v} (fin u, fin v) => [u] -> [1 + v] -> [v]
+pmod = Prims::pmod
+
+foldl : {n, a, b} (fin n) => (a -> b -> a) -> a -> [n]b -> a
+foldl = Prims::foldl
+
+parmap : {a, b, n} (Eq b, fin n) => (a -> b) -> [n]a -> [n]b
+parmap f lst = map f lst

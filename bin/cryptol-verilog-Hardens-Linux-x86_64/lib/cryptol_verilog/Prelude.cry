@@ -1,0 +1,7 @@
+module cryptol_verilog::Prelude where
+
+/**
+  Used as an annotation by the compiler that ought to know how to interpret a t1 as a t2
+  but not _when_ to do so.
+*/
+primitive wrap : {t1, t2} t1 -> t2

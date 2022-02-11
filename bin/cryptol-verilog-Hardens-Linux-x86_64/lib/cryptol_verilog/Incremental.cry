@@ -1,0 +1,22 @@
+module cryptol_verilog::Incremental where
+
+/**
+  Represents stateful algorithms that transforms of type 'block' to 'block',
+  starting from some initial state.
+*/
+type IncrementalAlgorithm s block a =
+  { next   : s -> block -> (s, block) // Produce a block of output plus the next state value
+  , finish : s -> a                   // A computation to run on the current "next state" value
+  }
+
+/** Simple reference implementation */
+runIncremental :
+  {s,block,a,l} (Zero block, fin l) =>
+  IncrementalAlgorithm s block a ->
+  s ->
+  [l]block ->
+  [l](a, block)
+runIncremental alg s0 ms =  [ (alg.finish x.0, x.1) | x <- drop`{1} out ]
+  where
+    out : [_](s, block)
+    out = [(s0, zero)] # [ alg.next (st'.0) m | st' <- out | m <- ms ]
