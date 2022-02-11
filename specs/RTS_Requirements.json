@@ -51,7 +51,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & TEMPERATURE_MODE = 2)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8cdcf310-5932-11ec-96a3-f79b5f3617de"
+        "_id": "30165290-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_SENSOR_TRIP_PRESSURE",
@@ -107,7 +107,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & PRESSURE_MODE = 1)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8cdd1a20-5932-11ec-96a3-f79b5f3617de"
+        "_id": "3016a0b0-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_SET_SETPOINT_PRESSURE",
@@ -162,7 +162,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b> is true and any point in the interval where <b><i>(( MAINTENANCE & SET_SETPOINT_PRESSURE ))</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8ce111c0-5932-11ec-96a3-f79b5f3617de"
+        "_id": "3016c7c0-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_SENSOR_TRIP_SATURATION",
@@ -218,7 +218,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & SATURATION_MODE = 1)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8ce15fe0-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301715e0-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_SET_MANUAL_TRIP_PRESSURE",
@@ -272,7 +272,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & PRESSURE_MODE = 2)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8ce1ae00-5932-11ec-96a3-f79b5f3617de"
+        "_id": "30178b10-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_SET_BYPASS_SATURATION",
@@ -326,7 +326,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & SATURATION_MODE = 0)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8ce1fc20-5932-11ec-96a3-f79b5f3617de"
+        "_id": "3017b220-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "ACTUATION_LOGIC_DEVICE_0",
@@ -372,7 +372,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "8ce24a40-5932-11ec-96a3-f79b5f3617de"
+        "_id": "3017d930-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_SET_SETPOINT_SATURATION",
@@ -427,7 +427,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b> is true and any point in the interval where <b><i>(( MAINTENANCE & SET_SETPOINT_SATURATION ))</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8ce29860-5932-11ec-96a3-f79b5f3617de"
+        "_id": "30180040-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_SET_BYPASS_PRESSURE",
@@ -481,7 +481,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & PRESSURE_MODE = 0)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8ce2e680-5932-11ec-96a3-f79b5f3617de"
+        "_id": "30184e60-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_SET_MANUAL_TRIP_SATURATION",
@@ -535,7 +535,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & SATURATION_MODE = 2)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8ce334a0-5932-11ec-96a3-f79b5f3617de"
+        "_id": "30187570-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "ACTUATION_LOGIC_VOTE_TEMPERATURE",
@@ -583,7 +583,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "8ce35bb0-5932-11ec-96a3-f79b5f3617de"
+        "_id": "3018c390-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "ACTUATION_LOGIC_DEVICE_1",
@@ -629,7 +629,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "8ce3a9d0-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301911b0-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "ACTUATION_LOGIC_VOTE_PRESSURE",
@@ -677,7 +677,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "8ce3f7f0-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301938c0-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_TRIP_TEMPERATURE",
@@ -719,7 +719,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "8ce44610-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301986e0-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_RESET",
@@ -774,7 +774,7 @@
             "description": "ENFORCED: in the interval (if defined) starting strictly after the first <b><i>RESET</i></b> interval and spanning to the end of the execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, if trigger holds then RES also holds at the same time point.",
             "diagram": "_media/user-interface/examples/svgDiagrams/after_null_immediately_satisfaction.svg"
         },
-        "_id": "8ce46d20-5932-11ec-96a3-f79b5f3617de"
+        "_id": "3019d500-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_TRIP_SATURATION",
@@ -816,7 +816,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "8ce49430-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301a2320-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "CORE_UI_INSTRUMENTATION",
@@ -876,7 +876,59 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "8ce4e250-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301a4a30-8ad1-11ec-891b-e36dd42a8cc0"
+    },
+    {
+        "reqid": "SELF_TEST",
+        "parent_reqid": "",
+        "project": "HARDENS",
+        "rationale": "",
+        "comments": "",
+        "fulltext": "Upon TEST_FAIL Core shall always satisfy OUTPUT_TEST_FAIL",
+        "semantics": {
+            "type": "nasa",
+            "scope": {
+                "type": "null"
+            },
+            "condition": "regular",
+            "timing": "always",
+            "response": "satisfaction",
+            "variables": [
+                "TEST_FAIL",
+                "OUTPUT_TEST_FAIL"
+            ],
+            "qualifier_word": "upon",
+            "pre_condition": "(TEST_FAIL)",
+            "regular_condition": "(TEST_FAIL)",
+            "conditionTextRange": [
+                0,
+                13
+            ],
+            "component_name": "Core",
+            "componentTextRange": [
+                15,
+                18
+            ],
+            "timingTextRange": [
+                26,
+                31
+            ],
+            "post_condition": "(OUTPUT_TEST_FAIL)",
+            "responseTextRange": [
+                33,
+                56
+            ],
+            "ft": "((LAST V (((! <b><i>(TEST_FAIL)</i></b>) & ((! LAST) & (X <b><i>(TEST_FAIL)</i></b>))) -> (X (LAST V <b><i>(OUTPUT_TEST_FAIL)</i></b>)))) & (<b><i>(TEST_FAIL)</i></b> -> (LAST V <b><i>(OUTPUT_TEST_FAIL)</i></b>)))",
+            "pt": "(H ((H (! <b><i>(TEST_FAIL)</i></b>)) | <b><i>(OUTPUT_TEST_FAIL)</i></b>))",
+            "ftExpanded": "((LAST V (((! <b><i>(TEST_FAIL)</i></b>) & ((! LAST) & (X <b><i>(TEST_FAIL)</i></b>))) -> (X (LAST V <b><i>(OUTPUT_TEST_FAIL)</i></b>)))) & (<b><i>(TEST_FAIL)</i></b> -> (LAST V <b><i>(OUTPUT_TEST_FAIL)</i></b>)))",
+            "ptExpanded": "(H ((H (! <b><i>(TEST_FAIL)</i></b>)) | <b><i>(OUTPUT_TEST_FAIL)</i></b>))",
+            "component": "<b><i>Core</i></b>",
+            "CoCoSpecCode": "(H((H( not (TEST_FAIL))) or (OUTPUT_TEST_FAIL)))",
+            "diagramVariables": "TC = <b><i>(TEST_FAIL)</i></b>, Response = <b><i>(OUTPUT_TEST_FAIL)</i></b>.",
+            "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(TEST_FAIL)</i></b> is true and any point in the interval where <b><i>(TEST_FAIL)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
+            "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_always_satisfaction.svg"
+        },
+        "_id": "301a7140-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_SET_MAINTENANCE",
@@ -930,7 +982,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(SET_MAINTENANCE)</i></b> is true and any point in the interval where <b><i>(SET_MAINTENANCE)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8ce53070-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301abf60-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "ACTUATION_LOGIC_MANUAL_DEVICE_0",
@@ -984,7 +1036,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b> is true and any point in the interval where <b><i>(SET_MANUAL_ACTUATE_DEVICE_0)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8ce57e90-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301ae670-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "ACTUATION_LOGIC_VOTE_SATURATION",
@@ -1032,7 +1084,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "8ce5a5a0-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301b3490-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "ACTUATION_LOGIC_MANUAL_DEVICE_1",
@@ -1086,7 +1138,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b> is true and any point in the interval where <b><i>(SET_MANUAL_ACTUATE_DEVICE_1)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8ce5f3c0-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301ba9c0-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "ACTUATION_LOGIC_VOTE_DEVICE_1",
@@ -1138,7 +1190,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(VOTE_TRIP_SATURATION)</i></b> is true and any point in the interval where <b><i>(VOTE_TRIP_SATURATION)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_always_satisfaction.svg"
         },
-        "_id": "8ce61ad0-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301bf7e0-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_SET_BYPASS_TEMPERATURE",
@@ -1192,7 +1244,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & TEMPERATURE_MODE = 0)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8ce641e0-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301c1ef0-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_TRIP_PRESSURE",
@@ -1234,7 +1286,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval.\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_null_always_satisfaction.svg"
         },
-        "_id": "8ce69000-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301c6d10-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "ACTUATION_LOGIC_VOTE_DEVICE_0",
@@ -1287,7 +1339,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b> is true and any point in the interval where <b><i>(VOTE_TRIP_TEMPERATURE | VOTE_TRIP_SATURATION)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must hold at all time points between (and including) the trigger and the end of the interval.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_always_satisfaction.svg"
         },
-        "_id": "8ce6b710-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301cbb30-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_SENSOR_TRIP_TEMPERATURE",
@@ -1343,7 +1395,7 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> is true and any point in the interval where <b><i>(MAINTENANCE & TEMPERATURE_MODE = 1)</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8ce70530-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301d0950-8ad1-11ec-891b-e36dd42a8cc0"
     },
     {
         "reqid": "INSTRUMENTATION_SET_SETPOINT_TEMPERATURE",
@@ -1398,6 +1450,6 @@
             "description": "ENFORCED: in the interval defined by the entire execution.\nTRIGGER: first point in the interval if <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b> is true and any point in the interval where <b><i>(( MAINTENANCE & SET_SETPOINT_TEMPERATURE ))</i></b> becomes true (from false).\nREQUIRES: for every trigger, RES must remain true until (but not necessarily including) the point where the stop condition holds, or to the end of the interval. If the stop condition never occurs, RES must hold until the end of the scope, or forever.  If the stop condition holds at the trigger, the requirement is satisfied.",
             "diagram": "_media/user-interface/examples/svgDiagrams/null_regular_until_satisfaction.svg"
         },
-        "_id": "8ce75350-5932-11ec-96a3-f79b5f3617de"
+        "_id": "301d3060-8ad1-11ec-891b-e36dd42a8cc0"
     }
 ]
