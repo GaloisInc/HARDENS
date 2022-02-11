@@ -8,9 +8,11 @@
 /*@requires div < NINSTR;
   @requires \valid(state);
   @requires \valid(state->reading + (0.. NTRIP-1));
+  @requires \valid(state->test_reading + (0.. NTRIP-1));
   @requires \valid(state->setpoints + (0.. NTRIP-1));
   @requires \valid(state->sensor_trip + (0.. NTRIP-1));
   @assigns state->reading[0.. NTRIP-1];
+  @assigns state->test_reading[0.. NTRIP-1];
   @assigns state->sensor_trip[0.. NTRIP-1];
   @ensures -1 <= \result <= 0;
 */
