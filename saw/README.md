@@ -19,7 +19,11 @@ to establish equivalence (e.g. see [](generated/Is_Ch_Tripped.yosys)).
 
 To run the proofs, just run `make proofs`.
 
-SAW depends on `clang 9` (`10` _may_ work, but is untested). If `clang` your
-path is a different version, you will need to install `clang 9` and supply the
-executable in the `CLANG9` environment variable, i.e.
-`CLANG9=/path/to/bin/clang9 make proofs`.
+## Dependencies
+
+- SAW 0.9 <https://saw.galois.com>,
+
+- SAW depends on `clang 9` (`10` _may_ work, but is untested). If `clang` your
+  path is a different version, you will need to install `clang 9` and supply the
+  executable in the `CLANG9` environment variable, i.e.
+  `CLANG9=/path/to/bin/clang9 make proofs`.
