@@ -147,6 +147,46 @@ RUN git checkout ${TAG}
 RUN make PREFIX=/tools/bsc-2021.07-ubuntu-20.04/
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
+# GHC and cabal
+ENV GHCUP_VERSION=0.1.14.1 \
+    GHC_VERSION=8.10.4 \
+    CABAL_VERSION=3.4.0.0
+ENV GHCUP_HOME=/opt/ghcup/
+ADD https://downloads.haskell.org/~ghcup/0.1.14.1/x86_64-linux-ghcup-${GHCUP_VERSION} ${GHCUP_HOME}/bin/ghcup
+RUN \
+    chmod +x ${GHCUP_HOME}/bin/ghcup \
+    && ghcup install ghc ${GHC_VERSION} \
+    && ghcup set ghc ${GHC_VERSION} \
+    && ghcup install cabal ${CABAL_VERSION} \
+    && ghcup set cabal ${CABAL_VERSION} \
+    && cabal update
+
+# cryptol 2.11
+ARG TOOL=cryptol
+ARG TAG=dfae4580e322584185235f301bc8a03b6bc19a65
+ARG REPO=https://github.com/GaloisInc/cryptol.git
+RUN git clone ${REPO} /tmp/${TOOL}
+WORKDIR /tmp/${TOOL}
+RUN git checkout ${TAG} \
+    && git submodule update --init
+RUN ./cry build \
+    && cabal v2-install --installdir=/tools/${TOOL}/bin
+RUN rm -rf /tmp/${TOOL}
+RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
+# cryptol-verilog
+ARG TOOL=cryptol-verilog
+ARG TAG=signed-compare
+ARG REPO=git@gitlab-ext.galois.com:cryptol/cryptol-verilog.git
+RUN git clone ${REPO} /tmp/${TOOL}
+WORKDIR /tmp/${TOOL}
+RUN git checkout ${TAG} \
+    && git submodule update --init
+RUN cabal v2-build \
+    && cabal v2-install --installdir=/tools/${TOOL}/bin
+RUN rm -rf /tmp/${TOOL}
+RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
 RUN cat ${VERSION_LOG}
 
 WORKDIR /
