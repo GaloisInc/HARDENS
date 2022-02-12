@@ -147,19 +147,10 @@ RUN git checkout ${TAG}
 RUN make PREFIX=/tools/bsc-2021.07-ubuntu-20.04/
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
-# GHC and cabal
-ENV GHCUP_VERSION=0.1.14.1 \
-    GHC_VERSION=8.10.4 \
-    CABAL_VERSION=3.4.0.0
-ENV GHCUP_HOME=/opt/ghcup/
-ADD https://downloads.haskell.org/~ghcup/0.1.14.1/x86_64-linux-ghcup-${GHCUP_VERSION} ${GHCUP_HOME}/bin/ghcup
-RUN \
-    chmod +x ${GHCUP_HOME}/bin/ghcup \
-    && ghcup install ghc ${GHC_VERSION} \
-    && ghcup set ghc ${GHC_VERSION} \
-    && ghcup install cabal ${CABAL_VERSION} \
-    && ghcup set cabal ${CABAL_VERSION} \
-    && cabal update
+# GHC and Cabal
+RUN apt-get update -y
+RUN apt-get install -y cabal-install
+RUN cabal update
 
 # cryptol 2.11
 ARG TOOL=cryptol
@@ -185,6 +176,17 @@ RUN git checkout ${TAG} \
 RUN cabal v2-build \
     && cabal v2-install --installdir=/tools/${TOOL}/bin
 RUN rm -rf /tmp/${TOOL}
+RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
+# Crymp
+ARG TOOL=crymp
+ARG TAG=hardens-tweaks
+ARG REPO=git@gitlab-ext.galois.com:cryptol/cryptol-codegen.git
+RUN git clone ${REPO} /tools/${TOOL}
+WORKDIR /tools/${TOOL}
+RUN git checkout ${TAG}
+RUN cabal build
+ENV PATH="/tools/${TOOL}:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 RUN cat ${VERSION_LOG}
