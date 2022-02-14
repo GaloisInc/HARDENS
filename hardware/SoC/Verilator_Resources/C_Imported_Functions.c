@@ -125,35 +125,13 @@ uint8_t c_trygetchar (uint8_t  dummy)
 // c_putchar()
 // Writes character to stdout
 
-//uint32_t c_putchar (uint8_t ch)
 void c_putchar (uint8_t ch)
 {
 	printf("%c",ch);
-    // int      status;
-    // uint32_t success = 0;
+}
 
-    // if ((ch == 0) || (ch > 0x7F)) {
-	// // Discard non-printables
-	// success = 1;
-    // }
-    // else {
-	// if ((ch == '\n') || (' ' <= ch)) {
-	//     status = fprintf (stdout, "%c", ch);
-	//     if (status > 0)
-	// 	success = 1;
-	// }
-	// else {
-	//     status = fprintf (stdout, "[\\%0d]", ch);
-	//     if (status > 0)
-	// 	success = 1;
-	// }
-
-	// if (success == 1) {
-	//     status = fflush (stdout);
-	//     if (status != 0)
-	// 	success = 0;
-	// }
-    // }
-
-    // return success;
+uint8_t c_i2c_request (uint8_t slaveaddr, uint8_t data) {
+	// TODO: make this proper
+	printf("Got i2c request, addr = 0x%X\n", slaveaddr);
+	return data;
 }
