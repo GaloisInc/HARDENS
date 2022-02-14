@@ -160,31 +160,26 @@ RUN git clone ${REPO} /tmp/${TOOL}
 WORKDIR /tmp/${TOOL}
 RUN git checkout ${TAG} \
     && git submodule update --init
-RUN ./cry build \
-    && cabal v2-install --installdir=/tools/${TOOL}/bin
+RUN ./cry build
+RUN cabal v2-install --installdir=/tools/${TOOL}/bin
 RUN rm -rf /tmp/${TOOL}
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # cryptol-verilog
 ARG TOOL=cryptol-verilog
-ARG TAG=signed-compare
-ARG REPO=git@gitlab-ext.galois.com:cryptol/cryptol-verilog.git
-RUN git clone ${REPO} /tmp/${TOOL}
+ARG TAG=${CRYPTOL_VERILOG_REV}
+ADD ${TOOL} /tmp/${TOOL}
 WORKDIR /tmp/${TOOL}
-RUN git checkout ${TAG} \
-    && git submodule update --init
-RUN cabal v2-build \
-    && cabal v2-install --installdir=/tools/${TOOL}/bin
+RUN cabal v2-build
+RUN cabal v2-install --installdir=/tools/${TOOL}/bin
 RUN rm -rf /tmp/${TOOL}
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # Crymp
-ARG TOOL=crymp
-ARG TAG=hardens-tweaks
-ARG REPO=git@gitlab-ext.galois.com:cryptol/cryptol-codegen.git
-RUN git clone ${REPO} /tools/${TOOL}
+ARG TOOL=cryptol-codegen
+ARG TAG=${CRYPTOL_CODEGEN_REV}
+ADD ${TOOL} /tools/${TOOL}
 WORKDIR /tools/${TOOL}
-RUN git checkout ${TAG}
 RUN cabal build
 ENV PATH="/tools/${TOOL}:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
