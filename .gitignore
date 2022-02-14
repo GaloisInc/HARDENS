@@ -4,3 +4,6 @@
 *.a
 *.bc
 *.ll
+*.elf
+*.asm
+.vscode
