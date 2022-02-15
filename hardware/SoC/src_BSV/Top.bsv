@@ -26,15 +26,15 @@ import GetPut::*;
 // ================================================================
 // Top
 
-// This works only if I simulate with iVerilog
 import "BDPI" function Action c_putchar (Bit #(8) c);
 import "BDPI" function ActionValue #(Bit #(8)) c_trygetchar (Bit #(8) dummy);
-
+import "BDPI" function ActionValue #(Bit #(8)) c_i2c_request (Bit #(8) wrAddr,
+                                                              Bit #(8) data);
 
 (* synthesize *)
 module mkTop (Empty);
 
-   Reg #(Bit #(32)) rg_leds <- mkReg (0);
+   Reg #(Bit #(32)) rg_gpio <- mkReg (0);
 
    NervSoC_IFC nerv_soc <- mkNervSoC;
 
@@ -86,10 +86,27 @@ module mkTop (Empty);
 `endif
    endrule
 
+   Reg #(Bit #(8)) rg_i2c_resp <- mkRegU();
+   Reg #(Bool) rg_i2c_complete <- mkReg(False);
+   rule i2c_request;
+      let request <- nerv_soc.i2c_get_request();
+      Bit #(8) wrAddr = signExtend(request.slaveaddr);
+      wrAddr[0] = pack(request.write);
+      let val <- c_i2c_request(wrAddr, request.data);
+      rg_i2c_resp <= val;
+      rg_i2c_complete <= True;
+   endrule
+
+   rule i2c_response(rg_i2c_complete);
+      let response = I2CResponse { data: rg_i2c_resp};
+      nerv_soc.i2c_give_response(response);
+      rg_i2c_complete <= False;
+   endrule
+
    rule rl_leds;
-      let leds = nerv_soc.leds;
-      if (leds != rg_leds) $display ("LEDs: %032b", leds);
-      rg_leds <= leds;
+      let gpio = nerv_soc.gpio;
+      if (gpio != rg_gpio) $display ("GPIO: %032b", gpio);
+      rg_gpio <= gpio;
    endrule
 
 endmodule

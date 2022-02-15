@@ -11,7 +11,7 @@ package NervSoC;
 // Import from BSV library
 
 import RegFile :: *;
-
+import I2C :: *;
 // ================================================================
 // Local imports
 
@@ -21,11 +21,14 @@ import Nerv :: *;
 // A small NERV SoC
 
 interface NervSoC_IFC;
-   method Bit #(32) leds;
+   method Bit #(32) gpio;
    // TX -> a byte to be send
    method ActionValue#(Bit #(8)) get_uart_tx_byte;
    // RX -> a byte to be received
    method Action set_uart_rx_byte(Bit #(8) rx);
+   // I2C methods
+   method ActionValue #(I2CRequest) i2c_get_request;
+   method Action i2c_give_response(I2CResponse r);
 endinterface
 
 // ================================================================
@@ -56,22 +59,39 @@ module mkNervSoC (NervSoC_IFC);
    function Bit #(8) strb2byte (Bit #(1) b) = signExtend (b);
 
    // IO addresses
-   Bit #(32) led_GPIO_addr = 32'h 0100_0000;
-   // 7bits addr, 1bit RW
+   Bit #(32) gpio_addr = 32'h 0100_0000;
+   // I2c Order of operations:
+   // 1) Copy data to i2c_reg_data
+   // 2) Write addr to i2c_reg_addr
+   // 3) Writing to i2c_reg_addr initiates transaction
+   // 4) Once i2c_reg_status & I2C_COMPLETE_BIT is 1(True) resulting data
+   // are stored in i2c_reg_data (in case on Read transaction)
+   // 5) i2c_reg_status holds also errors about the transaction
+   // for example `if (i2c_reg_status & I2C_TRANSACTION_ERROR)` then an error occured
+   // TODO: add granularity into error reporting (arbitration, no slave ack, etc)
+   //
+   // 7bits addr, 1bit RW, 8bits total - the firmware is responsible for setting R/W bit
    Bit #(32) i2c_reg_addr = 32'h 0300_0000;
    // I2C fifo has up to 16 bytes (4 registers)
-   // Bit #(32) i2c_reg_data_1 = 32'h 0300_0004;
+   Bit #(32) i2c_reg_data = 32'h 0300_0004;
+   // I2C status reg (transaction complete 1bit, transaction error 1bit, error type 2bits)
+   Bit #(32) i2c_reg_status = 32'h 0300_0008;
 
    Bit #(32) uart_reg_addr_tx = 32'h 0200_0000;
    Bit #(32) uart_reg_addr_rx = 32'h 0200_0004;
    Bit #(32) uart_reg_addr_data_ready = 32'h 0200_0008;
 
    // IO registers
-   Reg #(Bit #(32)) rg_leds       <- mkRegU;
+   Reg #(Bit #(32)) rg_gpio       <- mkRegU;
    Reg #(Bit #(8)) rg_uart_tx <- mkReg(0);
    Reg #(Bit #(8)) rg_uart_rx <- mkReg(0);
    Reg #(Bool) rg_uart_rx_data_ready <- mkReg(False);
    Reg #(Bool) rg_uart_tx_data_ready <- mkReg(False);
+   Reg #(Bit #(8)) rg_i2c_addr <- mkReg(0);
+   Reg #(Bit #(32)) rg_i2c_data <- mkReg(0);
+   Reg #(Bit #(32)) rg_i2c_status <- mkReg(0);
+   Reg #(Bool) rg_i2c_transaction_ready <- mkReg(False);
+   Reg #(Bool) rg_i2c_transaction_complete <- mkReg(False);
 
    // This rule deals with instruction fetch and D-Mem read results
    (* fire_when_enabled, no_implicit_conditions *)
@@ -112,11 +132,10 @@ module mkNervSoC (NervSoC_IFC);
          $display ("DMem addr 0x%0h  wstrb 0x%0h  wdata 0x%0h mask 0x%0h" , d_addr, wstrb, wdata, mask);
 
       case (d_addr)
-         // Write to GPIO LED pins
-         // TODO: repurpose for generic actuator IO
-         led_GPIO_addr:
+         // Write to GPIO pins
+         gpio_addr:
             begin
-               rg_leds <= ((rg_leds & (~ mask)) | (wdata & mask));
+               rg_gpio <= ((rg_gpio & (~ mask)) | (wdata & mask));
             end
          // Write a byte to serial port
          uart_reg_addr_tx:
@@ -140,7 +159,17 @@ module mkNervSoC (NervSoC_IFC);
             end
          i2c_reg_addr:
             begin
-               $display("Unimplemented");
+               // Only 8 bytes for the address, the rest is ignored
+               rg_i2c_addr <= wdata[7:0];
+               rg_i2c_transaction_ready <= True;
+            end
+         i2c_reg_data:
+            begin
+               rg_i2c_data <= ((rg_i2c_data & (~ mask)) | (wdata & mask));
+            end
+         i2c_reg_status:
+            begin
+               rg_dmem_rdata <= rg_i2c_status;
             end
          default:
             begin
@@ -158,8 +187,9 @@ module mkNervSoC (NervSoC_IFC);
 
    // ================================================================
    // INTERFACE
+   // set GPIO
+   method Bit #(32) gpio = rg_gpio;
 
-   method Bit #(32) leds = rg_leds;
    // TX -> a byte to be send
    method ActionValue#(Bit #(8)) get_uart_tx_byte () if (rg_uart_tx_data_ready);
       begin
@@ -167,11 +197,32 @@ module mkNervSoC (NervSoC_IFC);
          return rg_uart_tx;
       end
    endmethod
+
    // Rx -> a byte to be received
    method Action set_uart_rx_byte(Bit #(8) rx);
       begin
          rg_uart_rx_data_ready <= True;
          rg_uart_rx <= rx;
+      end
+   endmethod
+
+   // I2C methods
+   method ActionValue #(I2CRequest) i2c_get_request () if (rg_i2c_transaction_ready);
+      begin
+         let r =  I2CRequest {
+               write: unpack(rg_i2c_addr[0]),
+               address: rg_i2c_addr[7:0], // Unclear what this is for
+               slaveaddr: rg_i2c_addr[7:1],
+               data: rg_i2c_data[7:0]
+            };
+         return r;
+      end
+   endmethod
+
+   method Action i2c_give_response(I2CResponse r);
+      begin
+         rg_i2c_data <= signExtend(r.data);
+         rg_i2c_transaction_complete <= True;
       end
    endmethod
 

@@ -9,7 +9,8 @@ function  void  c_putchar (byte unsigned  ch);
 
 // import "BDPI" function ActionValue #(Bit #(8)) c_rx ();
 import "DPI-C"
-function  byte unsigned  c_trygetchar (byte unsigned  dummy);
+function  byte unsigned  c_trygetchar (byte unsigned dummy);
 
-
-
+import "DPI-C"
+function  byte unsigned  c_i2c_request (byte unsigned slaveaddr,
+                                        byte unsigned data);
