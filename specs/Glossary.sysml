@@ -4,6 +4,9 @@ package id Glossary 'Project Glossary' {
   private import ScalarValues::*;
   private import KerML::*;
 
+  item def id NRC 'Nuclear Regulatory Commission';
+  // @todo kiniry Make this more specific to the characteristics of this project.
+  item def 'NRC Certification Regulations';
   part def BlueCheck;
   /** A formal, state-based specification language that focuses on the
       specification of the interfaces of discrete modules in a system, and

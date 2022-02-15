@@ -1,0 +1,14 @@
+// Nondeterministic error in both sensors
+ES 0 0 4
+ES 0 1 4
+
+// Set temperature
+V 0 0 100
+V 1 0 100
+
+???
+#I 0 \(.\): T\[ *(?!0)(\d+) . .\] [^\r\n]+
+#I 1 \(.\): T\[ *\1 . .\] [^\r\n]+
+#I 2 \(.\): T\[ *(?!\1)(?!0)(\d+) . .\] [^\r\n]+
+#I 3 \(.\): T\[ *\2 . .\] .*(?!SELF TEST: *RUNNING)SELF TEST: NOT RUNNING
+???

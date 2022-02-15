@@ -1,0 +1,13 @@
+// Introduce error in sensor 1
+ES 0 0 3
+
+// Set temperature
+V 0 0 100
+V 1 0 100
+
+???
+#I 0 \(.\): T\[ *(\d+) . .\] P\[ *\d+ . .\] S\[ *-?\d+ . .\]
+#I 1 \(.\): T\[ *\1 . .\] P\[ *\d+ . .\] S\[ *-?\d+ . .\]
+#I 2 \(.\): T\[ *(?!\1)100 . .\] P\[ *\d+ . .\] S\[ *-?\d+ . .\]
+#I 3 \(.\): T\[ *(?!\1)100 . .\] P\[ *\d+ . .\] S\[ *-?\d+ . .\].*(?!SELF TEST: *RUNNING)SELF TEST: NOT RUNNING.*
+???

@@ -38,6 +38,7 @@ uint8_t Is_Ch_Tripped(uint8_t mode, uint8_t trip);
 
 struct instrumentation_state {
   uint32_t reading[NTRIP];
+  uint32_t test_reading[NTRIP];
   uint32_t setpoints[NTRIP];
   uint8_t sensor_trip[NTRIP];
   uint8_t mode[NTRIP];
@@ -49,6 +50,7 @@ void instrumentation_init(struct instrumentation_state *state);
 
 /*@requires \valid(state);
   @requires \valid(state->reading + (0.. NTRIP-1));
+  @requires \valid(state->test_reading + (0.. NTRIP-1));
   @requires \valid(state->setpoints + (0.. NTRIP-1));
   @requires \valid(state->sensor_trip + (0.. NTRIP-1));
   @requires state->mode[T] \in {BYPASS, OPERATE, TRIP};
@@ -56,6 +58,7 @@ void instrumentation_init(struct instrumentation_state *state);
   @requires state->mode[S] \in {BYPASS, OPERATE, TRIP};
   @requires div < NTRIP;
   @assigns state->reading[0.. NTRIP-1];
+  @assigns state->test_reading[0.. NTRIP-1];
   @assigns state->setpoints[0.. NTRIP-1];
   @assigns state->sensor_trip[0.. NTRIP-1];
   @assigns state->maintenance;

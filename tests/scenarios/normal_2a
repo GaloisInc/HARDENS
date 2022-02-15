@@ -1,0 +1,7 @@
+{S,D,SP,V}
+S {D} 0 {SP}
+
+B {D} 0 1
+?#I {D} \(.\): T\[ *\d+ O 0\] P\[ *\d+ . .\] S\[ *-?\d+ . .\]
+V {S} 0 {V}
+?.*(?!SELF TEST: *RUNNING)#I {D} \(.\): T\[ *\d+ O 1\] P\[ *\d+ . .\] S\[ *-?\d+ . .\].*(?!SELF TEST: *RUNNING)

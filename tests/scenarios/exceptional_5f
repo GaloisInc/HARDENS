@@ -1,0 +1,14 @@
+// Set pressure
+V 0 1 100
+V 1 1 100
+
+// Set pressure, all demuxes to nondet failure
+ES 0 1 5
+ES 1 1 5
+
+M 0 0
+M 1 0
+M 2 0
+M 3 0
+
+?WARNING: LARGE SENSOR DIFFERENTIAL

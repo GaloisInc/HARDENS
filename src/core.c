@@ -17,6 +17,9 @@ const char self_test_not_running[] = "SELF TEST: NOT RUNNING";
 const char pass[] = "LAST TEST: PASS";
 const char fail[] = "LAST TEST: FAIL";
 
+char sensor_warning[] = "WARNING: LARGE SENSOR DIFFERENTIAL";
+char sensor_ok[] = "SENSORS OK";
+
 struct testcase {
   uint32_t input[4][2];
   uint32_t setpoints[4][3];
@@ -51,6 +54,7 @@ char maint_char(uint8_t mode) {
 
 int update_ui_instr(struct ui_values *ui) {
   int err = 0;
+  int sensor_differential = 0;
 
   char line[256];
 
@@ -68,12 +72,37 @@ int update_ui_instr(struct ui_values *ui) {
 
     snprintf(line, sizeof(line), INSTR_LINE_FMT, INST_OFFSET + i,
              maint_char(ui->maintenance[i]), ui->values[i][T],
-             mode_char(ui->bypass[i][T]), ui->trip[i][T], ui->values[i][P],
-             mode_char(ui->bypass[i][P]), ui->trip[i][P], ui->values[i][S],
-             mode_char(ui->bypass[i][S]), ui->trip[i][S]);
+             mode_char(ui->bypass[i][T]), 0 != ui->trip[i][T], ui->values[i][P],
+             mode_char(ui->bypass[i][P]), 0 != ui->trip[i][P], ui->values[i][S],
+             mode_char(ui->bypass[i][S]), 0 != ui->trip[i][S]);
 
-    set_display_line(i, line, sizeof(line));
+    set_display_line(ui, i, line, sizeof(line));
   }
+
+  // Flag any sensor differences that exceed thresholds
+  for (uint8_t i = 0; i < NDIVISIONS; ++i) {
+
+    if (ui->maintenance[i])
+      continue;
+
+    for (uint8_t j = 0; j < NDIVISIONS; ++j) {
+
+      if (ui->maintenance[j])
+        continue;
+
+      sensor_differential |=
+        (ui->values[i][T] > ui->values[j][T] &&
+         ui->values[i][T] - ui->values[j][T] > T_THRESHOLD);
+      sensor_differential |=
+        (ui->values[i][P] > ui->values[j][P] &&
+         ui->values[i][P] - ui->values[j][P] > P_THRESHOLD);
+    }
+  }
+
+  if (sensor_differential)
+    set_display_line(ui, 14, sensor_warning, sizeof(sensor_warning));
+  else
+    set_display_line(ui, 14, sensor_ok, sizeof(sensor_ok));
 
   return err;
 }
@@ -89,7 +118,7 @@ int update_ui_actuation(struct ui_values *ui) {
     }
     snprintf(line, sizeof(line), ACT_LINE_FMT, i, ui->actuators[i][0],
              ui->actuators[i][1]);
-    set_display_line(ACT_OFFSET + i, line, sizeof(line));
+    set_display_line(ui, ACT_OFFSET + i, line, sizeof(line));
   }
 
   return err;
@@ -103,7 +132,13 @@ int update_ui(struct ui_values *ui) {
   return err;
 }
 
-int end_test(struct test_state *test) {
+int set_display_line(struct ui_values *ui, uint8_t line_number, char *display, uint32_t size) {
+  memset(ui->display[line_number], ' ', LINELENGTH);
+  strncpy(ui->display[line_number], (const char*)display, LINELENGTH);
+  return 0;
+}
+
+int end_test(struct test_state *test, struct ui_values *ui) {
     int passed =
          test->test_device_result[test->test_device]
       == (test->self_test_expect || test->actuation_old_vote);
@@ -113,15 +148,15 @@ int end_test(struct test_state *test) {
     set_test_running(0);
 
     if (passed) {
-      set_display_line(16, pass, 0);
+      set_display_line(ui, 16, (char*)pass, 0);
       test->test++;
       if (test->test >= sizeof(tests)/sizeof(struct testcase)) {
         test->test = 0;
         test->test_timer_start = time_in_s();
       }
     } else {
-      set_display_line(16, fail, 0);
-      set_display_line(20, "A TEST FAILED", 0);
+      set_display_line(ui, 16, (char*)fail, 0);
+      set_display_line(ui, 20, (char*)"A TEST FAILED", 0);
     }
 
     return passed;
@@ -149,7 +184,7 @@ int should_start_self_test(struct test_state *test) {
   return (!is_test_running()) && (self_test_timer_expired(test) || (test->test != 0));
 }
 
-int test_step(struct test_state *test) {
+int test_step(struct test_state *test, struct ui_values *ui) {
   int err = 0;
 
   if(!test->failed && should_start_self_test(test)) {
@@ -164,13 +199,13 @@ int test_step(struct test_state *test) {
       memcpy(test->test_setpoints, next->setpoints, 3*4*sizeof(uint32_t));
 
       set_test_running(1);
-      set_display_line(15, self_test_running, 0);
+      set_display_line(ui, 15, (char *)self_test_running, 0);
     }
   } else if (is_test_running() && test->test_device_done[test->test_device]) {
-    int passed = end_test(test);
+    int passed = end_test(test, ui);
     if(!passed) err = -1;
   } else if (!is_test_running()) {
-    set_display_line(15, self_test_not_running, 0);
+    set_display_line(ui, 15, (char *)self_test_not_running, 0);
   }
 
   return err;
@@ -185,9 +220,13 @@ int core_step(struct core_state *core) {
   int err = 0;
   struct rts_command rts;
 
-  // Actuate devices if necessary
-  actuate_devices_generated_C();
+  if (!core->error)
+    // Actuate devices if necessary
+    actuate_devices_generated_C();
 
+  // Let's allow command processing even if an error is detected.
+  // In a real system, we would probably want to disconnect the device
+  // and perform maintenance.
   int read_cmd = read_rts_command(&rts);
   if (read_cmd < 0) {
     err |= -read_cmd;
@@ -208,8 +247,9 @@ int core_step(struct core_state *core) {
     }
   }
 
-  err |= test_step(&core->test);
+  err |= test_step(&core->test, &core->ui);
   err |= update_ui(&core->ui);
 
+  core->error = err;
   return err;
 }

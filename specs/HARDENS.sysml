@@ -682,28 +682,50 @@ package 'RTS Hardware Artifacts' {
  * IEEE 603-2018 standards and the NRC RFP.
  */
 package id Requirements 'RTS Requirements' {
- // Note that we do not specify documentation comments here as they
- // are specified in the Lando specification.  If we do not include
- // additional specifications here on the refinement from the higher-level
- // specification (in this case, SysML refines Lando), then the higher-level
- // specification's comments/specifications refine too (an hence are 
- // just copied verbatim).
- package id Requirements 'HARDENS Project High-level Requirements' {
-   requirement def 'NRC Understanding';
-   requirement def 'Identify Regulatory Gaps';
-   requirement def Demonstrate;
-   requirement def 'Demonstrator Parts';
-   requirement 'Demonstrator Groundwork';
+  // Note that we do not specify documentation comments here as they
+  // are specified in the Lando specification.  If we do not include
+  // additional specifications here on the refinement from the higher-level
+  // specification (in this case, SysML refines Lando), then the higher-level
+  // specification's comments/specifications refine too (an hence are 
+  // just copied verbatim).
+  package id Requirements 'HARDENS Project High-level Requirements' {
+    import 'Project Glossary'::*;
+    
+    requirement def 'Project Requirements' {
+      subject 'NRC staff' : NRC;
+    }
+    requirement 'NRC Understanding' : 'Project Requirements';
+    requirement 'Identify Regulatory Gaps' : 'Project Requirements';
+    requirement Demonstrate : 'Project Requirements';
+    requirement 'Demonstrator Parts' : 'Project Requirements';
+    requirement 'Demonstrator Groundwork' : 'Project Requirements';
  }
  package id Characteristics 'NRC Characteristics' {
-   requirement def 'Requirements Consistency';
-   requirement def 'Requirements Colloquial Completeness';
-   requirement def 'Requirements Formal Completeness';
-   requirement def 'Instrumentation Independence';
-   requirement def 'Channel Independence';
-   requirement def 'Actuation Independence';
-   requirement def 'Actuation Correctness';
-   requirement def 'Self-Test/Trip Independence';
+   import 'Project Glossary'::*;
+   requirement def 'NRC Characteristic' {
+     subject regulation: 'NRC Certification Regulations';
+   }
+   requirement 'Requirements Consistency' : 'NRC Characteristic';
+   requirement 'Requirements Colloquial Completeness' : 'NRC Characteristic';
+   requirement 'Requirements Formal Completeness' : 'NRC Characteristic';
+   requirement 'Instrumentation Independence' : 'NRC Characteristic';
+   requirement 'Channel Independence' : 'NRC Characteristic';
+   requirement 'Actuation Independence' : 'NRC Characteristic';
+   requirement 'Actuation Correctness' : 'NRC Characteristic';
+   requirement 'Self-Test/Trip Independence' : 'NRC Characteristic';
+ }
+ // Note that formal requirements expressed externally must be traceable
+ // to this system model, but need not be repeated in whole here.  Model
+ // elements that are expressed in both the SysML and FRET models must
+ // be in a refinement relationship with each other (e.g,, in this case study,
+ // SysML ⊑ FRET.
+ package 'Formal Requirements' {
+   import 'Project Glossary'::*;
+   requirement def id FRET 'FRET Requirements' {
+     doc /* RTS requirements formalized in the FRET tool. */     
+   }
+   // @todo kiniry Complete remaining FRET requirements.
+   requirement ACTUATION_ACTUATOR_0 : FRET;
  }
 }
 
@@ -722,8 +744,152 @@ package id Characteristics 'IEEE Std 603-2018 Characteristics' {
 }
 
 /**
- * The IEEE 603-2018 requirements (known as "characteristics" in
- * the standard) which the RTS demonstrator system must fulfill.
+ * The set of all atomic external or internal actions that the RTS
+ * system can take.  Note that every scenario must be describable by
+ * a sequence of actions. 
  */
-package id Characteristics 'IEEE Std 603-2018 Characteristics' {
+package id Actions 'RTS Actions' {
+  package id Internal 'RTS Internal Actions' {
+    action def id IA 'Intenral Action' {
+      doc /* Actions internal to the RTS */
+    }
+    action id Trip 'Signal Trip' : IA {
+    	in item division;
+    	in item channel;
+    }
+    action id Vote 'Vote on Like Trips using Two-out-of-four Coincidence' : IA {
+    	in item divisions[2];
+    	in item channel;
+    }
+    action id A 'Automatically Actuate Device' : IA {
+    	in item device;
+    }
+    action id T 'Self-test of Safety Signal Path' : IA;
+  } 
+  package id External 'RTS External Actions' {
+    package 'UI Actions' {
+      action def id UIA 'UI Action' {
+        doc /* Actions exhibited by the RTS UI, either inbound or outbound. */
+      }
+      // @design kiniry These should both be specializations of UIA, but I
+      // don't know how to write that in SysML yet.
+      action def id UI_IA 'UI Input Action';
+      action def id UI_OA 'UI Output Action';
+      
+      // Input actions.
+      // @todo kiniry Add features to correspond to UI parameters.
+      action id A Actuate : UI_IA {
+        in item actuator;
+        in item on_off;
+      }
+      action id M 'Set Maintenance Mode' :  UI_IA {
+        in item division;
+        in item on_off;
+      }
+      action id B 'Set Mode' : UI_IA {
+        in item division;
+        in item trip_mode; 
+      } 
+      action id S 'Set Setpoint' : UI_IA {
+        in item division;
+        in item channel;
+        in item value;
+      }
+      action id V 'Sensor Value' : UI_IA {
+      	doc /* Simulate a sensor reading */
+      	in item division;
+      	in item channel;
+      	in item value;
+      }
+      action id Q 'Quit' : UI_IA;
+      
+      // Output actions.
+      action id 'Display Pressure' : UI_OA;
+      action id 'Display Temperature' : UI_OA;
+      action id 'Display Saturation Margin': UI_OA;
+      action id 'Display Trip Ouput Signal State': UI_OA;
+      action id 'Display Indication Of Channel in Bypass': UI_OA;
+      action id 'Display Actuation State': UI_OA;
+    }
+  }
+} 
+
+/**
+ * The set of all scenarios that describe interesting end-to-end executions
+ * of the RTS system.  The full set of scenarios must include all normal
+ * behavior (online and during sefl-test) and exceptional behavior.  
+ */
+package id Scenarios 'RTS Scenarios' {
+  package id Normal 'RTS Normal Behavior Scenarios' {
+    import 'RTS Architecture'::'RTS System Architecture'::RTS;
+    
+    item def 'RTS User';
+    use case def id NB 'Normal Behavior' {
+      subject RTS;
+      actor user : 'RTS User';
+      objective {
+        doc /* @see test_scenarios.lando */
+      }
+    }
+    // @design kiniry Actually, ST should specialize NB.  I don't know how
+    // to express that in SysML yet.
+    use case def id ST 'Normal Behavior Under Self-Test' {
+        subject RTS;
+        actor tester : 'RTS User';
+    }
+    package 'Self-test Scenarios' {
+      import Normal::ST;
+      use case '1a - Trip on Mock High Pressure Reading from that Pressure Sensor' : NB;
+      use case '1b - Trip on Environmental High Pressure Reading from that Pressure Sensor' : NB;
+      use case '2a - Trip on Mock High Temperature Reading from that Temperature Sensor' : NB;
+      use case '2a - Trip on Environmental High Temperature Reading from that Temperature Sensor' : NB;
+      use case '3a - Trip on Mock Low Saturation Margin' : NB;
+      use case '3a - Trip on Environmental Low Saturation Margin' : NB;
+      use case '4 - Vote on Every Possible Like Trip' : NB;
+      use case '5a - Automatically Actuate All Mock Devices in Sequence' : NB;
+      use case '5b - Automatically Actuate All Mock Devices in Sequence' : NB;
+      use case '6 - Manually Actuate Each Device in Sequence' : NB;
+      use case '7a - Select Maintenance Operating Mode for each Division' : NB;
+      use case '7b - Select Normal Operating Mode for each Division' : NB;
+      use case '8 - Perform Each Kind of Setpoint Adjustment' : NB;
+      use case '9 - Configure Bypass of Each Instrument Channel in Sequence' : NB;
+      use case '10 - Configure Active Trip Output State of Each Instrument Channel in Sequence' : NB;
+      use case '11 - Display Pressure, Temperature, and Saturation Margin' : NB;
+      use case '13 - Display Indication of Every Channel in Bypass in Sequence' : NB;
+      use case '14 - Demonstrate Periodic Continual Self-test of Safety Signal Path' : NB;
+      use case 'Full Self-Test' : NB;
+    }
+    package 'RTS Scenarios' {
+      // @todo Still need to enumerate these.      
+    }
+  } 
+  package id Exceptional 'RTS Exceptional Behavior Scenarios' {
+    use case def id EB 'Exceptional Behavior' {
+      subject RTS;
+      objective {
+        doc /* @see test_scenarios.lando */
+      }
+    }
+    use case '1a - Cause Actuator 1 to Fail' : EB;
+    use case '1b - Cause Actuator 2 to Fail' : EB;
+    use case '1c - Non-determinisitically Cause an Actuator to Eventually Fail' : EB;
+    use case '2a - Cause Temperature Sensor 1 to Fail' : EB;
+    use case '2b - Cause Temperature Sensor 2 to Fail' : EB;
+    use case '2c - Non-deterministically Cause a Temperature Sensor to Eventually Fail' : EB;
+    use case '3a - Cause Pressure Sensor 1 to Fail' : EB;
+    use case '3b - Cause Pressure Sensor 2 to Fail' : EB;
+    use case '3c - Non-deterministically Cause a Pressure Sensor to Eventually Fail' : EB;
+    use case '4a - Cause Instrumentation Unit 1 to Fail' : EB;
+    use case '4b - Cause Instrumentation Unit 2 to Fail' : EB;
+    use case '4c - Cause Instrumentation Unit 3 to Fail' : EB;
+    use case '4d - Cause Instrumentation Unit 4 to Fail' : EB;
+    use case '4e - Non-Deterministically Cause Instrumentation Unit to Eventually Fail' : EB;
+    // @review kiniry I actually don't know if we are fault tolerant to' : EB;
+    // failure in these components.  Please review @abakst.
+    use case '5a - Cause Temperature Demultiplexor 1 to Fail' : EB;
+    use case '5b - Cause Temperature Demultiplexor 2 to Fail' : EB;
+    use case '5b - Cause a Temperature Demultiplexor to Eventualy Fail' : EB;
+  }
 }
+
+)

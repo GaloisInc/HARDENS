@@ -27,6 +27,39 @@ Verification with `frama-c` additionally requires `frama-c` version 24.0
 The RTS can be built for simulation on a macOS or Linux host, or (not yet
 implemented) on a NERV-based SoC.
 
+## Build parameters
+
+- `SELF_TEST_PERIOD_SEC` controls how often to run the automatic self test, in seconds
+- `PLATFORM` controls the target platform (see [below](#execution))
+- `EXECUTION` controls threading (only supported on the macOS/Linux host platform) (see [below](#execution))
+- `SENSORS`, `T0`, `P0`, `T_BIAS`, `P_BIAS`, `SENSOR_UPDATE_MS` control sensor modeling (see [below](#sensors))
+- `T_THRESHOLD`,`P_THRESHOLD`: indicate in the UI when two sensor readings
+  (temperature and pressure, respectively) differ by these thresholds (degrees F
+  and 10^-5 lb/in^2, respectively)
+  
+## UI
+
+The UI accepts commands, each of which is a single line consisting of a command
+identifier plus some integer arguments.
+
+Channels are always coded `0` for temperature, `1` for pressure, `2` for saturation.
+
+- `A <device> <on/off>`: manually set actuation state for device `<device>` to on (`1`) or off (`0`).
+- `M <div> <on/off>`: set maintenance mode for instrumentation division `<div>` to on (`1`) or off (`0`).
+- `B <div> <ch> <mode>`: set division `<div>` trip for channel `<ch>` to bypass (`0`), normal (`1`), or trip (`2`).
+- `S <div> <ch> <val>`: set division `<div>` setpoint for channel `<ch>` to `<val>`.
+- `V <s> <ch> <val>`: simulate an input of `<val>` on the `<s>`th channel `<ch>`.
+- `ES <s> <ch> <mode>`: simulate a failure in sensor `<s>` for channel `<ch>`:
+  * `<mode>` = `0` disable failure
+  * `<mode>` = `1` demux failure, first output
+  * `<mode>` = `2` demux failure, second output
+  * `<mode>` = `3` total sensor failure
+  * `<mode>` = `4` nondeterministic failure in total sensor
+  * `<mode>` = `5` nondeterministic failure in any demux output
+- `EI <div>`: simulate a failure in instrumentation division `<div>` (`<mode>` = `0` disables, `1` enables).
+- `D`: force the display to update
+- `Q`: quit
+
 ### Simulation Targets
 
 The `Makefile` in this directory can generate simulation builds of the `RTS`
@@ -45,7 +78,9 @@ The `PLATFORM` variable controls whether or not we are building for the Soc:
 
 #### Sensors
 
-The simulation build can be configured to accept user input for sensor values (see [](tests/sense_actuate_0) or to generate a "random walk" of sensor values. This is controlled via the `SENSORS` build flag:
+The simulation build can be configured to accept user input for sensor values
+(see [](tests/sense_actuate_0) or to generate a "random walk" of sensor values.
+This is controlled via the `SENSORS` build flag:
 
 - `make SENSORS=Simulated rts` will build a simulator that generates random
   temperature/pressure data;
@@ -60,7 +95,14 @@ The simulation build can be configured to accept user input for sensor values (s
 - `make SENSORS= rts` will build a simulator that allows the user to provide
   sensor values (`V #I #C #V`) sets channel `#C` of division `#I` to `#V`
 
-An example of how to script the system is given in [](tests/sense_actuate_0); you can execute
+- `make SENSORS=Simulated rts` will build a simulator that generates
+  random temperature/pressure data;
+- `make SENSORS=rts` will build a simulator that allows the user to
+  provide sensor values (`V #I #C #V`) sets channel `#C` of division
+  `#I` to `#V`
+
+An example of how to script the system is given in
+[](tests/sense_actuate_0); you can execute
 
 ``` sh
 cat tests/sense_actuate_0 | ./rts.posix
@@ -70,15 +112,12 @@ to run the script.
 
 ### Notes and Current Limitations
 
-- Currently the simulator build does *not* model failure or other exceptional conditions.
-- The self-test functionality is not yet implemented.
-- Hand-written equivalents of the generated `C` and `SystemVerilog` are not yet included.
-- The build system does not yet support mixing implementations of different components.
-
+- The build system does not yet support mixing implementations of
+  different components.
 
 ## Building
 
-Run `make rts.posix{.verilog}` to generate an executable simulator. To regenerate
+Run `make rts` to generate an executable simulator. To regenerate
 `SystemVerilog` or `C` functions after an update to the Cryptol model, you can
 run `REGEN_SOURCES=1 make <target>`; by default, the checked-in existing
 generated code will be used.

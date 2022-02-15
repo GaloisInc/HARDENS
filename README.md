@@ -93,6 +93,7 @@ The repository is structured as follows:
 - [assets](./assets) and [docs](./docs) contain project and device documentation
 - [saw](./saw) contains SAW-based proofs of correctness of specific model-derived
   components
+- [tests](./tests) contains end-to-end tests derived from the lando test scenarios.
 
 ## Submodules
 

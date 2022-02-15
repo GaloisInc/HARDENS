@@ -81,7 +81,7 @@ int read_instrumentation_command(uint8_t division, struct instrumentation_comman
 /*@requires division < NINSTR;
   @requires \valid(cmd);
   @assigns cmd->type, cmd->cmd;
-  @ensures -1 <= \result <= 1;
+  @ensures -1 <= \result <= 0;
 */
 int send_instrumentation_command(uint8_t division, struct instrumentation_command *cmd);
 
@@ -95,9 +95,6 @@ int read_actuation_command(uint8_t id, struct actuation_command *cmd);
 
 int send_actuation_command(uint8_t actuator,
                            struct actuation_command *cmd);
-
-
-int set_display_line(uint8_t line_number, const char *display, uint32_t size);
 
 
 /////////////////////////////////////////////

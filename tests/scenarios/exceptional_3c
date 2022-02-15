@@ -1,0 +1,14 @@
+// Nondeterministic error in both sensors
+ES 0 1 4
+ES 1 1 4
+
+// Set pressure
+V 0 1 1000
+V 1 1 1000
+
+M 0 0
+M 1 0
+M 2 0
+M 3 0
+
+?WARNING: LARGE SENSOR DIFFERENTIAL
