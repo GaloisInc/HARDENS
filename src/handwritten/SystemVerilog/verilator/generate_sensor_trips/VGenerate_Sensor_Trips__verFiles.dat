@@ -1,0 +1,13 @@
+# DESCRIPTION: Verilator output: Timestamp data for --skip-identical.  Delete at will.
+C "--cc -Wno-WIDTH -Wno-LITENDIAN --top-module Generate_Sensor_Trips handwritten/SystemVerilog/instrumentation_impl.sv -Mdir handwritten/SystemVerilog/verilator/generate_sensor_trips --build"
+S   7892640 34257364  1633978175   119173703  1598506306           0 "/usr/bin/verilator_bin"
+S       915 20011382  1642441122   996138160  1642441122   996138160 "handwritten/SystemVerilog/instrumentation_impl.sv"
+T      4493 20015014  1643403104    35382672  1643403104    35382672 "handwritten/SystemVerilog/verilator/generate_sensor_trips/VGenerate_Sensor_Trips.cpp"
+T      2780 20015012  1643403104    35382672  1643403104    35382672 "handwritten/SystemVerilog/verilator/generate_sensor_trips/VGenerate_Sensor_Trips.h"
+T      1507 20015016  1643403104    35382672  1643403104    35382672 "handwritten/SystemVerilog/verilator/generate_sensor_trips/VGenerate_Sensor_Trips.mk"
+T      2079 20015013  1643403104    35382672  1643403104    35382672 "handwritten/SystemVerilog/verilator/generate_sensor_trips/VGenerate_Sensor_Trips__Slow.cpp"
+T       619 20015010  1643403104    35382672  1643403104    35382672 "handwritten/SystemVerilog/verilator/generate_sensor_trips/VGenerate_Sensor_Trips__Syms.cpp"
+T       893 20015011  1643403104    35382672  1643403104    35382672 "handwritten/SystemVerilog/verilator/generate_sensor_trips/VGenerate_Sensor_Trips__Syms.h"
+T       803 20015017  1643403104    35382672  1643403104    35382672 "handwritten/SystemVerilog/verilator/generate_sensor_trips/VGenerate_Sensor_Trips__ver.d"
+T         0        0  1643403104    35382672  1643403104    35382672 "handwritten/SystemVerilog/verilator/generate_sensor_trips/VGenerate_Sensor_Trips__verFiles.dat"
+T      1610 20015015  1643403104    35382672  1643403104    35382672 "handwritten/SystemVerilog/verilator/generate_sensor_trips/VGenerate_Sensor_Trips_classes.mk"

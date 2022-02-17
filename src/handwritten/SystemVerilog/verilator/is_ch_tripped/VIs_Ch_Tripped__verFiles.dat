@@ -1,0 +1,13 @@
+# DESCRIPTION: Verilator output: Timestamp data for --skip-identical.  Delete at will.
+C "--cc -Wno-WIDTH -Wno-LITENDIAN --top-module Is_Ch_Tripped handwritten/SystemVerilog/instrumentation_impl.sv -Mdir handwritten/SystemVerilog/verilator/is_ch_tripped --build"
+S   7892640 34257364  1633978175   119173703  1598506306           0 "/usr/bin/verilator_bin"
+S       915 20011382  1642441122   996138160  1642441122   996138160 "handwritten/SystemVerilog/instrumentation_impl.sv"
+T      4232 20015027  1643403104   163373652  1643403104   163373652 "handwritten/SystemVerilog/verilator/is_ch_tripped/VIs_Ch_Tripped.cpp"
+T      2651 20015025  1643403104   163373652  1643403104   163373652 "handwritten/SystemVerilog/verilator/is_ch_tripped/VIs_Ch_Tripped.h"
+T      1467 20015029  1643403104   163373652  1643403104   163373652 "handwritten/SystemVerilog/verilator/is_ch_tripped/VIs_Ch_Tripped.mk"
+T      1884 20015026  1643403104   163373652  1643403104   163373652 "handwritten/SystemVerilog/verilator/is_ch_tripped/VIs_Ch_Tripped__Slow.cpp"
+T       579 20015023  1643403104   163373652  1643403104   163373652 "handwritten/SystemVerilog/verilator/is_ch_tripped/VIs_Ch_Tripped__Syms.cpp"
+T       837 20015024  1643403104   163373652  1643403104   163373652 "handwritten/SystemVerilog/verilator/is_ch_tripped/VIs_Ch_Tripped__Syms.h"
+T       675 20015030  1643403104   163373652  1643403104   163373652 "handwritten/SystemVerilog/verilator/is_ch_tripped/VIs_Ch_Tripped__ver.d"
+T         0        0  1643403104   163373652  1643403104   163373652 "handwritten/SystemVerilog/verilator/is_ch_tripped/VIs_Ch_Tripped__verFiles.dat"
+T      1578 20015028  1643403104   163373652  1643403104   163373652 "handwritten/SystemVerilog/verilator/is_ch_tripped/VIs_Ch_Tripped_classes.mk"
