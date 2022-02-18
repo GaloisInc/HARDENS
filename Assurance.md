@@ -1,7 +1,9 @@
 # HARDENS Assurance Case
 
 This document outlines the HARDENS assurance case for the Reactor Trip
-System (RTS).
+System (RTS), which has been designed, developed, and assured using
+Galois's Rigorous Digital Engineering (RDE) approach to high-assurance
+engineering.
 
 ## High-Level Specification and Requirements
 
@@ -106,29 +108,121 @@ development).
 Recall that the point of including these hand-written implementations
 is threefold:
 
- 1. 
+ 1. Since the RTS is a safety-critical system, key
+    subsystems/components are duplicated and the architecture is fault
+    tolerant.  One mechanism used to have high-assurance of such
+    duplicate functionality is to independently implement the various
+    components that are used in the fault-tolerant subsystem.  
+    It has been historically proposed that even higher-assurance would
+    result in a systems engineering process that can prove that such
+    implementation are equivalent, so long as one can also formally
+    prove that their specifications are correct against more abstract
+    requirements and/or specification, otherwise all implementations
+    might excactly implement erroneous functionality.  This is exactly
+    what we have achieved in the RTS, and to our knowledge, this is
+    the first time this has ever been demonstrated on a system whose
+    assurance case spans software, firmware, and hardware-based
+    fault-tolerance duplication.
+ 2. Virtually all code in the field is hand-written and is reused,
+    thus we wanted to demonstrate that our RDE methodology can
+    accomodate such code.  In particular, it is important to
+    demonstrate how formal models can be used to assure what might
+    otherwise be considered untrustworthy reused components, either
+    through runtime verification, formal verification, or both.  Our
+    use of SAW, Frama-C, and model-based runtime verification of
+    hand-written components is well-beyond the state-of-the-art in
+    nearly all safety-critical model-based systems engineering, and is
+    representative of what model-based engineering can and must
+    accomplish for safety-critical systems in NPPs like RTSs.
+ 3. Some teams and customers are uncomfortable with using
+    implementation that are automatically generated or synthesized
+    from formal methods.  They prefer to write, use, maintain,
+    optimize, and evolve hand-written implementations.  
+    
+    For these kinds of situations, we recommend that automatically
+    generated implementations are used as _assurance artifacts_,
+    rather than _deployment artifacts_.  Our RDE methodology in this
+    project demonstrates how one can rigorously validate or formally
+    verify a hand-written component against a golden implementation
+    model, which is the generated implementation.
+    
+    Rigorous validation is demonstrable and measurable by using the
+    automatically generated test suite to runtime verify (1) the
+    executable model, (2) the golden implementation model, and (3) the
+    hand-written implementation of the model.  All three executable
+    artifacts must pass all tests in exactly the same fashion.
+    
+    **TODO**: Discuss running test suites on digital twins.
+    
+    But in order to judge whether or not such multi-dimensional
+    runtime verification is meaningful, we need a measure of quality
+    for the model(s) and test suite(s).  We traditionally use three
+    core measures, some of which are partially (due to project budget
+    and scope, not assurance capability) demonstrated in the RTS
+    system.
+    
+    First, we measure _model quality_ through the previously discussed
+    methodology of refining requirements and system scenarios into
+    model theorems.  By proving or demonstrating that the model
+    conforms to the requirements, scenarios, and theorems, we know
+    that the model is valid, consistent, realizable, and sound.
+    Additionally, we can instrument the model to discover if there are
+    any model components that are not exercised, either via proof or
+    testing, by the full model assurance case. 
+    
+    **TODO** file an issue to this kind of model analysis later
+    
+    Second, model theorems are translated into implementation
+    properties, expressed as parametrized first-order test cases.
+    Then we use property-based testing **and** formal verification
+    against said properties to demonstrate that the implementation
+    perfectly fulfills system requirements and scenarios. 
 
-### Static verification
+    **TODO** file an issue to double-check we have full coverage
+    
+    Finally, third, we can measure source-level and binary-level code
+    runtime verification coverage of the system.  In general, our RDE
+    methodology guarantees extremely high statement, block, function,
+    function call, branch, and condition/decision coverage of the
+    entire modeled system.  It is commonly the case that we achieve
+    >98% coverage "out of the box", and then use either program
+    analysis or subject matter expert review to automatically generate
+    or hand-write the remaining <2% of unit, integration, or system
+    test cases.  This methodology means that we need only manage,
+    evolve, and maintain two orders of magnitude fewer test cases than
+    a traditional agile or test-centric development process.
 
-We use ACSL to model key components from the Cryptol model. The model is
-provided [here](src/include/models.acsl), and is effectively a transliteration
-of the Cryptol specification, making the refinement step from Cryptol to ACSL
-(close to) obvious. Next, we use this model to specify ACSL contracts inline with the C
-code (.e.g `Is_Ch_Tripped` in
-[instrumentation.h](src/include/instrumentation.h).
+    **TODO** file an issue to perform code coverage analysis for this
+    case study
 
-We then use Frama-C and its `wp` plugin to statically verify that such functions
-satisfy their contracts, guaranteeing that the implementation refines the
-Cryptol model. We use this plugin to additionally verify that the specification
-is _consistent_.
+### Static Verification
 
-Moreover, we use Frama-C's `rte` plugin to further prove the absence of runtime
-errors due to undefined behaviors.
+We use ACSL to model key components from the Cryptol model. The model
+is provided [here](src/include/models.acsl), and is effectively a
+transliteration of the Cryptol specification, making the refinement
+step from Cryptol to ACSL (close to) obvious.  Next, we use this model
+to specify ACSL contracts inline with the C code (e.g.,
+`Is_Ch_Tripped` in [instrumentation.h](src/include/instrumentation.h).
+
+We then use Frama-C and its `wp` plugin to statically verify that such
+functions satisfy their contracts, guaranteeing that the
+implementation refines the Cryptol model.  We use this plugin to
+additionally verify that the specification is _consistent_.
+
+Moreover, we use Frama-C's `rte` plugin to further prove the absence
+of runtime errors due to undefined behaviors.
+
+**TODO** explain what these kinds of errors are all about.
 
 ### Runtime verification
 
-Finally, we translate each Lando test scenario is translated into an end-to-end
-test. Connecting each test to a high level scenario ensures that all high level
-behaviors are covered by testing. Testing is complementary to the static
-verification above by ensuring that components that can _not_ be verified behave
-correctly.
+Finally, we translate each Lando scenario into either a subsystem
+level integration test or an end-to-end system test.  Connecting each
+test to a high level scenario ensures that all high level behaviors
+are covered by testing.
+
+Testing is complementary to the static verification above by ensuring
+that components that can _not_ be verified behave correctly.
+
+**TODO** discuss the utility of testing vs. verification wrt digital
+twins and the real hardware.
