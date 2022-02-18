@@ -302,6 +302,8 @@ int update_sensor_simulation(void) {
 
   return 0;
 }
+
+// NOTE: This will be different for SoC impl run
 void update_sensors(void) {
   update_sensor_errors();
 #ifdef SIMULATE_SENSORS
@@ -340,6 +342,7 @@ int set_output_instrumentation_trip(uint8_t div, uint8_t channel, uint8_t val) {
   return 0;
 }
 
+// NOTE: This will be different for SoC impl run - maybe a GPIO write?
 int send_actuation_command(uint8_t id, struct actuation_command *cmd) {
   if (id < 2) {
     act_command_buf[id] = (struct actuation_command *)malloc(sizeof(*act_command_buf[id]));
@@ -562,6 +565,7 @@ void* start1(void *arg) {
   }
 }
 
+// NOTE: This will be different for SoC impl run
 uint32_t time_in_s()
 {
   struct timespec tp;

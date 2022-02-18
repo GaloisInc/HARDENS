@@ -42,6 +42,7 @@ module mkNervSoC (NervSoC_IFC);
    Bool show_exec_trace = False;
    Bool show_load_store = False;
    Reg #(Bit #(64)) rg_tick    <- mkReg (0);
+   Reg #(Bit #(64)) rg_clock    <- mkReg (0);
 
    // Instantiate the nerv CPU
    Nerv_IFC nerv <- mkNerv;
@@ -60,14 +61,19 @@ module mkNervSoC (NervSoC_IFC);
 
    // IO addresses
    Bit #(32) gpio_addr = 32'h 0100_0000;
+
+   Bit #(32) uart_reg_addr_tx = 32'h 0200_0000;
+   Bit #(32) uart_reg_addr_rx = 32'h 0200_0004;
+   Bit #(32) uart_reg_addr_dr = 32'h 0200_0008;
+
    // I2c Order of operations:
    // 1) Copy data to i2c_reg_data
    // 2) Write addr to i2c_reg_addr
    // 3) Writing to i2c_reg_addr initiates transaction
-   // 4) Once i2c_reg_status & I2C_COMPLETE_BIT is 1(True) resulting data
+   // 4) Once i2c_reg_stat & I2C_COMPLETE_BIT is 1(True) resulting data
    // are stored in i2c_reg_data (in case on Read transaction)
-   // 5) i2c_reg_status holds also errors about the transaction
-   // for example `if (i2c_reg_status & I2C_TRANSACTION_ERROR)` then an error occured
+   // 5) i2c_reg_stat holds also errors about the transaction
+   // for example `if (i2c_reg_stat & I2C_TRANSACTION_ERROR)` then an error occured
    // TODO: add granularity into error reporting (arbitration, no slave ack, etc)
    //
    // 7bits addr, 1bit RW, 8bits total - the firmware is responsible for setting R/W bit
@@ -75,11 +81,10 @@ module mkNervSoC (NervSoC_IFC);
    // I2C fifo has up to 16 bytes (4 registers)
    Bit #(32) i2c_reg_data = 32'h 0300_0004;
    // I2C status reg (transaction complete 1bit, transaction error 1bit, error type 2bits)
-   Bit #(32) i2c_reg_status = 32'h 0300_0008;
+   Bit #(32) i2c_reg_stat = 32'h 0300_0008;
 
-   Bit #(32) uart_reg_addr_tx = 32'h 0200_0000;
-   Bit #(32) uart_reg_addr_rx = 32'h 0200_0004;
-   Bit #(32) uart_reg_addr_data_ready = 32'h 0200_0008;
+   Bit #(32) clock_reg_lower = 32'h 0400_0000;
+   Bit #(32) clock_reg_upper = 32'h 0400_0004;
 
    // IO registers
    Reg #(Bit #(32)) rg_gpio       <- mkRegU;
@@ -91,7 +96,7 @@ module mkNervSoC (NervSoC_IFC);
    Reg #(Bit #(32)) rg_i2c_data <- mkReg(0);
    Reg #(Bit #(32)) rg_i2c_status <- mkReg(0);
    Reg #(Bool) rg_i2c_transaction_ready <- mkReg(False);
-   Reg #(Bool) rg_i2c_transaction_complete <- mkReg(False);
+   Reg #(Bit #(32)) rg_i2c_transaction_complete <- mkReg(0);
 
    // This rule deals with instruction fetch and D-Mem read results
    (* fire_when_enabled, no_implicit_conditions *)
@@ -136,46 +141,76 @@ module mkNervSoC (NervSoC_IFC);
          gpio_addr:
             begin
                rg_gpio <= ((rg_gpio & (~ mask)) | (wdata & mask));
+               rg_clock <= rg_clock +1;
             end
          // Write a byte to serial port
          uart_reg_addr_tx:
             begin
                rg_uart_tx <= wdata[7:0];
                rg_uart_tx_data_ready <= True;
+               rg_clock <= rg_clock +1;
             end
          // Receive data from serial port
-         // Note: might be 0 or stale, check uart_reg_addr_data_ready first
+         // Note: might be 0 or stale, check uart_reg_addr_dr first
          uart_reg_addr_rx:
             begin
                rg_dmem_rdata <= signExtend(rg_uart_rx);
                rg_uart_rx_data_ready <= False;
+               rg_clock <= rg_clock +1;
             end
-         uart_reg_addr_data_ready:
+         uart_reg_addr_dr:
             begin
                if (rg_uart_rx_data_ready)
                   rg_dmem_rdata <= 1;
                else
                rg_dmem_rdata <= 0;
+               rg_clock <= rg_clock +1;
             end
          i2c_reg_addr:
             begin
                // Only 8 bytes for the address, the rest is ignored
                rg_i2c_addr <= wdata[7:0];
                rg_i2c_transaction_ready <= True;
+               rg_clock <= rg_clock +1;
             end
          i2c_reg_data:
             begin
-               rg_i2c_data <= ((rg_i2c_data & (~ mask)) | (wdata & mask));
+               rg_clock <= rg_clock +1;
+               if (mask == 0)
+               begin
+                  // Read rg_i2c_data
+                  rg_dmem_rdata <= rg_i2c_data;
+               end
+               else
+               begin
+                  // Write to rg_i2c_data
+                  rg_i2c_data <= ((rg_i2c_data & (~ mask)) | (wdata & mask));
+               end
             end
-         i2c_reg_status:
+         i2c_reg_stat:
             begin
-               rg_dmem_rdata <= rg_i2c_status;
+               rg_dmem_rdata <= rg_i2c_transaction_complete;
+               rg_i2c_transaction_complete <= 0;
+
+               rg_clock <= rg_clock +1;
+            end
+         clock_reg_lower:
+            begin
+               rg_dmem_rdata <= rg_clock[31:0];
+            end
+         clock_reg_upper:
+            begin
+               rg_dmem_rdata <= rg_clock[63:32];
             end
          default:
             begin
                // Regular memory read
                dmem.upd (d_addr [31:2], ((mem_data & (~ mask)) | (wdata & mask)));
                rg_dmem_rdata <= mem_data;
+
+               // Update clock - this is a hack and should be done differently,
+               // presumably an RWire that lets me increment and read in the same clock cycle
+               rg_clock <= rg_clock +1;
             end
       endcase
    endrule
@@ -222,7 +257,7 @@ module mkNervSoC (NervSoC_IFC);
    method Action i2c_give_response(I2CResponse r);
       begin
          rg_i2c_data <= signExtend(r.data);
-         rg_i2c_transaction_complete <= True;
+         rg_i2c_transaction_complete <= 1;
       end
    endmethod
 

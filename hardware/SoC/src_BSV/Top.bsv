@@ -88,7 +88,7 @@ module mkTop (Empty);
 
    Reg #(Bit #(8)) rg_i2c_resp <- mkRegU();
    Reg #(Bool) rg_i2c_complete <- mkReg(False);
-   rule i2c_request;
+   rule i2c_request(!rg_i2c_complete);
       let request <- nerv_soc.i2c_get_request();
       Bit #(8) wrAddr = signExtend(request.slaveaddr);
       wrAddr[0] = pack(request.write);

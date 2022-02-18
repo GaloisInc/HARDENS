@@ -58,6 +58,7 @@
 #include <termios.h>
 #include <unistd.h>
 
+// NOTE: Not needed right now
 void print_tty(char* name, FILE * f) {
 	printf("%s (fileno %d): ", name, fileno(f));
 	if (isatty(fileno(f))) printf("TTY %s\n", ttyname(fileno(f)));
@@ -131,7 +132,6 @@ void c_putchar (uint8_t ch)
 }
 
 uint8_t c_i2c_request (uint8_t slaveaddr, uint8_t data) {
-	// TODO: make this proper
-	printf("Got i2c request, addr = 0x%X\n", slaveaddr);
-	return data;
+	// TODO: make this properly random
+	return 42;
 }

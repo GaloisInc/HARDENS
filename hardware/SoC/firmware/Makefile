@@ -6,7 +6,7 @@ ABI 		= -mabi=ilp32
 CC		= $(TARGET)-gcc
 OBJDUMP	= $(TARGET)-objdump
 LDLIBS	 =  -lc -lgcc
-WERROR ?= -Werror
+WERROR ?= #-Werror
 
 COMPILER_FLAGS = -mcmodel=medany
 
@@ -20,10 +20,10 @@ WARNINGS = -Wextra -Wshadow -Wpointer-arith -Wcast-align -Wsign-compare \
 		-Waggregate-return -Wmissing-declarations -Wunused $(WERROR) 
 C_WARNINGS = -Wbad-function-cast -Wmissing-prototypes -Wstrict-prototypes
 
-INCLUDES = -I.
+INCLUDES = -I. -I../../../src/include
 
 DEMO_SRC = firmware.c
-APP_SRC = syscalls.c
+APP_SRC = syscalls.c bsp.c
 
 ASFLAGS  += -g $(ARCH) $(ABI) -Wa,-Ilegacy
 CFLAGS += $(OPT) -g3 $(ARCH) $(ABI) $(COMPILER_FLAGS) $(WARNINGS) $(C_WARNINGS) $(INCLUDES)
