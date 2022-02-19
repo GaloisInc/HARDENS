@@ -1,0 +1,90 @@
+
+firmware.elf:     file format elf32-littleriscv
+
+
+Disassembly of section .text:
+
+00000000 <_start>:
+   0:	00000093          	li	ra,0
+   4:	00000113          	li	sp,0
+   8:	00000193          	li	gp,0
+   c:	00000213          	li	tp,0
+  10:	00000293          	li	t0,0
+  14:	00000313          	li	t1,0
+  18:	00000393          	li	t2,0
+  1c:	00000413          	li	s0,0
+  20:	00000493          	li	s1,0
+  24:	00000513          	li	a0,0
+  28:	00000593          	li	a1,0
+  2c:	00000613          	li	a2,0
+  30:	00000693          	li	a3,0
+  34:	00000713          	li	a4,0
+  38:	00000793          	li	a5,0
+  3c:	00000813          	li	a6,0
+  40:	00000893          	li	a7,0
+  44:	00000913          	li	s2,0
+  48:	00000993          	li	s3,0
+  4c:	00000a13          	li	s4,0
+  50:	00000a93          	li	s5,0
+  54:	00000b13          	li	s6,0
+  58:	00000b93          	li	s7,0
+  5c:	00000c13          	li	s8,0
+  60:	00000c93          	li	s9,0
+  64:	00000d13          	li	s10,0
+  68:	00000d93          	li	s11,0
+  6c:	00000e13          	li	t3,0
+  70:	00000e93          	li	t4,0
+  74:	00000f13          	li	t5,0
+  78:	00000f93          	li	t6,0
+  7c:	00000517          	auipc	a0,0x0
+  80:	0a050513          	addi	a0,a0,160 # 11c <_etext>
+  84:	00000593          	li	a1,0
+  88:	00000613          	li	a2,0
+  8c:	00c5dc63          	bge	a1,a2,a4 <end_init_data>
+
+00000090 <loop_init_data>:
+  90:	00052683          	lw	a3,0(a0)
+  94:	00d5a023          	sw	a3,0(a1)
+  98:	00450513          	addi	a0,a0,4
+  9c:	00458593          	addi	a1,a1,4
+  a0:	fec5c8e3          	blt	a1,a2,90 <loop_init_data>
+
+000000a4 <end_init_data>:
+  a4:	00000513          	li	a0,0
+  a8:	00000593          	li	a1,0
+  ac:	00b55863          	bge	a0,a1,bc <end_init_bss>
+
+000000b0 <loop_init_bss>:
+  b0:	00052023          	sw	zero,0(a0)
+  b4:	00450513          	addi	a0,a0,4
+  b8:	feb54ce3          	blt	a0,a1,b0 <loop_init_bss>
+
+000000bc <end_init_bss>:
+  bc:	00001137          	lui	sp,0x1
+  c0:	01c000ef          	jal	ra,dc <main>
+  c4:	00100073          	ebreak
+
+000000c8 <delay>:
+  c8:	00051463          	bnez	a0,d0 <delay+0x8>
+  cc:	00008067          	ret
+  d0:	00000013          	nop
+  d4:	fff50513          	addi	a0,a0,-1
+  d8:	ff1ff06f          	j	c8 <delay>
+
+000000dc <main>:
+  dc:	ff010113          	addi	sp,sp,-16 # ff0 <_etext+0xed4>
+  e0:	00812423          	sw	s0,8(sp)
+  e4:	00912223          	sw	s1,4(sp)
+  e8:	01212023          	sw	s2,0(sp)
+  ec:	00112623          	sw	ra,12(sp)
+  f0:	010007b7          	lui	a5,0x1000
+  f4:	000184b7          	lui	s1,0x18
+  f8:	0007a023          	sw	zero,0(a5) # 1000000 <_etext+0xfffee4>
+  fc:	00000413          	li	s0,0
+ 100:	6a048493          	addi	s1,s1,1696 # 186a0 <_etext+0x18584>
+ 104:	01000937          	lui	s2,0x1000
+ 108:	00048513          	mv	a0,s1
+ 10c:	fbdff0ef          	jal	ra,c8 <delay>
+ 110:	00892023          	sw	s0,0(s2) # 1000000 <_etext+0xfffee4>
+ 114:	00140413          	addi	s0,s0,1
+ 118:	ff1ff06f          	j	108 <main+0x2c>

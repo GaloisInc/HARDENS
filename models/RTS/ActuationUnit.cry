@@ -1,3 +1,13 @@
+// HARDENS Reactor Trip System (RTS) Actuation Unit
+// A formal model of RTS Actuation Unit behavior written in the
+// Cryptol DSL.
+//
+// @author Alex Bakst <abakst@galois.com>
+// @created November, 2021
+// @refines HARDENS.sysml
+// @refines RTS.lando
+// @refines RTS_Requirements.json
+
 module RTS::ActuationUnit where
 
 import RTS::Utils
@@ -7,42 +17,52 @@ type Input            = [3][4]TripPort
 type ActuationPort    = Bit
 type ActuationUnit    = { output: [2]ActuationPort }
 type CoincidenceLogic = [4]TripPort -> Bit
-type OrLogic          = [2]Bit -> Bit
+type OrLogic          = [2] -> Bit
 
 TripInput: [3][4]TripPort -> ActuationUnit -> ActuationUnit
 TripInput trips actuationUnit =
   { output = [ d0, d1 ] }
   where
-    d0 = (actuationUnit.output @ 0)
-      || TempPressureTripOut [TemperatureLogic temperatureTrips,
+    d0 = Actuate_D0 trips (actuationUnit.output @ 0)
+    d1 = Actuate_D1 trips (actuationUnit.output @ 1)
+
+Actuate_D0: Input -> Bit -> Bit
+Actuate_D0 trips old = d0 || old
+  where
+    d0 = TempPressureTripOut [TemperatureLogic temperatureTrips,
                               PressureLogic pressureTrips]
+    temperatureTrips = trips @ (0:[2])
+    pressureTrips = trips @ (1:[2])
 
-    d1 = (actuationUnit.output @ 1)
-      || (SaturationLogic saturationTrips)
+Actuate_D1: Input -> Bit -> Bit
+Actuate_D1 trips old = d1 || old
+  where
+    d1 = SaturationLogic saturationTrips
+    saturationTrips = trips @ (2:[2])
 
-    temperatureTrips = trips @ T
-    pressureTrips = trips @ P
-    saturationTrips = trips @ S
+TemperatureLogic: [4]TripPort -> Bit
+TemperatureLogic ts = Coincidence_2_4 ts
 
-TemperatureLogic: CoincidenceLogic
-TemperatureLogic = Coincidence_2_4
+PressureLogic: [4]TripPort -> Bit
+PressureLogic ts = Coincidence_2_4 ts
 
-PressureLogic: CoincidenceLogic
-PressureLogic = Coincidence_2_4
+SaturationLogic: [4]TripPort -> Bit
+SaturationLogic ts = Coincidence_2_4 ts
 
-SaturationLogic: CoincidenceLogic
-SaturationLogic = Coincidence_2_4
-
-TempPressureTripOut: OrLogic
-TempPressureTripOut = or
+TempPressureTripOut: [2] -> Bit
+TempPressureTripOut ts = (ts @ (0:[1])) || (ts @ (1:[1]))
 
 private
-  Coincidence_2_4 : [4][8] -> Bit
-  Coincidence_2_4 x = (bits != 0) && (bits != 1) && (bits != 2) && (bits != 4) && (bits != 8)
+  Coincidence_2_4 : [4]TripPort -> Bit
+  Coincidence_2_4 x =
+    (a&&b) || ((a||b) && (c||d)) || (c&&d)
     where
-      bits = [ b != 0 | b <- x ]
+      a = (x @ (0:[2])) != 0
+      b = (x @ (1:[2])) != 0
+      c = (x @ (2:[2])) != 0
+      d = (x @ (3:[2])) != 0
 
-  count : {n} (fin n) => [n] -> Integer
+  count : {n} (fin n, n >= 1) => [n] -> [width n]
   count bs = sum [ if b then 1 else 0 | b <- bs ]
 
   /** @requirements

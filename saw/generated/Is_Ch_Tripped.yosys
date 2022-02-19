@@ -1,0 +1,15 @@
+read_verilog Is_Ch_Tripped.v
+rename \f \Is_Ch_Tripped_Spec
+select -module \Is_Ch_Tripped_Spec
+rename \var0 \mode
+rename \var1 \sensor_tripped
+select -clear
+
+read_verilog -sv ../src/generated/SystemVerilog/instrumentation_impl.sv
+select -module \Is_Ch_Tripped
+select -clear
+
+equiv_make \Is_Ch_Tripped_Spec \Is_Ch_Tripped equiv
+prep -top equiv
+equiv_induct
+equiv_status -assert

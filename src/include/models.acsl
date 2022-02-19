@@ -1,0 +1,54 @@
+#ifndef MODELS_ACSL_
+#define MODELS_ACSL_
+#include <stdint.h>
+
+/*@ axiomatic Actuator {
+  @
+  @ // Refines RTS::Actuator::ActuateActuator
+  @ logic boolean ActuateActuator(uint8_t input) =
+  @   ((input & 0x1) != 0) || ((input & 0x2) != 0);
+  @ }
+  @
+  @
+  @ axiomatic ActuationUnit {
+  @
+  @ // Refines RTS::ActuationUnit::Coincidence_2_4
+  @ logic boolean Coincidence_2_4(uint8_t *trips) =
+  @   \let a = trips[0] != 0;
+  @   \let b = trips[1] != 0;
+  @   \let c = trips[2] != 0;
+  @   \let d = trips[3] != 0;
+  @   (a&&b) || ((a||b) && (c||d)) || (c&&d);
+  @
+  @ // Refines RTS::ActuationUnit::Actuate_D0
+  @ logic boolean Actuate_D0(uint8_t *tripsT, uint8_t *tripsP, uint8_t *tripsS, boolean old) =
+  @   Coincidence_2_4(tripsT) || Coincidence_2_4(tripsP) || old;
+  @
+  @ // Refines RTS::ActuationUnit::Actuate_D1
+  @ logic boolean Actuate_D1(uint8_t *tripsT, uint8_t *tripsP, uint8_t *tripsS, boolean old) =
+  @   Coincidence_2_4(tripsS) || old;
+  @
+  @ }
+  @
+  @
+  @ axiomatic Instrumentation {
+  @
+  @ // Refines RTS::InstrumentationUnit::Trip
+  @ logic boolean Trip(uint32_t *vals, uint32_t *setpoints, integer channel) =
+  @   channel == 2 ? ((int)vals[channel] < (int)setpoints[channel])
+  @                : (setpoints[channel] < vals[channel]);
+  @
+  @ // Refines RTS::InstrumentationUnit::Generate_Sensor_Trips
+  @ logic integer Generate_Sensor_Trips(uint32_t *vals, uint32_t *setpoints) =
+  @   \let t = Trip(vals, setpoints, T);
+  @   \let p = Trip(vals, setpoints, P);
+  @   \let s = Trip(vals, setpoints, S);
+  @   (t ? 1 : 0) + (p ? 2 : 0) + (s ? 4 : 0);
+  @
+  @ // Refines RTS::InstrumentationUnit::Is_Ch_Tripped
+  @ logic boolean Is_Ch_Tripped(integer mode, boolean tripped) =
+  @   (mode == 2) || ((mode == 1) && tripped);
+  @
+  @ }
+  @*/
+#endif

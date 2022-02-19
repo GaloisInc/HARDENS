@@ -1,0 +1,15 @@
+{Dir}
+
+// Set temperature
+V 0 0 100
+V 1 0 100
+
+// Set temperature, sensor 1 demux failure (1 or 2)
+ES 0 0 {Dir}
+
+M 0 0
+M 1 0
+M 2 0
+M 3 0
+
+?WARNING: LARGE SENSOR DIFFERENTIAL

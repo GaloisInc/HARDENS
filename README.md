@@ -1,11 +1,26 @@
 # HARDENS
 
-## Copyright (C) Galois 2021
-## Principal Investigator: Joe Kiniry <kiniry@galois.com>
-## Project Lead: Andrew Bivin <abivin@galois.com>
-## Research Engineers: Alexander Bakst <abakst@galois.com> and Michal Podhradsky <mpodhradsky@galois.com>
+*Copyright (C) Galois 2021-2022*
 
-Repository for the HARDENS project for the [Nuclear Regulatory Commission](https://www.nrc.gov/about-nrc.html).
+*Principal Investigator: Joe Kiniry <kiniry@galois.com>*
+
+*Project Lead: Andrew Bivin <abivin@galois.com>*
+
+*Research Engineers: Alexander Bakst <abakst@galois.com> and Michal Podhradsky <mpodhradsky@galois.com>*
+
+Repository for the HARDENS project for the 
+[Nuclear Regulatory Commission](https://www.nrc.gov/about-nrc.html).
+
+```
+This work is supported by the U.S. Nuclear Regulatory Commission (NRC), 
+Office of Nuclear Regulatory Research, under contract/order number 31310021C0014.
+
+All material is considered in development and not a finalized product. 
+
+Any opinions, findings, conclusions or recommendations expressed in
+this material are those of the author(s) and do not necessarily
+reflect the views of the NRC.
+```
 
 ## Overview
 
@@ -71,6 +86,21 @@ will accomplish such early in Task 2, and cross-compile our POSIX C
 implementation to that SoC.  That ongoing work is found in the `nerv`
 branch of the repository.
 
+## Task 2: Validation and Verification
+
+As described in the Statement of Work, for Task 2 of the HARDENS project Galois
+will perform preliminary validation and verification and testing of the design 
+using model-based engineering and testing methods. The deliverable will be the 
+artifacts as described in the proposal.
+
+The [Hardens Assurance Case](./Assurance.md) document in this repository describes
+the end-to-end specification-to-implementation process, system requirements, testing, 
+and V&V associated with Task 2 deliverables. Rather than restate the document's contents 
+here, Galois recommends reviewing it as a conextualized summary of Task 2 artifacts.
+
+Galois will continue to develop V&V capabilities and port the design to actual hardware
+in preparation for Tasks 3 (Evaluation) and 4 (Presentation).
+
 ## Repository Structure
 
 The repository is structured as follows:
@@ -80,6 +110,9 @@ The repository is structured as follows:
   (`*.sysml`).
 - [models](./models) contains the executable Cryptol model
 - [assets](./assets) and [docs](./docs) contain project and device documentation
+- [saw](./saw) contains SAW-based proofs of correctness of specific model-derived
+  components
+- [tests](./tests) contains end-to-end tests derived from the lando test scenarios.
 
 ## Submodules
 
