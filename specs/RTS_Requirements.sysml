@@ -11,9 +11,10 @@ package id Requirements 'RTS Requirements' {
   // just copied verbatim).
   package id Requirements 'HARDENS Project High-level Requirements' {
     import 'Project Glossary'::*;
+    import 'RTS Stakeholders'::*;
     
     requirement def 'Project Requirements' {
-      subject 'NRC staff' : NRC;
+      subject 'NRC staff' : 'NRC Customer';
     }
     requirement 'NRC Understanding' : 'Project Requirements';
     requirement 'Identify Regulatory Gaps' : 'Project Requirements';
@@ -21,10 +22,15 @@ package id Requirements 'RTS Requirements' {
     requirement 'Demonstrator Parts' : 'Project Requirements';
     requirement 'Demonstrator Groundwork' : 'Project Requirements';
  }
+ // @todo kiniry These requirements must be made consistent, or merged with
+ // those found in the Characteristics specification.
  package id Characteristics 'NRC Characteristics' {
    import 'Project Glossary'::*;
+   import 'RTS Stakeholders'::*;
+
    requirement def 'NRC Characteristic' {
-     subject regulation: 'NRC Certification Regulations';
+     //subject expert: 'NRC Certification SME';
+     //subject regulation: 'NRC Certification Regulations';
    }
    requirement 'Requirements Consistency' : 'NRC Characteristic';
    requirement 'Requirements Colloquial Completeness' : 'NRC Characteristic';

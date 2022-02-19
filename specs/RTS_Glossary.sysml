@@ -1,9 +1,11 @@
 /*
  # Reactor Trip System (RTS) High-assurance Demonstrator
  ## project: High Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS)
- ### copyright (C) 2021 Galois
+ ### copyright (C) 2021-2022 Galois
  ### author: Joe Kiniry <kiniry@galois.com>
 */
+
+// @see https://github.com/GaloisInc/HARDENS/issues/30
 
 package id Glossary 'Project Glossary' {
   // @design Eliminate all redundancy with concepts in KerML or SysML domain 
@@ -282,4 +284,7 @@ package id Glossary 'Project Glossary' {
   abstract part def id Bitstream 'FPGA Bitstream' {
     attribute proprietary_flow: Boolean;
   }
+  
+  // NRC concepts.
+  abstract part def 'NRC Certifcation Regulations';
 }
