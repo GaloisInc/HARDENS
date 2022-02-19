@@ -30,14 +30,18 @@ running on three FPGAs connected via an AXI bus, or (4) three single
 core ASICs connected on an AXI bus.
 
 The digital twins that we have built for HARDENS are:
+
  1. A build and simulation of the entire software stack which runs on
     POSIX OSs like Linux and macOS.
+    
  2. A build of the software stack targeting the single core variant of
     our RISC-V-based SoC, running via RTL software simulation in
     Verilator.
+    
  3. A build of the software stack targeting the three core variant of
     our RISC-V-based SoC, running via RTL software simulation in
     Verilator.
+
  4. Our executable Cryptol model which faithfully specify and
     implements all system behavior.
 
