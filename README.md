@@ -1,11 +1,15 @@
 # HARDENS
 
-## Copyright (C) Galois 2021
-## Principal Investigator: Joe Kiniry <kiniry@galois.com>
-## Project Lead: Andrew Bivin <abivin@galois.com>
-## Research Engineers: Alexander Bakst <abakst@galois.com> and Michal Podhradsky <mpodhradsky@galois.com>
+*Copyright (C) Galois 2021-2022*
 
-Repository for the HARDENS project for the [Nuclear Regulatory Commission](https://www.nrc.gov/about-nrc.html).
+*Principal Investigator: Joe Kiniry <kiniry@galois.com>*
+
+*Project Lead: Andrew Bivin <abivin@galois.com>*
+
+*Research Engineers: Alexander Bakst <abakst@galois.com> and Michal Podhradsky <mpodhradsky@galois.com>*
+
+Repository for the HARDENS project for the 
+[Nuclear Regulatory Commission](https://www.nrc.gov/about-nrc.html).
 
 ```
 This work is supported by the U.S. Nuclear Regulatory Commission (NRC), 
