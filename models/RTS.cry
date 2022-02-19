@@ -3,9 +3,9 @@
 //
 // @author Alex Bakst <abakst@galois.com>
 // @created November, 2021
-// @refines HARDENS.sysml 
+// @refines HARDENS.sysml
 // @refines RTS.lando
-// @refines 
+// @refines RTS_Requirements.json
 
 module RTS where
 
@@ -151,6 +151,7 @@ Sense_Actuate inputs icmds rts =
     expect       = (old_vote != 0) || ShouldActuate test_ch inputs rts.instrumentation.units [i0,i1]
     test_fail    = expect != (actuators_test @ test_dev).input
 
+// @review kiniry Shouldn't this/these be private?
 MaskTripFrom: {idx} (Integral idx, Literal 0 idx) =>
   (idx -> Channel -> Bit) -> [3][4][8] -> [3][4][8]
 MaskTripFrom p trips =

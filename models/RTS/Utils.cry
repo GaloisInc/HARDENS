@@ -1,3 +1,10 @@
+// HARDENS Reactor Trip System (RTS) Utility Functions
+// In support of a formal model of RTS system behavior written in the
+// Cryptol DSL.
+//
+// @author Alex Bakst <abakst@galois.com>
+// @created November, 2021
+
 module RTS::Utils where
 
 infixl 5 >>>>
