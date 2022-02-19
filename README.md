@@ -86,6 +86,21 @@ will accomplish such early in Task 2, and cross-compile our POSIX C
 implementation to that SoC.  That ongoing work is found in the `nerv`
 branch of the repository.
 
+## Task 2: Validation and Verification
+
+As described in the Statement of Work, for Task 2 of the HARDENS project Galois
+will perform preliminary validation and verification and testing of the design 
+using model-based engineering and testing methods. The deliverable will be the 
+artifacts as described in the proposal.
+
+The [Hardens Assurance Case](./Assurance.md) document in this repository describes
+the end-to-end specification-to-implementation process, system requirements, testing, 
+and V&V associated with Task 2 deliverables. Rather than restate the document's contents 
+here, Galois recommends reviewing it as a conextualized summary of Task 2 artifacts.
+
+Galois will continue to develop V&V capabilities and port the design to actual hardware
+in preparation for Tasks 3 (Evaluation) and 4 (Presentation).
+
 ## Repository Structure
 
 The repository is structured as follows:
