@@ -48,7 +48,7 @@ CRYPTOL_CODEGEN_REV=hardens-tweaks
 echo "Current Cryptol_codegen revision is ${CRYPTOL_CODEGEN_REV}!"
 git checkout ${CRYPTOL_CODEGEN_REV}
 git submodule update --init
-
+cd -
 
 # Build the container
 echo "INFO: Building the container..."
