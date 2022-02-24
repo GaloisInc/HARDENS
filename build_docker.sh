@@ -35,6 +35,7 @@ CRYPTOL_VERILOG_REV=signed-compare
 echo "Current Cryptol_verilog revision is ${CRYPTOL_VERILOG_REV}!"
 git checkout ${CRYPTOL_VERILOG_REV}
 git submodule update --init
+cd -
 
 # clone crymp and update submodules prior to building the docker image
 if [ -d "cryptol-codegen" ];
@@ -52,7 +53,7 @@ cd -
 
 # Build the container
 echo "INFO: Building the container..."
-DOCKER_BUILDKIT=1 docker build \
+DOCKER_BUILDKIT=1 sudo docker build \
     --progress=plain \
     --build-arg CRYPTOL_CODEGEN_REV=${CRYPTOL_CODEGEN_REV} \
     --build-arg CRYPTOL_VERILOG_REV=${CRYPTOL_VERILOG_REV} \

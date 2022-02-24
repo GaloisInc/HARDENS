@@ -119,6 +119,7 @@ RUN \
     && cd /tmp/${TOOL} \
     && git checkout ${TAG}
 RUN mkdir /tmp/${TOOL}/build
+WORKDIR /tmp/${TOOL}/build
 RUN \
     cmake ../ \
     && cmake --build . \
@@ -172,6 +173,30 @@ RUN \
     && cabal v2-install --installdir=/tools
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
+# Z3 solver
+ARG TOOL=z3
+ARG TAG=4.8.14-x64-glibc-2.31
+ARG REPO=https://github.com/Z3Prover/z3/releases/download/z3-4.8.14
+WORKDIR /tmp
+RUN wget ${REPO}/${TOOL}-${TAG}.zip
+RUN unzip ${TOOL}-${TAG}.zip
+RUN    mv ${TOOL}-${TAG} /tools/${TOOL}
+ENV PATH="/tools/${TOOL}:${PATH}"
+RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
+# SAW
+ARG TOOL=saw
+ARG TAG=e2fef66d7cf4c67ecb86b0fe096977cd7e925183
+ARG REPO=https://github.com/GaloisInc/saw-script.git
+RUN git clone ${REPO} /tmp/${TOOL}
+WORKDIR /tmp/${TOOL}
+RUN git checkout ${TAG} \
+    && git submodule update --init \
+    && ./build.sh \
+    && cp bin/saw /usr/local/bin
+RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
+
 # cryptol-verilog
 ARG TOOL=cryptol-verilog
 ARG TAG=${CRYPTOL_VERILOG_REV}
@@ -189,31 +214,7 @@ COPY ${TOOL} /tmp/${TOOL}
 WORKDIR /tmp/${TOOL}
 RUN \
     cabal build \
-    && cabal install --installdir=/tools \
-ENV PATH="/tools/${TOOL}:${PATH}"
-RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
-
-# SAW
-ARG TOOL=saw
-ARG TAG=e2fef66d7cf4c67ecb86b0fe096977cd7e925183
-ARG REPO=https://github.com/GaloisInc/saw-script.git
-RUN git clone ${REPO} /tmp/${TOOL}
-WORKDIR /tmp/${TOOL}
-RUN git checkout ${TAG} \
-    && git submodule update --init \
-    && ./build.sh \
-    && cp bin/saw /usr/local/bin
-RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
-
-# Z3 solver
-ARG TOOL=z3
-ARG TAG=4.8.14-x64-glibc-2.31
-ARG REPO=https://github.com/Z3Prover/z3/releases/download/z3-4.8.14
-WORKDIR /tmp
-RUN \
-    wget ${REPO}/${TOOL}-${TAG}.zip \
-    && unzip ${TOOL}-${TAG}.zip \
-    mv ${TOOL}-${TAG} /tools/${TOOL}
+    && cabal install --installdir=/tools
 ENV PATH="/tools/${TOOL}:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
@@ -234,7 +235,7 @@ RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 # git@github.com:GaloisInc/BESSPIN-Lando.git
 
 # Clean tmp files
-RUN cd /tmp && rm -rf .
+RUN rm -rf /tmp/*
 
 RUN cat ${VERSION_LOG}
 
