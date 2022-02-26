@@ -122,7 +122,7 @@ endif
 
 ifeq ($(EXECUTION),Parallel)
 CFLAGS += -DUSE_PTHREADS
-LIBS   += -lpthread
+LIBS   += -pthread
 endif
 
 ifneq ($(SELF_TEST_PERIOD_SEC),)
@@ -136,7 +136,7 @@ BUILD_MSG = BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) 
 all: rts
 
 rts: $(SRC:.c=.o) $(EXTRA_SRC)
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) $(LIBS) -o $@ $^
 	@echo "***"
 	@echo $(BUILD_MSG)
 	@echo "***"
