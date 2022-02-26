@@ -55,14 +55,11 @@ cd -
 echo "INFO: Building the container..."
 DOCKER_BUILDKIT=1 sudo docker build \
     --progress=plain \
-    --build-arg CRYPTOL_CODEGEN_REV=${CRYPTOL_CODEGEN_REV} \
-    --build-arg CRYPTOL_VERILOG_REV=${CRYPTOL_VERILOG_REV} \
     --tag ${IMAGE_TAG} \
     .
 
 # once the build is complete, then remove the introduced directories and files
 rm -rf cryptol-verilog cryptol-codegen
-
 
 if [ $doPush -eq 1 ]; then
     echo "Logging in to the docker repository"

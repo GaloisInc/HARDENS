@@ -181,7 +181,7 @@ WORKDIR /tmp
 RUN wget ${REPO}/${TOOL}-${TAG}.zip
 RUN unzip ${TOOL}-${TAG}.zip
 RUN    mv ${TOOL}-${TAG} /tools/${TOOL}
-ENV PATH="/tools/${TOOL}:${PATH}"
+ENV PATH="/tools/${TOOL}/bin:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # SAW
@@ -196,27 +196,23 @@ RUN git checkout ${TAG} \
     && cp bin/saw /usr/local/bin
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
-
 # cryptol-verilog
 ARG TOOL=cryptol-verilog
-ARG TAG=${CRYPTOL_VERILOG_REV}
 COPY ${TOOL} /tmp/${TOOL}
 WORKDIR /tmp/${TOOL}
 RUN \
     cabal v2-build \
     && cabal v2-install --installdir=/tools
-RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # Crymp
 ARG TOOL=cryptol-codegen
-ARG TAG=${CRYPTOL_CODEGEN_REV}
 COPY ${TOOL} /tmp/${TOOL}
 WORKDIR /tmp/${TOOL}
 RUN \
     cabal build \
     && cabal install --installdir=/tools
-ENV PATH="/tools/${TOOL}:${PATH}"
-RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
+ENV PATH="/tools/:${PATH}"
 
 # Fret
 # ARG TOOL=fret
