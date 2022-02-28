@@ -155,7 +155,7 @@ variants/%_generated_C.o: variants/%_generated_C.c generated/C/%_impl.c
 variants/%_generated_SystemVerilog.o: variants/%_generated_SystemVerilog.c ${SV_LIBS}
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-%.o: %.c
+%.o: %.c self_test_data/tests.inc.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 clean:
