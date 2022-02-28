@@ -16,7 +16,8 @@ import I2C :: *;
 // Local imports
 
 import Nerv :: *;
-
+import Instrumentation_IFC::*;
+import Instrumentation_Handwritten_BVI::*;
 // ================================================================
 // A small NERV SoC
 
@@ -35,14 +36,13 @@ endinterface
 
 (* synthesize *)
 module mkNervSoC (NervSoC_IFC);
-
    Bit#(30) memory_size = 'h40000;
 
    // For debugging only
    Bool show_exec_trace = False;
    Bool show_load_store = False;
    Reg #(Bit #(64)) rg_tick    <- mkReg (0);
-   Reg #(Bit #(64)) rg_clock    <- mkReg (0);
+   RWire#(Bit #(64)) rw_tick <- mkRWire();
 
    // Instantiate the nerv CPU
    Nerv_IFC nerv <- mkNerv;
@@ -98,6 +98,21 @@ module mkNervSoC (NervSoC_IFC);
    Reg #(Bool) rg_i2c_transaction_ready <- mkReg(False);
    Reg #(Bit #(32)) rg_i2c_transaction_complete <- mkReg(0);
 
+
+   // ChannelTripped_IFC instr_hand <- mkInstrHandwriten();
+   // Reg #(Bit #(32)) rg_instr_trip <- mkReg(0);
+   // Reg #(Bit #(32)) rg_instr_trip_res <- mkReg(0);
+   // Reg #(Bool) rg_instr_trip_en <- mkReg(False);
+   // rule instrumentation;
+   //    if (rg_instr_trip_en)
+   //    begin
+   //       let sensor_tripped = unpack(rg_instr_trip[0]);
+   //       let mode = unpack(rg_instr_trip[2:1]);
+   //       let val <- instr_hand.is_channel_tripped (mode, sensor_tripped);
+   //       rg_instr_trip_res <= signExtend(pack(val));
+   //    end
+   // endrule
+
    // This rule deals with instruction fetch and D-Mem read results
    (* fire_when_enabled, no_implicit_conditions *)
    rule rl_always;
@@ -118,6 +133,7 @@ module mkNervSoC (NervSoC_IFC);
       if (trap) $display ("Trapped");
 
       rg_tick <= rg_tick + 1;
+      rw_tick.wset(rg_tick);
    endrule
 
    // This rule deals with D-Mem writes and LED GPIO writes
@@ -141,14 +157,12 @@ module mkNervSoC (NervSoC_IFC);
          gpio_addr:
             begin
                rg_gpio <= ((rg_gpio & (~ mask)) | (wdata & mask));
-               rg_clock <= rg_clock +1;
             end
          // Write a byte to serial port
          uart_reg_addr_tx:
             begin
                rg_uart_tx <= wdata[7:0];
                rg_uart_tx_data_ready <= True;
-               rg_clock <= rg_clock +1;
             end
          // Receive data from serial port
          // Note: might be 0 or stale, check uart_reg_addr_dr first
@@ -156,7 +170,6 @@ module mkNervSoC (NervSoC_IFC);
             begin
                rg_dmem_rdata <= signExtend(rg_uart_rx);
                rg_uart_rx_data_ready <= False;
-               rg_clock <= rg_clock +1;
             end
          uart_reg_addr_dr:
             begin
@@ -164,18 +177,15 @@ module mkNervSoC (NervSoC_IFC);
                   rg_dmem_rdata <= 1;
                else
                rg_dmem_rdata <= 0;
-               rg_clock <= rg_clock +1;
             end
          i2c_reg_addr:
             begin
                // Only 8 bytes for the address, the rest is ignored
                rg_i2c_addr <= wdata[7:0];
                rg_i2c_transaction_ready <= True;
-               rg_clock <= rg_clock +1;
             end
          i2c_reg_data:
             begin
-               rg_clock <= rg_clock +1;
                if (mask == 0)
                begin
                   // Read rg_i2c_data
@@ -191,26 +201,24 @@ module mkNervSoC (NervSoC_IFC);
             begin
                rg_dmem_rdata <= rg_i2c_transaction_complete;
                rg_i2c_transaction_complete <= 0;
-
-               rg_clock <= rg_clock +1;
             end
          clock_reg_lower:
             begin
-               rg_dmem_rdata <= rg_clock[31:0];
+               Maybe#(Bit #(64)) ticks = rw_tick.wget();
+               Bit #(64) t = fromMaybe (?, ticks);
+               rg_dmem_rdata <= t[31:0];
             end
          clock_reg_upper:
             begin
-               rg_dmem_rdata <= rg_clock[63:32];
+               Maybe#(Bit #(64)) ticks = rw_tick.wget();
+               Bit #(64) t = fromMaybe (?, ticks);
+               rg_dmem_rdata <= t[63:32];
             end
          default:
             begin
                // Regular memory read
                dmem.upd (d_addr [31:2], ((mem_data & (~ mask)) | (wdata & mask)));
                rg_dmem_rdata <= mem_data;
-
-               // Update clock - this is a hack and should be done differently,
-               // presumably an RWire that lets me increment and read in the same clock cycle
-               rg_clock <= rg_clock +1;
             end
       endcase
    endrule
