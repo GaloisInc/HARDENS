@@ -231,7 +231,7 @@ ENV PATH="/tools/:${PATH}"
 # RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # Lando/Lobot
-ARG TOOL=Lando
+ARG TOOL=lando
 ARG TAG=428ea1174de2bed7c069a6ef8edb30ca75ed441a
 ARG REPO=https://github.com/GaloisInc/BESSPIN-Lando.git
 RUN git clone ${REPO} /tools/${TOOL}
