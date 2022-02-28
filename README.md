@@ -132,11 +132,11 @@ tools to this container as necessary during project execution.
 
 ### HARDENS Container
 
-To build and run the core HARDENS Docker image, use the `build` and
-`run` commands.
+To build and run the core HARDENS Docker image, use the `build_docker.sh` script and then
+`docker run` commands.
 
 ```
-$ docker build -t hardens:latest .
+$ ./build_docker.sh
 $ docker run --network host --privileged -v $PWD:/HARDENS -it hardens:latest
 ```
 

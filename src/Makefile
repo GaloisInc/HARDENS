@@ -129,7 +129,7 @@ endif
 
 ifeq ($(EXECUTION),Parallel)
 CFLAGS += -DUSE_PTHREADS
-LIBS   += -lpthread
+LIBS   += -pthread
 endif
 
 ifneq ($(SELF_TEST_PERIOD_SEC),)
@@ -143,7 +143,7 @@ BUILD_MSG = BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) 
 all: rts
 
 rts: $(SRC:.c=.o) $(EXTRA_SRC)
-	$(CC) $(CFLAGS) -o $@ $^ $(LIBS)
+	$(CC) $(CFLAGS) $(LIBS) -o $@ $^
 	@echo "***"
 	@echo $(BUILD_MSG)
 	@echo "***"
@@ -162,7 +162,7 @@ variants/%_generated_C.o: variants/%_generated_C.c generated/C/%_impl.c
 variants/%_generated_SystemVerilog.o: variants/%_generated_SystemVerilog.c ${SV_LIBS}
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-%.o: %.c
+%.o: %.c self_test_data/tests.inc.c
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 clean:

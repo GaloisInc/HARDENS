@@ -7,7 +7,7 @@
 #include <poll.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <sys/_pthread/_pthread_mutex_t.h>
+#include <pthread.h>
 #include <termios.h>
 #include <unistd.h>
 #include <stddef.h>
