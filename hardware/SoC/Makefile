@@ -114,6 +114,19 @@ link_verilator: compile_verilog
 	cp -p  verilog/*.v                                   $(VERILATOR_RTL_DIR)/
 	cp -p  $(NERV_REPO)/nerv.sv                          $(VERILATOR_RTL_DIR)/
 	cp -p  $(BLUESPEC_HOME)/lib/Verilog/*.v  $(VERILATOR_RTL_DIR)/
+	@echo "Copying over handwritten modules"
+	cp -p ../../src/handwritten/SystemVerilog/instrumentation_impl.sv $(VERILATOR_RTL_DIR)/Is_Ch_Tripped.sv
+	sed 's/Is_Ch_Tripped/Is_Ch_Tripped_Handwritten/' $(VERILATOR_RTL_DIR)/Is_Ch_Tripped.sv > $(VERILATOR_RTL_DIR)/out.sv
+	mv $(VERILATOR_RTL_DIR)/out.sv $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Handwritten.sv
+	sed 's/Generate_Sensor_Trips/Generate_Sensor_Trips_Handwritten/' $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Handwritten.sv > $(VERILATOR_RTL_DIR)/out.sv
+	mv $(VERILATOR_RTL_DIR)/out.sv $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Handwritten.sv
+	@echo "Copying over generated modules"
+	cp -p ../../src/generated/SystemVerilog/instrumentation_impl.sv $(VERILATOR_RTL_DIR)/Is_Ch_Tripped.sv
+	sed 's/Is_Ch_Tripped/Is_Ch_Tripped_Generated/' $(VERILATOR_RTL_DIR)/Is_Ch_Tripped.sv > $(VERILATOR_RTL_DIR)/out.sv
+	mv $(VERILATOR_RTL_DIR)/out.sv $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Generated.sv
+	sed 's/Generate_Sensor_Trips/Generate_Sensor_Trips_Generated/' $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Generated.sv > $(VERILATOR_RTL_DIR)/out.sv
+	mv $(VERILATOR_RTL_DIR)/out.sv $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Generated.sv
+	cp -p ../../src/generated/SystemVerilog/actuation_unit_impl.sv $(VERILATOR_RTL_DIR)/Actuate_D0.sv
 	@echo "INFO: Generating sim_main.cpp for TOPMODULE = $(TOPMODULE)"
 	sed  's/TOPMODULE/mkTop/g' \
 		$(VERILATOR_RESOURCES)/sim_main_template.cpp \

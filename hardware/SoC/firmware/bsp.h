@@ -7,6 +7,7 @@
 
 // Eyeballing the core frequency (ticks per second)
 #define CORE_FREQ 100000
+// Note this might be different on different machines
 #define TICKS_TO_MS_MULTIPLIER 8
 #define UART_RX_REG 0x02000004
 #define UART_DATA_READY_REG 0x02000008

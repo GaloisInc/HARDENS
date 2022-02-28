@@ -11,13 +11,29 @@ package NervSoC;
 // Import from BSV library
 
 import RegFile :: *;
+// TODO: refactor the I2C comments
+// I2c Order of operations:
+// 1) Copy data to i2c_reg_addr_data
+// 2) Write addr to i2c_reg_addr_base
+// 3) Writing to i2c_reg_addr_base initiates transaction
+// 4) Once i2c_reg_addr_stat & I2C_COMPLETE_BIT is 1(True) resulting data
+// are stored in i2c_reg_addr_data (in case on Read transaction)
+// 5) i2c_reg_addr_stat holds also errors about the transaction
+// for example `if (i2c_reg_addr_stat & I2C_TRANSACTION_ERROR)` then an error occured
+// TODO: add granularity into error reporting (arbitration, no slave ack, etc)
+//
+// 7bits addr, 1bit RW, 8bits total - the firmware is responsible for setting R/W bit
 import I2C :: *;
 // ================================================================
 // Local imports
 
 import Nerv :: *;
-import Instrumentation_IFC::*;
+import Instrumentation::*;
 import Instrumentation_Handwritten_BVI::*;
+import Instrumentation_Generated_BVI::*;
+
+import Actuation::*;
+import Actuation_Generated_BVI::*;
 // ================================================================
 // A small NERV SoC
 
@@ -61,30 +77,17 @@ module mkNervSoC (NervSoC_IFC);
 
    // IO addresses
    Bit #(32) gpio_addr = 32'h 0100_0000;
-
    Bit #(32) uart_reg_addr_tx = 32'h 0200_0000;
    Bit #(32) uart_reg_addr_rx = 32'h 0200_0004;
    Bit #(32) uart_reg_addr_dr = 32'h 0200_0008;
-
-   // I2c Order of operations:
-   // 1) Copy data to i2c_reg_data
-   // 2) Write addr to i2c_reg_addr
-   // 3) Writing to i2c_reg_addr initiates transaction
-   // 4) Once i2c_reg_stat & I2C_COMPLETE_BIT is 1(True) resulting data
-   // are stored in i2c_reg_data (in case on Read transaction)
-   // 5) i2c_reg_stat holds also errors about the transaction
-   // for example `if (i2c_reg_stat & I2C_TRANSACTION_ERROR)` then an error occured
-   // TODO: add granularity into error reporting (arbitration, no slave ack, etc)
-   //
-   // 7bits addr, 1bit RW, 8bits total - the firmware is responsible for setting R/W bit
-   Bit #(32) i2c_reg_addr = 32'h 0300_0000;
-   // I2C fifo has up to 16 bytes (4 registers)
-   Bit #(32) i2c_reg_data = 32'h 0300_0004;
-   // I2C status reg (transaction complete 1bit, transaction error 1bit, error type 2bits)
-   Bit #(32) i2c_reg_stat = 32'h 0300_0008;
-
-   Bit #(32) clock_reg_lower = 32'h 0400_0000;
-   Bit #(32) clock_reg_upper = 32'h 0400_0004;
+   Bit #(32) i2c_reg_addr_base = 32'h 0300_0000;
+   Bit #(32) i2c_reg_addr_data = 32'h 0300_0004; // I2C fifo has up to 16 bytes (4 registers)
+   Bit #(32) i2c_reg_addr_stat = 32'h 0300_0008; // I2C status reg (transaction complete 1bit, transaction error 1bit, error type 2bits)
+   Bit #(32) clock_reg_adrr_lower = 32'h 0400_0000; // System ticks
+   Bit #(32) clock_reg_adrr_upper = 32'h 0400_0004;
+   Bit #(32) instr_reg_addr_hand_base = 32'h 0500_0000;// Handwritten Instrumentation base register
+   Bit #(32) instr_reg_addr_gen_base = 32'h 0500_0010;// Generated Instrumentation base register
+   Bit #(32) actuation_reg_addr_gen_base = 32'h 0500_0020;// Generated Actuation base register
 
    // IO registers
    Reg #(Bit #(32)) rg_gpio       <- mkRegU;
@@ -98,20 +101,10 @@ module mkNervSoC (NervSoC_IFC);
    Reg #(Bool) rg_i2c_transaction_ready <- mkReg(False);
    Reg #(Bit #(32)) rg_i2c_transaction_complete <- mkReg(0);
 
-
-   // ChannelTripped_IFC instr_hand <- mkInstrHandwriten();
-   // Reg #(Bit #(32)) rg_instr_trip <- mkReg(0);
-   // Reg #(Bit #(32)) rg_instr_trip_res <- mkReg(0);
-   // Reg #(Bool) rg_instr_trip_en <- mkReg(False);
-   // rule instrumentation;
-   //    if (rg_instr_trip_en)
-   //    begin
-   //       let sensor_tripped = unpack(rg_instr_trip[0]);
-   //       let mode = unpack(rg_instr_trip[2:1]);
-   //       let val <- instr_hand.is_channel_tripped (mode, sensor_tripped);
-   //       rg_instr_trip_res <= signExtend(pack(val));
-   //    end
-   // endrule
+   // Instantiate instrumentation and actuation interfaces
+   Instrumentation_IFC instr_hand <- mkInstrumentationHandwritten();
+   Instrumentation_IFC instr_gen <- mkInstrumentationGenerated();
+   Actuation_IFC actuation_gen <- mkActuationGenerated();
 
    // This rule deals with instruction fetch and D-Mem read results
    (* fire_when_enabled, no_implicit_conditions *)
@@ -178,13 +171,13 @@ module mkNervSoC (NervSoC_IFC);
                else
                rg_dmem_rdata <= 0;
             end
-         i2c_reg_addr:
+         i2c_reg_addr_base:
             begin
                // Only 8 bytes for the address, the rest is ignored
                rg_i2c_addr <= wdata[7:0];
                rg_i2c_transaction_ready <= True;
             end
-         i2c_reg_data:
+         i2c_reg_addr_data:
             begin
                if (mask == 0)
                begin
@@ -197,22 +190,34 @@ module mkNervSoC (NervSoC_IFC);
                   rg_i2c_data <= ((rg_i2c_data & (~ mask)) | (wdata & mask));
                end
             end
-         i2c_reg_stat:
+         i2c_reg_addr_stat:
             begin
                rg_dmem_rdata <= rg_i2c_transaction_complete;
                rg_i2c_transaction_complete <= 0;
             end
-         clock_reg_lower:
+         clock_reg_adrr_lower:
             begin
                Maybe#(Bit #(64)) ticks = rw_tick.wget();
                Bit #(64) t = fromMaybe (?, ticks);
                rg_dmem_rdata <= t[31:0];
             end
-         clock_reg_upper:
+         clock_reg_adrr_upper:
             begin
                Maybe#(Bit #(64)) ticks = rw_tick.wget();
                Bit #(64) t = fromMaybe (?, ticks);
                rg_dmem_rdata <= t[63:32];
+            end
+         instr_reg_addr_hand_base:
+            begin
+               // TODO: common reg offsets
+            end
+         instr_reg_addr_gen_base:
+            begin
+               // TODO: common reg offsets
+            end
+         actuation_reg_addr_gen_base:
+            begin
+               // TODO: common reg offsets
             end
          default:
             begin
