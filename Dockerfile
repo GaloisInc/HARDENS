@@ -23,7 +23,8 @@ RUN apt-get install -y wget git python pip \
     cabal-install libffi7 \
     libftdi1-2 libftdi1-dev libhidapi-libusb0 libhidapi-dev libudev-dev make g++ \
     clang libc++-dev libc++abi-dev nodejs python2 npm \
-    iverilog verilator
+    iverilog verilator \
+    vim
 
 # Yosys
 ARG TOOL=yosys
@@ -223,12 +224,22 @@ ENV PATH="/tools/:${PATH}"
 # RUN git checkout ${TAG} \
 #     && git submodule update --init
 # WORKDIR /tools/${TOOL}/fret-electron
-# RUN npm install -g npm@8.5.1
+# # Change https://github.com/NASA-SW-VnV/fret/blob/master/fret-electron/package.json#L249 to "redux-thunk": "^2.4.1" and
+# # https://github.com/NASA-SW-VnV/fret/blob/master/fret-electron/package.json#L248 to "redux": :^4"
 # RUN npm run fret-install
+# # NOTE: npm run start still fails, likely because it requires X server which is not availale in Docker
 # RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # Lando/Lobot
-# git@github.com:GaloisInc/BESSPIN-Lando.git
+ARG TOOL=Lando
+ARG TAG=428ea1174de2bed7c069a6ef8edb30ca75ed441a
+ARG REPO=https://github.com/GaloisInc/BESSPIN-Lando.git
+RUN git clone ${REPO} /tools/${TOOL}
+WORKDIR /tools/${TOOL}
+RUN apt-get install -y maven
+RUN ./lando.sh -r
+ENV PATH="/tools/${TOOL}:${PATH}"
+RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # Clean tmp files
 RUN rm -rf /tmp/*
