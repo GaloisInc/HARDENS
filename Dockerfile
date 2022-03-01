@@ -249,7 +249,8 @@ RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 # Runner
 FROM base as runner
 COPY --from=builder /opt/ /opt/
-COPY --from=builder /tools /
+COPY --from=builder /tools/ /tools/
+COPY --from=builder /root/.cabal/ /root/.cabal/
 COPY --from=builder /usr/local/bin/riscv64-unknown-elf-elf2hex /usr/local/bin/riscv64-unknown-elf-elf2hex
 RUN cat ${VERSION_LOG}
 
