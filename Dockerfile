@@ -1,9 +1,8 @@
-FROM ubuntu:21.04
-
+# Base
+FROM ubuntu:21.04 as base
 ARG DEBIAN_FRONTEND=noninteractive
 RUN mkdir /tools
-ARG VERSION_LOG=/tools/log.txt
-RUN echo "Installed tools:" >> ${VERSION_LOG}
+WORKDIR /
 
 RUN apt-get update && apt-get upgrade -y
 RUN apt-get install -y wget git python pip \
@@ -25,6 +24,11 @@ RUN apt-get install -y wget git python pip \
     clang libc++-dev libc++abi-dev nodejs python2 npm \
     iverilog verilator \
     vim
+
+# Builder
+FROM base as builder
+ARG VERSION_LOG=/tools/log.txt
+RUN echo "Installed tools:" >> ${VERSION_LOG}
 
 # Yosys
 ARG TOOL=yosys
@@ -241,9 +245,9 @@ RUN ./lando.sh -r
 ENV PATH="/tools/${TOOL}:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
-# Clean tmp files
-RUN rm -rf /tmp/*
 
+# Runner
+FROM base as runner
+COPY --from=builder /opt/ /opt/
+COPY --from=builder /tools /
 RUN cat ${VERSION_LOG}
-
-WORKDIR /
