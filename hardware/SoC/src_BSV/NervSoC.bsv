@@ -11,6 +11,7 @@ package NervSoC;
 // Import from BSV library
 
 import RegFile :: *;
+import Vector :: *;
 // TODO: refactor the I2C comments
 // I2c Order of operations:
 // 1) Copy data to i2c_reg_addr_data
@@ -85,9 +86,30 @@ module mkNervSoC (NervSoC_IFC);
    Bit #(32) i2c_reg_addr_stat = 32'h 0300_0008; // I2C status reg (transaction complete 1bit, transaction error 1bit, error type 2bits)
    Bit #(32) clock_reg_adrr_lower = 32'h 0400_0000; // System ticks
    Bit #(32) clock_reg_adrr_upper = 32'h 0400_0004;
-   Bit #(32) instr_reg_addr_hand_base = 32'h 0500_0000;// Handwritten Instrumentation base register
-   Bit #(32) instr_reg_addr_gen_base = 32'h 0500_0010;// Generated Instrumentation base register
-   Bit #(32) actuation_reg_addr_gen_base = 32'h 0500_0020;// Generated Actuation base register
+
+   Bit #(32) instr_reg_addr_hand_base           = 32'h 0500_0000;// Handwritten Instrumentation base register
+   Bit #(32) instr_reg_addr_hand_instr_val_0    = 32'h 0500_0004;
+   Bit #(32) instr_reg_addr_hand_instr_val_1    = 32'h 0500_0008;
+   Bit #(32) instr_reg_addr_hand_instr_val_2    = 32'h 0500_000C;
+   Bit #(32) instr_reg_addr_hand_setpoint_val_0 = 32'h 0500_0010;
+   Bit #(32) instr_reg_addr_hand_setpoint_val_1 = 32'h 0500_0014;
+   Bit #(32) instr_reg_addr_hand_setpoint_val_2 = 32'h 0500_0018;
+   Bit #(32) instr_reg_addr_hand_res            = 32'h 0500_001C;
+
+   Bit #(32) instr_reg_addr_gen_base           = 32'h 0500_0020;// Generated Instrumentation base register
+   Bit #(32) instr_reg_addr_gen_instr_val_0    = 32'h 0500_0024;
+   Bit #(32) instr_reg_addr_gen_instr_val_1    = 32'h 0500_0028;
+   Bit #(32) instr_reg_addr_gen_instr_val_2    = 32'h 0500_002C;
+   Bit #(32) instr_reg_addr_gen_setpoint_val_0 = 32'h 0500_0030;
+   Bit #(32) instr_reg_addr_gen_setpoint_val_1 = 32'h 0500_0034;
+   Bit #(32) instr_reg_addr_gen_setpoint_val_2 = 32'h 0500_0038;
+   Bit #(32) instr_reg_addr_gen_res            = 32'h 0500_003C;
+
+   Bit #(32) actuation_reg_addr_gen_base       = 32'h 0500_0040;// Generated Actuation base register
+   Bit #(32) actuation_reg_addr_gen_trip_0     = 32'h 0500_0044;
+   Bit #(32) actuation_reg_addr_gen_trip_1     = 32'h 0500_0048;
+   Bit #(32) actuation_reg_addr_gen_trip_2     = 32'h 0500_004C;
+   Bit #(32) actuation_reg_addr_gen_res        = 32'h 0500_0050;
 
    // IO registers
    Reg #(Bit #(32)) rg_gpio       <- mkRegU;
@@ -100,6 +122,12 @@ module mkNervSoC (NervSoC_IFC);
    Reg #(Bit #(32)) rg_i2c_status <- mkReg(0);
    Reg #(Bool) rg_i2c_transaction_ready <- mkReg(False);
    Reg #(Bit #(32)) rg_i2c_transaction_complete <- mkReg(0);
+   Vector#(6, Reg#(Bit #(32))) instr_vals <- replicateM( mkReg(0) );
+   Vector#(6, Reg#(Bit #(32))) instr_setpoints <- replicateM( mkReg(0) );
+   Vector#(3, Reg#(Bit #(32))) actuation_trips <- replicateM( mkReg(0) );
+   Reg #(Bit #(32)) rg_actuation_res <- mkReg(0);
+   Reg #(Bit #(32)) rg_instr_hand_res <- mkReg(0);
+   Reg #(Bit #(32)) rg_instr_gen_res <- mkReg(0);
 
    // Instantiate instrumentation and actuation interfaces
    Instrumentation_IFC instr_hand <- mkInstrumentationHandwritten();
@@ -207,18 +235,187 @@ module mkNervSoC (NervSoC_IFC);
                Bit #(64) t = fromMaybe (?, ticks);
                rg_dmem_rdata <= t[63:32];
             end
+         /**
+         * ////////////////////////////////////////////////////////////////
+         * Instrumentation handwritten unit
+         * ////////////////////////////////////////////////////////////////
+         */
          instr_reg_addr_hand_base:
             begin
-               // TODO: common reg offsets
+               // wdata[0] - fnc select ( 0 - is_channel_tripped | 1 - generate_sensor_trips)
+               // wdata[2:1] - mode
+               // wdata[3] - sensor_tripped
+               // rg_instr_hand_res[2:0] - result
+               // rg_instr_hand_res[31] - fnc select ( 0 - is_channel_tripped | 1 - generate_sensor_trips)
+               if (wdata[0] == 0)
+                  begin
+                  // is_channel_tripped
+                  // method Bool is_channel_tripped (Bit #(2) mode, Bool sensor_tripped);
+                  let mode = wdata[2:1];
+                  let sensor_tripped = unpack(wdata[3]);
+                  rg_instr_hand_res <= signExtend( pack(instr_hand.channel.is_channel_tripped(mode, sensor_tripped)) );
+                  end
+               else
+                  begin
+                  // generate_sensor_trips
+                  // method Bit#(3) generate_sensor_trips (Bit#(96) vals, Bit#(96) setpoints);
+                  Bit #(96) val_0 = signExtend(instr_vals[0]);
+                  Bit #(96) val_1 = signExtend(instr_vals[1]) << 32;
+                  Bit #(96) val_2 = signExtend(instr_vals[2]) << 64;
+                  Bit #(96) vals = val_0 | val_1 | val_2;
+                  Bit #(96) stp_0 = signExtend(instr_setpoints[0]);
+                  Bit #(96) stp_1 = signExtend(instr_setpoints[1]) << 32;
+                  Bit #(96) stp_2 = signExtend(instr_setpoints[2]) << 64;
+                  Bit #(96) setpoints = stp_0 | stp_1 | stp_2;
+                  let res = signExtend( pack(instr_hand.sensors.generate_sensor_trips(vals, setpoints)) );
+                  res[31] = 1;
+                  rg_instr_hand_res <= res;
+                  end
             end
+         instr_reg_addr_hand_instr_val_0:
+            begin
+               instr_vals[0] <= ((instr_vals[0] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_hand_instr_val_1:
+            begin
+               instr_vals[1] <= ((instr_vals[1] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_hand_instr_val_2:
+            begin
+               instr_vals[2] <= ((instr_vals[2] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_hand_setpoint_val_0:
+            begin
+               instr_setpoints[0] <= ((instr_setpoints[0] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_hand_setpoint_val_1:
+            begin
+               instr_setpoints[1] <= ((instr_setpoints[1] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_hand_setpoint_val_2:
+            begin
+               instr_setpoints[2] <= ((instr_setpoints[2] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_hand_res:
+            begin
+               rg_dmem_rdata <= rg_instr_hand_res;
+            end
+         /**
+         * ////////////////////////////////////////////////////////////////
+         * Instrumentation generated unit
+         * ////////////////////////////////////////////////////////////////
+         */
          instr_reg_addr_gen_base:
             begin
-               // TODO: common reg offsets
+               // wdata[0] - fnc select ( 0 - is_channel_tripped | 1 - generate_sensor_trips)
+               // wdata[2:1] - mode
+               // wdata[3] - sensor_tripped
+               // rg_instr_gen_res[2:0] - result
+               // rg_instr_gen_res[31] - fnc select ( 0 - is_channel_tripped | 1 - generate_sensor_trips)
+               if (wdata[0] == 0)
+                  begin
+                  // is_channel_tripped
+                  // method Bool is_channel_tripped (Bit #(2) mode, Bool sensor_tripped);
+                  let mode = wdata[2:1];
+                  let sensor_tripped = unpack(wdata[3]);
+                  rg_instr_gen_res <= signExtend( pack(instr_gen.channel.is_channel_tripped(mode, sensor_tripped)) );
+                  end
+               else
+                  begin
+                  // generate_sensor_trips
+                  // method Bit#(3) generate_sensor_trips (Bit#(96) vals, Bit#(96) setpoints);
+                  Bit #(96) val_0 = signExtend(instr_vals[3]);
+                  Bit #(96) val_1 = signExtend(instr_vals[4]) << 32;
+                  Bit #(96) val_2 = signExtend(instr_vals[5]) << 64;
+                  Bit #(96) vals = val_0 | val_1 | val_2;
+                  Bit #(96) stp_0 = signExtend(instr_setpoints[3]);
+                  Bit #(96) stp_1 = signExtend(instr_setpoints[4]) << 32;
+                  Bit #(96) stp_2 = signExtend(instr_setpoints[5]) << 64;
+                  Bit #(96) setpoints = stp_0 | stp_1 | stp_2;
+                  let res = signExtend( pack(instr_gen.sensors.generate_sensor_trips(vals, setpoints)) );
+                  res[31] = 1;
+                  rg_instr_gen_res <= res;
+                  end
             end
+         instr_reg_addr_gen_instr_val_0:
+            begin
+               instr_vals[3] <= ((instr_vals[3] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_gen_instr_val_1:
+            begin
+               instr_vals[4] <= ((instr_vals[4] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_gen_instr_val_2:
+            begin
+               instr_vals[5] <= ((instr_vals[5] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_gen_setpoint_val_0:
+            begin
+               instr_setpoints[3] <= ((instr_setpoints[3] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_gen_setpoint_val_1:
+            begin
+               instr_setpoints[4] <= ((instr_setpoints[4] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_gen_setpoint_val_2:
+            begin
+               instr_setpoints[5] <= ((instr_setpoints[5] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_gen_res:
+            begin
+               rg_dmem_rdata <= rg_instr_gen_res;
+            end
+         /**
+         * ////////////////////////////////////////////////////////////////
+         * Actuation unit
+         * ////////////////////////////////////////////////////////////////
+         */
          actuation_reg_addr_gen_base:
             begin
-               // TODO: common reg offsets
+               // base - trigger the actuation
+               Bit #(96) trip_0 = signExtend(actuation_trips[0]);
+               Bit #(96) trip_1 = signExtend(actuation_trips[1]) << 32;
+               Bit #(96) trip_2 = signExtend(actuation_trips[2]) << 64;
+               Bit #(96) trips = trip_0 | trip_1 | trip_2;
+               Bool old = unpack(wdata[0]);
+               // wdata[0] - value of `old` argument
+               // wdata[1] - which actuator to actuate
+               if (wdata[1] == 0)
+                  begin
+                     // Actuate D0
+                     rg_actuation_res <= signExtend( pack(actuation_gen.d0.actuate_d0(trips, old)) );
+                  end
+               else
+                  begin
+                     // Actuate D1
+                     rg_actuation_res <= signExtend( pack(actuation_gen.d0.actuate_d0(trips, old)) );
+                  end
             end
+         actuation_reg_addr_gen_trip_0:
+            begin
+               // Set value for trip value 0
+               actuation_trips[0] <= ((actuation_trips[0] & (~ mask)) | (wdata & mask));
+            end
+         actuation_reg_addr_gen_trip_1:
+            begin
+               // Set value for trip value 1
+               actuation_trips[1] <= ((actuation_trips[1] & (~ mask)) | (wdata & mask));
+            end
+         actuation_reg_addr_gen_trip_2:
+            begin
+               // Set value for trip value 2
+               actuation_trips[2] <= ((actuation_trips[2] & (~ mask)) | (wdata & mask));
+            end
+         actuation_reg_addr_gen_res:
+            begin
+               // Get actuation results
+               rg_dmem_rdata <= rg_actuation_res;
+            end
+         /**
+         * ////////////////////////////////////////////////////////////////
+         * Default value
+         * ////////////////////////////////////////////////////////////////
+         */
          default:
             begin
                // Regular memory read
