@@ -3,6 +3,7 @@ package Actuation_Generated_BVI;
 import Clocks :: *;
 import Actuation::*;
 
+(* synthesize *)
 module mkActuationGenerated(Actuation_IFC);
     ActuationD0_IFC a0 <- mkActuationGeneratedD0();
     ActuationD1_IFC a1 <- mkActuationGeneratedD1();

@@ -3,6 +3,7 @@ package Instrumentation_Handwritten_BVI;
 import Clocks :: *;
 import Instrumentation::*;
 
+(* synthesize *)
 module mkInstrumentationHandwritten(Instrumentation_IFC);
     ChannelTripped_IFC i_channel <- mkInstrHandwrittenIsChannelTripped();
     SensorTrips_IFC i_sensors <- mkInstrHandwrittenGenerateSensorTrips();

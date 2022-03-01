@@ -122,8 +122,10 @@ module mkNervSoC (NervSoC_IFC);
    Reg #(Bit #(32)) rg_i2c_status <- mkReg(0);
    Reg #(Bool) rg_i2c_transaction_ready <- mkReg(False);
    Reg #(Bit #(32)) rg_i2c_transaction_complete <- mkReg(0);
-   Vector#(6, Reg#(Bit #(32))) instr_vals <- replicateM( mkReg(0) );
-   Vector#(6, Reg#(Bit #(32))) instr_setpoints <- replicateM( mkReg(0) );
+   Vector#(3, Reg#(Bit #(32))) instr_hand_vals <- replicateM( mkReg(0) );
+   Vector#(3, Reg#(Bit #(32))) instr_hand_setpoints <- replicateM( mkReg(0) );
+   Vector#(3, Reg#(Bit #(32))) instr_gen_vals <- replicateM( mkReg(0) );
+   Vector#(3, Reg#(Bit #(32))) instr_gen_setpoints <- replicateM( mkReg(0) );
    Vector#(3, Reg#(Bit #(32))) actuation_trips <- replicateM( mkReg(0) );
    Reg #(Bit #(32)) rg_actuation_res <- mkReg(0);
    Reg #(Bit #(32)) rg_instr_hand_res <- mkReg(0);
@@ -258,43 +260,46 @@ module mkNervSoC (NervSoC_IFC);
                else
                   begin
                   // generate_sensor_trips
-                  // method Bit#(3) generate_sensor_trips (Bit#(96) vals, Bit#(96) setpoints);
-                  Bit #(96) val_0 = signExtend(instr_vals[0]);
-                  Bit #(96) val_1 = signExtend(instr_vals[1]) << 32;
-                  Bit #(96) val_2 = signExtend(instr_vals[2]) << 64;
-                  Bit #(96) vals = val_0 | val_1 | val_2;
-                  Bit #(96) stp_0 = signExtend(instr_setpoints[0]);
-                  Bit #(96) stp_1 = signExtend(instr_setpoints[1]) << 32;
-                  Bit #(96) stp_2 = signExtend(instr_setpoints[2]) << 64;
-                  Bit #(96) setpoints = stp_0 | stp_1 | stp_2;
-                  let res = signExtend( pack(instr_hand.sensors.generate_sensor_trips(vals, setpoints)) );
+                  Vector#(3, Bit#(32)) vals = newVector;
+                  vals[0] = instr_hand_vals[0];
+                  vals[1] = instr_hand_vals[1];
+                  vals[2] = instr_hand_vals[2];
+
+                  Vector#(3, Bit#(32)) setpoints = newVector;
+                  setpoints[0] = instr_hand_setpoints[0];
+                  setpoints[1] = instr_hand_setpoints[1];
+                  setpoints[2] = instr_hand_setpoints[2];
+
+                  let res = signExtend(pack(
+                              instr_hand.sensors.generate_sensor_trips(vals, setpoints)
+                            ));
                   res[31] = 1;
                   rg_instr_hand_res <= res;
                   end
             end
          instr_reg_addr_hand_instr_val_0:
             begin
-               instr_vals[0] <= ((instr_vals[0] & (~ mask)) | (wdata & mask));
+               instr_hand_vals[0] <= ((instr_hand_vals[0] & (~ mask)) | (wdata & mask));
             end
          instr_reg_addr_hand_instr_val_1:
             begin
-               instr_vals[1] <= ((instr_vals[1] & (~ mask)) | (wdata & mask));
+               instr_hand_vals[1] <= ((instr_hand_vals[1] & (~ mask)) | (wdata & mask));
             end
          instr_reg_addr_hand_instr_val_2:
             begin
-               instr_vals[2] <= ((instr_vals[2] & (~ mask)) | (wdata & mask));
+               instr_hand_vals[2] <= ((instr_hand_vals[2] & (~ mask)) | (wdata & mask));
             end
          instr_reg_addr_hand_setpoint_val_0:
             begin
-               instr_setpoints[0] <= ((instr_setpoints[0] & (~ mask)) | (wdata & mask));
+               instr_hand_setpoints[0] <= ((instr_hand_setpoints[0] & (~ mask)) | (wdata & mask));
             end
          instr_reg_addr_hand_setpoint_val_1:
             begin
-               instr_setpoints[1] <= ((instr_setpoints[1] & (~ mask)) | (wdata & mask));
+               instr_hand_setpoints[1] <= ((instr_hand_setpoints[1] & (~ mask)) | (wdata & mask));
             end
          instr_reg_addr_hand_setpoint_val_2:
             begin
-               instr_setpoints[2] <= ((instr_setpoints[2] & (~ mask)) | (wdata & mask));
+               instr_hand_setpoints[2] <= ((instr_hand_setpoints[2] & (~ mask)) | (wdata & mask));
             end
          instr_reg_addr_hand_res:
             begin
@@ -318,48 +323,52 @@ module mkNervSoC (NervSoC_IFC);
                   // method Bool is_channel_tripped (Bit #(2) mode, Bool sensor_tripped);
                   let mode = wdata[2:1];
                   let sensor_tripped = unpack(wdata[3]);
-                  rg_instr_gen_res <= signExtend( pack(instr_gen.channel.is_channel_tripped(mode, sensor_tripped)) );
+                  rg_instr_gen_res <= signExtend(pack(
+                                       instr_gen.channel.is_channel_tripped(mode, sensor_tripped)
+                                      ));
                   end
                else
                   begin
                   // generate_sensor_trips
-                  // method Bit#(3) generate_sensor_trips (Bit#(96) vals, Bit#(96) setpoints);
-                  Bit #(96) val_0 = signExtend(instr_vals[3]);
-                  Bit #(96) val_1 = signExtend(instr_vals[4]) << 32;
-                  Bit #(96) val_2 = signExtend(instr_vals[5]) << 64;
-                  Bit #(96) vals = val_0 | val_1 | val_2;
-                  Bit #(96) stp_0 = signExtend(instr_setpoints[3]);
-                  Bit #(96) stp_1 = signExtend(instr_setpoints[4]) << 32;
-                  Bit #(96) stp_2 = signExtend(instr_setpoints[5]) << 64;
-                  Bit #(96) setpoints = stp_0 | stp_1 | stp_2;
-                  let res = signExtend( pack(instr_gen.sensors.generate_sensor_trips(vals, setpoints)) );
+                  Vector#(3, Bit#(32)) vals = newVector;
+                  vals[0] = instr_gen_vals[0];
+                  vals[1] = instr_gen_vals[1];
+                  vals[2] = instr_gen_vals[2];
+
+                  Vector#(3, Bit#(32)) setpoints = newVector;
+                  setpoints[0] = instr_gen_setpoints[0];
+                  setpoints[1] = instr_gen_setpoints[1];
+                  setpoints[2] = instr_gen_setpoints[2];
+                  let res = signExtend(pack(
+                              instr_gen.sensors.generate_sensor_trips(vals, setpoints)
+                            ));
                   res[31] = 1;
                   rg_instr_gen_res <= res;
                   end
             end
          instr_reg_addr_gen_instr_val_0:
             begin
-               instr_vals[3] <= ((instr_vals[3] & (~ mask)) | (wdata & mask));
+               instr_gen_vals[0] <= ((instr_gen_vals[0] & (~ mask)) | (wdata & mask));
             end
          instr_reg_addr_gen_instr_val_1:
             begin
-               instr_vals[4] <= ((instr_vals[4] & (~ mask)) | (wdata & mask));
+               instr_gen_vals[1] <= ((instr_gen_vals[1] & (~ mask)) | (wdata & mask));
             end
          instr_reg_addr_gen_instr_val_2:
             begin
-               instr_vals[5] <= ((instr_vals[5] & (~ mask)) | (wdata & mask));
+               instr_gen_vals[2] <= ((instr_gen_vals[2] & (~ mask)) | (wdata & mask));
             end
          instr_reg_addr_gen_setpoint_val_0:
             begin
-               instr_setpoints[3] <= ((instr_setpoints[3] & (~ mask)) | (wdata & mask));
+               instr_gen_setpoints[0] <= ((instr_gen_setpoints[0] & (~ mask)) | (wdata & mask));
             end
          instr_reg_addr_gen_setpoint_val_1:
             begin
-               instr_setpoints[4] <= ((instr_setpoints[4] & (~ mask)) | (wdata & mask));
+               instr_gen_setpoints[1] <= ((instr_gen_setpoints[1] & (~ mask)) | (wdata & mask));
             end
          instr_reg_addr_gen_setpoint_val_2:
             begin
-               instr_setpoints[5] <= ((instr_setpoints[5] & (~ mask)) | (wdata & mask));
+               instr_gen_setpoints[2] <= ((instr_gen_setpoints[2] & (~ mask)) | (wdata & mask));
             end
          instr_reg_addr_gen_res:
             begin
@@ -373,11 +382,11 @@ module mkNervSoC (NervSoC_IFC);
          actuation_reg_addr_gen_base:
             begin
                // base - trigger the actuation
-               Bit #(96) trip_0 = signExtend(actuation_trips[0]);
-               Bit #(96) trip_1 = signExtend(actuation_trips[1]) << 32;
-               Bit #(96) trip_2 = signExtend(actuation_trips[2]) << 64;
-               Bit #(96) trips = trip_0 | trip_1 | trip_2;
                Bool old = unpack(wdata[0]);
+               Vector#(3, Bit#(32)) trips = newVector;
+               trips[0] = actuation_trips[0];
+               trips[1] = actuation_trips[1];
+               trips[2] = actuation_trips[2];
                // wdata[0] - value of `old` argument
                // wdata[1] - which actuator to actuate
                if (wdata[1] == 0)

@@ -3,6 +3,7 @@ package Instrumentation_Generated_BVI;
 import Clocks :: *;
 import Instrumentation::*;
 
+(* synthesize *)
 module mkInstrumentationGenerated(Instrumentation_IFC);
     ChannelTripped_IFC i_channel <- mkInstrGeneratedIsChannelTripped();
     SensorTrips_IFC i_sensors <- mkInstrGeneratedGenerateSensorTrips();
