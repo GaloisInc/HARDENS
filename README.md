@@ -154,6 +154,14 @@ use by running a command like:
 $ docker exec -it HARDENS bash -l
 ```
 
+If you are *within Galois network*, you can download the docker image from artifactory:
+
+```bash
+$ docker pull artifactory.galois.com:5015/hardens:latest
+$ docker run --network host --privileged -v $PWD:/HARDENS -it artifactory.galois.com:5015/hardens:latest
+```
+
+
 ### SysMLv2 Container
 
 To pull and use the pre-build SysMLv2 container, use the following
