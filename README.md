@@ -22,7 +22,7 @@ this material are those of the author(s) and do not necessarily
 reflect the views of the NRC.
 ```
 
-## Overview
+## Project Overview
 
 The goal of HARDENS is to provide to the NRC expert technical services
 in order to (1) develop a better understanding of how Model-Based
@@ -47,6 +47,129 @@ to the [original NRC RFP](docs/RFP.pdf).
 
 This document summarizes the current state of affairs of the project
 and demonstrator.
+
+## Executive Summary
+
+In the **High Assurance Rigorous Digital Engineering for Nuclear
+Safety** (HARDENS) project, Galois has developed a high-assurance,
+safety-critical demonstration system for the Nuclear Regulatory
+Commission using Rigorous Digital Engineering (RDE).  The system in
+question is a Digital Instrumentation and Control (DI&C) system for
+Nuclear Power Plants (NPPs), and is called the Reactor Trip System
+(RTS).
+
+RDE is the combination of *Model-based Engineering*, *Digital
+Engineering*, and *Applied Formal Methods*.  The engineering focus of
+RDE is broad, as we have used it to perform *software, firmware,
+hardware, systems, domain, requirements, product line, safety, and
+security engineering* of *high-assurance, secure-by-design systems*.
+The HARDENS project includes nearly all of these kinds of engineering,
+but for security engineering at this time.
+
+To our knowledge, this demonstrator is the most rigorously specified
+and assured system of its kind that includes formally assured software
+and hardware for a safety-critical system.
+
+*Model-based Engineering* focuses on the use of semi-formal and formal
+models and their properties to describe aspects of a system
+independent of a particular implementation.  Models are connected to
+each other through a variety of relations (refinement, containment,
+subtyping/subsumption/implication, traceability, etc.), models are
+either or both denotational or operational (and thus executable), and
+models are used to specify, examine, understand, and reason about a
+system well-prior to a line of code ever being written.  Models are
+used for rigorous validation---through automatic model-based test
+bench generation and bisimulation---and formal verification---through
+automatic model-based verification bench generation.
+
+The models used in HARDENS include, from most to least abstract:
+ - a Lando high-level system specification model, which includes
+   within it:
+   + a domain engineering model, 
+   + a requirements engineering model, which includes:
+     * derived certification requirements,
+     * contractual requirements,
+     * safety requirements, and
+     * correctness requirements.
+   + a product line (feature) model, 
+   + a static system model, 
+   + a dataflow model of the RDE methodology, 
+   + a system event model, 
+   + a system scenario model (including all normal and exceptional
+     behaviors),
+   + a hardware, software, and evidence Bill of Materials (BOMs), 
+ - a SysMLv2 system model, which includes within it, as refined
+   directly from the Lando model:
+   + a stakeholder model,
+   + a domain engineering model,
+   + a requirements engineering model,
+   + property specifications for all correctness and safety properties
+     derived from the formal requirements model,
+   + a product line (feature/variant) model,
+   + a static system model that includes both the software and
+     hardware manifestations of the system,
+   + a system action model, and
+   + a validation and verification assurance case model.
+ - a formal requirements model expressed in JPL's FRET tool, as
+   refined from the Lando and SysMLv2 requirements models above,
+ - a Cryptol model of the entire system, including all subsystems and
+   components, including formal, executable digital twin models of the
+   system's sensors, actuators, and compute infrastructure, and this
+   Cryptol model includes a refinement of all formal requirements from
+   FRET into Cryptol properties (theorems) about the Cryptol model
+   itself,
+ - a model of the semantics of the RISC-V instruction set,
+ - a model-based specification of critical portions of the RTS's
+   software stack expressed in ACSL,
+ - an executable and synthesizable Bluespec System Verilog model of a
+   family of RISC-V-based SoCs, and
+ - a System Verilog executable and synthesizable model of a simple,
+   in-order 32-bit RISC-V CPU (NERV, from YosysHQ).
+
+Digital Engineering focuses on the use of *digital twins* of physical
+systems, subsystems, and their components.  A digital twin is
+typically an executable model that has known and measurable objective
+fidelity in relation to the models or systems that relate to the twin.
+For example, an executable Cryptol or SCADE model are a digital twins.
+
+The HARDENS system includes several digital twins, including
+simulation and emulation of the system hardware (CPUs and SoCs),
+software implementation, and system model.
+
+Applied formal methods are the sensible use of formal methods
+concepts, tools, and technologies to formally specifying and reasoning
+about systems and their properties.  In the context of RDE and the
+HARDENS project, we use formal methods to achieve the following
+assurance:
+ - critical components of the RTS are automatically synthesized from
+   Cryptol model into both formally verifiable C implementations and
+   formally verifiable System Verilog implementations,
+ - automatically generated C code and hand-written implementations of
+   the same models are used to fulfill safety-critical redundancy and
+   fault-tolerance requirements, and all of those implementations are
+   formally verified both against their model, as well as verified
+   against each other as being equivalent, using Frama-C and Galois's
+   SAW tool,
+ - the RISC-V CPU is formally verified against the RISC-V ISA
+   specification using the Yosys open source verification tool,
+ - the RISC-V-based SoC is rigorously assured against the
+   automatically generated end-to-end test bench,
+ - the formal requirements specified in FRET are formally verified for
+   consistency, completeness, and realizability using SAT and SMT
+   solvers,
+ - the refinement of these requirements into Cryptol properties are
+   used as model validation theorems to rigorously check and formally
+   verifying that the Cryptol model conforms to the requirements,
+ - the Cryptol model is used to automatically generate a component-level
+   and end-to-end test bench (in C) for the entire system, and that
+   test bench is executed on all digital twins and (soon) the full
+   hardware implementation as well, and
+ - all models and assurance artifacts are traceable and sit in a
+   semi-formal refinement hierarchy that spans semi-formal system
+   specification written in precise natural language all of the way
+   down for formally assured source code (in verifiable C), (a
+   side-effect of the optional use of CompCert) binaries, and hardware
+   designs (in System Verilog and Bluespec System Verilog).
 
 ## Task 1: Implementation
 
