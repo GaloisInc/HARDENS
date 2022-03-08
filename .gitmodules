@@ -1,3 +1,6 @@
 [submodule "hardware/nerv"]
 	path = hardware/nerv
 	url = https://github.com/YosysHQ/nerv.git
+[submodule "hardware/printf"]
+	path = hardware/printf
+	url = https://github.com/mpaland/printf
