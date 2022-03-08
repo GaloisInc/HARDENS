@@ -31,6 +31,7 @@ import "BDPI" function ActionValue #(Bit #(8)) c_trygetchar (Bit #(8) dummy);
 import "BDPI" function ActionValue #(Bit #(8)) c_i2c_request (Bit #(8) wrAddr,
                                                               Bit #(8) data);
 
+// (* clock_prefix="clk", reset_prefix="btn" *) if needed
 (* synthesize *)
 module mkTop (Empty);
 
