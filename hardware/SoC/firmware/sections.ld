@@ -1,11 +1,11 @@
-_STACK_SIZE = 4K;
-_HEAP_SIZE = 4K;
+_STACK_SIZE = 2K;
+_HEAP_SIZE = 2K;
 
 MEMORY
 {
     /* FLASH and RAM must have the same memory origin */
-    FLASH(xr)       : ORIGIN = 0x00000000, LENGTH = 0x040000
-    RAM  (rw)       : ORIGIN = 0x00000000, LENGTH = 0x040000
+    FLASH(xr)       : ORIGIN = 0x00000000, LENGTH = 0x006000
+    RAM  (rw)       : ORIGIN = 0x00000000, LENGTH = 0x002000
 }
 
 SECTIONS {

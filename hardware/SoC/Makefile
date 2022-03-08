@@ -19,7 +19,9 @@ else
   $(info  INFO: BLUESPEC_HOME is $(BLUESPEC_HOME))
 endif
 
-MEMORY_SIZE ?= 0x40000
+IMEMORY_SIZE ?= 0x06000
+DMEMORY_SIZE ?= 0x02000
+
 
 # ================================================================
 
@@ -61,18 +63,23 @@ verilog:
 	mkdir -p $@
 
 FIRMWARE_DIR = firmware
-imem_contents.memhex32:
+dmem_contents.memhex32:
 	@make -C $(FIRMWARE_DIR) clean
 	@make -C $(FIRMWARE_DIR) firmware.elf
 	@riscv64-unknown-elf-elf2hex --bit-width 32 --input $(FIRMWARE_DIR)/firmware.elf --output $(FIRMWARE_DIR)/intermediate.hex
-#	@riscv64-unknown-elf-objcopy -O ihex $(FIRMWARE_DIR)/firmware.elf $(FIRMWARE_DIR)/intermediate.hex
-	@./pyhex2memhex.py --input $(FIRMWARE_DIR)/intermediate.hex --output $(FIRMWARE_DIR)/firmware.memhex32 --maxlen $(MEMORY_SIZE)
+	@./pyhex2memhex.py --input $(FIRMWARE_DIR)/intermediate.hex --output $(FIRMWARE_DIR)/firmware.memhex32 --maxlen $(DMEMORY_SIZE)
 	@mv $(FIRMWARE_DIR)/firmware.memhex32 $@
-	@mv $(FIRMWARE_DIR)/firmware.asm .
+	@cp $(FIRMWARE_DIR)/firmware.asm .
 	@rm $(FIRMWARE_DIR)/intermediate.hex
 
-.PHONY: compile_verilog
-compile_verilog: build_v verilog imem_contents.memhex32
+imem_contents.memhex32: dmem_contents.memhex32
+	@riscv64-unknown-elf-elf2hex --bit-width 32 --input $(FIRMWARE_DIR)/text.elf --output $(FIRMWARE_DIR)/intermediate.hex
+	@./pyhex2memhex.py --input $(FIRMWARE_DIR)/intermediate.hex --output $(FIRMWARE_DIR)/text.memhex32 --maxlen $(IMEMORY_SIZE)
+	@mv $(FIRMWARE_DIR)/text.memhex32 $@
+	@cp $(FIRMWARE_DIR)/text.asm .
+	@rm $(FIRMWARE_DIR)/intermediate.hex
+
+compile_verilog: build_v verilog dmem_contents.memhex32 imem_contents.memhex32
 	@echo INFO: Verilog generation ...
 	bsc -u -elab -verilog  $(BSCDIRS_V)  $(BSCFLAGS) -p +:%/Libraries/FPGA/Misc -p $(BSCPATH_V) $(TOPFILE)
 	@echo INFO: Finished Verilog generation
@@ -81,9 +88,6 @@ compile_verilog: build_v verilog imem_contents.memhex32
 # FOR VERILATOR
 
 EXEFILE_VERILATOR  ?= exe_verilator
-
-.PHONY: all_verilator
-all_verilator:  compile_verilog  link_verilator  exe_verilator
 
 # Boilerplate stuff
 VERILATOR_RESOURCES = Verilator_Resources
@@ -103,7 +107,6 @@ VERILATOR_FLAGS += -CFLAGS -O3
 VERILATOR_FLAGS += -CFLAGS -DVL_DEBUG
 VERILATOR_FLAGS += -LDFLAGS -static
 
-.PHONY: link_verilator
 link_verilator: compile_verilog
 	@echo "INFO: Link for Verilator ..."
 	@echo "INFO: For convenience (single -I flag to verilator) copy all Verilog files into $(VERILATOR_RTL_DIR)/"
@@ -146,7 +149,6 @@ link_verilator: compile_verilog
 	mv  $(VERILATOR_MAKE_DIR)/$(EXEFILE_VERILATOR)  .
 	@echo INFO: Finished Link for Verilator
 
-.PHONY: exe_verilator
 exe_verilator: link_verilator
 	@echo INFO: Verilator Simulation ...
 	./$(EXEFILE_VERILATOR)
@@ -154,11 +156,43 @@ exe_verilator: link_verilator
 
 # ================================================================
 
+design.json: compile_verilog
+	mkdir -p test
+	cp $(NERV_REPO)/nerv.sv test/.
+	cp $(BLUESPEC_HOME)/lib/Verilog/ResetInverter.v test/.
+	cp $(BLUESPEC_HOME)/lib/Verilog/SizedFIFO.v test/.
+	cp $(BLUESPEC_HOME)/lib/Verilog/Counter.v test/.
+	cp verilog/*.v test/
+# Trick to be able to load two different binaries
+	sed 's/RegFileLoad #(.file('\"'i/RegFileLoadI #(.file('\"'i/' test/mkNervSoC.v > out.v
+	sed 's/RegFileLoad #(.file('\"'d/RegFileLoadD #(.file('\"'d/' out.v > test/mkNervSoC.v
+# Dmem
+	sed 's/'\"\"'/'\"imem_contents.memhex32\"'/' $(BLUESPEC_HOME)/lib/Verilog/RegFileLoad.v > test/RegFileLoadI.v
+	sed 's/module RegFileLoad/module RegFileLoadI/' test/RegFileLoadI.v > out.v
+	mv out.v test/RegFileLoadI.v
+# Imem
+	sed 's/'\"\"'/'\"dmem_contents.memhex32\"'/' $(BLUESPEC_HOME)/lib/Verilog/RegFileLoad.v > test/RegFileLoadD.v
+	sed 's/module RegFileLoad/module RegFileLoadD/' test/RegFileLoadD.v > out.v
+	mv out.v test/RegFileLoadD.v
+# Run the actual synthesis
+	yosys -l design_ys.log -s yosys.txt
 
-.PHONY: clean
+#	yosys -l design_ys.log -p "read_verilog verilog/*.v $(VERILATOR_RTL_DIR)/nerv.sv $(VERILATOR_RTL_DIR)/ResetInverter.v $(VERILATOR_RTL_DIR)/SizedFIFO.v $(VERILATOR_RTL_DIR)/RegFileLoad.v $(VERILATOR_RTL_DIR)/Counter.v; proc; synth_ecp5 -json $@ -top mkTop"
+#	yosys -l design_ys.log -p "synth_ecp5 -json $@" $(VERILATOR_RTL_DIR)/SizedFIFO.v $(VERILATOR_RTL_DIR)/nerv.sv verilog/*.v $(VERILATOR_RTL_DIR)/ResetInverter.v $(VERILATOR_RTL_DIR)/RegFileLoad.v
+#	yosys -l design_ys.log -p "synth_ecp5 -json $@" $(BLUESPEC_HOME)/lib/Verilog/SizedFIFO.v $(NERV_REPO)/nerv.sv verilog/*.v $(BLUESPEC_HOME)/lib/Verilog/ResetInverter.v $(BLUESPEC_HOME)/lib/Verilog/RegFileLoad.v
+#yosys -l design_ys.log -p "read_verilog $(BLUESPEC_HOME)/lib/Verilog/SizedFIFO.v; proc; read_verilog $(NERV_REPO)/nerv.sv verilog/*.v $(BLUESPEC_HOME)/lib/Verilog/ResetInverter.v $(BLUESPEC_HOME)/lib/Verilog/RegFileLoad.v; synth_ecp5 -json $@"
+
+design.config: design.json
+	nextpnr-ecp5 --json $< --textcfg $@ --um5g-85k --package CABGA381 --lpf ecp5.lpf --lpf-allow-unconstrained
+# TODO: constrain pins
+
+design.bit: design.config
+	ecppack --svf design.svf $< $@
+
 clean:
 	rm -r -f  *~   */*~  build*  obj_dir \
-		$(VERILATOR_RTL_DIR)  $(VERILATOR_MAKE_DIR)  Verilator_Resources/sim_main.cpp imem_contents.memhex32 firmware.asm \
-		verilog  exe_* *.o *.sft ./*.so
+		$(VERILATOR_RTL_DIR)  $(VERILATOR_MAKE_DIR)  Verilator_Resources/sim_main.cpp *.memhex32 *.asm \
+		verilog  exe_* *.o *.sft ./*.so \
+		design* test
 
 # ================================================================
