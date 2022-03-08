@@ -17,8 +17,6 @@ endinterface
 
 interface SensorTrips_IFC;
     (* always_ready *)
-    // NOTE: this is silly - we should be using arrays, but the docs is not clear
-    // about how to use arrays in BVI imports
     method Bit#(3) generate_sensor_trips (Vector#(3, Bit#(32)) vals,
                                           Vector#(3, Bit#(32)) setpoints);
 endinterface

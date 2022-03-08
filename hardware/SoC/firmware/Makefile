@@ -7,7 +7,7 @@ CC		= $(TARGET)-gcc
 OBJDUMP	= $(TARGET)-objdump
 OBJCOPY	= $(TARGET)-objcopy
 LDLIBS	 =  -lc -lgcc
-WERROR ?= #-Werror
+WERROR ?= -Werror
 
 COMPILER_FLAGS = -mcmodel=medany
 
