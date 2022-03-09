@@ -303,6 +303,7 @@ COPY --from=builder /opt/ /opt/
 COPY --from=builder /tools/ /tools/
 COPY --from=builder /root/.cabal/ /root/.cabal/
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
+COPY --from=builder /usr/local/lib/python2.7/dist-packages/ /usr/local/lib/python2.7/dist-packages/
 RUN cat ${VERSION_LOG}
 
 ENV PATH="/tools/lando:/tools:/tools/z3/bin:/tools/bsc-2021.07-ubuntu-20.04/bin:/opt/riscv/bin:/opt/bin:${PATH}"
