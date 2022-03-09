@@ -12,18 +12,18 @@ RUN apt-get install -y wget git python pip \
     libreadline-dev gawk tcl-dev libffi-dev git \
     graphviz xdot pkg-config python3 libboost-system-dev \
     libboost-python-dev libboost-filesystem-dev zlib1g-dev \
-    libboost-all-dev python3 python3-pip \
+    libboost-all-dev python3-pip \
     cmake openocd \
     libeigen3-dev qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools \
     autoconf automake autotools-dev curl libmpc-dev \
-    libmpfr-dev libgmp-dev gawk build-essential bison flex texinfo gperf \
+    libmpfr-dev libgmp-dev texinfo gperf \
     libtool patchutils bc zlib1g-dev libexpat-dev \
     libftdi-dev unzip \
     cabal-install libffi7 \
     libftdi1-2 libftdi1-dev libhidapi-libusb0 libhidapi-dev libudev-dev make g++ \
-    clang libc++-dev libc++abi-dev nodejs python2 npm \
+    libc++-dev libc++abi-dev nodejs python2 npm \
     iverilog verilator \
-    vim
+    vim mercurial libboost-program-options-dev
 
 # Builder
 FROM base as builder
@@ -201,6 +201,42 @@ RUN git checkout ${TAG} \
     && cp bin/saw /usr/local/bin
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
+########################################
+# Riscv-formal
+#######################################
+ARG TOOL=SymbiYosys
+ARG TAG=419ef76f82b3973e356815f63fc919218b2860bb
+ARG REPO=https://github.com/YosysHQ/SymbiYosys.git
+RUN git clone ${REPO} /tmp/${TOOL}
+WORKDIR /tmp/${TOOL}
+RUN make install
+RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
+ARG TOOL=yices2
+ARG TAG=Yices-2.6.4
+ARG REPO=https://github.com/SRI-CSL/yices2.git
+RUN git clone ${REPO} /tmp/${TOOL}
+WORKDIR /tmp/${TOOL}
+RUN autoconf
+RUN ./configure
+RUN make -j$(nproc)
+RUN make install
+RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
+ARG TOOL=boolector
+ARG TAG=3.2.2
+ARG REPO=https://github.com/boolector/boolector
+RUN git clone ${REPO} /tmp/${TOOL}
+WORKDIR /tmp/${TOOL}
+RUN ./contrib/setup-btor2tools.sh
+RUN ./contrib/setup-lingeling.sh
+RUN ./configure.sh
+RUN make -C build -j$(nproc)
+RUN cp build/bin/boolector /usr/local/bin/
+RUN cp build/bin/btor* /usr/local/bin/
+RUN cp deps/btor2tools/bin/btorsim /usr/local/bin/
+RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
 # cryptol-verilog
 ARG TOOL=cryptol-verilog
 COPY ${TOOL} /tmp/${TOOL}
@@ -249,5 +285,11 @@ RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 # Runner
 FROM base as runner
 COPY --from=builder /opt/ /opt/
-COPY --from=builder /tools /
+COPY --from=builder /tools/ /tools/
+COPY --from=builder /root/.cabal/ /root/.cabal/
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
+COPY --from=builder /usr/local/lib/python2.7/dist-packages/ /usr/local/lib/python2.7/dist-packages/
+COPY --from=builder /usr/local/share/ /usr/local/share/
 RUN cat ${VERSION_LOG}
+
+ENV PATH="/tools/lando:/tools:/tools/z3/bin:/tools/bsc-2021.07-ubuntu-20.04/bin:/opt/riscv/bin:/opt/bin:${PATH}"
