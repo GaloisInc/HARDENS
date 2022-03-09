@@ -232,7 +232,8 @@ RUN ./contrib/setup-btor2tools.sh
 RUN ./contrib/setup-lingeling.sh
 RUN ./configure.sh
 RUN make -C build -j$(nproc)
-RUN cp build/bin/{boolector,btor*} /usr/local/bin/
+RUN cp build/bin/boolector /usr/local/bin/
+RUN cp build/bin/btor* /usr/local/bin/
 RUN cp deps/btor2tools/bin/btorsim /usr/local/bin/
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
@@ -246,7 +247,8 @@ RUN mkdir build
 WORKDIR /tmp/${TOOL}/build
 RUN cmake -DCMAKE_BUILD_TYPE=Release ..
 RUN make -j$(nproc)
-RUN cp avy/src/{avy,avybmc} /usr/local/bin/
+RUN cp avy/src/avy /usr/local/bin/
+RUN cp avy/src/avybmc /usr/local/bin/
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 
