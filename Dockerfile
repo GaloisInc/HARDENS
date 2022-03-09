@@ -237,19 +237,19 @@ RUN cp build/bin/btor* /usr/local/bin/
 RUN cp deps/btor2tools/bin/btorsim /usr/local/bin/
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
-ARG TOOL=extavy
-ARG TAG=95e27413a5b982d3e2748ad74b05c28bbb590741
-ARG REPO=https://bitbucket.org/arieg/extavy.git
-RUN git clone ${REPO} /tmp/${TOOL}
-WORKDIR /tmp/${TOOL}
-RUN git submodule update --init
-RUN mkdir build
-WORKDIR /tmp/${TOOL}/build
-RUN cmake -DCMAKE_BUILD_TYPE=Release ..
-RUN make -j$(nproc)
-RUN cp avy/src/avy /usr/local/bin/
-RUN cp avy/src/avybmc /usr/local/bin/
-RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+# ARG TOOL=extavy
+# ARG TAG=95e27413a5b982d3e2748ad74b05c28bbb590741
+# ARG REPO=https://bitbucket.org/arieg/extavy.git
+# RUN git clone ${REPO} /tmp/${TOOL}
+# WORKDIR /tmp/${TOOL}
+# RUN git submodule update --init
+# RUN mkdir build
+# WORKDIR /tmp/${TOOL}/build
+# RUN cmake -DCMAKE_BUILD_TYPE=Release ..
+# RUN make -j$(nproc)
+# RUN cp avy/src/avy /usr/local/bin/
+# RUN cp avy/src/avybmc /usr/local/bin/
+# RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 
 # cryptol-verilog
@@ -304,6 +304,7 @@ COPY --from=builder /tools/ /tools/
 COPY --from=builder /root/.cabal/ /root/.cabal/
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 COPY --from=builder /usr/local/lib/python2.7/dist-packages/ /usr/local/lib/python2.7/dist-packages/
+COPY --from=builder /usr/local/share/ /usr/local/share/
 RUN cat ${VERSION_LOG}
 
 ENV PATH="/tools/lando:/tools:/tools/z3/bin:/tools/bsc-2021.07-ubuntu-20.04/bin:/opt/riscv/bin:/opt/bin:${PATH}"
