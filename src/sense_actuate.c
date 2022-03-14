@@ -4,17 +4,11 @@
 #include "actuation_logic.h"
 #include "sense_actuate.h"
 
-int instrumentation_step_generated_C(uint8_t div, struct instrumentation_state *state);
-int instrumentation_step_handwritten_C(uint8_t div, struct instrumentation_state *state);
-int instrumentation_step_generated_SystemVerilog(uint8_t div, struct instrumentation_state *state);
-int instrumentation_step_handwritten_SystemVerilog(uint8_t div, struct instrumentation_state *state);
-int actuation_unit_step_generated_C(uint8_t logic_no, struct actuation_logic *state);
-int actuation_unit_step_generated_SystemVerilog(uint8_t logic_no, struct actuation_logic *state);
-
 int sense_actuate_init(int core_id,
                        struct instrumentation_state *instrumentation,
                        struct actuation_logic *actuation)
 {
+  (void)core_id;
   instrumentation_init(&instrumentation[0]);
   instrumentation_init(&instrumentation[1]);
   actuation->vote_actuate[0] = 0;

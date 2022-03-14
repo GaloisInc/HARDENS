@@ -192,6 +192,6 @@ int is_actuate_test_complete(uint8_t dev);
 ////////////////////////////////////////////
 // General Utilities                      //
 ////////////////////////////////////////////
-uint32_t time_in_s();
+uint32_t time_in_s(void);
 
 #endif // PLATFORM_H_

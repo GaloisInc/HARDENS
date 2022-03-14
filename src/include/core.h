@@ -56,8 +56,18 @@ struct core_state {
   uint8_t error;
 };
 
-int set_display_line(struct ui_values *ui, uint8_t line_number, char *display, uint32_t size);
-
+int set_display_line(struct ui_values *ui, uint8_t line_number, char *display);
+int actuate_devices_generated_C(void);
 void core_init(struct core_state *core);
 int core_step(struct core_state *core);
+char mode_char(uint8_t mode);
+char maint_char(uint8_t mode);
+int update_ui_instr(struct ui_values *ui);
+int update_ui_actuation(struct ui_values *ui);
+int update_ui(struct ui_values *ui);
+int end_test(struct test_state *test, struct ui_values *ui);
+int components_ready(void);
+int self_test_timer_expired(struct test_state *test);
+int should_start_self_test(struct test_state *test);
+int test_step(struct test_state *test, struct ui_values *ui);
 #endif // CORE_H_

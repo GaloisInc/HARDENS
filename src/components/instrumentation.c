@@ -66,6 +66,7 @@ static int instrumentation_step_trip(uint8_t div,
 static int instrumentation_handle_command(uint8_t div,
                                           struct instrumentation_command *i_cmd,
                                           struct instrumentation_state *state) {
+  (void)div;
   struct set_maintenance set_maint;
   struct set_mode set_mode;
   struct set_setpoint set_setpoint;

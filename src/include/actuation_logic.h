@@ -43,4 +43,8 @@ struct actuation_logic {
 */
 int actuation_unit_step(uint8_t logic_no, struct actuation_logic *state);
 
+
+int actuation_unit_step_generated_C(uint8_t logic_no, struct actuation_logic *state);
+int actuation_unit_step_generated_SystemVerilog(uint8_t logic_no, struct actuation_logic *state);
+
 #endif // ACTUATION_H_

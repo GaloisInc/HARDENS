@@ -31,7 +31,7 @@ pthread_mutex_t mem_mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 #ifndef T0
-#define T0 200
+#define T0 20
 #endif
 
 #ifndef P0
@@ -277,28 +277,28 @@ int update_sensor_simulation(void) {
 
   if (!initialized) {
     last_update = t;
-    last[0][T] = T0;
-    last[1][T] = T0;
-    last[0][P] = P0;
-    last[1][P] = P0;
+    last[0][TEMPERATURE_IDX] = T0;
+    last[1][TEMPERATURE_IDX] = T0;
+    last[0][PRESSURE_IDX] = P0;
+    last[1][PRESSURE_IDX] = P0;
     initialized = 1;
   } else if (t - t0 > SENSOR_UPDATE_MS) {
     for (int s = 0; s < 2; ++s) {
-      last[s][T] += (rand() % 7) - 3 + T_BIAS;
+      last[s][TEMPERATURE_IDX] += (rand() % 7) - 3 + T_BIAS;
       // Don't stray too far from our steam table
-      last[s][T] = min(last[s][T], 300);
-      last[s][T] = max(last[s][T], 25);
+      last[s][TEMPERATURE_IDX] = min(last[s][TEMPERATURE_IDX], TEMPERATURE_MAX_C);
+      last[s][TEMPERATURE_IDX] = max(last[s][TEMPERATURE_IDX], TEMPERATURE_MIN_C);
 
-      last[s][P] += (rand() % 7) - 3 + P_BIAS;
+      last[s][PRESSURE_IDX] += (rand() % 7) - 3 + P_BIAS;
       // Don't stray too far from our steam table
-      last[s][P] = min(last[s][P], 5775200);
-      last[s][P] = max(last[s][P], 8000);
+      last[s][PRESSURE_IDX] = min(last[s][PRESSURE_IDX], PRESSURE_MAX_P);
+      last[s][PRESSURE_IDX] = max(last[s][PRESSURE_IDX], PRESSURE_MIN_P);
     }
   }
-  sensors[0][T] = last[0][T];
-  sensors[1][T] = last[1][T];
-  sensors[0][P] = last[0][P];
-  sensors[1][P] = last[1][P];
+  sensors[0][TEMPERATURE_IDX] = last[0][TEMPERATURE_IDX];
+  sensors[1][TEMPERATURE_IDX] = last[1][TEMPERATURE_IDX];
+  sensors[0][PRESSURE_IDX] = last[0][PRESSURE_IDX];
+  sensors[1][PRESSURE_IDX] = last[1][PRESSURE_IDX];
 
   return 0;
 }

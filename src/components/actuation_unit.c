@@ -12,6 +12,7 @@
 static int
 actuation_logic_collect_trips(uint8_t logic_no, int do_test, uint8_t trip[3][4], uint8_t trip_test[3][4])
 {
+    (void)logic_no;
     int err = 0;
     uint8_t test_div[2];
     get_test_instrumentation(test_div);
@@ -113,6 +114,7 @@ actuation_logic_vote(uint8_t logic_no, int do_test, struct actuation_logic *stat
 static int
 actuation_handle_command(uint8_t logic_no, struct actuation_command *cmd, struct actuation_logic *state)
 {
+    (void)logic_no;
     if (cmd->device <= 1)
         state->manual_actuate[cmd->device] = cmd->on;
     return 0;

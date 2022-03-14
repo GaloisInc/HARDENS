@@ -74,7 +74,7 @@ int update_ui_instr(struct ui_values *ui) {
              mode_char(ui->bypass[i][P]), 0 != ui->trip[i][P], ui->values[i][S],
              mode_char(ui->bypass[i][S]), 0 != ui->trip[i][S]);
 
-    set_display_line(ui, i, line, sizeof(line));
+    set_display_line(ui, i, line);
   }
 
   // Flag any sensor differences that exceed thresholds
@@ -98,9 +98,9 @@ int update_ui_instr(struct ui_values *ui) {
   }
 
   if (sensor_differential)
-    set_display_line(ui, 14, sensor_warning, sizeof(sensor_warning));
+    set_display_line(ui, 14, sensor_warning);
   else
-    set_display_line(ui, 14, sensor_ok, sizeof(sensor_ok));
+    set_display_line(ui, 14, sensor_ok);
 
   return err;
 }
@@ -116,7 +116,7 @@ int update_ui_actuation(struct ui_values *ui) {
     }
     snprintf(line, sizeof(line), ACT_LINE_FMT, i, ui->actuators[i][0],
              ui->actuators[i][1]);
-    set_display_line(ui, ACT_OFFSET + i, line, sizeof(line));
+    set_display_line(ui, ACT_OFFSET + i, line);
   }
 
   return err;
@@ -130,7 +130,7 @@ int update_ui(struct ui_values *ui) {
   return err;
 }
 
-int set_display_line(struct ui_values *ui, uint8_t line_number, char *display, uint32_t size) {
+int set_display_line(struct ui_values *ui, uint8_t line_number, char *display) {
   memset(ui->display[line_number], ' ', LINELENGTH);
   strncpy(ui->display[line_number], (const char*)display, LINELENGTH);
   return 0;
@@ -146,15 +146,15 @@ int end_test(struct test_state *test, struct ui_values *ui) {
     set_test_running(0);
 
     if (passed) {
-      set_display_line(ui, 16, (char*)pass, 0);
+      set_display_line(ui, 16, (char*)pass);
       test->test++;
       if (test->test >= sizeof(tests)/sizeof(struct testcase)) {
         test->test = 0;
         test->test_timer_start = time_in_s();
       }
     } else {
-      set_display_line(ui, 16, (char*)fail, 0);
-      set_display_line(ui, 20, (char*)"A TEST FAILED", 0);
+      set_display_line(ui, 16, (char*)fail);
+      set_display_line(ui, 20, (char*)"A TEST FAILED");
     }
 
     return passed;
@@ -197,24 +197,24 @@ int test_step(struct test_state *test, struct ui_values *ui) {
       memcpy(test->test_setpoints, next->setpoints, 3*4*sizeof(uint32_t));
 
       set_test_running(1);
-      set_display_line(ui, 15, (char *)self_test_running, 0);
+      set_display_line(ui, 15, (char *)self_test_running);
     }
   } else if (is_test_running() && test->test_device_done[test->test_device]) {
     int passed = end_test(test, ui);
     if(!passed) err = -1;
   } else if (!is_test_running()) {
-    set_display_line(ui, 15, (char *)self_test_not_running, 0);
+    set_display_line(ui, 15, (char *)self_test_not_running);
   }
 
   return err;
 }
 
-void core_init(struct core_state *core) {
-  core->test.test_timer_start = time_in_s();
-  core->test.failed = 0;
+void core_init(struct core_state *c) {
+  c->test.test_timer_start = time_in_s();
+  c->test.failed = 0;
 }
 
-int core_step(struct core_state *core) {
+int core_step(struct core_state *c) {
   int err = 0;
   struct rts_command rts;
 
@@ -246,9 +246,9 @@ int core_step(struct core_state *core) {
     }
   }
 
-  err |= test_step(&core->test, &core->ui);
-  err |= update_ui(&core->ui);
+  err |= test_step(&c->test, &c->ui);
+  err |= update_ui(&c->ui);
 
-  core->error = err;
+  c->error = err;
   return err;
 }
