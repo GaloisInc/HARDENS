@@ -70,7 +70,7 @@ $(PROG).elf  : $(OBJS) Makefile
 
 clean :
 	@rm -f $(OBJS)
-	@rm -f $(PROG).elf 
-	@rm -f $(PROG).asm
+	@rm -f *.elf
+	@rm -f *.asm
 	@find ../../../ -iname '*.o' -exec rm -rf {} \;
 
