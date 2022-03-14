@@ -2,9 +2,9 @@
 
 uint32_t i2c_read(uint8_t addr, uint32_t data_tx)
 {
-  volatile uint32_t *i2c_addr = (void*) I2C_ADDR_REG;
-  volatile uint32_t *i2c_data = (void*) I2C_DATA_REG;
-  volatile uint32_t *i2c_status = (void*) I2C_STATUS_REG;
+  volatile uint32_t *i2c_addr = (void*) I2C_REG_ADDR;
+  volatile uint32_t *i2c_data = (void*) I2C_REG_DATA;
+  volatile uint32_t *i2c_status = (void*) I2C_REG_STATUS;
 
   // First set data
   *i2c_data = data_tx;
@@ -54,8 +54,8 @@ void delay(uint32_t count)
 
 uint8_t soc_getchar(void)
 {
-  volatile uint32_t *data_rdy = (void*) UART_DATA_READY_REG;
-  volatile uint32_t *rx_data = (void*) UART_RX_REG;
+  volatile uint32_t *data_rdy = (void*) UART_REG_DATA_READY;
+  volatile uint32_t *rx_data = (void*) UART_REG_RX;
   while (1) {
     if (*data_rdy){
         return (uint8_t)(*rx_data);

@@ -2,8 +2,6 @@
 #include "bsp.h"
 #include "printf.h"
 
-#define GPIO_REG 0x01000000
-
 int main(void)
 {
     volatile uint32_t *gpio = (void*) GPIO_REG;
