@@ -42,7 +42,7 @@ module mkTop (Empty);
    // I/O peripherals
    // @podhrmic TODO: check the prescalers
    // and look into proper use of I2C module
-   // I2CController #(1) i2c_controller <- mkI2CController();
+   I2CController #(1) i2c_controller <- mkI2CController();
    UART #(4) uart <- mkUART(8, NONE, STOP_1, 16);
 
    // ================================================================

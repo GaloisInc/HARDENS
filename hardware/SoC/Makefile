@@ -52,15 +52,10 @@ BSCPATH := $(BSCPATH):+
 
 # ================================================================
 # Verilog generation (common for all verilog simulator targets)
-
-BSCDIRS_V = -vdir verilog  -bdir build_v  -info-dir build_v
+BUILD_V_DIR = build_v
+VERILOG_DIR = verilog
+BSCDIRS_V = -vdir $(VERILOG_DIR)  -bdir $(BUILD_V_DIR)  -info-dir $(BUILD_V_DIR)
 BSCPATH_V = $(BSCPATH)
-
-build_v:
-	mkdir -p $@
-
-verilog:
-	mkdir -p $@
 
 FIRMWARE_DIR = firmware
 dmem_contents.memhex32:
@@ -79,7 +74,9 @@ imem_contents.memhex32: dmem_contents.memhex32
 	@cp $(FIRMWARE_DIR)/text.asm .
 	@rm $(FIRMWARE_DIR)/intermediate.hex
 
-compile_verilog: build_v verilog dmem_contents.memhex32 imem_contents.memhex32
+verilog: dmem_contents.memhex32 imem_contents.memhex32
+	mkdir -p $(BUILD_V_DIR)
+	mkdir -p $(VERILOG_DIR)
 	@echo INFO: Verilog generation ...
 	bsc -u -elab -verilog  $(BSCDIRS_V)  $(BSCFLAGS) -p +:%/Libraries/FPGA/Misc -p $(BSCPATH_V) $(TOPFILE)
 	@echo INFO: Finished Verilog generation
@@ -107,14 +104,14 @@ VERILATOR_FLAGS += -CFLAGS -O3
 VERILATOR_FLAGS += -CFLAGS -DVL_DEBUG
 VERILATOR_FLAGS += -LDFLAGS -static
 
-link_verilator: compile_verilog
+verilator: verilog
 	@echo "INFO: Link for Verilator ..."
 	@echo "INFO: For convenience (single -I flag to verilator) copy all Verilog files into $(VERILATOR_RTL_DIR)/"
 	mkdir -p $(VERILATOR_RTL_DIR)
 	cp -p  $(VERILATOR_RESOURCES)/verilator_wrapper.v    $(VERILATOR_RTL_DIR)/
 	cp -p  $(VERILATOR_RESOURCES)/*.c    $(VERILATOR_RTL_DIR)/
 	cp -p  $(VERILATOR_RESOURCES)/*.h    $(VERILATOR_RTL_DIR)/
-	cp -p  verilog/*.v                                   $(VERILATOR_RTL_DIR)/
+	cp -p  $(VERILOG_DIR)/*.v                                   $(VERILATOR_RTL_DIR)/
 	cp -p  $(NERV_REPO)/nerv.sv                          $(VERILATOR_RTL_DIR)/
 	cp -p  $(BLUESPEC_HOME)/lib/Verilog/*.v  $(VERILATOR_RTL_DIR)/
 	@echo "Copying over handwritten modules"
@@ -149,31 +146,32 @@ link_verilator: compile_verilog
 	mv  $(VERILATOR_MAKE_DIR)/$(EXEFILE_VERILATOR)  .
 	@echo INFO: Finished Link for Verilator
 
-exe_verilator: link_verilator
+exe: verilator
 	@echo INFO: Verilator Simulation ...
 	./$(EXEFILE_VERILATOR)
 	@echo INFO: Finished Verilator Simulation
 
 # ================================================================
 
-design.json: compile_verilog
-	mkdir -p test
-	cp $(NERV_REPO)/nerv.sv test/.
-	cp $(BLUESPEC_HOME)/lib/Verilog/ResetInverter.v test/.
-	cp $(BLUESPEC_HOME)/lib/Verilog/SizedFIFO.v test/.
-	cp $(BLUESPEC_HOME)/lib/Verilog/Counter.v test/.
-	cp verilog/*.v test/
+SYNTH_DIR = test
+design.json: verilog
+	mkdir -p $(SYNTH_DIR)
+	cp $(NERV_REPO)/nerv.sv $(SYNTH_DIR)/.
+	cp $(BLUESPEC_HOME)/lib/Verilog/ResetInverter.v $(SYNTH_DIR)/.
+	cp $(BLUESPEC_HOME)/lib/Verilog/SizedFIFO.v $(SYNTH_DIR)/.
+	cp $(BLUESPEC_HOME)/lib/Verilog/Counter.v $(SYNTH_DIR)/.
+	cp $(VERILOG_DIR)/*.v $(SYNTH_DIR)/
 # Trick to be able to load two different binaries
-	sed 's/RegFileLoad #(.file('\"'i/RegFileLoadI #(.file('\"'i/' test/mkNervSoC.v > out.v
-	sed 's/RegFileLoad #(.file('\"'d/RegFileLoadD #(.file('\"'d/' out.v > test/mkNervSoC.v
+	sed 's/RegFileLoad #(.file('\"'i/RegFileLoadI #(.file('\"'i/' $(SYNTH_DIR)/mkNervSoC.v > out.v
+	sed 's/RegFileLoad #(.file('\"'d/RegFileLoadD #(.file('\"'d/' out.v > $(SYNTH_DIR)/mkNervSoC.v
 # Dmem
-	sed 's/'\"\"'/'\"imem_contents.memhex32\"'/' $(BLUESPEC_HOME)/lib/Verilog/RegFileLoad.v > test/RegFileLoadI.v
-	sed 's/module RegFileLoad/module RegFileLoadI/' test/RegFileLoadI.v > out.v
-	mv out.v test/RegFileLoadI.v
+	sed 's/'\"\"'/'\"imem_contents.memhex32\"'/' $(BLUESPEC_HOME)/lib/Verilog/RegFileLoad.v > $(SYNTH_DIR)/RegFileLoadI.v
+	sed 's/module RegFileLoad/module RegFileLoadI/' $(SYNTH_DIR)/RegFileLoadI.v > out.v
+	mv out.v $(SYNTH_DIR)/RegFileLoadI.v
 # Imem
-	sed 's/'\"\"'/'\"dmem_contents.memhex32\"'/' $(BLUESPEC_HOME)/lib/Verilog/RegFileLoad.v > test/RegFileLoadD.v
-	sed 's/module RegFileLoad/module RegFileLoadD/' test/RegFileLoadD.v > out.v
-	mv out.v test/RegFileLoadD.v
+	sed 's/'\"\"'/'\"dmem_contents.memhex32\"'/' $(BLUESPEC_HOME)/lib/Verilog/RegFileLoad.v > $(SYNTH_DIR)/RegFileLoadD.v
+	sed 's/module RegFileLoad/module RegFileLoadD/' $(SYNTH_DIR)/RegFileLoadD.v > out.v
+	mv out.v $(SYNTH_DIR)/RegFileLoadD.v
 # Run the actual synthesis
 	yosys -l design_ys.log -s yosys.txt
 
@@ -192,7 +190,7 @@ design.bit: design.config
 clean:
 	rm -r -f  *~   */*~  build*  obj_dir \
 		$(VERILATOR_RTL_DIR)  $(VERILATOR_MAKE_DIR)  Verilator_Resources/sim_main.cpp *.memhex32 *.asm \
-		verilog  exe_* *.o *.sft ./*.so \
-		design* test
+		$(VERILOG_DIR)  exe_* *.o *.sft ./*.so \
+		design* $(SYNTH_DIR)
 
 # ================================================================
