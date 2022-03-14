@@ -44,5 +44,3 @@ relation RTS contains Architecture
 relation RTS contains Hardware
 relation RTS contains Properties
 relation RTS contains Characteristics
-
-// Properties

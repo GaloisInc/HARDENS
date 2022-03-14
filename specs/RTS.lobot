@@ -81,6 +81,9 @@ type twin_fidelity =
 -- hardware cost.
 -- @todo Refine the definition of cost to be precise with regards
 -- to components chosen by the team.
+-- @todo podhrmic Limit the number of options - i.e. we are
+-- choosing twin_or_physical only on the whole system level, *not*
+-- for individual components
 
 rts : kind of struct
   with -- Which development board is being used?
