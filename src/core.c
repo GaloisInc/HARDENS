@@ -5,8 +5,6 @@
 #include "rts.h"
 #include <string.h>
 
-int actuate_devices_generated_C(void);
-
 #define INST_OFFSET 0
 #define ACT_OFFSET 5
 char INSTR_LINE_FMT[] = "#I %d (%c): T[%10d %c %d] P[%10d %c %d] S[%10d %c %d]";
@@ -220,9 +218,10 @@ int core_step(struct core_state *core) {
   int err = 0;
   struct rts_command rts;
 
-  if (!core->error)
+  if (!core->error) {
     // Actuate devices if necessary
     actuate_devices_generated_C();
+  }
 
   // Let's allow command processing even if an error is detected.
   // In a real system, we would probably want to disconnect the device

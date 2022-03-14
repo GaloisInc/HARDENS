@@ -18,4 +18,5 @@ int actuate_devices(void);
 */
 uint8_t ActuateActuator(uint8_t vs);
 
+int actuate_devices_generated_C(void);
 #endif // ACTUATE_H_
