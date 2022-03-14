@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 
-
 //////////////////////////////////////////////////////////////
 // Constants derived from architecture and Cryptol model    //
 //////////////////////////////////////////////////////////////
@@ -23,16 +22,9 @@
 
 // Channel/Trip signal IDs
 #define NTRIP 3
-#define TEMPERATURE_IDX 0
-#define PRESSURE_IDX 1
-#define SATURATION_IDX 2
-
-// Min max values for sensors
-// TODO fill with realistic values
-#define TEMPERATURE_MIN_C 0 // for simplicity, assume no negative temps
-#define TEMPERATURE_MAX_C 85
-#define PRESSURE_MIN_P 8000
-#define PRESSURE_MAX_P 60200 // we have 16bits at most
+#define T 0
+#define P 1
+#define S 2
 
 // Actuation
 #define NVOTE_LOGIC 2

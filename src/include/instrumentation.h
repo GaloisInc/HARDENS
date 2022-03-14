@@ -69,9 +69,4 @@ void instrumentation_init(struct instrumentation_state *state);
   @ensures state->mode[S] \in {BYPASS, OPERATE, TRIP};
 */
 int instrumentation_step(uint8_t div, struct instrumentation_state *state);
-
-int instrumentation_step_generated_C(uint8_t div, struct instrumentation_state *state);
-int instrumentation_step_handwritten_C(uint8_t div, struct instrumentation_state *state);
-int instrumentation_step_generated_SystemVerilog(uint8_t div, struct instrumentation_state *state);
-int instrumentation_step_handwritten_SystemVerilog(uint8_t div, struct instrumentation_state *state);
 #endif // INSTRUMENTATION_H_
