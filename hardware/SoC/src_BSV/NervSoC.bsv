@@ -127,7 +127,7 @@ module mkNervSoC (NervSoC_IFC);
    */
    // Memory size
    Bit#(30) imemory_size = 'h06000;
-   Bit#(30) dmemory_size = 'h02000;
+   Bit#(30) dmemory_size = 'h03000;
 
    // Nerv has Harward architecture (separate data and instruction memory),
    // so in order to properly initialize global symbols, we need to load

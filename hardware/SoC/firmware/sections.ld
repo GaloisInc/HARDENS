@@ -5,7 +5,7 @@ MEMORY
 {
     /* FLASH and RAM must have the same memory origin */
     FLASH(xr)       : ORIGIN = 0x00000000, LENGTH = 0x006000
-    RAM  (rw)       : ORIGIN = 0x00000000, LENGTH = 0x002000
+    RAM  (rw)       : ORIGIN = 0x00000000, LENGTH = 0x003000
 }
 
 SECTIONS {

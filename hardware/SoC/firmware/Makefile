@@ -7,36 +7,45 @@ CC		= $(TARGET)-gcc
 OBJDUMP	= $(TARGET)-objdump
 OBJCOPY	= $(TARGET)-objcopy
 LDLIBS	 =  -lc -lgcc
-WERROR ?= -Werror
 
 COMPILER_FLAGS = -mcmodel=medany
 
 # Use main_blinky as demo source and target file name if not specified
-PROG 	?= firmware
+PROG 	?= main#firmware
 CRT0	= boot.S
 # Optimize for size
 OPT = -Os
 
-WARNINGS = -Wextra -Wshadow -Wpointer-arith -Wcast-align -Wsign-compare \
-		-Waggregate-return -Wmissing-declarations -Wunused $(WERROR) 
-C_WARNINGS = -Wbad-function-cast -Wmissing-prototypes -Wstrict-prototypes
+#WARNINGS = -Wno-shift-count-overflow -Wshadow -Wpointer-arith -Wcast-align -Werror
+WARNINGS = -Werror
 
-INCLUDES = -I. -I../../../src/include
+INCLUDES = -I.
 
-DEMO_SRC = firmware.c
 APP_SRC = syscalls.c \
 	bsp.c printf.c
 
+ifeq ($(PROG),main)
+$(info HELLO)
+PROG_SRC = main.c
+INCLUDES += -I../../../src/include
+APP_SRC += ../../../src/core.c \
+	../../../src/sense_actuate.c \
+	../../../src/components/instrumentation_common.c
+else
+$(info WORLD)
+PROG_SRC = firmware.c
+endif
+
 ASFLAGS  += -g $(ARCH) $(ABI) -Wa,-Ilegacy
-CFLAGS += $(OPT) -g3 $(ARCH) $(ABI) $(COMPILER_FLAGS) $(WARNINGS) $(C_WARNINGS) $(INCLUDES) -DPRINTF_INCLUDE_CONFIG_H
+CFLAGS += $(OPT) -g3 $(ARCH) $(ABI) $(COMPILER_FLAGS) $(WARNINGS) $(INCLUDES) -DPRINTF_INCLUDE_CONFIG_H
 LDFLAGS	 += -Wl,-Bstatic,-T,sections.ld,--strip-debug -nostartfiles -nostdlib $(ARCH) $(ABI)
 #
 # Define all object files.
 #
 APP_OBJ  = $(APP_SRC:.c=.o)
-DEMO_OBJ = $(DEMO_SRC:.c=.o)
+PROG_OBJ = $(PROG_SRC:.c=.o)
 CRT0_OBJ = $(CRT0:.S=.o)
-OBJS = $(CRT0_OBJ) $(DEMO_OBJ) $(APP_OBJ)
+OBJS = $(CRT0_OBJ) $(PROG_OBJ) $(APP_OBJ)
 
 $(info ASFLAGS=$(ASFLAGS))
 $(info LDLIBS=$(LDLIBS))
@@ -51,14 +60,14 @@ $(info LDFLAGS=$(LDFLAGS))
 	@echo "    CC $<"
 	@$(CC) $(ASFLAGS) -c $(CFLAGS) -o $@ $<
 
-all: $(PROG).elf
+all: firmware.elf
 
-$(PROG).elf  : $(OBJS) Makefile 
+firmware.elf  : $(OBJS) Makefile
 	@echo Linking....
 	@$(CC) -o $@ $(LDFLAGS) $(OBJS) $(LDLIBS)
-	@$(OBJDUMP) -S -D $(PROG).elf > $(PROG).asm	
+	@$(OBJDUMP) -S -D firmware.elf > firmware.asm
 	@echo Completed $@
-	@cp $(PROG).elf text.elf
+	@cp firmware.elf text.elf
 	@$(OBJCOPY) -j .text text.elf
 	@$(OBJDUMP) -S -D text.elf > text.asm
 #	@cp $(PROG).elf dmem.elf
