@@ -1,9 +1,14 @@
 #include "core.h"
 #include "platform.h"
-#include "stdio.h"
 #include "actuate.h"
 #include "rts.h"
 #include <string.h>
+
+#ifdef PLATFORM_HOST
+#include <stdio.h>
+#else
+#include "printf.h"
+#endif
 
 #define INST_OFFSET 0
 #define ACT_OFFSET 5
@@ -209,16 +214,16 @@ int test_step(struct test_state *test, struct ui_values *ui) {
   return err;
 }
 
-void core_init(struct core_state *core) {
-  core->test.test_timer_start = time_in_s();
-  core->test.failed = 0;
+void core_init(struct core_state *c) {
+  c->test.test_timer_start = time_in_s();
+  c->test.failed = 0;
 }
 
-int core_step(struct core_state *core) {
+int core_step(struct core_state *c) {
   int err = 0;
   struct rts_command rts;
 
-  if (!core->error) {
+  if (!c->error) {
     // Actuate devices if necessary
     actuate_devices_generated_C();
   }
@@ -246,9 +251,9 @@ int core_step(struct core_state *core) {
     }
   }
 
-  err |= test_step(&core->test, &core->ui);
-  err |= update_ui(&core->ui);
+  err |= test_step(&c->test, &c->ui);
+  err |= update_ui(&c->ui);
 
-  core->error = err;
+  c->error = err;
   return err;
 }

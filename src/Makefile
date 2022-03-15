@@ -93,7 +93,8 @@ ifeq ($(PLATFORM),Host)
 SRC+=posix_main.c
 endif
 
-CFLAGS=-Iinclude -g -Wno-shift-op-parentheses -Wno-shift-count-overflow -Werror
+WARNINGS = -Wno-shift-count-overflow -Wpointer-arith -Wcast-align -Werror
+CFLAGS=-Iinclude -g $(WARNINGS)
 
 CC ?= clang
 CXX ?= clang++
@@ -115,7 +116,7 @@ CFLAGS += -DT_THRESHOLD=$(T_THRESHOLD)
 CFLAGS += -DP_THRESHOLD=$(P_THRESHOLD)
 
 ifeq ($(HW),Simulated)
-CFLAGS += -DHW_SIMULATOR -I$(VERILATED_INC) -Wno-deprecated
+CFLAGS += -DHW_SIMULATOR -I$(VERILATED_INC) -Wno-deprecated -DPLATFORM_HOST
 CC = $(CXX)
 SRC += $(SV_LIBS)
 EXTRA_SRC += $(VERILATED_SRC)
