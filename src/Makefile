@@ -90,12 +90,13 @@ SRC+=\
   variants/saturation_generated_C.c \
   components/instrumentation_common.c
 
-ifeq ($(PLATFORM),Host)
-SRC+=posix_main.c
-endif
-
 WARNINGS = -Wno-shift-count-overflow -Wpointer-arith -Wcast-align -Werror
 CFLAGS=-Iinclude -g $(WARNINGS)
+
+ifeq ($(PLATFORM),Host)
+SRC+=posix_main.c
+CFLAGS += -DPLATFORM_HOST
+endif
 
 CC ?= clang
 CXX ?= clang++
@@ -117,7 +118,7 @@ CFLAGS += -DT_THRESHOLD=$(T_THRESHOLD)
 CFLAGS += -DP_THRESHOLD=$(P_THRESHOLD)
 
 ifeq ($(HW),Simulated)
-CFLAGS += -DHW_SIMULATOR -I$(VERILATED_INC) -Wno-deprecated -DPLATFORM_HOST
+CFLAGS += -DHW_SIMULATOR -I$(VERILATED_INC) -Wno-deprecated
 CC = $(CXX)
 SRC += $(SV_LIBS)
 EXTRA_SRC += $(VERILATED_SRC)
