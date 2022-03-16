@@ -25,14 +25,19 @@ APP_SRC = syscalls.c \
 	bsp.c printf.c
 
 ifeq ($(PROG),main)
-$(info HELLO)
 PROG_SRC = main.c
 INCLUDES += -I../../../src/include
-APP_SRC += ../../../src/core.c \
+APP_SRC += \
+	../../../src/core.c \
+	../../../src/common.c \
 	../../../src/sense_actuate.c \
-	../../../src/components/instrumentation_common.c
+	../../../src/components/instrumentation_common.c \
+	../../../src/variants/actuation_unit_generated_C.c \
+	../../../src/variants/actuator_generated_C.c \
+	../../../src/variants/instrumentation_handwritten_C.c \
+	../../../src/variants/saturation_generated_C.c \
+	../../../src/variants/instrumentation_generated_C.c
 else
-$(info WORLD)
 PROG_SRC = firmware.c
 endif
 

@@ -56,10 +56,15 @@ uint8_t soc_getchar(void)
 {
   volatile uint32_t *data_rdy = (void*) UART_REG_DATA_READY;
   volatile uint32_t *rx_data = (void*) UART_REG_RX;
-  while (1) {
+  int startime = time_in_ms();
+  int delay_ms = 0;
+  // Wait 1s for each character
+  while (1 && (delay_ms < 1000)) {
     if (*data_rdy){
         return (uint8_t)(*rx_data);
     }
+    delay_ms = time_in_ms() - startime;
   }
+  return 0;
 }
 
