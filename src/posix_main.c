@@ -19,6 +19,7 @@
 #include <time.h>
 
 extern struct instrumentation_state instrumentation[4];
+struct actuation_command *act_command_buf[2];
 
 #define min(_a, _b) ((_a) < (_b) ? (_a) : (_b))
 #define max(_a, _b) ((_a) > (_b) ? (_a) : (_b))
@@ -269,6 +270,18 @@ void update_sensors(void) {
       }
     }
   }
+}
+
+int read_actuation_command(uint8_t id, struct actuation_command *cmd) {
+  struct actuation_command *c = act_command_buf[id];
+  if (c) {
+    cmd->device = c->device;
+    cmd->on = c->on;
+    free(c);
+    act_command_buf[id] = NULL;
+    return 1;
+  }
+  return 0;
 }
 
 int send_actuation_command(uint8_t id, struct actuation_command *cmd) {

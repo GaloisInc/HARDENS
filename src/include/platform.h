@@ -41,18 +41,22 @@ extern uint8_t error_sensor[2][2];
 extern uint8_t error_sensor_demux[2][2][2];
 
 #ifdef PLATFORM_HOST
+#include <assert.h>
+#define ASSERT(x) assert(x)
+#else
+#define ASSERT(x)
+#endif // PLATFORM_HOST
+
+#if defined(PLATFORM_HOST) && defined(USE_PTHREADS)
 #include <pthread.h>
 extern pthread_mutex_t display_mutex;
 extern pthread_mutex_t mem_mutex;
 #define MUTEX_LOCK(x) pthread_mutex_lock(x)
 #define MUTEX_UNLOCK(x) pthread_mutex_unlock(x)
-#include <assert.h>
-#define ASSERT(x) assert(x)
 #else
-#define ASSERT(x)
 #define MUTEX_LOCK(x)
 #define MUTEX_UNLOCK(x)
-#endif
+#endif // defined(PLATFORM_HOST) && defined(USE_PTHREADS)
 
 /////////////////////////////////////////
 // Reading signals and values          //
@@ -136,7 +140,10 @@ int read_instrumentation_command(uint8_t division, struct instrumentation_comman
 */
 int send_instrumentation_command(uint8_t division, struct instrumentation_command *cmd);
 
-/* Read external command, setting *cmd. Does not block. */
+/**
+ * Read external command, setting *cmd. Does not block.
+ * Platform specific
+ */
 /*@requires \valid(cmd);
   @assigns cmd->on;
   @assigns cmd->device;

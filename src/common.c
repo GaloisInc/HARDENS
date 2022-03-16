@@ -24,7 +24,6 @@ struct instrumentation_command *inst_command_buf[4];
 
 uint8_t actuator_state[NDEV];
 uint8_t device_actuation_logic[2][NDEV];
-struct actuation_command *act_command_buf[2];
 
 //EI mode:
 //  mode = 0 => no error
@@ -157,18 +156,6 @@ int send_instrumentation_command(uint8_t id,
     return 0;
   }
   return -1;
-}
-
-int read_actuation_command(uint8_t id, struct actuation_command *cmd) {
-  struct actuation_command *c = act_command_buf[id];
-  if (c) {
-    cmd->device = c->device;
-    cmd->on = c->on;
-    free(c);
-    act_command_buf[id] = NULL;
-    return 1;
-  }
-  return 0;
 }
 
 uint8_t is_test_running()
