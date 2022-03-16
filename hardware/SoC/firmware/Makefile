@@ -1,11 +1,14 @@
 TARGET=riscv64-unknown-elf
 
+
 ARCH 		= -march=rv32i
 ABI 		= -mabi=ilp32
 
-CC		= $(TARGET)-gcc
+#CC		= $(TARGET)-gcc
+CC =clang --target=riscv32
 OBJDUMP	= $(TARGET)-objdump
 OBJCOPY	= $(TARGET)-objcopy
+LD 		= $(TARGET)-gcc
 LDLIBS	 =  -lc -lgcc
 
 COMPILER_FLAGS = -mcmodel=medany
@@ -16,10 +19,10 @@ CRT0	= boot.S
 # Optimize for size
 OPT = -Os
 
-#WARNINGS = -Wno-shift-count-overflow -Wshadow -Wpointer-arith -Wcast-align -Werror
-WARNINGS = -Werror
+# NOTE: why do we have different warnings setup?
+WARNINGS = -Wno-shift-op-parentheses -Wno-shift-count-overflow -Wpointer-arith -Wcast-align -Werror
 
-INCLUDES = -I.
+INCLUDES = -I. -I/opt/riscv/riscv64-unknown-elf/include
 
 APP_SRC = syscalls.c \
 	bsp.c printf.c
@@ -69,7 +72,7 @@ all: firmware.elf
 
 firmware.elf  : $(OBJS) Makefile
 	@echo Linking....
-	@$(CC) -o $@ $(LDFLAGS) $(OBJS) $(LDLIBS)
+	@$(LD) -o $@ $(LDFLAGS) $(OBJS) $(LDLIBS)
 	@$(OBJDUMP) -S -D firmware.elf > firmware.asm
 	@echo Completed $@
 	@cp firmware.elf text.elf
