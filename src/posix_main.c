@@ -1,13 +1,13 @@
-#include "actuation_logic.h"
+#include "common.h"
 #include "core.h"
-#include "sense_actuate.h"
 #include "instrumentation.h"
+#include "actuation_logic.h"
+#include "sense_actuate.h"
 #include "platform.h"
-#include <assert.h>
+
 #include <poll.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <pthread.h>
 #include <termios.h>
 #include <unistd.h>
 #include <stddef.h>
@@ -21,13 +21,10 @@
 #define min(_a, _b) ((_a) < (_b) ? (_a) : (_b))
 #define max(_a, _b) ((_a) > (_b) ? (_a) : (_b))
 
-#ifdef USE_PTHREADS
+#ifdef PLATFORM_HOST
 #include <pthread.h>
 pthread_mutex_t display_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mem_mutex = PTHREAD_MUTEX_INITIALIZER;
-#else
-#define pthread_mutex_lock(x)
-#define pthread_mutex_unlock(x)
 #endif
 
 #ifndef T0
@@ -52,39 +49,6 @@ pthread_mutex_t mem_mutex = PTHREAD_MUTEX_INITIALIZER;
 #define SENSOR_UPDATE_MS 500
 #endif
 
-struct core_state core = {0};
-struct instrumentation_state instrumentation[4];
-struct actuation_logic actuation_logic[2];
-
-// channel -> sensor # -> val
-uint32_t sensors[2][2];
-// channel -> sensor # -> demux output # -> val
-uint32_t sensors_demux[2][2][2];
-
-uint8_t trip_signals[NTRIP][4];
-struct instrumentation_command *inst_command_buf[4];
-
-uint8_t actuator_state[NDEV];
-uint8_t device_actuation_logic[2][NDEV];
-struct actuation_command *act_command_buf[2];
-
-//EI mode:
-//  mode = 0 => no error
-//  mode = 1 => error
-//  mode = 2 => nondet error
-uint8_t error_instrumentation_mode[NINSTR];
-uint8_t error_instrumentation[NINSTR];
-// ES ch mode:
-//   mode = 0 => no error
-//   mode = 1 => demux error (out 0)
-//   mode = 2 => demux error (out 1)
-//   mode = 3 => sensor error (error in both demux outs)
-//   mode = 4 => nondet sensor error
-//   mode = 5 => nondet demux error
-uint8_t error_sensor_mode[2][2];
-uint8_t error_sensor[2][2];
-uint8_t error_sensor_demux[2][2][2];
-
 int clear_screen() {
   return (isatty(fileno(stdin)) && (NULL == getenv("RTS_NOCLEAR")));
 }
@@ -98,26 +62,6 @@ void update_display() {
     printf("%s%s", core.ui.display[line], line == NLINES-1 ? "" : "\n");
   }
   if (clear_screen()) printf("\e[u");
-}
-
-int read_instrumentation_trip_signals(uint8_t arr[3][4]) {
-  for (int i = 0; i < NTRIP; ++i) {
-    for (int div = 0; div < 4; ++div) {
-      pthread_mutex_lock(&mem_mutex);
-      arr[i][div] = trip_signals[i][div];
-      pthread_mutex_unlock(&mem_mutex);
-    }
-  }
-
-  return 0;
-}
-
-int set_actuate_device(uint8_t device_no, uint8_t on)
-{
-  pthread_mutex_lock(&mem_mutex);
-  actuator_state[device_no] = on;
-  pthread_mutex_unlock(&mem_mutex);
-  return 0;
 }
 
 int read_rts_command(struct rts_command *cmd) {
@@ -146,12 +90,12 @@ int read_rts_command(struct rts_command *cmd) {
   if (linelen < 0)
     return 0;
 
-  pthread_mutex_lock(&display_mutex);
+  MUTEX_LOCK(&display_mutex);
 
   if (clear_screen())
       printf("\e[%d;1H\e[2K> ", NLINES+1);
 
-  pthread_mutex_unlock(&display_mutex);
+  MUTEX_UNLOCK(&display_mutex);
 
   if (2 == (ok = sscanf(line, "A %hhd %hhd", &device, &on))) {
     cmd->type = ACTUATION_COMMAND;
@@ -163,7 +107,7 @@ int read_rts_command(struct rts_command *cmd) {
     cmd->instrumentation_division = div;
     cmd->cmd.instrumentation.type = SET_MAINTENANCE;
     cmd->cmd.instrumentation.cmd.maintenance.on = on;
-    assert(on == 0 || on == 1);
+    ASSERT(on == 0 || on == 1);
     ok = 1;
   } else if (3 == (ok = sscanf(line, "B %hhd %hhd %hhd", &div, &ch, &mode))) {
     cmd->type = INSTRUMENTATION_COMMAND;
@@ -250,19 +194,10 @@ void update_sensor_errors(void) {
         }
         break;
         default:
-          assert("Invalid sensor fail mode" && 0);
+          ASSERT("Invalid sensor fail mode" && 0);
       }
     }
   }
-}
-
-int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
-  pthread_mutex_lock(&mem_mutex);
-  int sensor = div/2;
-  int demux_out = div%2;
-  *val = sensors_demux[channel][sensor][demux_out];
-  pthread_mutex_unlock(&mem_mutex);
-  return 0;
 }
 
 int update_sensor_simulation(void) {
@@ -315,34 +250,25 @@ void update_sensors(void) {
         sensors[c][s] = rand();
       }
 
-      pthread_mutex_lock(&mem_mutex);
+      MUTEX_LOCK(&mem_mutex);
       sensors_demux[c][s][0] = sensors[c][s];
-      pthread_mutex_unlock(&mem_mutex);
+      MUTEX_UNLOCK(&mem_mutex);
 
-      pthread_mutex_lock(&mem_mutex);
+      MUTEX_LOCK(&mem_mutex);
       sensors_demux[c][s][1] = sensors[c][s];
-      pthread_mutex_unlock(&mem_mutex);
+      MUTEX_UNLOCK(&mem_mutex);
 
       for (int d = 0; d < 2; ++d) {
         if(error_sensor_demux[c][s][d]) {
-          pthread_mutex_lock(&mem_mutex);
+          MUTEX_LOCK(&mem_mutex);
           sensors_demux[c][s][d] = rand();
-          pthread_mutex_unlock(&mem_mutex);
+          MUTEX_UNLOCK(&mem_mutex);
         }
       }
     }
   }
 }
 
-int set_output_instrumentation_trip(uint8_t div, uint8_t channel, uint8_t val) {
-  pthread_mutex_lock(&mem_mutex);
-  if (!error_instrumentation[div])
-    trip_signals[channel][div] = val;
-  pthread_mutex_unlock(&mem_mutex);
-  return 0;
-}
-
-// NOTE: This will be different for SoC impl run - maybe a GPIO write?
 int send_actuation_command(uint8_t id, struct actuation_command *cmd) {
   if (id < 2) {
     act_command_buf[id] = (struct actuation_command *)malloc(sizeof(*act_command_buf[id]));
@@ -351,207 +277,6 @@ int send_actuation_command(uint8_t id, struct actuation_command *cmd) {
     return 0;
   }
   return -1;
-}
-
-int read_actuation_command(uint8_t id, struct actuation_command *cmd) {
-  struct actuation_command *c = act_command_buf[id];
-  if (c) {
-    cmd->device = c->device;
-    cmd->on = c->on;
-    free(c);
-    act_command_buf[id] = NULL;
-    return 1;
-  }
-  return 0;
-}
-
-int read_instrumentation_command(uint8_t div,
-                                 struct instrumentation_command *cmd) {
-  struct instrumentation_command *c = inst_command_buf[div];
-  if (c) {
-    cmd->type = c->type;
-    cmd->cmd = c->cmd;
-    free(c);
-    inst_command_buf[div] = NULL;
-    return 1;
-  }
-  return 0;
-}
-
-int send_instrumentation_command(uint8_t id,
-                                 struct instrumentation_command *cmd) {
-  if (id < 4) {
-    inst_command_buf[id] = (struct instrumentation_command *)malloc(sizeof(*inst_command_buf[id]));
-    inst_command_buf[id]->type = cmd->type;
-    inst_command_buf[id]->cmd = cmd->cmd;
-    return 0;
-  }
-  return -1;
-}
-
-int reset_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t reset_val) {
-  pthread_mutex_lock(&mem_mutex);
-  actuation_logic[logic_no].vote_actuate[device_no] = reset_val;
-  pthread_mutex_unlock(&mem_mutex);
-  return 0;
-}
-
-int set_output_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t on) {
-  assert(logic_no < 2);
-  assert(device_no < 2);
-
-  pthread_mutex_lock(&mem_mutex);
-  device_actuation_logic[logic_no][device_no] = on;
-  pthread_mutex_unlock(&mem_mutex);
-  return 0;
-}
-
-int get_instrumentation_value(uint8_t division, uint8_t ch, uint32_t *value) {
-  pthread_mutex_lock(&mem_mutex);
-  if (!error_instrumentation[division])
-    *value = instrumentation[division].reading[ch];
-  pthread_mutex_unlock(&mem_mutex);
-  return 0;
-}
-
-int get_instrumentation_trip(uint8_t division, uint8_t ch, uint8_t *value) {
-  pthread_mutex_lock(&mem_mutex);
-  if (!error_instrumentation[division])
-    *value = instrumentation[division].sensor_trip[ch];
-  pthread_mutex_unlock(&mem_mutex);
-  return 0;
-}
-
-int get_instrumentation_mode(uint8_t division, uint8_t ch, uint8_t *value) {
-  pthread_mutex_lock(&mem_mutex);
-  if (!error_instrumentation[division])
-    *value = instrumentation[division].mode[ch];
-  pthread_mutex_unlock(&mem_mutex);
-  return 0;
-}
-
-int get_instrumentation_maintenance(uint8_t division, uint8_t *value) {
-  pthread_mutex_lock(&mem_mutex);
-  if (!error_instrumentation[division])
-    *value = instrumentation[division].maintenance;
-  pthread_mutex_unlock(&mem_mutex);
-  return 0;
-}
-
-int get_actuation_state(uint8_t i, uint8_t device, uint8_t *value) {
-  pthread_mutex_lock(&mem_mutex);
-  *value = device_actuation_logic[i][device];
-  pthread_mutex_unlock(&mem_mutex);
-  return 0;
-}
-
-uint8_t get_test_device()
-{
-  return core.test.test_device;
-}
-
-void get_test_instrumentation(uint8_t *id)
-{
-  id[0] = core.test.test_instrumentation[0];
-  id[1] = core.test.test_instrumentation[1];
-}
-
-int get_instrumentation_test_setpoints(uint8_t id, uint32_t *setpoints)
-{
-  setpoints[0] = core.test.test_setpoints[id][0];
-  setpoints[1] = core.test.test_setpoints[id][1];
-  setpoints[2] = core.test.test_setpoints[id][2];
-  return 0;
-}
-
-void set_instrumentation_test_complete(uint8_t div, int v)
-{
-  pthread_mutex_lock(&mem_mutex);
-  core.test.test_instrumentation_done[div] = v;
-  pthread_mutex_unlock(&mem_mutex);
-}
-
-int is_instrumentation_test_complete(uint8_t id)
-{
-  pthread_mutex_lock(&mem_mutex);
-  int ret = core.test.test_instrumentation_done[id];
-  pthread_mutex_unlock(&mem_mutex);
-  return ret;
-}
-
-uint8_t get_test_actuation_unit()
-{
-  pthread_mutex_lock(&mem_mutex);
-  uint8_t ret = core.test.test_actuation_unit;
-  pthread_mutex_unlock(&mem_mutex);
-  return ret;
-}
-
-void set_actuation_unit_test_complete(uint8_t div, int v)
-{
-  pthread_mutex_lock(&mem_mutex);
-  core.test.test_actuation_unit_done[div] = v;
-  pthread_mutex_unlock(&mem_mutex);
-}
-
-void set_actuation_unit_test_input_vote(uint8_t id, int v)
-{
-  pthread_mutex_lock(&mem_mutex);
-  core.test.actuation_old_vote = v != 0;
-  pthread_mutex_unlock(&mem_mutex);
-}
-
-int is_actuation_unit_test_complete(uint8_t id)
-{
-  pthread_mutex_lock(&mem_mutex);
-  int ret = core.test.test_actuation_unit_done[id];
-  pthread_mutex_unlock(&mem_mutex);
-  return ret;
-}
-
-void set_actuate_test_result(uint8_t dev, uint8_t result)
-{
-  pthread_mutex_lock(&mem_mutex);
-  core.test.test_device_result[dev] = result;
-  pthread_mutex_unlock(&mem_mutex);
-}
-
-void set_actuate_test_complete(uint8_t dev, int v)
-{
-  pthread_mutex_lock(&mem_mutex);
-  core.test.test_device_done[dev] = v;
-  pthread_mutex_unlock(&mem_mutex);
-}
-
-int is_actuate_test_complete(uint8_t dev)
-{
-  pthread_mutex_lock(&mem_mutex);
-  int ret = core.test.test_device_done[dev];
-  pthread_mutex_unlock(&mem_mutex);
-  return ret;
-}
-
-int read_test_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val)
-{
-  pthread_mutex_lock(&mem_mutex);
-  *val = core.test.test_inputs[div][channel];
-  pthread_mutex_unlock(&mem_mutex);
-  return 0;
-}
-
-uint8_t is_test_running()
-{
-  pthread_mutex_lock(&mem_mutex);
-  uint8_t ret = core.test.self_test_running;
-  pthread_mutex_unlock(&mem_mutex);
-  return ret;
-}
-
-void set_test_running(int val)
-{
-  pthread_mutex_lock(&mem_mutex);
-  core.test.self_test_running = val;
-  pthread_mutex_unlock(&mem_mutex);
 }
 
 void* start0(void *arg) {
@@ -565,7 +290,6 @@ void* start1(void *arg) {
   }
 }
 
-// NOTE: This will be different for SoC impl run
 uint32_t time_in_s()
 {
   struct timespec tp;
@@ -597,10 +321,10 @@ int main(int argc, char **argv) {
   while (1) {
     char line[256];
     fflush(stdout);
-    pthread_mutex_lock(&display_mutex);
+    MUTEX_LOCK(&display_mutex);
     sprintf(line, "HW ACTUATORS %s %s", actuator_state[0] ? "ON " : "OFF", actuator_state[1]? "ON " : "OFF");
     set_display_line(&core.ui, 8, line, 0);
-    pthread_mutex_unlock(&display_mutex);
+    MUTEX_UNLOCK(&display_mutex);
     update_instrumentation_errors();
     update_sensors();
     core_step(&core);

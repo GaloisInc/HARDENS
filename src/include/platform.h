@@ -4,8 +4,55 @@
 
 #include "common.h"
 #include "core.h"
+#include "instrumentation.h"
+#include "actuation_logic.h"
 
 extern struct core_state core;
+extern struct instrumentation_state instrumentation[4];
+extern struct actuation_logic actuation_logic[2];
+
+// channel -> sensor # -> val
+extern uint32_t sensors[2][2];
+// channel -> sensor # -> demux output # -> val
+extern uint32_t sensors_demux[2][2][2];
+
+extern uint8_t trip_signals[NTRIP][4];
+extern struct instrumentation_command *inst_command_buf[4];
+
+extern uint8_t actuator_state[NDEV];
+extern uint8_t device_actuation_logic[2][NDEV];
+extern struct actuation_command *act_command_buf[2];
+
+//EI mode:
+//  mode = 0 => no error
+//  mode = 1 => error
+//  mode = 2 => nondet error
+extern uint8_t error_instrumentation_mode[NINSTR];
+extern uint8_t error_instrumentation[NINSTR];
+// ES ch mode:
+//   mode = 0 => no error
+//   mode = 1 => demux error (out 0)
+//   mode = 2 => demux error (out 1)
+//   mode = 3 => sensor error (error in both demux outs)
+//   mode = 4 => nondet sensor error
+//   mode = 5 => nondet demux error
+extern uint8_t error_sensor_mode[2][2];
+extern uint8_t error_sensor[2][2];
+extern uint8_t error_sensor_demux[2][2][2];
+
+#ifdef PLATFORM_HOST
+#include <pthread.h>
+extern pthread_mutex_t display_mutex;
+extern pthread_mutex_t mem_mutex;
+#define MUTEX_LOCK(x) pthread_mutex_lock(x)
+#define MUTEX_UNLOCK(x) pthread_mutex_unlock(x)
+#include <assert.h>
+#define ASSERT(x) assert(x)
+#else
+#define ASSERT(x)
+#define MUTEX_LOCK(x)
+#define MUTEX_UNLOCK(x)
+#endif
 
 /////////////////////////////////////////
 // Reading signals and values          //
@@ -67,6 +114,10 @@ int set_actuate_device(uint8_t device_no, uint8_t on);
 /////////////////////////////////////////
 // Sending commands between components //
 /////////////////////////////////////////
+/**
+ * Read RTS command from the user
+ * Platform specific
+ */
 int read_rts_command(struct rts_command *cmd);
 
 /* Communicate with instrumentation division */
@@ -93,6 +144,10 @@ int send_instrumentation_command(uint8_t division, struct instrumentation_comman
  */
 int read_actuation_command(uint8_t id, struct actuation_command *cmd);
 
+/**
+ * Physically set actuator to a new value
+ * Platform specific
+ */
 int send_actuation_command(uint8_t actuator,
                            struct actuation_command *cmd);
 
@@ -121,6 +176,7 @@ void get_test_instrumentation(uint8_t *id);
 
 /*@ assigns \nothing;
 */
+// NOTE: this is actually never used (only in `bottom.c`)
 int is_instrumentation_under_test(uint8_t id);
 
 /*@ requires \valid(setpoints + (0.. NTRIP-1));
@@ -154,7 +210,9 @@ int read_test_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *va
 */
 uint8_t get_test_actuation_unit(void);
 
+// NOTE: this is actually never used (only in `bottom.c`)
 int is_actuation_unit_under_test(uint8_t id);
+
 /*@ requires div < NVOTE_LOGIC;
   @ assigns core.test.test_actuation_unit_done[div];
   @ ensures core.test.test_actuation_unit_done[div] == v;
@@ -192,6 +250,23 @@ int is_actuate_test_complete(uint8_t dev);
 ////////////////////////////////////////////
 // General Utilities                      //
 ////////////////////////////////////////////
-uint32_t time_in_s();
+
+/**
+ * Return uptime in seconds
+ * Platform specific
+ */
+uint32_t time_in_s(void);
+
+/**
+ * Update user display
+ * Platform specific
+ */
+void update_display(void);
+
+/**
+ * Poll sensors for new values
+ * Platform specific
+ */
+void update_sensors(void);
 
 #endif // PLATFORM_H_

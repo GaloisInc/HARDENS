@@ -78,6 +78,7 @@ EXECUTION ?= Parallel
 
 SRC+=\
   core.c \
+  common.c \
   sense_actuate.c \
   variants/actuation_unit_generated_C.c \
   variants/actuation_unit_generated_SystemVerilog.c \
