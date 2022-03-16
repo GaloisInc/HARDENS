@@ -18,6 +18,8 @@
 #include <sys/select.h>
 #include <time.h>
 
+extern struct instrumentation_state instrumentation[4];
+
 #define min(_a, _b) ((_a) < (_b) ? (_a) : (_b))
 #define max(_a, _b) ((_a) > (_b) ? (_a) : (_b))
 
