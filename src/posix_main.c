@@ -340,11 +340,11 @@ int set_output_instrumentation_trip(uint8_t div, uint8_t channel, uint8_t val) {
   return 0;
 }
 
-int send_actuation_command(uint8_t id, struct actuation_command *cmd) {
-  if (id < 2) {
-    act_command_buf[id] = (struct actuation_command *)malloc(sizeof(*act_command_buf[id]));
-    act_command_buf[id]->device = cmd->device;
-    act_command_buf[id]->on = cmd->on;
+int send_actuation_command(uint8_t logic, struct actuation_command *cmd) {
+  if (logic < NVOTE_LOGIC) {
+    act_command_buf[logic] = (struct actuation_command *)malloc(sizeof(*act_command_buf[logic]));
+    act_command_buf[logic]->device = cmd->device;
+    act_command_buf[logic]->on = cmd->on;
     return 0;
   }
   return -1;

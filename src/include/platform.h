@@ -80,7 +80,7 @@ int read_instrumentation_command(uint8_t division, struct instrumentation_comman
 
 /*@requires division < NINSTR;
   @requires \valid(cmd);
-  @assigns cmd->type, cmd->cmd;
+  @assigns \nothing; // not entirely true, but we'll never mention that state
   @ensures -1 <= \result <= 0;
 */
 int send_instrumentation_command(uint8_t division, struct instrumentation_command *cmd);
@@ -93,7 +93,12 @@ int send_instrumentation_command(uint8_t division, struct instrumentation_comman
  */
 int read_actuation_command(uint8_t id, struct actuation_command *cmd);
 
-int send_actuation_command(uint8_t actuator,
+/*@requires logic < NVOTE_LOGIC;
+  @requires \valid(cmd);
+  @assigns \nothing; // not entirely true, but we'll never mention that state
+  @ensures -1 <= \result <= 0;
+*/
+int send_actuation_command(uint8_t logic,
                            struct actuation_command *cmd);
 
 
