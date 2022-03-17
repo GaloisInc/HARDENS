@@ -10,7 +10,7 @@ nat : kind of int where self >= 0
 -- then we will be running on the bare metal.
 
 type virtualized_platform_runtime =
-  { MacOS, Linux, RV32_bare_metal, None }
+  { Posix, RV32_bare_metal, None }
 
 -- The developer boards we have to choose from.  We are using the
 -- ECP-5 5G 85F variant of the Lattice Semiconductor dev board, and if
@@ -18,7 +18,7 @@ type virtualized_platform_runtime =
 -- use the Vega board.
 
 type dev_board =
-  { LFE5UM5G_85F_EVN, RV32M1_VEGA, None }
+  { Virtual, LFE5UM5G_85F_EVN, RV32M1_VEGA, None }
 
 -- The ECP-5 FPGA comes in several flavors.  We are using the 5G
 -- variant for this project.  Other variants should be able to use the

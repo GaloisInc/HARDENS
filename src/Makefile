@@ -68,10 +68,7 @@ VERILATOR_SHIM_OBJS=\
 SRC=
 EXTRA_SRC=
 
-## Are we running on a (POSIX) Host or the SoC
-PLATFORM ?= Host
-
-## On the Host plaform,
+## On the Posix plaform,
 ## Parallel: pthread-based implementation to simulate the concurrency SoC
 ## Sequential:  a single-threaded implementation
 EXECUTION ?= Parallel
@@ -93,10 +90,8 @@ SRC+=\
 WARNINGS = -Wno-shift-count-overflow -Wpointer-arith -Wcast-align -Werror
 CFLAGS=-Iinclude -g $(WARNINGS)
 
-ifeq ($(PLATFORM),Host)
 SRC+=posix_main.c
 CFLAGS += -DPLATFORM_HOST
-endif
 
 CC ?= clang
 CXX ?= clang++
