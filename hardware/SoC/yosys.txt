@@ -1,4 +1,4 @@
-read_verilog test/*.v test/*.sv
+read_verilog -sv test/*.v test/*.sv
 design -save read
 hierarchy -top mkNervSoC
 proc

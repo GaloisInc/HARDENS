@@ -1,10 +1,6 @@
 TARGET=riscv64-unknown-elf
-
-
 ARCH 		= -march=rv32i
 ABI 		= -mabi=ilp32
-
-#CC		= $(TARGET)-gcc
 CC =clang --target=riscv32
 OBJDUMP	= $(TARGET)-objdump
 OBJCOPY	= $(TARGET)-objcopy
@@ -14,7 +10,7 @@ LDLIBS	 =  -lc -lgcc
 COMPILER_FLAGS = -mcmodel=medany
 
 # Use main_blinky as demo source and target file name if not specified
-PROG 	?= main#firmware
+PROG 	?= main
 CRT0	= boot.S
 # Optimize for size
 OPT = -Os
@@ -78,6 +74,11 @@ firmware.elf  : $(OBJS) Makefile
 	@cp firmware.elf text.elf
 	@$(OBJCOPY) -j .text text.elf
 	@$(OBJDUMP) -S -D text.elf > text.asm
+# To remove .text from the firmware:
+#	@$(OBJCOPY) firmware.elf firmware.elf
+#	@$(OBJCOPY) -R *text firmware.elf
+#	@$(OBJDUMP) -S -D firmware.elf > firmware.asm
+# Old attempt to create a better DMEM
 #	@cp $(PROG).elf dmem.elf
 #	@$(OBJCOPY) -R text dmem.elf
 #	@$(OBJCOPY) -R .text dmem.elf

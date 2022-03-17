@@ -3,6 +3,7 @@
  */
 // System includes
 #include <stdint.h>
+#include <stdlib.h>
 
 // Board includes
 #include "bsp.h"

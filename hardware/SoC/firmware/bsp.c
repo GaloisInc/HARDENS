@@ -1,4 +1,5 @@
 #include "bsp.h"
+#include "printf.h"
 
 uint32_t i2c_read(uint8_t addr, uint32_t data_tx)
 {
@@ -25,10 +26,9 @@ uint32_t i2c_read(uint8_t addr, uint32_t data_tx)
 
 uint32_t time_in_s(void)
 {
-  volatile uint32_t *tick_reg_low = (void*) TICK_REG_LOW;
-  volatile uint32_t *tick_reg_high = (void*) TICK_REG_HIGH;
-  uint64_t ticks = (uint64_t) (*tick_reg_high << 31 | *tick_reg_low);
-  return (uint32_t)((ticks)/CORE_FREQ);
+  uint32_t t_s = time_in_ms()/1000;
+  printf("[%u]\n",t_s);
+  return t_s;
 }
 
 uint32_t time_in_ms(void)

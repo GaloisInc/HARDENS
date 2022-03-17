@@ -58,9 +58,12 @@ BSCDIRS_V = -vdir $(VERILOG_DIR)  -bdir $(BUILD_V_DIR)  -info-dir $(BUILD_V_DIR)
 BSCPATH_V = $(BSCPATH)
 
 FIRMWARE_DIR = firmware
+PROG 	?= main
+
+# TODO: properly storing sdata in FLASH could help keep the dmem smaller
 dmem_contents.memhex32:
-	@make -C $(FIRMWARE_DIR) clean
-	@make -C $(FIRMWARE_DIR) firmware.elf
+	PROG=$(PROG) make -C $(FIRMWARE_DIR) clean
+	PROG=$(PROG) make -C $(FIRMWARE_DIR) firmware.elf
 	@riscv64-unknown-elf-elf2hex --bit-width 32 --input $(FIRMWARE_DIR)/firmware.elf --output $(FIRMWARE_DIR)/intermediate.hex
 	@./pyhex2memhex.py --input $(FIRMWARE_DIR)/intermediate.hex --output $(FIRMWARE_DIR)/firmware.memhex32 --maxlen $(DMEMORY_SIZE)
 	@mv $(FIRMWARE_DIR)/firmware.memhex32 $@
@@ -154,13 +157,16 @@ exe: verilator
 # ================================================================
 
 SYNTH_DIR = test
-design.json: verilog
+design.json: verilator
 	mkdir -p $(SYNTH_DIR)
 	cp $(NERV_REPO)/nerv.sv $(SYNTH_DIR)/.
 	cp $(BLUESPEC_HOME)/lib/Verilog/ResetInverter.v $(SYNTH_DIR)/.
 	cp $(BLUESPEC_HOME)/lib/Verilog/SizedFIFO.v $(SYNTH_DIR)/.
 	cp $(BLUESPEC_HOME)/lib/Verilog/Counter.v $(SYNTH_DIR)/.
 	cp $(VERILOG_DIR)/*.v $(SYNTH_DIR)/
+	cp $(VERILATOR_RTL_DIR)/Actuate_D0.sv $(SYNTH_DIR)/.
+	cp $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Handwritten.sv $(SYNTH_DIR)/.
+	cp $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Generated.sv $(SYNTH_DIR)/.
 # Trick to be able to load two different binaries
 	sed 's/RegFileLoad #(.file('\"'i/RegFileLoadI #(.file('\"'i/' $(SYNTH_DIR)/mkNervSoC.v > out.v
 	sed 's/RegFileLoad #(.file('\"'d/RegFileLoadD #(.file('\"'d/' out.v > $(SYNTH_DIR)/mkNervSoC.v
