@@ -27,7 +27,7 @@ uint32_t i2c_read(uint8_t addr, uint32_t data_tx)
 uint32_t time_in_s(void)
 {
   uint32_t t_s = time_in_ms()/1000;
-  printf("[%u]\n",t_s);
+  printf("<bsp.c> time_in_s: [%u]s\n",t_s);
   return t_s;
 }
 

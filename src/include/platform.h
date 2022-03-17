@@ -40,6 +40,19 @@ extern uint8_t error_sensor_mode[2][2];
 extern uint8_t error_sensor[2][2];
 extern uint8_t error_sensor_demux[2][2][2];
 
+#ifndef PLATFORM_HOST
+// Cludge to deal with the generated function madness
+#define instrumentation_step_handwritten_SystemVerilog instrumentation_step_handwritten_C
+#define instrumentation_step_generated_SystemVerilog instrumentation_step_handwritten_C
+#define actuation_unit_step_generated_SystemVerilog actuation_unit_step_generated_C
+#endif
+
+#ifdef DEBUG
+#define DEBUG_PRINTF(X) printf X
+#else
+#define DEBUG_PRINTF(X)
+#endif
+
 #ifdef PLATFORM_HOST
 #include <assert.h>
 #define ASSERT(x) assert(x)

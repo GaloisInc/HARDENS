@@ -9,6 +9,11 @@
 #include "actuation_logic.h"
 #include "sense_actuate.h"
 
+#ifdef PLATFORM_HOST
+#include <stdio.h>
+#else
+#include "printf.h"
+#endif
 
 struct core_state core = {0};
 struct instrumentation_state instrumentation[4];
@@ -48,6 +53,7 @@ int read_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *val) {
   int demux_out = div%2;
   *val = sensors_demux[channel][sensor][demux_out];
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> read_instrumentation_channel: div=%u,channel=%u,val=%u\n",div,channel,*val));
   return 0;
 }
 
@@ -56,6 +62,7 @@ int get_instrumentation_value(uint8_t division, uint8_t ch, uint32_t *value) {
   if (!error_instrumentation[division])
     *value = instrumentation[division].reading[ch];
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> get_instrumentation_value: error=%u, division=%u,ch=%u,val=%u\n",error_instrumentation[division], division,ch,*value));
   return 0;
 }
 
@@ -64,6 +71,7 @@ int get_instrumentation_trip(uint8_t division, uint8_t ch, uint8_t *value) {
   if (!error_instrumentation[division])
     *value = instrumentation[division].sensor_trip[ch];
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> get_instrumentation_trip: error=%u, division=%u,ch=%u,val=%u\n",error_instrumentation[division], division,ch,*value));
   return 0;
 }
 
@@ -72,6 +80,7 @@ int get_instrumentation_mode(uint8_t division, uint8_t ch, uint8_t *value) {
   if (!error_instrumentation[division])
     *value = instrumentation[division].mode[ch];
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> get_instrumentation_mode: error=%u, division=%u,ch=%u,val=%u\n",error_instrumentation[division], division,ch,*value));
   return 0;
 }
 
@@ -80,6 +89,7 @@ int get_instrumentation_maintenance(uint8_t division, uint8_t *value) {
   if (!error_instrumentation[division])
     *value = instrumentation[division].maintenance;
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> get_instrumentation_maintenance: error=%u, division=%u,val=%u\n",error_instrumentation[division],division,*value));
   return 0;
 }
 
@@ -87,17 +97,23 @@ int get_actuation_state(uint8_t i, uint8_t device, uint8_t *value) {
   MUTEX_LOCK(&mem_mutex);
   *value = device_actuation_logic[i][device];
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> get_actuation_state: i=%u,device=%u,val=%u\n",i,device,*value));
   return 0;
 }
 
 int read_instrumentation_trip_signals(uint8_t arr[3][4]) {
+  DEBUG_PRINTF(("<common.c> read_instrumentation_trip_signals: ["));
   for (int i = 0; i < NTRIP; ++i) {
+    DEBUG_PRINTF(("["));
     for (int div = 0; div < 4; ++div) {
       MUTEX_LOCK(&mem_mutex);
       arr[i][div] = trip_signals[i][div];
+      DEBUG_PRINTF(("%u",trip_signals[i][div]));
       MUTEX_UNLOCK(&mem_mutex);
     }
+    DEBUG_PRINTF(("],"));
   }
+  DEBUG_PRINTF(("]\n"));
   return 0;
 }
 
@@ -105,6 +121,7 @@ int reset_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t reset_val
   MUTEX_LOCK(&mem_mutex);
   actuation_logic[logic_no].vote_actuate[device_no] = reset_val;
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> reset_actuation_logic: logic_no=%u,device=%u,reset_val=%u\n",logic_no,device_no,reset_val));
   return 0;
 }
 
@@ -115,6 +132,7 @@ int set_output_actuation_logic(uint8_t logic_no, uint8_t device_no, uint8_t on) 
   MUTEX_LOCK(&mem_mutex);
   device_actuation_logic[logic_no][device_no] = on;
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> set_output_actuation_logic: logic_no=%u,device=%u,on=%u\n",logic_no,device_no,on));
   return 0;
 }
 
@@ -123,6 +141,7 @@ int set_output_instrumentation_trip(uint8_t div, uint8_t channel, uint8_t val) {
   if (!error_instrumentation[div])
     trip_signals[channel][div] = val;
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> set_output_instrumentation_trip: error=%u,div=%u,channel=%u,val=%u\n",error_instrumentation[div], div, channel, val));
   return 0;
 }
 
@@ -131,12 +150,14 @@ int set_actuate_device(uint8_t device_no, uint8_t on)
   MUTEX_LOCK(&mem_mutex);
   actuator_state[device_no] = on;
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> set_actuate_device: dev %u, on %u\n",device_no, on));
   return 0;
 }
 
 int read_instrumentation_command(uint8_t div,
                                  struct instrumentation_command *cmd) {
   struct instrumentation_command *c = inst_command_buf[div];
+  DEBUG_PRINTF(("<common.c> read_instrumentation_command\n"));
   if (c) {
     cmd->type = c->type;
     cmd->cmd = c->cmd;
@@ -149,6 +170,7 @@ int read_instrumentation_command(uint8_t div,
 
 int send_instrumentation_command(uint8_t id,
                                  struct instrumentation_command *cmd) {
+  DEBUG_PRINTF(("<common.c> send_instrumentation_command\n"));
   if (id < 4) {
     inst_command_buf[id] = (struct instrumentation_command *)malloc(sizeof(*inst_command_buf[id]));
     inst_command_buf[id]->type = cmd->type;
@@ -163,6 +185,7 @@ uint8_t is_test_running()
   MUTEX_LOCK(&mem_mutex);
   uint8_t ret = core.test.self_test_running;
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> is_test_running? %u\n",ret));
   return ret;
 }
 
@@ -171,10 +194,12 @@ void set_test_running(int val)
   MUTEX_LOCK(&mem_mutex);
   core.test.self_test_running = val;
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> set_test_running: %i\n",core.test.self_test_running));
 }
 
 uint8_t get_test_device()
 {
+  DEBUG_PRINTF(("<common.c> get_test_device: %u\n",core.test.test_device));
   return core.test.test_device;
 }
 
@@ -182,6 +207,7 @@ void get_test_instrumentation(uint8_t *id)
 {
   id[0] = core.test.test_instrumentation[0];
   id[1] = core.test.test_instrumentation[1];
+  DEBUG_PRINTF(("<common.c> get_test_instrumentation\n"));
 }
 
 int get_instrumentation_test_setpoints(uint8_t id, uint32_t *setpoints)
@@ -189,6 +215,7 @@ int get_instrumentation_test_setpoints(uint8_t id, uint32_t *setpoints)
   setpoints[0] = core.test.test_setpoints[id][0];
   setpoints[1] = core.test.test_setpoints[id][1];
   setpoints[2] = core.test.test_setpoints[id][2];
+  DEBUG_PRINTF(("<common.c> get_instrumentation_test_setpoints\n"));
   return 0;
 }
 
@@ -197,6 +224,7 @@ void set_instrumentation_test_complete(uint8_t div, int v)
   MUTEX_LOCK(&mem_mutex);
   core.test.test_instrumentation_done[div] = v;
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> set_instrumentation_test_complete: div=%u,v=%i\n",div,v));
 }
 
 int is_instrumentation_test_complete(uint8_t id)
@@ -204,6 +232,7 @@ int is_instrumentation_test_complete(uint8_t id)
   MUTEX_LOCK(&mem_mutex);
   int ret = core.test.test_instrumentation_done[id];
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> is_instrumentation_test_complete: id=%u,ret=%i\n",id,ret));
   return ret;
 }
 
@@ -212,6 +241,7 @@ int read_test_instrumentation_channel(uint8_t div, uint8_t channel, uint32_t *va
   MUTEX_LOCK(&mem_mutex);
   *val = core.test.test_inputs[div][channel];
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> read_test_instrumentation_channel: div=%u,channel=%u,val=%u\n",div,channel,*val));
   return 0;
 }
 
@@ -220,6 +250,7 @@ uint8_t get_test_actuation_unit()
   MUTEX_LOCK(&mem_mutex);
   uint8_t ret = core.test.test_actuation_unit;
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> get_test_actuation_unit: %u\n",ret));
   return ret;
 }
 
@@ -228,6 +259,7 @@ void set_actuation_unit_test_complete(uint8_t div, int v)
   MUTEX_LOCK(&mem_mutex);
   core.test.test_actuation_unit_done[div] = v;
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> set_actuation_unit_test_complete: div %u, v=%i\n",div,v));
 }
 
 void set_actuation_unit_test_input_vote(uint8_t id, int v)
@@ -235,6 +267,7 @@ void set_actuation_unit_test_input_vote(uint8_t id, int v)
   MUTEX_LOCK(&mem_mutex);
   core.test.actuation_old_vote = v != 0;
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> set_actuation_unit_test_input_vote: id %u, v=%i\n",id,v));
 }
 
 int is_actuation_unit_test_complete(uint8_t id)
@@ -242,6 +275,7 @@ int is_actuation_unit_test_complete(uint8_t id)
   MUTEX_LOCK(&mem_mutex);
   int ret = core.test.test_actuation_unit_done[id];
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> is_actuation_unit_test_complete: %i\n",ret));
   return ret;
 }
 
@@ -250,6 +284,7 @@ void set_actuate_test_result(uint8_t dev, uint8_t result)
   MUTEX_LOCK(&mem_mutex);
   core.test.test_device_result[dev] = result;
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> set_actuate_test_result: dev %u, result=%u\n",dev,result));
 }
 
 void set_actuate_test_complete(uint8_t dev, int v)
@@ -257,6 +292,7 @@ void set_actuate_test_complete(uint8_t dev, int v)
   MUTEX_LOCK(&mem_mutex);
   core.test.test_device_done[dev] = v;
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> set_actuate_test_complete: dev %u, v=%i\n",dev,v));
 }
 
 int is_actuate_test_complete(uint8_t dev)
@@ -264,5 +300,6 @@ int is_actuate_test_complete(uint8_t dev)
   MUTEX_LOCK(&mem_mutex);
   int ret = core.test.test_device_done[dev];
   MUTEX_UNLOCK(&mem_mutex);
+  DEBUG_PRINTF(("<common.c> is_actuate_test_complete: %i\n",ret));
   return ret;
 }

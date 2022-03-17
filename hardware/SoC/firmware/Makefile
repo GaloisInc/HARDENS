@@ -24,7 +24,7 @@ APP_SRC = syscalls.c \
 	bsp.c printf.c
 
 ifeq ($(PROG),main)
-PROG_SRC = main.c
+PROG_SRC = ../../../src/rv32_main.c
 INCLUDES += -I../../../src/include
 APP_SRC += \
 	../../../src/core.c \

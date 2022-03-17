@@ -2,6 +2,12 @@
 #include "platform.h"
 #include "actuation_logic.h"
 
+#ifdef PLATFORM_HOST
+#include <stdio.h>
+#else
+#include "printf.h"
+#endif
+
 #define VOTE_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
 /*@requires \valid(&trip[0..2][0..3]);

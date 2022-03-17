@@ -126,7 +126,7 @@ module mkNervSoC (NervSoC_IFC);
    * ////////////////////////////////////////////////////////////////
    */
    // Memory size
-   Bit#(30) imemory_size = 'h06000;
+   Bit#(30) imemory_size = 'h060FF;
    Bit#(30) dmemory_size = 'h03000;
 
    // Nerv has Harward architecture (separate data and instruction memory),

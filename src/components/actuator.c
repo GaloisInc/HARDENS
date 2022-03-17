@@ -2,6 +2,12 @@
 #include "actuate.h"
 #include "actuation_logic.h"
 
+#ifdef PLATFORM_HOST
+#include <stdio.h>
+#else
+#include "printf.h"
+#endif
+
 #define w1 uint8_t
 #define w2 uint8_t
 
@@ -14,8 +20,10 @@ int actuate_devices(void)
 {
   int err = 0;
   int do_test = is_test_running() && is_actuation_unit_test_complete(get_test_actuation_unit());
+  DEBUG_PRINTF(("<actuator.c> actuate_devices, do_test = %i\n",do_test));
 
   if (!do_test) {
+    DEBUG_PRINTF(("<actuator.c> actuate_devices: set actuate test complete to FALSE\n"));
     set_actuate_test_complete(0, 0);
     set_actuate_test_complete(1, 0);
   }
@@ -47,6 +55,7 @@ int actuate_devices(void)
     }
 
     // Call out to actuation policy
+    DEBUG_PRINTF(("<actuator.c> actuate_devices: Call out to actuation policy\n"));
     err |= set_actuate_device(d, ActuateActuator(votes));
   }
 

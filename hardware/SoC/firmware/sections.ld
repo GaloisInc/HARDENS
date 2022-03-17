@@ -4,7 +4,7 @@ _HEAP_SIZE = 2K;
 MEMORY
 {
     /* FLASH and RAM must have the same memory origin */
-    FLASH(xr)       : ORIGIN = 0x00000000, LENGTH = 0x006000
+    FLASH(xr)       : ORIGIN = 0x00000000, LENGTH = 0x0060FF
     RAM  (rw)       : ORIGIN = 0x00000000, LENGTH = 0x003000
 }
 

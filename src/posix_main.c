@@ -64,7 +64,9 @@ void update_display() {
     printf("\e[0K");
     printf("%s%s", core.ui.display[line], line == NLINES-1 ? "" : "\n");
   }
-  if (clear_screen()) printf("\e[u");
+  if (clear_screen()) {
+    printf("\e[u");
+  }
 }
 
 int read_rts_command(struct rts_command *cmd) {
@@ -95,8 +97,9 @@ int read_rts_command(struct rts_command *cmd) {
 
   MUTEX_LOCK(&display_mutex);
 
-  if (clear_screen())
-      printf("\e[%d;1H\e[2K> ", NLINES+1);
+  if (clear_screen()) {
+    printf("\e[%d;1H\e[2K> ", NLINES+1);
+  }
 
   MUTEX_UNLOCK(&display_mutex);
 
@@ -311,7 +314,7 @@ uint32_t time_in_s()
   clock_gettime(CLOCK_REALTIME, &tp);
 
   time_t total = tp.tv_sec;
-
+  printf("<posix_main.c> time_in_s: [%u]s\n",(uint32_t)total);
   return (uint32_t)total;
 }
 
@@ -348,6 +351,7 @@ int main(int argc, char **argv) {
     sense_actuate_step_1(&instrumentation[2], &actuation_logic[1]);
 #endif
     update_display();
+    sleep(1);
   }
 
   return 0;

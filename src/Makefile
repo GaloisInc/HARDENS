@@ -71,7 +71,7 @@ EXTRA_SRC=
 ## On the Posix plaform,
 ## Parallel: pthread-based implementation to simulate the concurrency SoC
 ## Sequential:  a single-threaded implementation
-EXECUTION ?= Parallel
+EXECUTION ?= Sequential#Parallel
 
 SRC+=\
   core.c \
