@@ -45,6 +45,12 @@
 #define ACTUATION_REG_GENERATED_TRIP_2 0x0500004C
 #define ACTUATION_REG_GENERATED_RESULT 0x05000050
 
+// 7bit sensor addresses
+#define TEMP_0_I2C_ADDR 0x48
+#define TEMP_1_I2C_ADDR 0x4A
+#define PRESSURE_0_I2C_ADDR 0x60
+#define PRESSURE_1_I2C_ADDR 0x62
+
 /**
  * ////////////////////////////////////////////////////////////////
  * Timing

@@ -23,17 +23,16 @@ extern "C" {
 // Defines for sensor simulation
 // 7bit sensor address
 #define TEMP_0_I2C_ADDR 0x48
-#define TEMP_1_I2C_ADDR 0x49
+#define TEMP_1_I2C_ADDR 0x4A
 #define PRESSURE_0_I2C_ADDR 0x60
 // TODO: the pressure sensor has a fixed address - perhaps use two i2c interfaces?
 // Or get a different second sensor?
-#define PRESSURE_1_I2C_ADDR 0x61
+#define PRESSURE_1_I2C_ADDR 0x62
 
 // Channel/Trip signal IDs
 #define NTRIP 3
-#define TEMPERATURE_IDX 0
-#define PRESSURE_IDX 1
-#define SATURATION_IDX 2
+#define T 0
+#define P 1
 
 // Min max values for sensors
 // TODO fill with realistic values
@@ -65,7 +64,7 @@ extern "C" {
 #endif
 
 #ifndef SENSOR_UPDATE_MS
-#define SENSOR_UPDATE_MS 500
+#define SENSOR_UPDATE_MS 5000
 #endif
 
 // Functions for I/O

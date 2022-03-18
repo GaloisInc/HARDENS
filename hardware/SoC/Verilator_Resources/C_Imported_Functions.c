@@ -119,7 +119,6 @@ uint8_t c_trygetchar (uint8_t  dummy)
 // ================================================================
 // c_putchar()
 // Writes character to stdout
-
 void c_putchar (uint8_t ch)
 {
     printf("%c",ch);
@@ -139,7 +138,7 @@ void c_putchar (uint8_t ch)
 uint32_t sensors[2][2];
 uint8_t c_i2c_request (uint8_t slaveaddr, uint8_t data) {
     static uint8_t data_reg = 0;
-    static uint8_t pointer_reg = 0;
+    static uint8_t pointer_reg = 1;
     static int initialized = 0;
     static uint32_t last_update = 0;
     static uint32_t last[2][2] = {0};
@@ -151,51 +150,58 @@ uint8_t c_i2c_request (uint8_t slaveaddr, uint8_t data) {
 
     if (!initialized) {
         last_update = t;
-        last[0][TEMPERATURE_IDX] = T0;
-        last[1][TEMPERATURE_IDX] = T0;
-        last[0][PRESSURE_IDX] = P0;
-        last[1][PRESSURE_IDX] = P0;
+        last[0][T] = T0;
+        last[1][T] = T0;
+        last[0][P] = P0;
+        last[1][P] = P0;
+        sensors[0][T] = last[0][T];
+        sensors[1][T] = last[1][T];
+        sensors[0][P] = last[0][P];
+        sensors[1][P] = last[1][P];
         initialized = 1;
     } else if (t - t0 > SENSOR_UPDATE_MS) {
         for (int s = 0; s < 2; ++s) {
-        last[s][TEMPERATURE_IDX] += (rand() % 7) - 3 + T_BIAS;
-        // Temp sensor resolution is -25..85C
-        last[s][TEMPERATURE_IDX] = min(last[s][TEMPERATURE_IDX], TEMPERATURE_MAX_C);
-        last[s][TEMPERATURE_IDX] = max(last[s][TEMPERATURE_IDX], TEMPERATURE_MIN_C);
-
-        last[s][PRESSURE_IDX] += (rand() % 7) - 3 + P_BIAS;
+        last[s][T] += (rand() % 3) - 1;
+        // TODO: Temp sensor resolution is -25..85C
         // Don't stray too far from our steam table
-        last[s][PRESSURE_IDX] = min(last[s][PRESSURE_IDX], PRESSURE_MAX_P);
-        last[s][PRESSURE_IDX] = max(last[s][PRESSURE_IDX], PRESSURE_MIN_P);
+        last[s][T] = min(last[s][T], 300);
+        last[s][T] = max(last[s][T], 25);
+
+        last[s][P] += (rand() % 7) - 3 + P_BIAS;
+        // Don't stray too far from our steam table
+        last[s][P] = min(last[s][P], 5775200);
+        last[s][P] = max(last[s][P], 8000);
         }
+        last_update = t;
     }
-    sensors[0][TEMPERATURE_IDX] = last[0][TEMPERATURE_IDX];
-    sensors[1][TEMPERATURE_IDX] = last[1][TEMPERATURE_IDX];
-    sensors[0][PRESSURE_IDX] = last[0][PRESSURE_IDX];
-    sensors[1][PRESSURE_IDX] = last[1][PRESSURE_IDX];
+    // Smooth the transitions
+    sensors[0][T] = last[0][T];
+    sensors[1][T] = last[1][T];
+    sensors[0][P] = last[0][P];
+    sensors[1][P] = last[1][P];
 
     if (slaveaddr & 0x1) {
         // Write request
-        data_reg = data;
-        pointer_reg = data % 2;
+        pointer_reg = data % 4;
+        data_reg = pointer_reg;
     } else {
         // Read request, use 7bit addressing
         uint8_t dev_addr = slaveaddr >> 1;
         switch (dev_addr) {
             case TEMP_0_I2C_ADDR:
-                data_reg = (uint8_t)(sensors[0][TEMPERATURE_IDX] >> pointer_reg*8);
+                data_reg = (uint8_t)(sensors[0][T] >> pointer_reg*8);
                 break;
             case TEMP_1_I2C_ADDR:
-                data_reg = (uint8_t)(sensors[1][TEMPERATURE_IDX] >> pointer_reg*8);
+                data_reg = (uint8_t)(sensors[1][T] >> pointer_reg*8);
                 break;
             case PRESSURE_0_I2C_ADDR:
-                data_reg = (uint8_t)(sensors[0][PRESSURE_IDX] >> pointer_reg*8);
+                data_reg = (uint8_t)(sensors[0][P] >> pointer_reg*8);
                 break;
             case PRESSURE_1_I2C_ADDR:
-                data_reg = (uint8_t)(sensors[1][PRESSURE_IDX] >> pointer_reg*8);
+                data_reg = (uint8_t)(sensors[1][P] >> pointer_reg*8);
                 break;
             default:
-                data = 0;
+                data_reg = 0xAA;
                 break;
         }
 

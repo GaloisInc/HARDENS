@@ -257,7 +257,7 @@ module mkNervSoC (NervSoC_IFC);
                else
                begin
                   // Write to rg_i2c_data
-                  rg_i2c_data <= ((rg_i2c_data & (~ mask)) | (wdata & mask));
+                  rg_i2c_data <= wdata;//((rg_i2c_data & (~ mask)) | (wdata & mask));
                end
             end
          i2c_reg_addr_stat:
@@ -523,6 +523,7 @@ module mkNervSoC (NervSoC_IFC);
                slaveaddr: rg_i2c_addr[7:1],
                data: rg_i2c_data[7:0]
             };
+         rg_i2c_transaction_ready <= False;
          return r;
       end
    endmethod

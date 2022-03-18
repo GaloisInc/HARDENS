@@ -235,6 +235,7 @@ int update_sensor_simulation(void) {
       last[s][P] = min(last[s][P], 5775200);
       last[s][P] = max(last[s][P], 8000);
     }
+    last_update = t;
   }
   sensors[0][T] = last[0][T];
   sensors[1][T] = last[1][T];
@@ -244,7 +245,6 @@ int update_sensor_simulation(void) {
   return 0;
 }
 
-// NOTE: This will be different for SoC impl run
 void update_sensors(void) {
   update_sensor_errors();
 #ifdef SIMULATE_SENSORS

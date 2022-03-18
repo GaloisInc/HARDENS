@@ -69,9 +69,56 @@ int read_rts_command(struct rts_command *cmd)
   return ok;
 }
 
+uint32_t get_sensor_data(uint8_t sensor_addr)
+{
+  uint32_t data = 0;
+  uint32_t addr = 0;
+  uint32_t result = 0;
+  uint8_t intermidiate = 0;
+
+  // run 4 times to get all 32bits of uint32_t value
+  for (uint8_t i = 0; i < 4; i++)
+  {
+    data = i;
+    // Set data pointer reg
+    write_reg(I2C_REG_DATA, data);
+    // Set write addr
+    addr = (sensor_addr << 1) | 0x1;
+    write_reg(I2C_REG_ADDR, addr);
+    // Wait for transaction to finish
+    while (read_reg(I2C_REG_STATUS) != 1) {
+      ;;
+    }
+    // Set read addr
+    addr = (sensor_addr << 1);
+    write_reg(I2C_REG_ADDR, addr);
+    // Wait for transaction to finish
+    while (read_reg(I2C_REG_STATUS) != 1) {
+      ;;
+    }
+    // Update the result
+    intermidiate = read_reg(I2C_REG_DATA);
+    result = result | ( intermidiate << i*8);
+  }
+  return result;
+}
+
 void update_sensors(void)
 {
-  // TODO
+  uint32_t val0, val1;
+  val0 = get_sensor_data(TEMP_0_I2C_ADDR);
+  val1 = get_sensor_data(TEMP_1_I2C_ADDR);
+  sensors_demux[0][T][0] = val0;
+  sensors_demux[0][T][1] = val1;
+  sensors_demux[1][T][0] = val0;
+  sensors_demux[1][T][1] = val1;
+
+  val0 = get_sensor_data(PRESSURE_0_I2C_ADDR);
+  val1 = get_sensor_data(PRESSURE_1_I2C_ADDR);
+  sensors_demux[0][P][0] = val0;
+  sensors_demux[0][P][1] = val1;
+  sensors_demux[1][P][0] = val0;
+  sensors_demux[1][P][1] = val1;
 }
 
 /**
@@ -133,7 +180,7 @@ int main(void)
   char line[256];
   while (1)
   {
-    //update_sensors();
+    update_sensors();
     sprintf(line, "HW ACTUATORS 0x%X", read_reg(GPIO_REG));
     set_display_line(&core.ui, 8, line, 0);
     int retval = core_step(&core);
