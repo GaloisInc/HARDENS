@@ -442,7 +442,7 @@ module mkNervSoC (NervSoC_IFC);
                else
                   begin
                      // Actuate D1
-                     rg_actuation_res <= signExtend( pack(actuation_gen.d0.actuate_d0(trips, old)) );
+                     rg_actuation_res <= signExtend( pack(actuation_gen.d1.actuate_d1(trips, old)) );
                   end
             end
          actuation_reg_addr_gen_trip_0:

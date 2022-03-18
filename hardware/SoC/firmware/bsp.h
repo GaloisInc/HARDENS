@@ -28,7 +28,7 @@
 #define INSTRUMENTATION_HANDWRITTEN_REG_SETPOINT_VAL_0 0x05000010
 #define INSTRUMENTATION_HANDWRITTEN_REG_SETPOINT_VAL_1 0x05000014
 #define INSTRUMENTATION_HANDWRITTEN_REG_SETPOINT_VAL_2 0x05000018
-#define INSTRUMENTATION_HANDWRITTEN_REG_RESPONSE 0x0500001C
+#define INSTRUMENTATION_HANDWRITTEN_REG_RESULT 0x0500001C
 
 #define INSTRUMENTATION_GENERATED_REG_BASE 0x05000020
 #define INSTRUMENTATION_GENERATED_REG_INSTR_VAL_0 0x05000024
@@ -69,5 +69,11 @@ uint8_t soc_getchar(void);
 uint32_t i2c_read(uint8_t addr, uint32_t data);
 uint32_t time_in_s(void);
 uint32_t time_in_ms(void);
+
+// Read from a register
+uint32_t read_reg(uint32_t reg);
+
+// Write `val` to `reg`
+void write_reg(uint32_t reg, uint32_t val);
 
 #endif // BSP_H_

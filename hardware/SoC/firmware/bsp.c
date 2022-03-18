@@ -27,7 +27,6 @@ uint32_t i2c_read(uint8_t addr, uint32_t data_tx)
 uint32_t time_in_s(void)
 {
   uint32_t t_s = time_in_ms()/1000;
-  printf("<bsp.c> time_in_s: [%u]s\n",t_s);
   return t_s;
 }
 
@@ -68,3 +67,16 @@ uint8_t soc_getchar(void)
   return 0;
 }
 
+// Read from a register
+uint32_t read_reg(uint32_t reg)
+{
+  uint32_t *p = (void*)reg;
+  return *p;
+}
+
+// Write `val` to `reg`
+void write_reg(uint32_t reg, uint32_t val)
+{
+  uint32_t *p = (void*)reg;
+  *p = val;
+}

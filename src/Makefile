@@ -95,7 +95,6 @@ CFLAGS += -DPLATFORM_HOST
 
 CC ?= clang
 CXX ?= clang++
-HW ?= Simulated
 
 SENSORS ?=
 # Simulated sensor parameters:
@@ -112,12 +111,10 @@ P_THRESHOLD ?= 100 # (10^-5 lb/in^2)
 CFLAGS += -DT_THRESHOLD=$(T_THRESHOLD)
 CFLAGS += -DP_THRESHOLD=$(P_THRESHOLD)
 
-ifeq ($(HW),Simulated)
-CFLAGS += -DHW_SIMULATOR -I$(VERILATED_INC) -Wno-deprecated
+CFLAGS += -I$(VERILATED_INC) -Wno-deprecated
 CC = $(CXX)
 SRC += $(SV_LIBS)
 EXTRA_SRC += $(VERILATED_SRC)
-endif
 
 ifeq ($(SENSORS),Simulated)
 CFLAGS += -DSIMULATE_SENSORS -DT_BIAS=$(T_BIAS) -DP_BIAS=$(P_BIAS)
@@ -134,7 +131,7 @@ ifneq ($(SELF_TEST_PERIOD_SEC),)
 CFLAGS += -DSELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC)
 endif
 
-BUILD_MSG = BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) SELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC)
+BUILD_MSG = BUILD CC=$(CC) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) SELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC)
 
 .PHONY: all rts clean linux macos proof generate_sources generate_c generate_sv self_test_data/tests.inc.c
 

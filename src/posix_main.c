@@ -310,11 +310,16 @@ void* start1(void *arg) {
 
 uint32_t time_in_s()
 {
+  static time_t start_time = 0;
   struct timespec tp;
   clock_gettime(CLOCK_REALTIME, &tp);
-
-  time_t total = tp.tv_sec;
-  printf("<posix_main.c> time_in_s: [%u]s\n",(uint32_t)total);
+  if (start_time == 0) {
+    start_time = tp.tv_sec;
+  }
+  time_t total = tp.tv_sec - start_time;
+  char line[256];
+  sprintf(line, "Uptime: [%u]s\n",(uint32_t)total);
+  set_display_line(&core.ui, 9, line, 0);
   return (uint32_t)total;
 }
 

@@ -35,6 +35,9 @@ APP_SRC += \
 	../../../src/variants/actuator_generated_C.c \
 	../../../src/variants/instrumentation_handwritten_C.c \
 	../../../src/variants/saturation_generated_C.c \
+	../../../src/variants/actuation_unit_generated_SystemVerilog.c \
+	../../../src/variants/instrumentation_handwritten_SystemVerilog.c \
+	../../../src/variants/instrumentation_generated_SystemVerilog.c \
 	../../../src/variants/instrumentation_generated_C.c
 else
 PROG_SRC = firmware.c

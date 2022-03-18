@@ -16,21 +16,27 @@
 #include "actuation_logic.h"
 #include "sense_actuate.h"
 #include "platform.h"
+#include "actuation_logic.h"
 
 extern struct instrumentation_state instrumentation[4];
 
-// GPIO access
-volatile uint32_t *gpio = (void*)GPIO_REG;
+#define CLEAN_SCREEN 1
 
 void update_display()
 {
+#if CLEAN_SCREEN
   // This starts printing from the top of the screen
   printf("\e[s\e[1;1H");//\e[2J");
+#endif
   for (int line = 0; line < NLINES; ++line) {
+#if CLEAN_SCREEN
     printf("\e[0K");
+#endif
     printf("%s%s", core.ui.display[line], line == NLINES-1 ? "" : "\n");
   }
+#if CLEAN_SCREEN
   printf("\e[u");
+#endif
 }
 
 int read_rts_command(struct rts_command *cmd)
@@ -45,7 +51,9 @@ int read_rts_command(struct rts_command *cmd)
   //   }
   // }
   // printf("You entered: %s\n",line);
+#if CLEAN_SCREEN
   printf("\e[%d;1H\e[2K> ", NLINES+1);
+#endif
 
   //printf("read_rts_command\n");
   static uint8_t dev = 0;
@@ -73,7 +81,7 @@ void update_sensors(void)
 int read_actuation_command(uint8_t id, struct actuation_command *cmd) {
   // TODO: what is cmd->device for?
   cmd->device = id;
-  cmd->on = *gpio & (id+1);
+  cmd->on = (uint8_t) (read_reg(GPIO_REG) & (id+1));
   DEBUG_PRINTF(("<main.c> read_actuation_command: cmd->device=%u, cmd->on=%u\n",cmd->device,cmd->on));
   return 1;
 }
@@ -87,7 +95,7 @@ int send_actuation_command(uint8_t id, struct actuation_command *cmd)
   DEBUG_PRINTF(("<main.c> send_actuation_command, id=%u, cmd->device=%u, cmd->on=%u\n",id,cmd->device,cmd->on));
   // TODO: what is cmd->device for?
   if ((id < 2) && (cmd->on < 2) ) {
-    uint32_t gpio_val = *gpio;
+    uint32_t gpio_val = read_reg(GPIO_REG);
     if (id == 0) {
       // Set the actuator bit to zero
       gpio_val = gpio_val & 0xFFFFFFFE;
@@ -102,39 +110,19 @@ int send_actuation_command(uint8_t id, struct actuation_command *cmd)
       // Bit shift by one left
       gpio_val = gpio_val | (cmd->on << 1);
     }
-    *gpio = gpio_val;
+    write_reg(GPIO_REG, gpio_val);
     return 0;
   }
   return -1;
 }
 
-// Verilog implemented module handlers
-// int instrumentation_step_handwritten_SystemVerilog(uint8_t div, struct instrumentation_state *state)
-// {
-//   // TODO
-//   printf("instrumentation_step_handwritten_SystemVerilog\n");
-//   return instrumentation_step(div,state);
-// }
-
-// int instrumentation_step_generated_SystemVerilog(uint8_t div, struct instrumentation_state *state)
-// {
-//   // TODO
-//   printf("instrumentation_step_generated_SystemVerilog\n");
-//   return instrumentation_step(div,state);
-// }
-
-// int actuation_unit_step_generated_SystemVerilog(uint8_t logic_no, struct actuation_logic *state)
-// {
-//   // TODO
-//   printf("actuation_unit_step_generated_SystemVerilog\n");
-//   return actuation_unit_step(logic_no, state);
-// }
-
 int main(void)
 {
+#if CLEAN_SCREEN
   // Prep the screen
   printf("\e[1;1H\e[2J");
   printf("\e[%d;3H\e[2K> ", NLINES+1);
+#endif
 
   struct rts_command *cmd = (struct rts_command *)malloc(sizeof(*cmd));
   core_init(&core);
@@ -142,11 +130,17 @@ int main(void)
   sense_actuate_init(0, &instrumentation[0], &actuation_logic[0]);
   sense_actuate_init(1, &instrumentation[0], &actuation_logic[0]);
 
+  char line[256];
   while (1)
   {
     //update_sensors();
+    sprintf(line, "HW ACTUATORS 0x%X", read_reg(GPIO_REG));
+    set_display_line(&core.ui, 8, line, 0);
     int retval = core_step(&core);
     DEBUG_PRINTF(("<main.c> core_step= 0x%X\n",retval));
+    char line[256];
+    sprintf(line, "Uptime: [%u]s\n",time_in_s());
+    set_display_line(&core.ui, 9, line, 0);
     update_display();
     sense_actuate_step_0(&instrumentation[0], &actuation_logic[0]);
     sense_actuate_step_1(&instrumentation[2], &actuation_logic[1]);
