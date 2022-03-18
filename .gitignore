@@ -7,7 +7,7 @@
 *.elf
 *.asm
 .vscode
-src/generated/SystemVerilog/verilator/
+src/generated/
 src/handwritten/SystemVerilog/verilator/
 src/self_test_data/
 src/rts
