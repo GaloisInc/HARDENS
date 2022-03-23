@@ -88,6 +88,7 @@ SRC+=\
   components/instrumentation_common.c
 
 WARNINGS = -Wno-shift-count-overflow -Wpointer-arith -Wcast-align -Werror
+WARNINGS += -Wno-shift-op-parentheses # Due to `crymp`
 CFLAGS=-Iinclude -g $(WARNINGS)
 
 SRC+=posix_main.c
