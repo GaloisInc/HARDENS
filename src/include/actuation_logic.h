@@ -32,6 +32,8 @@ struct actuation_logic {
     uint8_t manual_actuate[NDEV];
 };
 
+extern struct actuation_logic actuation_logic[2];
+
 /* The main logic of the actuation unit */
 
 /*@requires \valid(state);

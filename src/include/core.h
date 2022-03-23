@@ -56,6 +56,8 @@ struct core_state {
   uint8_t error;
 };
 
+extern struct core_state core;
+
 int set_display_line(struct ui_values *ui, uint8_t line_number, char *display, uint32_t size);
 
 void core_init(struct core_state *core);

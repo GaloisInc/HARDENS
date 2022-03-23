@@ -7,10 +7,6 @@
 #include "instrumentation.h"
 #include "actuation_logic.h"
 
-extern struct core_state core;
-//extern struct instrumentation_state instrumentation[4];
-extern struct actuation_logic actuation_logic[2];
-
 // channel -> sensor # -> val
 extern uint32_t sensors[2][2];
 // channel -> sensor # -> demux output # -> val
