@@ -8,7 +8,7 @@
 # General Config
 ######################################
 # Which platform: Posix or RV32_bare_metal
-PLATFORM ?= RV32_bare_metal
+PLATFORM ?= Posix
 
 ######################################
 # Config for Posix only:
@@ -90,4 +90,7 @@ docs:   README.pdf Assurance.pdf Toolchain.pdf
 
 docs_clean:
 	rm -f README.pdf Assurance.pdf Toolchain.pdf
+
+check:
+	make -C models
 

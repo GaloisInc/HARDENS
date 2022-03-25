@@ -171,21 +171,6 @@ clean:
 	rm -f ${SV_GEN_DIR}/*.sv
 	rm -f bottom.o rts_bottom
 
-rts.posix: ${OBJ} ${POSIX_OBJ}
-	clang -fsanitize=address,undefined -g ${CFLAGS} $^ -o rts.posix
-
-# @review kiniry Why aren't these non-phony rules, a la `rts.linux` and `rts.macos`?
-
-linux: rts.posix
-	mv rts.posix rts.linux
-
-macos: rts.posix
-	mv rts.posix rts.macos
-
-proof: ${GEN_ACTUATION_UNIT_GEN} ${GEN_INSTRUMENTATION_INC}
-	clang -g -emit-llvm -c ${GEN_ACTUATION_UNIT_C} -o ${C_GEN_DIR}/vote.bc
-	clang -g -emit-llvm -c ${GEN_INSTRUMENTATION_C} -o ${C_GEN_DIR}/step_trip_signals.bc
-
 components/%.generated.C.o: components/%.c
 	clang ${CFLAGS} -DSRC=generated -DLANG=C $< -c -o $@
 
