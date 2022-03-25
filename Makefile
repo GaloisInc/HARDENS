@@ -81,3 +81,13 @@ $(info Unsupported platform!)
 endif # PLATFORM=RV32_bare_metal ?
 endif # PLATFORM=posix ?
 
+.PHONY: rts all clean docs_clean
+
+docs:   README.pdf Assurance.pdf Toolchain.pdf
+
+%.pdf: %.md
+	pandoc -f markdown -t latex -o `basename $< .md`.pdf $<
+
+docs_clean:
+	rm -f README.pdf Assurance.pdf Toolchain.pdf
+

@@ -1,4 +1,6 @@
-# Executable Behavioral Specification 
+# Executable Behavioral Specification
+
+## Alex Bakst, November 2021--February 2022
 
 This directory contains the executable behavioral model, implemented in Cryptol,
 which refines the formal specification given by the domain model, requirements,

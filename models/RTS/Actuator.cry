@@ -1,3 +1,13 @@
+// HARDENS Reactor Trip System (RTS) Actuator Unit
+// A formal model of RTS Actuator behavior written in the Cryptol
+// DSL.
+//
+// @author Alex Bakst <abakst@galois.com>
+// @created November, 2021
+// @refines HARDENS.sysml
+// @refines RTS.lando
+// @refines RTS_Requirements.json
+
 module RTS::Actuator where
 
 type Actuation = Bit
@@ -12,7 +22,7 @@ type Actuator =
   }
 
 SetInput: Actuation -> Actuator -> Actuator
-SetInput on actuator = {actuator| input = on }
+SetInput on actuator = {actuator | input = on }
 
 SetManual: Actuation -> Actuator -> Actuator
 SetManual on actuator = {actuator | manualActuatorInput = on}

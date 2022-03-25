@@ -1,12 +1,19 @@
+/*
+ # Reactor Trip System (RTS) High-assurance Demonstrator
+ ## project: High Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS)
+ ### copyright (C) 2021-2022 Galois
+ ### author: Joe Kiniry <kiniry@galois.com>
+*/
+
+// @see https://github.com/GaloisInc/HARDENS/issues/30
+
 package id Glossary 'Project Glossary' {
   // @design Eliminate all redundancy with concepts in KerML or SysML domain 
   // libraries.
   private import ScalarValues::*;
   private import KerML::*;
 
-  item def id NRC 'Nuclear Regulatory Commission';
-  // @todo kiniry Make this more specific to the characteristics of this project.
-  item def 'NRC Certification Regulations';
+  // Original proposal glossary.
   part def BlueCheck;
   /** A formal, state-based specification language that focuses on the
       specification of the interfaces of discrete modules in a system, and
@@ -277,4 +284,7 @@ package id Glossary 'Project Glossary' {
   abstract part def id Bitstream 'FPGA Bitstream' {
     attribute proprietary_flow: Boolean;
   }
+  
+  // NRC concepts.
+  abstract part def 'NRC Certifcation Regulations';
 }

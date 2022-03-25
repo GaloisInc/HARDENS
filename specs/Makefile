@@ -15,6 +15,7 @@ validate_lando:
 	lando validate instrumentation.lando
 	lando validate project_requirements.lando
 	lando validate requirements.lando
+	lando validate scenarios.lando
 	lando validate test_scenarios.lando
 	lando validate tool_scenarios.lando
 

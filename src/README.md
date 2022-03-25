@@ -60,6 +60,53 @@ Channels are always coded `0` for temperature, `1` for pressure, `2` for saturat
 - `D`: force the display to update
 - `Q`: quit
 
+## Display
+
+The display will look something like the following:
+
+``` sh
+#I 0 (M): T[         0 B 0] P[         0 B 0] S[     -9998 B 1]
+#I 1 (M): T[         0 B 1] P[         0 B 1] S[     -9998 B 1]
+#I 2 (M): T[         0 B 0] P[         0 B 1] S[     -9998 B 1]
+#I 3 (M): T[         0 B 0] P[         0 B 0] S[     -9998 B 1]
+
+#A 0 [9 8]
+#A 1 [0 0]
+
+HW ACTUATORS OFF OFF
+
+
+
+
+
+SENSORS OK
+SELF TEST:     RUNNING
+LAST TEST: PASS
+```
+
+The first four lines display information about each of the four instrumentation units:
+
+- `#I <number>` identifies which unit
+- `(<M or _>)` indicates the unit is in maintenance (`M`), or not (`_`).
+- `<T or P or S>[ <number> <O or B or T> <byte> ]` is a channel reading:
+   - `T`, `P`, `S` for temperature, pressure, and saturation margin
+   - `<number>` is the sensor (or computed) reading: degrees F for `T`, 10^-5 lb/in^2 for `P` and `S`
+   - `O`=normal mode, `B`=bypass, `T`=trip mode
+   - The `<byte>` value's LSB indicates a signal trip if set. The MSB indicates if this is a monitored test signal.
+ 
+The Two `#A` lines indicate the actuation unit output signals:
+
+- `#A <number> [<byte> <byte>]` indicates the state for actuation unit
+  `<number>`. The two byte values indicate the voting logic output for each
+  device. The LSB indicates a vote to actuate if set, the MSB indicates if this
+  is a monitored test signal.
+
+Other output:
+- `HW ACTUATORS <ON or OFF> <ON or OFF>` indicate the state of the HW actuators.
+- `SENSORS <state>` indicate if sensors readings appear to diverge more than some configured threshold (see `T_THRESHOLD`,`P_THRESHOLD`).
+- `SELF TEST: <state>` indicates whether or not self test is currently running
+- `LAST TEST: <state>` indicates the result of the last self test.
+
 ### Simulation Targets
 
 The `Makefile` in this directory can generate simulation builds of the `RTS`
