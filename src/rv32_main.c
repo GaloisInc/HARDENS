@@ -126,7 +126,6 @@ void update_sensors(void)
  * Platform specific
  */
 int read_actuation_command(uint8_t id, struct actuation_command *cmd) {
-  // TODO: what is cmd->device for?
   cmd->device = id;
   cmd->on = (uint8_t) (read_reg(GPIO_REG) & (id+1));
   DEBUG_PRINTF(("<main.c> read_actuation_command: cmd->device=%u, cmd->on=%u\n",cmd->device,cmd->on));
@@ -140,7 +139,6 @@ int read_actuation_command(uint8_t id, struct actuation_command *cmd) {
 int send_actuation_command(uint8_t id, struct actuation_command *cmd)
 {
   DEBUG_PRINTF(("<main.c> send_actuation_command, id=%u, cmd->device=%u, cmd->on=%u\n",id,cmd->device,cmd->on));
-  // TODO: what is cmd->device for?
   if ((id < 2) && (cmd->on < 2) ) {
     uint32_t gpio_val = read_reg(GPIO_REG);
     if (id == 0) {
@@ -173,7 +171,6 @@ int main(void)
 
   struct rts_command *cmd = (struct rts_command *)malloc(sizeof(*cmd));
   core_init(&core);
-  // TODO: core_id is unused?
   sense_actuate_init(0, &instrumentation[0], &actuation_logic[0]);
   sense_actuate_init(1, &instrumentation[0], &actuation_logic[0]);
 

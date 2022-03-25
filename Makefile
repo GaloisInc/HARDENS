@@ -93,4 +93,5 @@ docs_clean:
 
 check:
 	make -C models
+	make -C saw
 

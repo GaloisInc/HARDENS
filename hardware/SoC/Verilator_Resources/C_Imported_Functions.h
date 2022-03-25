@@ -20,14 +20,7 @@
 extern "C" {
 #endif
 
-// Defines for sensor simulation
-// 7bit sensor address
-#define TEMP_0_I2C_ADDR 0x48
-#define TEMP_1_I2C_ADDR 0x4A
-#define PRESSURE_0_I2C_ADDR 0x60
-// TODO: the pressure sensor has a fixed address - perhaps use two i2c interfaces?
-// Or get a different second sensor?
-#define PRESSURE_1_I2C_ADDR 0x62
+#include "../firmware/sensors.h"
 
 // Channel/Trip signal IDs
 #define NTRIP 3
@@ -35,7 +28,7 @@ extern "C" {
 #define P 1
 
 // Min max values for sensors
-// TODO fill with realistic values
+// TODO @podhrmic fill with realistic values for ambient room temperature
 #define TEMPERATURE_MIN_C 0 // for simplicity, assume no negative temps
 #define TEMPERATURE_MAX_C 85
 #define PRESSURE_MIN_P 8000

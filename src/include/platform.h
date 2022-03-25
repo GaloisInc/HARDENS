@@ -183,11 +183,6 @@ uint8_t get_test_device(void);
 */
 void get_test_instrumentation(uint8_t *id);
 
-/*@ assigns \nothing;
-*/
-// NOTE: this is actually never used (only in `bottom.c`)
-int is_instrumentation_under_test(uint8_t id);
-
 /*@ requires \valid(setpoints + (0.. NTRIP-1));
   @ requires id < NINSTR;
   @ assigns setpoints[0.. NTRIP-1];

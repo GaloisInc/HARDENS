@@ -24,11 +24,9 @@ struct actuation_command *act_command_buf[2];
 #define min(_a, _b) ((_a) < (_b) ? (_a) : (_b))
 #define max(_a, _b) ((_a) > (_b) ? (_a) : (_b))
 
-#ifdef PLATFORM_HOST
 #include <pthread.h>
 pthread_mutex_t display_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mem_mutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
 
 #ifndef T0
 #define T0 200

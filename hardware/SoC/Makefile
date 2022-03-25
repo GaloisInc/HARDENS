@@ -155,6 +155,7 @@ exe: verilator
 	@echo INFO: Finished Verilator Simulation
 
 # ================================================================
+# TODO @podhrmic Define CORE_FREQ and TICKS_TO_MS_MULTIPLIER for the FPGA
 
 SYNTH_DIR = test
 design.json: verilator
