@@ -1,8 +1,8 @@
 #ifndef INSTRUMENTATION_H_
 #define INSTRUMENTATION_H_
 
-#include "platform.h"
 #include "common.h"
+#include "core.h"
 #include "models.acsl"
 
 #define ShouldTrip(_vals, _setpoints, _ch) \

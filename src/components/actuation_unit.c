@@ -64,8 +64,10 @@ actuate_device(uint8_t device, uint8_t trips[3][4], int old)
         res = Actuate_D1(trips, old);
     }
     DEBUG_PRINTF(("<actuation_unit.c> actuate_device: device=0x%X, old=0x%X, out=0x%X,trips=[\n", device, old, res));
+    /*@ loop assigns i; */
     for (int i = 0; i < 3; ++i) {
         DEBUG_PRINTF(("["));
+        /*@ loop assigns div; */
         for (int div = 0; div < 4; ++div) {
         DEBUG_PRINTF(("%u,",trips[i][div]));
         }
