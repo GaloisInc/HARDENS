@@ -336,3 +336,39 @@ General purpose button `SW4` is connected to `P4`
 * MOSFET power control kit: https://www.sparkfun.com/products/12959
 * 12 V Latch solenoid: https://www.sparkfun.com/products/15324
 * Pressure sensor: https://www.sparkfun.com/products/11084
+
+## Slide Deck
+
+The HARDENS slide deck is meant to fully characterize the RTS
+demonstrator and also, in tandem, explain the concepts, technologies,
+and tools of model-driven engineering in the large.  This means that
+we will be reviewing technologies that are used in the project as well
+as those that are commonly used for MDE for hardware, firmware,
+software, systems, safety, and security engineering.  Tools reviewed
+will include 
+
+## Final Report
+
+Our final report for HARDENS must have the following characteristics:
+ 1. [ ] it must be well-suited to fit into the document-centric
+        certification process used by the NRC and other similar
+        government agencies,
+ 2. [ ] it must completely describe the framing for the project, the
+        technical work, the safety and correctness assurance case of
+        the RTS demonstrator, and the manner in which the document can
+        be read, the R&D can/should be reviewed, etc.
+ 3. [ ] It must include all formal specifications and assurance
+        artifacts as nicely typeset, hyper-textual cross-referenced
+        appendix chapters.
+
+In order to fulfill (1) above, the final report must be both:
+ 1. [ ] a polished, high-quality, hyperlinked HTML webpage, or set of
+        webpages that compile into a single webpage, that contains the
+        entire report, includes its technical appendices, and
+ 2. [ ] a polished, high-quality, hyperlinked PDF document that can be
+        printed on paper and, in that form, it just as easy to read
+        front-to-back and to follow cross-references therein.
+
+In order to help certification actors review a model-based system and
+its assurance case, we intend to provide a chapter in the report that
+characterizes a workflow and set of best practices for such a review.
