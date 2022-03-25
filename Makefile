@@ -26,7 +26,7 @@ SENSORS ?=
 # Config for RV32_bare_metal only
 ######################################
 # Virtual or LFE5UM5G_85F_EVN
-DEV_BOARD ?= LFE5UM5G_85F_EVN
+DEV_BOARD ?= Virtual
 
 ######################################
 #

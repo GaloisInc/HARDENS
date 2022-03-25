@@ -41,7 +41,7 @@ void update_display()
 
 int read_rts_command(struct rts_command *cmd)
 {
-  // TODO: make conditional on self-test *not* running
+  // @todo podhrmic: make conditional on self-test *not* running
   // printf("Enter command and press enter:\n");
   // char line[256] = {0};
   // for (uint i = 0; i < sizeof(line); i++) {
@@ -64,7 +64,7 @@ int read_rts_command(struct rts_command *cmd)
   cmd->cmd.act.on = on;
 
   int ok = 0;
-  // TODO: sscanf blows up the binary size
+  // @todo podhrmic sscanf blows up the binary size
   // hand crafted alternative needed
   return ok;
 }
