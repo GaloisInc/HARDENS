@@ -68,16 +68,14 @@ VERILATOR_SHIM_OBJS=\
 SRC=
 EXTRA_SRC=
 
-## Are we running on a (POSIX) Host or the SoC
-PLATFORM ?= Host
-
-## On the Host plaform,
+## On the Posix plaform,
 ## Parallel: pthread-based implementation to simulate the concurrency SoC
 ## Sequential:  a single-threaded implementation
-EXECUTION ?= Parallel
+EXECUTION ?= Sequential#Parallel
 
 SRC+=\
   core.c \
+  common.c \
   sense_actuate.c \
   variants/actuation_unit_generated_C.c \
   variants/actuation_unit_generated_SystemVerilog.c \
@@ -89,17 +87,17 @@ SRC+=\
   variants/saturation_generated_C.c \
   components/instrumentation_common.c
 
-ifeq ($(PLATFORM),Host)
-SRC+=posix_main.c
-endif
+WARNINGS = -Wno-shift-count-overflow -Wpointer-arith -Wcast-align -Werror
+WARNINGS += -Wno-shift-op-parentheses # Due to `crymp`
+CFLAGS=-Iinclude -g $(WARNINGS)
 
-CFLAGS=-Iinclude -g -Wno-shift-op-parentheses -Wno-shift-count-overflow
+SRC+=posix_main.c
+CFLAGS += -DPLATFORM_HOST
 
 CC ?= clang
 CXX ?= clang++
-HW ?= Simulated
 
-SENSORS ?=
+SENSORS ?=Simulated
 # Simulated sensor parameters:
 T0 ?= 200 # Initial temperature reading (deg. F)
 P0 ?= 1152600 # Initial pressure reading (10^-5 lb/in^2)
@@ -114,12 +112,10 @@ P_THRESHOLD ?= 100 # (10^-5 lb/in^2)
 CFLAGS += -DT_THRESHOLD=$(T_THRESHOLD)
 CFLAGS += -DP_THRESHOLD=$(P_THRESHOLD)
 
-ifeq ($(HW),Simulated)
-CFLAGS += -DHW_SIMULATOR -I$(VERILATED_INC) -Wno-deprecated
+CFLAGS += -I$(VERILATED_INC) -Wno-deprecated
 CC = $(CXX)
 SRC += $(SV_LIBS)
 EXTRA_SRC += $(VERILATED_SRC)
-endif
 
 ifeq ($(SENSORS),Simulated)
 CFLAGS += -DSIMULATE_SENSORS -DT_BIAS=$(T_BIAS) -DP_BIAS=$(P_BIAS)
@@ -136,7 +132,7 @@ ifneq ($(SELF_TEST_PERIOD_SEC),)
 CFLAGS += -DSELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC)
 endif
 
-BUILD_MSG = BUILD CC=$(CC) HW=$(HW) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) SELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC)
+BUILD_MSG = BUILD CC=$(CC) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) SELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC)
 
 .PHONY: all rts clean linux macos proof generate_sources generate_c generate_sv self_test_data/tests.inc.c
 
@@ -174,21 +170,6 @@ clean:
 	find ${SV_GEN_DIR} -regex '${SV_GEN_DIR}/[^\.]*' -type d -prune -exec rm -r "{}" \;
 	rm -f ${SV_GEN_DIR}/*.sv
 	rm -f bottom.o rts_bottom
-
-rts.posix: ${OBJ} ${POSIX_OBJ}
-	clang -fsanitize=address,undefined -g ${CFLAGS} $^ -o rts.posix
-
-# @review kiniry Why aren't these non-phony rules, a la `rts.linux` and `rts.macos`?
-
-linux: rts.posix
-	mv rts.posix rts.linux
-
-macos: rts.posix
-	mv rts.posix rts.macos
-
-proof: ${GEN_ACTUATION_UNIT_GEN} ${GEN_INSTRUMENTATION_INC}
-	clang -g -emit-llvm -c ${GEN_ACTUATION_UNIT_C} -o ${C_GEN_DIR}/vote.bc
-	clang -g -emit-llvm -c ${GEN_INSTRUMENTATION_C} -o ${C_GEN_DIR}/step_trip_signals.bc
 
 components/%.generated.C.o: components/%.c
 	clang ${CFLAGS} -DSRC=generated -DLANG=C $< -c -o $@

@@ -10,7 +10,7 @@ nat : kind of int where self >= 0
 -- then we will be running on the bare metal.
 
 type virtualized_platform_runtime =
-  { MacOS, Linux, RV32_bare_metal, None }
+  { Posix, RV32_bare_metal, None }
 
 -- The developer boards we have to choose from.  We are using the
 -- ECP-5 5G 85F variant of the Lattice Semiconductor dev board, and if
@@ -18,7 +18,7 @@ type virtualized_platform_runtime =
 -- use the Vega board.
 
 type dev_board =
-  { LFE5UM5G_85F_EVN, RV32M1_VEGA, None }
+  { Virtual, LFE5UM5G_85F_EVN, RV32M1_VEGA, None }
 
 -- The ECP-5 FPGA comes in several flavors.  We are using the 5G
 -- variant for this project.  Other variants should be able to use the
@@ -79,8 +79,6 @@ type twin_fidelity =
 -- based upon the value of the board plus all physical devices that
 -- are attached.  A purely virtualized RTS demonstrator has zero
 -- hardware cost.
--- @todo Refine the definition of cost to be precise with regards
--- to components chosen by the team.
 
 rts : kind of struct
   with -- Which development board is being used?
@@ -105,6 +103,12 @@ rts : kind of struct
        sa2 : twin_or_physical
        -- Are all devices twins?
        all_devices_twins : bool
+       -- Should sensors be simulated?
+       simulate_sensors : bool
+       -- Should we use parallel execution?
+       parallel_execution : bool
+       -- Compile with debugging options?
+       debug : bool
        -- Is this instance of the RTS fully virtualized and running only in software?
        virtualized_platform_rt : bool
        -- What development platform is being used to run this fully virtualized twin?
@@ -115,35 +119,8 @@ rts : kind of struct
     (soc = Twin) => all_devices_twins
     virtualized_platform_rt <=> ((soc = Twin) & (board = RV32M1_VEGA) & (rt = None)) ^ ((soc = Twin) & (board = None))
 
--- @design kiniry This feature model needs to be further enriched to
--- capture the design, nature, and assuance of the RTS architecture's
--- primary subsystems and components.  We will perform that
--- refinement after writing the RTS SysML system architecture.
-
--- @issue Refine feature model to reflect system architecture.
-
--- @design kiniry There are likely additional constraints to add to
--- this feature model.  Some things to think about include: whether or
--- not we want to support twins for arbitrary subset of devices, do we
--- want to support the use of an RV32 development board attached to
--- the physical devices, and what is the assurance of the RTS given
--- the assurance of its constituant parts?
-
--- @issue Refine feature model constraints after RTS models are
--- written.
-
--- There are 16 configurations of virtualized configurations.
-
--- @issue Ensure that all build configurations are supported by RTS
--- build system.
-
 virtualized_rts_configs : kind of rts
   where all_devices_twins = true & cost = 0 & board = None & virtualized_platform_rt = true
-
--- @todo Feature model checks go below.  An example check is included.
-
--- @issue Refine feature model checks to reflect final architecture,
--- requirements, and RTS demonstrator assurance.
 
 -- Virtualized builds do not need a development board.
 check_twin_build_configs : check

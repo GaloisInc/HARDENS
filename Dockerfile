@@ -278,9 +278,9 @@ RUN git clone ${REPO} /tools/${TOOL}
 WORKDIR /tools/${TOOL}
 RUN apt-get install -y maven
 RUN ./lando.sh -r
+RUN cd /tools/${TOOL}/source/lobot/ && cabal v2-build
 ENV PATH="/tools/${TOOL}:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
-
 
 # Runner
 FROM base as runner
@@ -291,5 +291,6 @@ COPY --from=builder /usr/local/bin/ /usr/local/bin/
 COPY --from=builder /usr/local/lib/python2.7/dist-packages/ /usr/local/lib/python2.7/dist-packages/
 COPY --from=builder /usr/local/share/ /usr/local/share/
 RUN cat ${VERSION_LOG}
+WORKDIR /HARDENS
 
 ENV PATH="/tools/lando:/tools:/tools/z3/bin:/tools/bsc-2021.07-ubuntu-20.04/bin:/opt/riscv/bin:/opt/bin:${PATH}"

@@ -1,56 +1,23 @@
 subsystem Proposal Acronyms (Acronyms)
-@todo kiniry Add an explanation.
+A list of words formed by combining the initial letters of a multipart name.
 
-component 21st Century Cryptography (21CC)
-@todo kiniry Add an explanation.
-
-component Architecture Analysis and Design Language (AADL)
-@todo kiniry Add an explanation.
-
+// Source: Frama-C website
 component ISO ANSI C Specification Language (ACSL)
-@todo kiniry Add an explanation.
+The ANSI/ISO C Specification Langage (ACSL) is a behavioral specification language for C programs.
 
-component Advanced Encryption Standard (AES)
-@todo kiniry Add an explanation.
-
+// Source: https://csrc.nist.gov/glossary/term/Application_Programming_Interface
 component Application Programming Interface (API)
-@todo kiniry Add an explanation.
+A system access point or library function that has a well-defined syntax and
+is accessible from application programs or user code to provide well-defined functionality.
 
 component Application-Specific Integrated Circuit (ASIC)
-@todo kiniry Add an explanation.
-
-component Abstract State Machine (ASM)
-@todo kiniry Add an explanation.
-
-component Amazon Web Services (AWS)
-@todo kiniry Add an explanation.
-
-component Balancing the Evaluation of System Security Properties Against Industrial Needs (BESSPIN)
-@todo kiniry Add an explanation.
-
-component Behavioral Language for Embedded Systems with Software (BLESS)
-@todo kiniry Add an explanation.
-
-component Business Object Notation (BON)
-@todo kiniry Add an explanation.
-
-component Bluespec SystemVerilog (BSV)
-@todo kiniry Add an explanation.
-
-component BESSPIN Tool Suite (BTS)
-@todo kiniry Add an explanation.
-
-component Continuous Deployment (CD)
-@todo kiniry Add an explanation.
-
-component Continuous Integration (CI)
-@todo kiniry Add an explanation.
+Custom-designed and/or custom-manufactured integrated circuits.
 
 component Commercial Off The Shelf (COTS)
-@todo kiniry Add an explanation.
+Software and hardware that already exists and is available from commercial sources.
 
 component Central Processing Unit (CPU)
-@todo kiniry Add an explanation.
+A CPU is the electronic circuitry that executes instructions comprising a computer program.
 
 component Continuous Verification (CV)
 @todo kiniry Add an explanation.

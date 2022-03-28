@@ -1,6 +1,7 @@
 #include "instrumentation.h"
 #include "platform.h"
 #include "common.h"
+#include "core.h"
 #include <string.h>
 
 #define TRIP_I(_v, _i) (((_v) >> (_i)) & 0x1)

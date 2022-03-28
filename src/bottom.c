@@ -169,10 +169,7 @@ uint8_t get_test_device() {
 }
 
 void get_test_instrumentation(uint8_t *id) { assert(0); }
-int is_instrumentation_under_test(uint8_t id) {
-  assert(0);
-  return 0;
-}
+
 int get_instrumentation_test_setpoints(uint8_t id, uint32_t *setpoints) {
   assert(0);
   return 0;

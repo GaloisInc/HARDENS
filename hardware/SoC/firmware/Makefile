@@ -1,40 +1,58 @@
 TARGET=riscv64-unknown-elf
-
 ARCH 		= -march=rv32i
 ABI 		= -mabi=ilp32
-
-CC		= $(TARGET)-gcc
+CC =clang --target=riscv32
 OBJDUMP	= $(TARGET)-objdump
+OBJCOPY	= $(TARGET)-objcopy
+LD 		= $(TARGET)-gcc
 LDLIBS	 =  -lc -lgcc
-WERROR ?= -Werror
 
 COMPILER_FLAGS = -mcmodel=medany
 
 # Use main_blinky as demo source and target file name if not specified
-PROG 	?= firmware
+PROG 	?= main
 CRT0	= boot.S
-# No optimization for now
-OPT = -O0
+# Optimize for size
+OPT = -Os
 
-WARNINGS = -Wextra -Wshadow -Wpointer-arith -Wcast-align -Wsign-compare \
-		-Waggregate-return -Wmissing-declarations -Wunused $(WERROR) 
-C_WARNINGS = -Wbad-function-cast -Wmissing-prototypes -Wstrict-prototypes
+# NOTE: why do we have different warnings setup?
+WARNINGS = -Wno-shift-op-parentheses -Wno-shift-count-overflow -Wpointer-arith -Wcast-align -Werror
 
-INCLUDES = -I.
+INCLUDES = -I. -I/opt/riscv/riscv64-unknown-elf/include
 
-DEMO_SRC = firmware.c
-APP_SRC = syscalls.c
+APP_SRC = syscalls.c \
+	bsp.c printf.c
+
+ifeq ($(PROG),main)
+PROG_SRC = ../../../src/rv32_main.c
+INCLUDES += -I../../../src/include
+APP_SRC += \
+	../../../src/core.c \
+	../../../src/common.c \
+	../../../src/sense_actuate.c \
+	../../../src/components/instrumentation_common.c \
+	../../../src/variants/actuation_unit_generated_C.c \
+	../../../src/variants/actuator_generated_C.c \
+	../../../src/variants/instrumentation_handwritten_C.c \
+	../../../src/variants/saturation_generated_C.c \
+	../../../src/variants/actuation_unit_generated_SystemVerilog.c \
+	../../../src/variants/instrumentation_handwritten_SystemVerilog.c \
+	../../../src/variants/instrumentation_generated_SystemVerilog.c \
+	../../../src/variants/instrumentation_generated_C.c
+else
+PROG_SRC = firmware.c
+endif
 
 ASFLAGS  += -g $(ARCH) $(ABI) -Wa,-Ilegacy
-CFLAGS += $(OPT) -g3 $(ARCH) $(ABI) $(COMPILER_FLAGS) $(WARNINGS) $(C_WARNINGS) $(INCLUDES)
+CFLAGS += $(OPT) -g3 $(ARCH) $(ABI) $(COMPILER_FLAGS) $(WARNINGS) $(INCLUDES) -DPRINTF_INCLUDE_CONFIG_H
 LDFLAGS	 += -Wl,-Bstatic,-T,sections.ld,--strip-debug -nostartfiles -nostdlib $(ARCH) $(ABI)
 #
 # Define all object files.
 #
 APP_OBJ  = $(APP_SRC:.c=.o)
-DEMO_OBJ = $(DEMO_SRC:.c=.o)
+PROG_OBJ = $(PROG_SRC:.c=.o)
 CRT0_OBJ = $(CRT0:.S=.o)
-OBJS = $(CRT0_OBJ) $(DEMO_OBJ) $(APP_OBJ)
+OBJS = $(CRT0_OBJ) $(PROG_OBJ) $(APP_OBJ)
 
 $(info ASFLAGS=$(ASFLAGS))
 $(info LDLIBS=$(LDLIBS))
@@ -49,17 +67,31 @@ $(info LDFLAGS=$(LDFLAGS))
 	@echo "    CC $<"
 	@$(CC) $(ASFLAGS) -c $(CFLAGS) -o $@ $<
 
-all: $(PROG).elf
+all: firmware.elf
 
-$(PROG).elf  : $(OBJS) Makefile 
+firmware.elf  : $(OBJS) Makefile
 	@echo Linking....
-	@$(CC) -o $@ $(LDFLAGS) $(OBJS) $(LDLIBS)
-	@$(OBJDUMP) -S -D $(PROG).elf > $(PROG).asm	
+	@$(LD) -o $@ $(LDFLAGS) $(OBJS) $(LDLIBS)
+	@$(OBJDUMP) -S -D firmware.elf > firmware.asm
 	@echo Completed $@
+	@cp firmware.elf text.elf
+	@$(OBJCOPY) -j .text text.elf
+	@$(OBJDUMP) -S -D text.elf > text.asm
+# To remove .text from the firmware:
+#	@$(OBJCOPY) firmware.elf firmware.elf
+#	@$(OBJCOPY) -R *text firmware.elf
+#	@$(OBJDUMP) -S -D firmware.elf > firmware.asm
+# Old attempt to create a better DMEM
+#	@cp $(PROG).elf dmem.elf
+#	@$(OBJCOPY) -R text dmem.elf
+#	@$(OBJCOPY) -R .text dmem.elf
+#	@$(OBJDUMP) -S -D dmem.elf > dmem.asm
+#	@mv dmem.elf $(PROG).elf
+#	@$(OBJDUMP) -S -D $(PROG).elf > $(PROG).asm
 
 clean :
 	@rm -f $(OBJS)
-	@rm -f $(PROG).elf 
-	@rm -f $(PROG).asm
+	@rm -f *.elf
+	@rm -f *.asm
 	@find ../../../ -iname '*.o' -exec rm -rf {} \;
 

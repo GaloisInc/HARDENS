@@ -4,8 +4,8 @@ This directory contains the source (both hand-written and generated, `C` and
 `SystemVerilog`) for the reactor trip system:
 
 - The root directory contains hand-written `C` sources
-- [](./generated_csrc) contains `C` sources generated from the `Cryptol` model
-- [](./generated_vsrc) contains `SystemVerilog` sources generated from the `Cryptol` model
+- [./generated_csrc](./generated_csrc) contains `C` sources generated from the `Cryptol` model
+- [./generated_vsrc](./generated_vsrc) contains `SystemVerilog` sources generated from the `Cryptol` model
 
 ## Dependencies
 
@@ -126,7 +126,7 @@ The `PLATFORM` variable controls whether or not we are building for the Soc:
 #### Sensors
 
 The simulation build can be configured to accept user input for sensor values
-(see [](tests/sense_actuate_0) or to generate a "random walk" of sensor values.
+(see [tests/sense_actuate_0](tests/sense_actuate_0) or to generate a "random walk" of sensor values.
 This is controlled via the `SENSORS` build flag:
 
 - `make SENSORS=Simulated rts` will build a simulator that generates random
@@ -149,7 +149,7 @@ This is controlled via the `SENSORS` build flag:
   `#I` to `#V`
 
 An example of how to script the system is given in
-[](tests/sense_actuate_0); you can execute
+[tests/sense_actuate_0](tests/sense_actuate_0); you can execute
 
 ``` sh
 cat tests/sense_actuate_0 | ./rts.posix

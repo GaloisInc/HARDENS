@@ -1,41 +1,23 @@
 #include <stdint.h>
-#include <stdio.h>
+#include "bsp.h"
+#include "printf.h"
 
-#define UART_RX_REG 0x02000004
-#define UART_DATA_READY_REG 0x02000008
-
-void delay(uint32_t count);
-
-void delay(uint32_t count)
-{
-	while(count-->0) {
-		__asm__ volatile ("nop");
-	}
-}
-						  
 int main(void)
 {
-	volatile uint32_t *data_rdy = (void*) UART_DATA_READY_REG;
-	volatile uint32_t *rx_data = (void*) UART_RX_REG;
-	printf("Hello world!\n");
-	delay(100);
+    volatile uint32_t *gpio = (void*) GPIO_REG;
+    uint32_t cnt = 0;
+    printf("Hello world\n");
+    while(1) {
+        printf("%u miliseconds passed\n",time_in_ms());
+        //printf("%d seconds passed...and a sensor reads 0x%X\n",time_in_s(),i2c_read(0x64, 0x0B));
 
-	while(1) {
-		if (*data_rdy){
-			printf("%c", *rx_data);
-		}
-	}
+        // NOTE this is still line buffered
+        //uint8_t c = soc_getchar();
+        //printf("%c",c);
+        *gpio = cnt;
+        cnt++;
+        delay_ms(1000);
+    }
 
-	// // Uncomment for a loop print
-	// volatile uint32_t *leds = (void*)0x01000000;
-	// *leds = 0;
-	// uint32_t cnt = 0;
-	// while(1)
-	// {
-	// 	delay(500000);
-	// 	*leds = cnt++;
-	// 	printf("%d: Still alive!",cnt);
-	// }
-
-	return 0;
+    return 0;
 }

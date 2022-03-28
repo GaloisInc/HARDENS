@@ -29,6 +29,7 @@ package id Architecture 'RTS Architecture' {
       /** Generic sensor */
       part def GenericSensor {
         attribute currentValue : ScalarQuantityValue;
+        attribute sensorAddress : Integer;
         port output: SensorOutPort;
       }
 

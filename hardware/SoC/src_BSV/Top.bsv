@@ -28,9 +28,10 @@ import GetPut::*;
 
 import "BDPI" function Action c_putchar (Bit #(8) c);
 import "BDPI" function ActionValue #(Bit #(8)) c_trygetchar (Bit #(8) dummy);
-import "BDPI" function ActionValue #(Bit #(8)) c_i2c_request (Bit #(8) wrAddr,
+import "BDPI" function ActionValue #(Bit #(8)) c_i2c_request (Bit #(8) addr,
                                                               Bit #(8) data);
 
+// (* clock_prefix="clk", reset_prefix="btn" *) if needed
 (* synthesize *)
 module mkTop (Empty);
 
@@ -41,7 +42,7 @@ module mkTop (Empty);
    // I/O peripherals
    // @podhrmic TODO: check the prescalers
    // and look into proper use of I2C module
-   // I2CController #(1) i2c_controller <- mkI2CController();
+   I2CController #(1) i2c_controller <- mkI2CController();
    UART #(4) uart <- mkUART(8, NONE, STOP_1, 16);
 
    // ================================================================
@@ -88,11 +89,9 @@ module mkTop (Empty);
 
    Reg #(Bit #(8)) rg_i2c_resp <- mkRegU();
    Reg #(Bool) rg_i2c_complete <- mkReg(False);
-   rule i2c_request;
+   rule i2c_request(!rg_i2c_complete);
       let request <- nerv_soc.i2c_get_request();
-      Bit #(8) wrAddr = signExtend(request.slaveaddr);
-      wrAddr[0] = pack(request.write);
-      let val <- c_i2c_request(wrAddr, request.data);
+      let val <- c_i2c_request(request.address, request.data);
       rg_i2c_resp <= val;
       rg_i2c_complete <= True;
    endrule

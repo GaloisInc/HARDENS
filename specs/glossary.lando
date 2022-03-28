@@ -1,4 +1,5 @@
 subsystem Proposal Glossary (Glossary)
+A list of often difficult or specialized words with their definitions, often placed at the back of a book.
 
 component Behavioral Interface Specification Language (BISL)
 A formal, state-based specification language that focuses on the

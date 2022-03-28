@@ -20,7 +20,47 @@
 extern "C" {
 #endif
 
-// Functions for console I/O
+#include "../firmware/sensors.h"
+
+// Channel/Trip signal IDs
+#define NTRIP 3
+#define T 0
+#define P 1
+
+// Min max values for sensors
+// TODO @podhrmic fill with realistic values for ambient room temperature
+#define TEMPERATURE_MIN_C 0 // for simplicity, assume no negative temps
+#define TEMPERATURE_MAX_C 85
+#define PRESSURE_MIN_P 8000
+#define PRESSURE_MAX_P 60200 // we have 16bits at most
+
+#define min(_a, _b) ((_a) < (_b) ? (_a) : (_b))
+#define max(_a, _b) ((_a) > (_b) ? (_a) : (_b))
+
+
+#ifndef T0
+#define T0 200
+#endif
+
+#ifndef P0
+#define P0 1152600
+#endif
+
+// Bias to simulated sensor readings in degrees F
+#ifndef T_BIAS
+#define T_BIAS 0
+#endif
+
+// Bias to simulated sensor readings in 10^-5 lb/in2
+#ifndef P_BIAS
+#define P_BIAS 0
+#endif
+
+#ifndef SENSOR_UPDATE_MS
+#define SENSOR_UPDATE_MS 5000
+#endif
+
+// Functions for I/O
 
 // ================================================================
 // c_trygetchar()
@@ -46,4 +86,5 @@ uint8_t c_i2c_request (uint8_t slaveaddr, uint8_t data);
 
 #ifdef __cplusplus
 }
+
 #endif
