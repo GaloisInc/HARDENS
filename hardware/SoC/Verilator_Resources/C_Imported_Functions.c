@@ -167,7 +167,7 @@ uint8_t c_i2c_request (uint8_t slaveaddr, uint8_t data) {
         last[s][T] = min(last[s][T], 300);
         last[s][T] = max(last[s][T], 25);
 
-        last[s][P] += (rand() % 7) - 3 + P_BIAS;
+        last[s][P] += (rand() % 3) - 1 + P_BIAS;
         // Don't stray too far from our steam table
         last[s][P] = min(last[s][P], 5775200);
         last[s][P] = max(last[s][P], 8000);
