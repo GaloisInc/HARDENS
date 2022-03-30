@@ -4,6 +4,7 @@
 // System includes
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 // Board includes
 #include "bsp.h"
@@ -20,7 +21,7 @@
 
 extern struct instrumentation_state instrumentation[4];
 
-#define CLEAN_SCREEN 1
+#define CLEAN_SCREEN 0
 
 void update_display()
 {
@@ -39,33 +40,121 @@ void update_display()
 #endif
 }
 
+/**
+ * Return first space-separated substring
+ * TODO: make more robust (effectively we need a custom sscanf)
+ */
+size_t split_string(size_t in_idx, size_t max_len, char in_array[], char out_array[])
+{
+  printf(">>>in_array:%s<<<\n",in_array);
+  size_t out_idx = in_idx;
+  int number_of_bytes = 0;
+
+  for (size_t i = 0; i < max_len; i++) {
+    out_array[i] = 0;
+  }
+  
+  for (size_t i = in_idx; i < max_len; i++) {
+    if ((in_array[i] == ' ') || (in_array[i] == '\n') || (in_array[i] == '\r') || ((in_array[i] == '\t'))) {
+      // check for termination
+      if (number_of_bytes == 0) {
+        // we just started, continue but increment in_idx
+        in_idx++;
+        continue;
+      } else {
+        // we reached the end of segment
+        break;
+      }
+    } else {
+      // increment out index
+      out_idx++;
+      number_of_bytes++;
+    }
+    memcpy(out_array, &in_array[in_idx], number_of_bytes);
+    // terminate string
+    in_array[number_of_bytes] = '\n';
+  }
+
+  printf(">>>out_array:%s<<<\n",out_array);
+  return out_idx;
+}
+
 int read_rts_command(struct rts_command *cmd)
 {
+  char line[256] = {0};
+  char substr[256] = {0};
+  int ok = 0;
+
   // @todo podhrmic: make conditional on self-test *not* running
-  // printf("Enter command and press enter:\n");
-  // char line[256] = {0};
-  // for (uint i = 0; i < sizeof(line); i++) {
-  //   line[i] = soc_getchar();
-  //   if (line[i] == 0 || line[i] == '\n') {
-  //     break;
-  //   }
-  // }
-  // printf("You entered: %s\n",line);
+  printf("\nEnter command and press enter:\n");
+  delay_ms(1000);
+
+  for (unsigned int i = 0; i < sizeof(line); i++) {
+    line[i] = soc_getchar();
+    if (line[i] == 0 || line[i] == '\n') {
+      break;
+    }
+  }
+  
+  printf("> %s\n",line);
 #if CLEAN_SCREEN
   printf("\e[%d;1H\e[2K> ", NLINES+1);
 #endif
 
-  //printf("read_rts_command\n");
-  static uint8_t dev = 0;
-  static uint8_t on = 0;
-
-  cmd->type = ACTUATION_COMMAND;
-  cmd->cmd.act.device = dev;
-  cmd->cmd.act.on = on;
-
-  int ok = 0;
-  // @todo podhrmic sscanf blows up the binary size
-  // hand crafted alternative needed
+  int index = 2;
+  switch (line[0]) {
+    case 'A':
+      cmd->type = ACTUATION_COMMAND;
+      // "A %hhd %hhd", &device, &on
+      index = split_string(index, sizeof(line), line, substr);
+      cmd->cmd.act.device = atoi(substr);
+      split_string(index, sizeof(line), line, substr);
+      cmd->cmd.act.on = atoi(substr);
+      printf("ACTUATION_COMMAND dev=%d on=%d\n",cmd->cmd.act.device, cmd->cmd.act.on);
+      ok = 1;
+      break;
+    // case 'M':
+    //   cmd->type = INSTRUMENTATION_COMMAND;
+    //   // "M %hhd %hhd", &div, &on
+    //   //split_string(line, sizeof(line), substr);
+    //   cmd->instrumentation_division = atoi(substr);
+    //   //memcpy(line, substr, sizeof(substr));
+    //   cmd->cmd.instrumentation.type = SET_MAINTENANCE;
+    //   //split_string(line, sizeof(line), substr);
+    //   cmd->cmd.instrumentation.cmd.maintenance.on = atoi(substr);
+    //   ok = 1;
+    //   break;
+    // case 'B':
+    //   cmd->type = INSTRUMENTATION_COMMAND;
+    //   // "B %hhd %hhd %hhd", &div, &ch, &mode
+    //   //split_string(line, sizeof(line), substr);
+    //   cmd->instrumentation_division = atoi(substr);
+    //   //memcpy(line, substr, sizeof(substr));
+    //   cmd->cmd.instrumentation.type = SET_MODE;
+    //   //split_string(line, sizeof(line), substr);
+    //   cmd->cmd.instrumentation.cmd.mode.channel = atoi(substr);
+    //   //memcpy(line, substr, sizeof(substr));
+    //   //split_string(line, sizeof(line), substr);
+    //   cmd->cmd.instrumentation.cmd.mode.mode_val = atoi(substr);
+    //   ok = 1;
+    //   break;
+    // case 'S':
+    //   cmd->type = INSTRUMENTATION_COMMAND;
+    //   // "S %hhd %hhd %d", &div, &ch, &val
+    //   //split_string(line, sizeof(line), substr);
+    //   cmd->instrumentation_division = atoi(substr);
+    //   cmd->cmd.instrumentation.type = SET_SETPOINT;
+    //   //memcpy(line, substr, sizeof(substr));
+    //   //split_string(line, sizeof(line), substr);
+    //   cmd->cmd.instrumentation.cmd.setpoint.channel = atoi(substr);
+    //   //memcpy(line, substr, sizeof(substr));
+    //   //split_string(line, sizeof(line), substr);
+    //   cmd->cmd.instrumentation.cmd.setpoint.val = atoi(substr);
+    //   ok = 1;
+    //   break;
+    default:
+      break;
+  }
   return ok;
 }
 
