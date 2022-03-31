@@ -3,7 +3,7 @@ A list of words formed by combining the initial letters of a multipart name.
 
 // Source: Frama-C website
 component ISO ANSI C Specification Language (ACSL)
-The ANSI/ISO C Specification Langage (ACSL) is a behavioral specification language for C programs.
+The ANSI/ISO C Specification Language (ACSL) is a behavioral specification language for C programs.
 
 // Source: https://csrc.nist.gov/glossary/term/Application_Programming_Interface
 component Application Programming Interface (API)

@@ -73,6 +73,17 @@ type twin_or_physical =
 type twin_fidelity =
   { Low, Medium, High, Perfect }
 
+-- We use three different C compilers for (cross-)compilation.
+type compiler =
+  { GCC, Clang, CompCert }
+
+-- We target three different ISAs in software compilation because our
+-- development platforms for the POSIX-based virtual platform is
+-- either ARM or x86-based and the SoC digital twin and deployment
+-- platform are RISC-V-based.
+type isa =
+  { ARM, x86, RV32 }
+
 -- The feature model of the RTS demonstrator itself.
 
 -- The cost of a demonstrator is expressed in U.S. dollars and is
@@ -101,6 +112,10 @@ rts : kind of struct
        sa1 : twin_or_physical
        -- Is the second actuator a twin or physically present?
        sa2 : twin_or_physical
+       -- Which C compiler is used to (cross-)compile the software?
+       comp : compiler
+       -- Which ISA is the compiler (cross-)compiling to?
+       target : isa
        -- Are all devices twins?
        all_devices_twins : bool
        -- Should sensors be simulated?
@@ -118,6 +133,8 @@ rts : kind of struct
     all_devices_twins <=> ((ts1 = Twin) & (ts2 = Twin) & (ps1 = Twin) & (ps2 = Twin) & (sa1 = Twin) & (sa2 = Twin))
     (soc = Twin) => all_devices_twins
     virtualized_platform_rt <=> ((soc = Twin) & (board = RV32M1_VEGA) & (rt = None)) ^ ((soc = Twin) & (board = None))
+
+-- @todo kiniry Add appropriate constraints for the comp and isa features.
 
 virtualized_rts_configs : kind of rts
   where all_devices_twins = true & cost = 0 & board = None & virtualized_platform_rt = true
