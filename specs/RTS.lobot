@@ -107,6 +107,8 @@ rts : kind of struct
        simulate_sensors : bool
        -- Should we use parallel execution?
        parallel_execution : bool
+       -- Compile with automatic self-test mode enabled?
+       self_test_enabled : bool
        -- Compile with debugging options?
        debug : bool
        -- Is this instance of the RTS fully virtualized and running only in software?

@@ -132,11 +132,17 @@ ifneq ($(SELF_TEST_PERIOD_SEC),)
 CFLAGS += -DSELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC)
 endif
 
-BUILD_MSG = BUILD CC=$(CC) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) SELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC)
+SELF_TEST =? Enabled
 
-.PHONY: all rts clean linux macos proof generate_sources generate_c generate_sv self_test_data/tests.inc.c
+ifeq ($(SELF_TEST),Disabled)
+CFLAGS += -DDISABLE_SELF_TEST
+endif
 
-all: rts
+BUILD_MSG = BUILD CC=$(CC) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) SELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC) SELF_TEST=$(SELF_TEST)
+
+.PHONY: all rts clean linux macos proof generate_sources generate_c generate_sv self_test_data/tests.inc.c core.c
+
+all: rts rts_no_self_test
 
 rts: $(SRC:.c=.o) $(EXTRA_SRC)
 	$(CC) $(CFLAGS) $(LIBS) -o $@ $^
