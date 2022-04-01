@@ -32,7 +32,7 @@ static int instrumentation_step_trip(uint8_t div,
     state->reading[S] = Saturation(state->reading[T], state->reading[P]);
   }
 
-  uint8_t new_trips;
+  uint8_t new_trips = 0;
 
   if (do_test) {
     uint32_t setpoints[3];
