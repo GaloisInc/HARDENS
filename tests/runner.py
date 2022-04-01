@@ -4,17 +4,30 @@
 
 import pexpect
 import sys
+import os
 
-def try_expect(p,expected,timeout=5,retries=10):
+
+RTS_BIN = os.environ.get("RTS_BIN")
+RTS_DEBUG = os.environ.get("RTS_DEBUG") is not None
+
+def try_expect(p,expected,timeout=1,retries=60):
     expected = expected.strip()
+    if RTS_DEBUG:
+        print(f"CHECKING: {expected}")
     while retries > 0:
         p.sendline('D')
         try:
             p.expect(expected.strip() + "\r\n", timeout)
         except pexpect.TIMEOUT:
             retries = retries - 1
+            if RTS_DEBUG:
+                print(f"...{retries} retries remaining",end='\r')
             continue
+        if RTS_DEBUG:
+            print(f"CHECKING: {expected} succeeded")
         return True
+    if RTS_DEBUG:
+        print(f"CHECKING: {expected} failed")
     return False
 
 def run_script(p, cmds):
@@ -47,12 +60,14 @@ def run_script(p, cmds):
             else:
                 return False
         else:
+            if RTS_DEBUG:
+                print(f"SENDING: {c.strip()}")
             p.sendline(c.strip())
             p.sendline('')
     return True
 
 def run(script, args):
-    p = pexpect.spawn("../src/rts")
+    p = pexpect.spawn(RTS_BIN)
     with open(script) as f:
         cmds = f.readlines()
         fst = cmds[0].strip()
@@ -72,6 +87,11 @@ def run(script, args):
 def main():
     script = sys.argv[1]
     args = sys.argv[2:] if len(sys.argv) > 2 else []
+
+    if RTS_BIN is None:
+        print("Error: RTS_BIN should be set to rts binary to test")
+        sys.exit(1)
+
     if run(script, args):
         print("PASS")
         sys.exit(0)

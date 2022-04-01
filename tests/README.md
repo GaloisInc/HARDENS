@@ -9,15 +9,25 @@ outlined below.
 To run all the tests, just run:
 
 ``` sh
-python3 ./run_all.py
+make
 ```
 
 Some tests have a large number of cases. As the implementation and tests
 are symmetric, you can do a quick sanity run by setting the `QUICK` environment variable, i.e.:
 
 ``` sh
-QUICK=1 python3 ./run_all.py
+QUICK=1 make
 ```
+
+Individual tests can be run (and debugged) by using the `test.py` script:
+
+``` sh
+RTS_BIN=path/to/rts/binary ./test.py <path/to/scenario> [path/to/scenario.cases]
+```
+
+Defining the `RTS_DEBUG` envrionment variable will cause the tester to print out
+debug output, including which commands are sent to the binary and which output
+is being checked.
 
 ## Scenario format
 
