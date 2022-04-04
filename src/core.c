@@ -23,7 +23,7 @@ const char fail[] = "LAST TEST: FAIL";
 char sensor_warning[] = "WARNING: LARGE SENSOR DIFFERENTIAL";
 char sensor_ok[] = "SENSORS OK";
 
-#ifndef DISABLE_SELF_TEST
+#ifdef ENABLE_SELF_TEST
 struct testcase {
   uint32_t input[4][2];
   uint32_t setpoints[4][3];
@@ -145,7 +145,7 @@ int set_display_line(struct ui_values *ui, uint8_t line_number, char *display, u
   return 0;
 }
 
-#ifndef DISABLE_SELF_TEST
+#ifdef ENABLE_SELF_TEST
 int end_test(struct test_state *test, struct ui_values *ui) {
     int passed =
          test->test_device_result[test->test_device]
@@ -265,7 +265,7 @@ int core_step(struct core_state *c) {
     }
   }
 
-#ifndef DISABLE_SELF_TEST
+#ifdef ENABLE_SELF_TEST
   err |= test_step(&c->test, &c->ui);
 #endif
   err |= update_ui(&c->ui);
