@@ -36,6 +36,8 @@ implemented) on a NERV-based SoC.
 - `T_THRESHOLD`,`P_THRESHOLD`: indicate in the UI when two sensor readings
   (temperature and pressure, respectively) differ by these thresholds (degrees F
   and 10^-5 lb/in^2, respectively)
+- `SELF_TEST=Enabled` (default) builds the `rts` with a periodic self-test
+  feature. `SELF_TEST=Disabled` builds the system without this feature.
   
 ## UI
 
