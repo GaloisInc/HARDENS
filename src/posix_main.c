@@ -235,10 +235,10 @@ int update_sensor_simulation(void) {
     }
     last_update = t;
   }
-  sensors[0][T] = last[0][T];
-  sensors[1][T] = last[1][T];
-  sensors[0][P] = last[0][P];
-  sensors[1][P] = last[1][P];
+  sensors[T][0] = last[T][0];
+  sensors[T][1] = last[T][1];
+  sensors[P][0] = last[P][0];
+  sensors[P][1] = last[P][1];
 
   return 0;
 }

@@ -23,6 +23,7 @@ const char fail[] = "LAST TEST: FAIL";
 char sensor_warning[] = "WARNING: LARGE SENSOR DIFFERENTIAL";
 char sensor_ok[] = "SENSORS OK";
 
+#ifdef ENABLE_SELF_TEST
 struct testcase {
   uint32_t input[4][2];
   uint32_t setpoints[4][3];
@@ -35,6 +36,7 @@ struct testcase {
 // Test data generated from Cryptol RTS::SelfTestOracleHalf
 #include "self_test_data/tests.inc.c"
 };
+#endif
 
 char mode_char(uint8_t mode) {
   switch (mode) {
@@ -143,6 +145,7 @@ int set_display_line(struct ui_values *ui, uint8_t line_number, char *display, u
   return 0;
 }
 
+#ifdef ENABLE_SELF_TEST
 int end_test(struct test_state *test, struct ui_values *ui) {
     int passed =
          test->test_device_result[test->test_device]
@@ -222,6 +225,7 @@ int test_step(struct test_state *test, struct ui_values *ui) {
 
   return err;
 }
+#endif
 
 void core_init(struct core_state *c) {
   c->test.test_timer_start = time_in_s();
@@ -261,7 +265,9 @@ int core_step(struct core_state *c) {
     }
   }
 
+#ifdef ENABLE_SELF_TEST
   err |= test_step(&c->test, &c->ui);
+#endif
   err |= update_ui(&c->ui);
 
   c->error = err;
