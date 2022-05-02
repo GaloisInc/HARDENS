@@ -75,7 +75,7 @@ relation FPGA Dev Board contains J2
 
 component Temperature Sensor
 A sensor that is capable of measuring the temperature of its environment.
-What is your temperature reading in Celcius (C)?
+What is your temperature reading in Celsius (C)?
 
 component Pressure Sensor
 A sensor that is capable of measuring the air pressure of its environment.
