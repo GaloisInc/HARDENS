@@ -70,28 +70,29 @@ indexing
   proposal_figure: 3
   figure_name: Dataflow of RTS Implementation Artifacts.
 
-relation CryptolToC client CryptolSpec
-relation CryptolToSystemVerilog client CryptolSpec
+// Lando currently doesn't support the relations below
+// relation CryptolToC client CryptolSpec
+// relation CryptolToSystemVerilog client CryptolSpec
 
-relation SynthSW client CryptolToC
+// relation SynthSW client CryptolToC
 
-relation SynthHW client CryptolToSystemVerilog
-relation SynthHW client BSC
+// relation SynthHW client CryptolToSystemVerilog
+// relation SynthHW client BSC
 
-relation CompCert client SynthSoftImpl
-relation CompCert client SoftImpl
+// relation CompCert client SynthSoftImpl
+// relation CompCert client SoftImpl
 
-relation BSC inherit Compiler
-relation BSC client HWImpl
+// relation BSC inherit Compiler
+// relation BSC client HWImpl
 
-relation SymbiFlow client SynthHW
-relation SymbiFlow client CPU
+// relation SymbiFlow client SynthHW
+// relation SymbiFlow client CPU
 
-relation Binaries client CompCert
+// relation Binaries client CompCert
 
-relation RTL client SymbiFLow
-relation RTL contains Soft-core RISC-V CPU
+// relation RTL client SymbiFLow
+// relation RTL contains Soft-core RISC-V CPU
 
-relation Bitstream contains SynthHW
-relation Bitstream contains CPU
-relation BitStream client SymbiFlow
+// relation Bitstream contains SynthHW
+// relation Bitstream contains CPU
+// relation BitStream client SymbiFlow

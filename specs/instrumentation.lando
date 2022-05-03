@@ -7,8 +7,7 @@ The systems architecture for the instrumentation subsystem of the RTS
 demonstrator.  Some of the architecture is implemented in hardware,
 and some is implementated in software.
 
-component Instrumentation Implementation (InstImpl)
-inherit Driver
+component Instrumentation Implementation (InstImpl) inherit Driver
 A software or hardware driver that interfaces with a sensor.  In the
 RTS demonstrator there are two kinds of sensors: pressure and
 temperature.
@@ -28,8 +27,7 @@ subsystem Instrumentation Software Stack (SWStack)
 inherit Software
 The software stack associated with the instrumentation subsystem.
 
-component Instrumentation Implementation 1 (InstImpl1)
-inherit InstImpl
+component Instrumentation Implementation 1 (InstImpl1) inherit Instrumentation Implementation
 The first of four sensor drivers for the instrumentation subsystem.
 
 relation InstImpl1 inherit SWImpl
@@ -57,7 +55,7 @@ demonstrator.
 relation SWStack client Binaries
 relation Binaries client SWStack
 
-subsystem Instrumentation, Actuation, and Voting Hardware Stack (HWStack)
+subsystem Instrumentation Actuation and Voting Hardware Stack (HWStack)
 The hardware implementations driving a redundant subset of sensors,
 actuators, and voting components.
 

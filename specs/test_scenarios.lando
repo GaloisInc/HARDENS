@@ -86,7 +86,7 @@ Normal Self-Test Behavior 10 - Configure Active Trip Output State of Each Instru
 For each instrumentation division, the user puts each channel in
 'trip' and then 'normal' mode.
 
-Normal Self-Test Behavior 11 - Display Pressure, Temperature, and Saturation Margin
+Normal Self-Test Behavior 11 - Display Pressure Temperature and Saturation Margin
 The user provides inputs for an instrumentation division, then the UI
 displays the updated pressure, temperature and saturation margin.
 
@@ -158,24 +158,24 @@ Exceptional Behavior 3c - Non-deterministically Cause a Pressure Sensor to Event
 Temperature Sensor 1 or Temperature Sensor 2 report inconsistent values,
 discrepancy is indicated on the UI.
 
-Exceptional Behavior 4a - Cause Instrumentation Unit 1 to Fail
 // Can be further refined, e.g.:
 // Sensor values are read by Instrumnetation Unit 1, the unit generates the wrong trip signal,
+Exceptional Behavior 4a - Cause Instrumentation Unit 1 to Fail
 Instrumentation unit 1 fails, self test indicates that a test has failed.
 
-Exceptional Behavior 4b - Cause Instrumentation Unit 2 to Fail
 // Can be further refined, e.g.:
 // Sensor values are read by Instrumnetation Unit 1, the unit generates the wrong trip signal,
+Exceptional Behavior 4b - Cause Instrumentation Unit 2 to Fail
 Instrumentation unit 2 fails, self test indicates that a test has failed.
 
-Exceptional Behavior 4c - Cause Instrumentation Unit 3 to Fail
 // Can be further refined, e.g.:
 // Sensor values are read by Instrumnetation Unit 1, the unit generates the wrong trip signal,
+Exceptional Behavior 4c - Cause Instrumentation Unit 3 to Fail
 Instrumentation unit 3 fails, self test indicates that a test has failed.
 
-Exceptional Behavior 4d - Cause Instrumentation Unit 4 to Fail
 // Can be further refined, e.g.:
 // Sensor values are read by Instrumnetation Unit 1, the unit generates the wrong trip signal,
+Exceptional Behavior 4d - Cause Instrumentation Unit 4 to Fail
 Instrumentation unit 4 fails, self test indicates that a test has failed.
 
 Exceptional Behavior 4e - Non-Deterministically Cause Instrumentation Unit to Eventually Fail
