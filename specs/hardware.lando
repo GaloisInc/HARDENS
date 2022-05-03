@@ -7,7 +7,8 @@ A normal USB cable.
 What kind of USB connector is on the start of the cable?
 What kind of USB connector is on the end of the cable?
 
-relation USB Cable inherit USB, Cable
+// Lando currently doesn't support the relations below
+// relation USB Cable inherit USB, Cable
 
 component SERDES Test SMA Connectors (J9-J26)
 @todo To be copied from board documentation.
@@ -63,15 +64,7 @@ component Mini USB Programming (J2)
 component Lattice ECP-5 FPGA Development Board (Board)
 @todo To be copied from board documentation.
 
-relation ECP5-5G Device inherit FPGA
-relation Board contains ECP5-5G
-relation Board inherit PCB
-
 // @todo Add all board I/O and devices listed above.
-
-relation FPGA Dev Board contains J2
-
-// relation FPGA Dev Board contains etc.
 
 component Temperature Sensor
 A sensor that is capable of measuring the temperature of its environment.
@@ -86,9 +79,10 @@ A solenoid actuator capable of being in an open or closed state.
 Close!
 Open!
 
-relation Temperature Sensor inherit Sensor
-relation Pressure Sensor inherit Sensor
-relation Solenoid Actuator inherit Actuator
+// Lando currently doesn't support the relations below
+// relation Temperature Sensor inherit Sensor
+// relation Pressure Sensor inherit Sensor
+// relation Solenoid Actuator inherit Actuator
 
 subsystem Physical Architecture
 The physical architecture of the HARDENS RTS demonstrator.
@@ -133,26 +127,29 @@ component HARDENS Demonstrator (Demonstrator)
 The fully assembled HARDENS demonstrator hardware with all component
 present.
 
-relation Demonstrator client Board
-relation Board client UI
-relation Board client UI-C
-relation Board client Prog-C
-relation Board client Debug-C
-relation Board client TS1
-relation Board client TS2
-relation Board client PS1
-relation Board client PS2
-relation Board client SA1
-relation Board client SA2
-
 component Developer Machine
 The computer used by a developer to interface with the demonstrator,
 typically for driving the demonstrator's UI and programming and
 debugging the board.
 
-relation UI-C client Developer Machine
-relation Prog-C client Developer Machine
-relation Debug-C client Developer Machine
-
-
+// Lando currently doesn't support the relations below
+// relation Demonstrator client Board
+// relation Board client UI
+// relation Board client UI-C
+// relation Board client Prog-C
+// relation Board client Debug-C
+// relation Board client TS1
+// relation Board client TS2
+// relation Board client PS1
+// relation Board client PS2
+// relation Board client SA1
+// relation Board client SA2
+// relation UI-C client Developer Machine
+// relation Prog-C client Developer Machine
+// relation Debug-C client Developer Machine
+// relation ECP5-5G Device inherit FPGA
+// relation Board contains ECP5-5G
+// relation Board inherit PCB
+// relation FPGA Dev Board contains J2
+// relation FPGA Dev Board contains etc.
 

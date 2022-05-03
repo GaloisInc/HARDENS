@@ -118,7 +118,7 @@ component Object Constraint Language (OCL)
 component Open Systems Architecture (OSA)
 @todo kiniry Add an explanation.
 
-component Power, Performance, Area, and Security (PPAS)
+component Power Performance Area and Security (PPAS)
 @todo kiniry Add an explanation.
 
 component Rigorous Digital Engineering (RDE)
@@ -154,7 +154,7 @@ component SystemVerilog (SV)
 component SystemVerilog Assertions (SVA)
 @todo kiniry Add an explanation.
 
-component Size, Weight, and Power (SWaP)
+component Size Weight and Power (SWaP)
 @todo kiniry Add an explanation.
 
 component System Modeling Language (SysML)

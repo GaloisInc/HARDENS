@@ -40,7 +40,8 @@ subsystem IEEE Std 603-2018 Characteristics (Characteristics)
 The IEEE 603-2018 requirements (known as "characteristics" in
 the standard) which the RTS demonstrator system must fulfill.
 
-relation RTS contains Architecture
-relation RTS contains Hardware
-relation RTS contains Properties
-relation RTS contains Characteristics
+// Lando currently doesn't support the relations below
+// relation RTS contains Architecture
+// relation RTS contains Hardware
+// relation RTS contains Properties
+// relation RTS contains Characteristics
