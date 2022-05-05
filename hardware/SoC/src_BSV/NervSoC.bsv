@@ -11,6 +11,8 @@ package NervSoC;
 import RegFile :: *;
 import Vector :: *;
 import I2C :: *;
+import BRAM :: *;
+import BRAMCore :: *;
 // ================================================================
 // Local imports
 import Nerv :: *;
@@ -50,7 +52,7 @@ module mkNervSoC (NervSoC_IFC);
 
    // For debugging only
    Bool show_exec_trace = False;
-   Bool show_load_store = False;
+   Bool show_load_store = True;
 
    /**
    * ////////////////////////////////////////////////////////////////
@@ -119,6 +121,8 @@ module mkNervSoC (NervSoC_IFC);
    Reg #(Bit #(32)) rg_instr_hand_res <- mkReg(0);
    Reg #(Bit #(32)) rg_instr_gen_res <- mkReg(0);
    RWire#(Bit #(64)) rw_tick <- mkRWire();
+   Reg#(Bit#(30)) rg_dmem_addr <- mkReg(0);
+   Reg#(Bit#(32)) rg_dmem_put_data <- mkReg(0);
 
    /**
    * ////////////////////////////////////////////////////////////////
@@ -133,13 +137,16 @@ module mkNervSoC (NervSoC_IFC);
    // so in order to properly initialize global symbols, we need to load
    // the hex file into *both* memories.
    // `memory_size` is just for verilator
-   RegFile #(Bit #(30), Bit #(32)) imem <- mkRegFileLoad ("imem_contents.memhex32", 0, imemory_size);
-   RegFile #(Bit #(30), Bit #(32)) dmem <- mkRegFileLoad ("dmem_contents.memhex32", 0, dmemory_size);
+   //RegFile #(Bit #(30), Bit #(32)) imem <- mkRegFileLoad ("imem_contents.memhex32", 0, imemory_size);
+   //RegFile #(Bit #(30), Bit #(32)) dmem <- mkRegFileLoad ("dmem_contents.memhex32", 0, dmemory_size);
+   BRAM_PORT#(Bit#(30), Bit#(32)) dmem_bram <- mkBRAMCore1Load('h03001, False,"dmem_contents.memhex32", False);
+   BRAM_PORT#(Bit#(30), Bit#(32)) imem_bram <- mkBRAMCore1Load('h07001, False,"imem_contents.memhex32", False);
+   //BRAM_PORT#(Bit#(30), Bit#(32)) imem_bram <- mkBRAMCore1Load('h07001, False,"imem_contents.memhex32", False);
 
    Reg #(Bit #(32)) rg_imem_addr  <- mkReg (0);
    Reg #(Bit #(32)) rg_imem_data  <- mkRegU;
    Reg #(Bit #(32)) rg_dmem_rdata <- mkRegU;
-
+   Reg #(Bool) rg_update_dmem <- mkReg(False);
    Reg #(Bit #(64)) rg_tick    <- mkReg (0);
 
    /**
@@ -155,19 +162,20 @@ module mkNervSoC (NervSoC_IFC);
    * ////////////////////////////////////////////////////////////////
    */
    // This rule deals with instruction fetch and D-Mem read results
-   (* fire_when_enabled, no_implicit_conditions *)
+   //(* fire_when_enabled, no_implicit_conditions *)
    rule rl_always;
       let i_addr = nerv.m_imem_addr;
+      let imem_data = imem_bram.read();
       rg_imem_addr <= i_addr;
-      rg_imem_data <= imem.sub (i_addr [31:2]);
+      imem_bram.put(False, i_addr [31:2], 0);
 
       nerv.m_stall (False);
-      nerv.m_imem_data (rg_imem_data);
+      nerv.m_imem_data (imem_data);
       nerv.m_dmem_rdata (rg_dmem_rdata);
 
       if (show_exec_trace)
-         $display ("%0d: PC 0x%0h  Instr 0x%0h  Next PC 0x%0h",
-            rg_tick, rg_imem_addr, rg_imem_data, i_addr);
+         $display ("%0d: PC 0x%0h  Instr 0x%0h  Next PC 0x%0h dmem_valid 0x%0h",
+            rg_tick, rg_imem_addr, imem_data, i_addr, nerv.m_dmem_valid);
 
       // Note: not using trap for anything
       let trap = nerv.m_trap;
@@ -183,20 +191,23 @@ module mkNervSoC (NervSoC_IFC);
    * ////////////////////////////////////////////////////////////////
    */
    // This rule deals with D-Mem writes and IO writes
-   rule rl_memop;
-      let d_addr     = nerv.m_dmem_addr;
-      let mem_data = dmem.sub (d_addr [31:2]);
+   rule rl_memop(nerv.m_dmem_valid);
       let dmw      = nerv.m_get_dmem;
       let wstrb    = dmw.wstrb;
       let wdata    = dmw.wdata;
+      let d_addr     = nerv.m_dmem_addr;
+      // Read current data
+      dmem_bram.put(False, d_addr [31:2], 0);
+      let mem_data = dmem_bram.read();
 
       let mask  = {strb2byte (wstrb [3]),
            strb2byte (wstrb [2]),
            strb2byte (wstrb [1]),
            strb2byte (wstrb [0])};
 
+      let put_data = ((mem_data & (~ mask)) | (wdata & mask));
       if (show_load_store)
-         $display ("DMem addr 0x%0h  wstrb 0x%0h  wdata 0x%0h mask 0x%0h" , d_addr, wstrb, wdata, mask);
+         $display ("DMem addr 0x%0h  wstrb 0x%0h  wdata 0x%0h mask 0x%0h put_data 0x%0h" , d_addr[31:2], wstrb, wdata, mask, put_data);
 
       case (d_addr)
          /**
@@ -473,11 +484,21 @@ module mkNervSoC (NervSoC_IFC);
          default:
             begin
                // Regular memory read
-               dmem.upd (d_addr [31:2], ((mem_data & (~ mask)) | (wdata & mask)));
+               //dmem.upd (d_addr [31:2], ((mem_data & (~ mask)) | (wdata & mask)));
+               //dmem_bram.put(True, d_addr [31:2], put_data);
                rg_dmem_rdata <= mem_data;
+               rg_dmem_put_data <= put_data;
+               rg_dmem_addr <= d_addr [31:2];
+               if (show_load_store)
+                  $display ("rl_memop addr 0x%0h  data 0x%0h", d_addr [31:2], put_data);
             end
       endcase
+   endrule
 
+   rule rl_update_dmem(!nerv.m_dmem_valid);
+      if (show_load_store)
+         $display ("rl_update_dmem dmem_bram.put addr 0x%0h  data 0x%0h",rg_dmem_addr,rg_dmem_put_data);
+      dmem_bram.put(True, rg_dmem_addr, rg_dmem_put_data);
    endrule
 
    /**
