@@ -60,15 +60,16 @@ module mkNervSoC (NervSoC_IFC);
    * IO memory map
    * ////////////////////////////////////////////////////////////////
    */
-   Bit #(32) io_base_addr                       = 32'h 0100_0000;
-   Bit #(32) gpio_addr                          = io_base_addr;
+   Bit #(32) gpio_addr                          = 32'h 0100_0000;
 
    Bit #(32) uart_reg_addr_tx                   = 32'h 0200_0000;
    Bit #(32) uart_reg_addr_rx                   = 32'h 0200_0004;
    Bit #(32) uart_reg_addr_dr                   = 32'h 0200_0008;
+
    Bit #(32) i2c_reg_addr_base                  = 32'h 0300_0000;
    Bit #(32) i2c_reg_addr_data                  = 32'h 0300_0004; // I2C fifo has up to 16 bytes (4 registers)
    Bit #(32) i2c_reg_addr_stat                  = 32'h 0300_0008; // I2C status reg (transaction complete 1bit, transaction error 1bit, error type 2bits)
+
    Bit #(32) clock_reg_adrr_lower               = 32'h 0400_0000; // System ticks
    Bit #(32) clock_reg_adrr_upper               = 32'h 0400_0004;
 
@@ -166,34 +167,67 @@ module mkNervSoC (NervSoC_IFC);
          return gpio_val;
       endactionvalue;
 
-   // GPIO update
+   // UART
    function ActionValue#(Bit#(32)) fn_uart(Bit#(32) addr, Bit#(32) wdata)
       = actionvalue
-      case (addr)
-         // Write a byte to serial port
-         uart_reg_addr_tx:
-            begin
-               rg_uart_tx <= wdata[7:0];
-               rg_uart_tx_data_ready <= True;
-               return signExtend(wdata[7:0]);
-            end
-         // Receive data from serial port
-         // Note: might be 0 or stale, check uart_reg_addr_dr first
-         uart_reg_addr_rx:
-            begin
-               rg_uart_rx_data_ready <= False;
-               return signExtend(rg_uart_rx);
-            end
-         uart_reg_addr_dr:
-            begin
-               if (rg_uart_rx_data_ready)
-                  return 1;
-               else
-                  return 0;
-            end
-         default:
-            return 'hFFFF;
-      endcase
+         case (addr)
+            // Write a byte to serial port
+            uart_reg_addr_tx:
+               begin
+                  rg_uart_tx <= wdata[7:0];
+                  rg_uart_tx_data_ready <= True;
+                  return signExtend(wdata[7:0]);
+               end
+            // Receive data from serial port
+            // Note: might be 0 or stale, check uart_reg_addr_dr first
+            uart_reg_addr_rx:
+               begin
+                  rg_uart_rx_data_ready <= False;
+                  return signExtend(rg_uart_rx);
+               end
+            uart_reg_addr_dr:
+               begin
+                  if (rg_uart_rx_data_ready)
+                     return 1;
+                  else
+                     return 0;
+               end
+            default:
+               return 'hFFFF;
+         endcase
+      endactionvalue;
+
+   // I2C
+   function ActionValue#(Bit#(32)) fn_i2c(Bit#(32) addr, Bit#(32) mask, Bit#(32) wdata)
+      = actionvalue
+         case (addr)
+            i2c_reg_addr_base:
+               begin
+                  // Only 8 bytes for the address, the rest is ignored
+                  rg_i2c_addr <= wdata[7:0];
+                  rg_i2c_transaction_ready <= True;
+                  return wdata;
+               end
+            i2c_reg_addr_data:
+               begin
+                  if (mask == 0)
+                  begin
+                     // Read rg_i2c_data
+                     return rg_i2c_data;
+                  end
+                  else
+                  begin
+                     // Write to rg_i2c_data
+                     rg_i2c_data <= wdata;
+                     return wdata;
+                  end
+               end
+            i2c_reg_addr_stat:
+               begin
+                  rg_i2c_transaction_complete <= 0;
+                  return rg_i2c_transaction_complete;
+               end
+         endcase
       endactionvalue;
 
    // Clock
@@ -204,13 +238,209 @@ module mkNervSoC (NervSoC_IFC);
          return rg_tick[63:32];
    endfunction
 
+   // Instrumentation handwritten
+   function ActionValue#(Bit#(32)) fn_instrumentation_handwritten(Bit#(32) addr, Bit#(32) mask, Bit#(32) wdata)
+   = actionvalue
+      let val = 0;
+      case (addr)
+         instr_reg_addr_hand_base:
+            begin
+            // wdata[0] - fnc select ( 0 - is_channel_tripped | 1 - generate_sensor_trips)
+            // wdata[2:1] - mode
+            // wdata[3] - sensor_tripped
+            // rg_instr_hand_res[2:0] - result
+            // rg_instr_hand_res[31] - fnc select ( 0 - is_channel_tripped | 1 - generate_sensor_trips)
+            if (wdata[0] == 0)
+               begin
+                  // is_channel_tripped
+                  // method Bool is_channel_tripped (Bit #(2) mode, Bool sensor_tripped);
+                  let mode = wdata[2:1];
+                  let sensor_tripped = unpack(wdata[3]);
+                  rg_instr_hand_res <= signExtend( pack(instr_hand.channel.is_channel_tripped(mode, sensor_tripped)) );
+               end
+            else
+               begin
+                  // generate_sensor_trips
+                  Vector#(3, Bit#(32)) vals = newVector;
+                  vals[0] = instr_hand_vals[0];
+                  vals[1] = instr_hand_vals[1];
+                  vals[2] = instr_hand_vals[2];
+
+                  Vector#(3, Bit#(32)) setpoints = newVector;
+                  setpoints[0] = instr_hand_setpoints[0];
+                  setpoints[1] = instr_hand_setpoints[1];
+                  setpoints[2] = instr_hand_setpoints[2];
+
+                  let res = signExtend(pack(
+                              instr_hand.sensors.generate_sensor_trips(vals, setpoints)
+                           ));
+                  res[31] = 1;
+                  rg_instr_hand_res <= res;
+               end
+            end
+         instr_reg_addr_hand_instr_val_0:
+            begin
+               instr_hand_vals[0] <= ((instr_hand_vals[0] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_hand_instr_val_1:
+            begin
+               instr_hand_vals[1] <= ((instr_hand_vals[1] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_hand_instr_val_2:
+            begin
+               instr_hand_vals[2] <= ((instr_hand_vals[2] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_hand_setpoint_val_0:
+            begin
+               instr_hand_setpoints[0] <= ((instr_hand_setpoints[0] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_hand_setpoint_val_1:
+            begin
+               instr_hand_setpoints[1] <= ((instr_hand_setpoints[1] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_hand_setpoint_val_2:
+            begin
+               instr_hand_setpoints[2] <= ((instr_hand_setpoints[2] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_hand_res:
+            begin
+               val = rg_instr_hand_res;
+            end
+      endcase
+      return val;
+   endactionvalue;
+
+   // Instrumentation generated
+   function ActionValue#(Bit#(32)) fn_instrumentation_generated(Bit#(32) addr, Bit#(32) mask, Bit#(32) wdata)
+   = actionvalue
+      let val = 0;
+      case (addr)
+         instr_reg_addr_gen_base:
+            begin
+            // wdata[0] - fnc select ( 0 - is_channel_tripped | 1 - generate_sensor_trips)
+            // wdata[2:1] - mode
+            // wdata[3] - sensor_tripped
+            // rg_instr_gen_res[2:0] - result
+            // rg_instr_gen_res[31] - fnc select ( 0 - is_channel_tripped | 1 - generate_sensor_trips)
+            if (wdata[0] == 0)
+               begin
+               // is_channel_tripped
+               // method Bool is_channel_tripped (Bit #(2) mode, Bool sensor_tripped);
+               let mode = wdata[2:1];
+               let sensor_tripped = unpack(wdata[3]);
+               rg_instr_gen_res <= signExtend(pack(
+                                    instr_gen.channel.is_channel_tripped(mode, sensor_tripped)
+                                    ));
+               end
+            else
+               begin
+                  // generate_sensor_trips
+                  Vector#(3, Bit#(32)) vals = newVector;
+                  vals[0] = instr_gen_vals[0];
+                  vals[1] = instr_gen_vals[1];
+                  vals[2] = instr_gen_vals[2];
+
+                  Vector#(3, Bit#(32)) setpoints = newVector;
+                  setpoints[0] = instr_gen_setpoints[0];
+                  setpoints[1] = instr_gen_setpoints[1];
+                  setpoints[2] = instr_gen_setpoints[2];
+                  let res = signExtend(pack(
+                              instr_gen.sensors.generate_sensor_trips(vals, setpoints)
+                           ));
+                  res[31] = 1;
+                  rg_instr_gen_res <= res;
+               end
+            end
+         instr_reg_addr_gen_instr_val_0:
+            begin
+               instr_gen_vals[0] <= ((instr_gen_vals[0] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_gen_instr_val_1:
+            begin
+               instr_gen_vals[1] <= ((instr_gen_vals[1] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_gen_instr_val_2:
+            begin
+               instr_gen_vals[2] <= ((instr_gen_vals[2] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_gen_setpoint_val_0:
+            begin
+               instr_gen_setpoints[0] <= ((instr_gen_setpoints[0] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_gen_setpoint_val_1:
+            begin
+               instr_gen_setpoints[1] <= ((instr_gen_setpoints[1] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_gen_setpoint_val_2:
+            begin
+               instr_gen_setpoints[2] <= ((instr_gen_setpoints[2] & (~ mask)) | (wdata & mask));
+            end
+         instr_reg_addr_gen_res:
+            begin
+               val = rg_instr_gen_res;
+            end
+      endcase
+      return val;
+   endactionvalue;
+
+   // Actuation Generated
+   function ActionValue#(Bit#(32)) fn_actuation(Bit#(32) addr, Bit#(32) mask, Bit#(32) wdata)
+      = actionvalue
+      let val = 0;
+      case (addr)
+         actuation_reg_addr_gen_base:
+            begin
+               // base - trigger the actuation
+               Bool old = unpack(wdata[0]);
+               Vector#(3, Bit#(32)) trips = newVector;
+               trips[0] = actuation_trips[0];
+               trips[1] = actuation_trips[1];
+               trips[2] = actuation_trips[2];
+               // wdata[0] - value of `old` argument
+               // wdata[1] - which actuator to actuate
+               if (wdata[1] == 0)
+                  begin
+                     // Actuate D0
+                     rg_actuation_res <= signExtend( pack(actuation_gen.d0.actuate_d0(trips, old)) );
+                  end
+               else
+                  begin
+                     // Actuate D1
+                     rg_actuation_res <= signExtend( pack(actuation_gen.d1.actuate_d1(trips, old)) );
+                  end
+            end
+         actuation_reg_addr_gen_trip_0:
+            begin
+               // Set value for trip value 0
+               actuation_trips[0] <= ((actuation_trips[0] & (~ mask)) | (wdata & mask));
+            end
+         actuation_reg_addr_gen_trip_1:
+            begin
+               // Set value for trip value 1
+               actuation_trips[1] <= ((actuation_trips[1] & (~ mask)) | (wdata & mask));
+            end
+         actuation_reg_addr_gen_trip_2:
+            begin
+               // Set value for trip value 2
+               actuation_trips[2] <= ((actuation_trips[2] & (~ mask)) | (wdata & mask));
+            end
+         actuation_reg_addr_gen_res:
+            begin
+               // Get actuation results
+               val = rg_actuation_res;
+            end
+      endcase
+      return val;
+      endactionvalue;
+
+
    /**
    * ////////////////////////////////////////////////////////////////
    * State machine
    * ////////////////////////////////////////////////////////////////
    */
-   rule stateReqI (state == REQ_I); // default state
-      // request a new instruction from m_imem_addr
+   // default state: request a new instruction from m_imem_addr
+   rule stateReqI (state == REQ_I);
       imem_bram.put(False, nerv.m_imem_addr [31:2], 0);
       nerv.m_stall (True); // stall CPU until the fetch is done
       rg_tick <= rg_tick + 1;
@@ -218,8 +448,8 @@ module mkNervSoC (NervSoC_IFC);
       state <= PUSH_I;
    endrule
 
+   // push the new instruction from the memory to the CPU
    rule statePushI (state == PUSH_I);
-      // push the new instruction from the memory to the CPU
       nerv.m_imem_data (imem_bram.read());
       if (nerv.m_dmem_valid)
          state <= REQ_D;
@@ -227,14 +457,14 @@ module mkNervSoC (NervSoC_IFC);
          state <= STOP;
    endrule
 
+   // request data from a new data memory address
    rule stateReqD (state == REQ_D);
-      // request data from a new data memory address
       dmem_bram.put(False, nerv.m_dmem_addr [31:2], 0);
       state <= PUSH_D;
    endrule
 
+   // push new data into the CPU
    rule statePushD (state == PUSH_D);
-      // push new data into the CPU
       let d_addr     = nerv.m_dmem_addr;
       let mem_data = dmem_bram.read();
       let dmw      = nerv.m_get_dmem;
@@ -249,19 +479,31 @@ module mkNervSoC (NervSoC_IFC);
       if (show_load_store)
          $display ("DMem addr 0x%0h  wstrb 0x%0h  wdata 0x%0h mask 0x%0h put_data 0x%0h" , d_addr[31:2], wstrb, wdata, mask, put_data);
 
-      case (d_addr)
-         gpio_addr:
+      // a priority encoder that takes the first arm whose condition is true.
+      case (True)
+         // GPIO update
+         (gpio_addr == d_addr):
             put_data <- fn_gpio(mask, wdata);
-         uart_reg_addr_tx, uart_reg_addr_rx, uart_reg_addr_dr:
+         // UART
+         (uart_reg_addr_tx <= d_addr && d_addr < i2c_reg_addr_base): 
             put_data <- fn_uart(d_addr, wdata);
-         clock_reg_adrr_lower, clock_reg_adrr_upper:
+         // I2C
+         (i2c_reg_addr_base <= d_addr && d_addr < clock_reg_adrr_lower):
+            put_data <- fn_i2c(d_addr, mask, wdata);
+         // Clock
+         (clock_reg_adrr_lower <= d_addr && d_addr < instr_reg_addr_hand_base):
             put_data = fn_clock(d_addr);
-         /**
-         * ////////////////////////////////////////////////////////////////
-         * Regular memory read (no IO)
-         * ////////////////////////////////////////////////////////////////
-         */
+         // Instrumentation handwritten
+         (instr_reg_addr_hand_base <= d_addr && d_addr < instr_reg_addr_gen_base):
+            put_data <- fn_instrumentation_handwritten(d_addr, mask, wdata);
+         // Instrumentation generated
+         (instr_reg_addr_gen_base <= d_addr && d_addr < actuation_reg_addr_gen_base):
+            put_data <- fn_instrumentation_generated(d_addr, mask, wdata);
+         // Actuation Generated
+         (actuation_reg_addr_gen_base <= d_addr && d_addr < io_top_addr):
+            put_data <- fn_actuation(d_addr, mask, wdata);
          default:
+            // Regular memory read (no IO)
             begin
                dmem_bram.put(True, d_addr [31:2], put_data);
             end
@@ -273,312 +515,9 @@ module mkNervSoC (NervSoC_IFC);
 
    rule stateStop (state == STOP);
       nerv.m_dmem_rdata (rg_dmem_rdata);
-      nerv.m_stall (False); // unstall the CPU
+      nerv.m_stall (False); // un-stall the CPU
       state <= REQ_I;
    endrule
-
-
-   /**
-   * ////////////////////////////////////////////////////////////////
-   * Instruction memory
-   * ////////////////////////////////////////////////////////////////
-   */
-   // This rule deals with instruction fetch and D-Mem read results
-   //(* fire_when_enabled, no_implicit_conditions *)
-   // rule rl_always;
-   //    // let i_addr = nerv.m_imem_addr;
-   //    // let imem_data = imem_bram.read();
-   //    // rg_imem_addr <= i_addr;
-   //    // imem_bram.put(False, i_addr [31:2], 0);
-
-   //    // nerv.m_stall (False);
-   //    // nerv.m_imem_data (imem_data);
-   //    // nerv.m_dmem_rdata (rg_dmem_rdata);
-
-   //    // if (show_exec_trace)
-   //    //    $display ("%0d: PC 0x%0h  Instr 0x%0h  Next PC 0x%0h dmem_valid 0x%0h",
-   //    //       rg_tick, rg_imem_addr, imem_data, i_addr, nerv.m_dmem_valid);
-
-   //    // TODO: this will be wrong
-   //    rg_tick <= rg_tick + 1;
-   //    rw_tick.wset(rg_tick);
-   // endrule
-
-   /**
-   * ////////////////////////////////////////////////////////////////
-   * Data memory
-   * ////////////////////////////////////////////////////////////////
-   */
-   // This rule deals with D-Mem writes and IO writes
-   // rule rl_memop(nerv.m_dmem_valid);
-   //    case (d_addr)
-   //       /**
-   //       * ////////////////////////////////////////////////////////////////
-   //       * GPIO write
-   //       * ////////////////////////////////////////////////////////////////
-   //       */
-   //       gpio_addr:
-   //          begin
-   //             // GPIO update
-   //             let gpio_val = ((rg_gpio & (~ mask)) | (wdata & mask));
-   //             rg_gpio <= gpio_val;
-   //             rg_dmem_rdata <= gpio_val;
-   //          end
-   //       /**
-   //       * ////////////////////////////////////////////////////////////////
-   //       * UART
-   //       * ////////////////////////////////////////////////////////////////
-   //       */
-   //       // Write a byte to serial port
-   //       uart_reg_addr_tx:
-   //          begin
-   //                rg_uart_tx <= wdata[7:0];
-   //                rg_uart_tx_data_ready <= True;
-   //          end
-   //       // Receive data from serial port
-   //       // Note: might be 0 or stale, check uart_reg_addr_dr first
-   //       uart_reg_addr_rx:
-   //          begin
-   //                rg_dmem_rdata <= signExtend(rg_uart_rx);
-   //                rg_uart_rx_data_ready <= False;
-   //          end
-   //       uart_reg_addr_dr:
-   //          begin
-   //                if (rg_uart_rx_data_ready)
-   //                rg_dmem_rdata <= 1;
-   //                else
-   //                rg_dmem_rdata <= 0;
-   //          end
-   //       /**
-   //       * ////////////////////////////////////////////////////////////////
-   //       * I2C
-   //       * ////////////////////////////////////////////////////////////////
-   //       */
-   //       i2c_reg_addr_base:
-   //          begin
-   //             // Only 8 bytes for the address, the rest is ignored
-   //             rg_i2c_addr <= wdata[7:0];
-   //             rg_i2c_transaction_ready <= True;
-   //          end
-   //       i2c_reg_addr_data:
-   //          begin
-   //             if (mask == 0)
-   //             begin
-   //                // Read rg_i2c_data
-   //                rg_dmem_rdata <= rg_i2c_data;
-   //             end
-   //             else
-   //             begin
-   //                // Write to rg_i2c_data
-   //                rg_i2c_data <= wdata;//((rg_i2c_data & (~ mask)) | (wdata & mask));
-   //             end
-   //          end
-   //       i2c_reg_addr_stat:
-   //          begin
-   //             rg_dmem_rdata <= rg_i2c_transaction_complete;
-   //             rg_i2c_transaction_complete <= 0;
-   //          end
-   //       /**
-   //       * ////////////////////////////////////////////////////////////////
-   //       * Instrumentation handwritten unit
-   //       * ////////////////////////////////////////////////////////////////
-   //       */
-   //       instr_reg_addr_hand_base:
-   //          begin
-   //             // wdata[0] - fnc select ( 0 - is_channel_tripped | 1 - generate_sensor_trips)
-   //             // wdata[2:1] - mode
-   //             // wdata[3] - sensor_tripped
-   //             // rg_instr_hand_res[2:0] - result
-   //             // rg_instr_hand_res[31] - fnc select ( 0 - is_channel_tripped | 1 - generate_sensor_trips)
-   //             if (wdata[0] == 0)
-   //                begin
-   //                   // is_channel_tripped
-   //                   // method Bool is_channel_tripped (Bit #(2) mode, Bool sensor_tripped);
-   //                   let mode = wdata[2:1];
-   //                   let sensor_tripped = unpack(wdata[3]);
-   //                   rg_instr_hand_res <= signExtend( pack(instr_hand.channel.is_channel_tripped(mode, sensor_tripped)) );
-   //                end
-   //             else
-   //                begin
-   //                   // generate_sensor_trips
-   //                   Vector#(3, Bit#(32)) vals = newVector;
-   //                   vals[0] = instr_hand_vals[0];
-   //                   vals[1] = instr_hand_vals[1];
-   //                   vals[2] = instr_hand_vals[2];
-
-   //                   Vector#(3, Bit#(32)) setpoints = newVector;
-   //                   setpoints[0] = instr_hand_setpoints[0];
-   //                   setpoints[1] = instr_hand_setpoints[1];
-   //                   setpoints[2] = instr_hand_setpoints[2];
-
-   //                   let res = signExtend(pack(
-   //                               instr_hand.sensors.generate_sensor_trips(vals, setpoints)
-   //                            ));
-   //                   res[31] = 1;
-   //                   rg_instr_hand_res <= res;
-   //                end
-   //          end
-   //       instr_reg_addr_hand_instr_val_0:
-   //          begin
-   //             instr_hand_vals[0] <= ((instr_hand_vals[0] & (~ mask)) | (wdata & mask));
-   //          end
-   //       instr_reg_addr_hand_instr_val_1:
-   //          begin
-   //             instr_hand_vals[1] <= ((instr_hand_vals[1] & (~ mask)) | (wdata & mask));
-   //          end
-   //       instr_reg_addr_hand_instr_val_2:
-   //          begin
-   //             instr_hand_vals[2] <= ((instr_hand_vals[2] & (~ mask)) | (wdata & mask));
-   //          end
-   //       instr_reg_addr_hand_setpoint_val_0:
-   //          begin
-   //             instr_hand_setpoints[0] <= ((instr_hand_setpoints[0] & (~ mask)) | (wdata & mask));
-   //          end
-   //       instr_reg_addr_hand_setpoint_val_1:
-   //          begin
-   //             instr_hand_setpoints[1] <= ((instr_hand_setpoints[1] & (~ mask)) | (wdata & mask));
-   //          end
-   //       instr_reg_addr_hand_setpoint_val_2:
-   //          begin
-   //             instr_hand_setpoints[2] <= ((instr_hand_setpoints[2] & (~ mask)) | (wdata & mask));
-   //          end
-   //       instr_reg_addr_hand_res:
-   //          begin
-   //             rg_dmem_rdata <= rg_instr_hand_res;
-   //          end
-   //       /**
-   //       * ////////////////////////////////////////////////////////////////
-   //       * Instrumentation generated unit
-   //       * ////////////////////////////////////////////////////////////////
-   //       */
-   //       instr_reg_addr_gen_base:
-   //          begin
-   //             // wdata[0] - fnc select ( 0 - is_channel_tripped | 1 - generate_sensor_trips)
-   //             // wdata[2:1] - mode
-   //             // wdata[3] - sensor_tripped
-   //             // rg_instr_gen_res[2:0] - result
-   //             // rg_instr_gen_res[31] - fnc select ( 0 - is_channel_tripped | 1 - generate_sensor_trips)
-   //             if (wdata[0] == 0)
-   //                begin
-   //                // is_channel_tripped
-   //                // method Bool is_channel_tripped (Bit #(2) mode, Bool sensor_tripped);
-   //                let mode = wdata[2:1];
-   //                let sensor_tripped = unpack(wdata[3]);
-   //                rg_instr_gen_res <= signExtend(pack(
-   //                                     instr_gen.channel.is_channel_tripped(mode, sensor_tripped)
-   //                                     ));
-   //                end
-   //             else
-   //                begin
-   //                   // generate_sensor_trips
-   //                   Vector#(3, Bit#(32)) vals = newVector;
-   //                   vals[0] = instr_gen_vals[0];
-   //                   vals[1] = instr_gen_vals[1];
-   //                   vals[2] = instr_gen_vals[2];
-
-   //                   Vector#(3, Bit#(32)) setpoints = newVector;
-   //                   setpoints[0] = instr_gen_setpoints[0];
-   //                   setpoints[1] = instr_gen_setpoints[1];
-   //                   setpoints[2] = instr_gen_setpoints[2];
-   //                   let res = signExtend(pack(
-   //                               instr_gen.sensors.generate_sensor_trips(vals, setpoints)
-   //                            ));
-   //                   res[31] = 1;
-   //                   rg_instr_gen_res <= res;
-   //                end
-   //          end
-   //       instr_reg_addr_gen_instr_val_0:
-   //          begin
-   //             instr_gen_vals[0] <= ((instr_gen_vals[0] & (~ mask)) | (wdata & mask));
-   //          end
-   //       instr_reg_addr_gen_instr_val_1:
-   //          begin
-   //             instr_gen_vals[1] <= ((instr_gen_vals[1] & (~ mask)) | (wdata & mask));
-   //          end
-   //       instr_reg_addr_gen_instr_val_2:
-   //          begin
-   //             instr_gen_vals[2] <= ((instr_gen_vals[2] & (~ mask)) | (wdata & mask));
-   //          end
-   //       instr_reg_addr_gen_setpoint_val_0:
-   //          begin
-   //             instr_gen_setpoints[0] <= ((instr_gen_setpoints[0] & (~ mask)) | (wdata & mask));
-   //          end
-   //       instr_reg_addr_gen_setpoint_val_1:
-   //          begin
-   //             instr_gen_setpoints[1] <= ((instr_gen_setpoints[1] & (~ mask)) | (wdata & mask));
-   //          end
-   //       instr_reg_addr_gen_setpoint_val_2:
-   //          begin
-   //             instr_gen_setpoints[2] <= ((instr_gen_setpoints[2] & (~ mask)) | (wdata & mask));
-   //          end
-   //       instr_reg_addr_gen_res:
-   //          begin
-   //             rg_dmem_rdata <= rg_instr_gen_res;
-   //          end
-   //       /**
-   //       * ////////////////////////////////////////////////////////////////
-   //       * Actuation unit
-   //       * ////////////////////////////////////////////////////////////////
-   //       */
-   //       actuation_reg_addr_gen_base:
-   //          begin
-   //             // base - trigger the actuation
-   //             Bool old = unpack(wdata[0]);
-   //             Vector#(3, Bit#(32)) trips = newVector;
-   //             trips[0] = actuation_trips[0];
-   //             trips[1] = actuation_trips[1];
-   //             trips[2] = actuation_trips[2];
-   //             // wdata[0] - value of `old` argument
-   //             // wdata[1] - which actuator to actuate
-   //             if (wdata[1] == 0)
-   //                begin
-   //                   // Actuate D0
-   //                   rg_actuation_res <= signExtend( pack(actuation_gen.d0.actuate_d0(trips, old)) );
-   //                end
-   //             else
-   //                begin
-   //                   // Actuate D1
-   //                   rg_actuation_res <= signExtend( pack(actuation_gen.d1.actuate_d1(trips, old)) );
-   //                end
-   //          end
-   //       actuation_reg_addr_gen_trip_0:
-   //          begin
-   //             // Set value for trip value 0
-   //             actuation_trips[0] <= ((actuation_trips[0] & (~ mask)) | (wdata & mask));
-   //          end
-   //       actuation_reg_addr_gen_trip_1:
-   //          begin
-   //             // Set value for trip value 1
-   //             actuation_trips[1] <= ((actuation_trips[1] & (~ mask)) | (wdata & mask));
-   //          end
-   //       actuation_reg_addr_gen_trip_2:
-   //          begin
-   //             // Set value for trip value 2
-   //             actuation_trips[2] <= ((actuation_trips[2] & (~ mask)) | (wdata & mask));
-   //          end
-   //       actuation_reg_addr_gen_res:
-   //          begin
-   //             // Get actuation results
-   //             rg_dmem_rdata <= rg_actuation_res;
-   //          end
-   //       /**
-   //       * ////////////////////////////////////////////////////////////////
-   //       * Default (no IO)
-   //       * ////////////////////////////////////////////////////////////////
-   //       */
-   //       default:
-   //          begin
-   //             // Regular memory read
-   //             //dmem.upd (d_addr [31:2], ((mem_data & (~ mask)) | (wdata & mask)));
-   //             //dmem_bram.put(True, d_addr [31:2], put_data);
-   //             rg_dmem_rdata <= mem_data;
-   //             rg_dmem_put_data <= put_data;
-   //             rg_dmem_addr <= d_addr [31:2];
-   //             if (show_load_store)
-   //                $display ("rl_memop addr 0x%0h  data 0x%0h", d_addr [31:2], put_data);
-   //          end
-   //    endcase
-   // endrule
 
    /**
    * ////////////////////////////////////////////////////////////////

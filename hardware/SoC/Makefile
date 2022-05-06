@@ -57,7 +57,7 @@ VERILOG_DIR = verilog
 BSCDIRS_V = -vdir $(VERILOG_DIR)  -bdir $(BUILD_V_DIR)  -info-dir $(BUILD_V_DIR)
 
 FIRMWARE_DIR = firmware
-PROG 	?= demo
+PROG 	?= main
 
 # TODO: properly storing sdata in FLASH could help keep the dmem smaller
 dmem_contents.memhex32:
