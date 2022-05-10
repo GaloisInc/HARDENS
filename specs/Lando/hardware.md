@@ -6,6 +6,11 @@ The physical hardware components that are a part of the HARDENS RTS demonstrator
 ### <a id ="usb-cable"></a>USB Cable
 A normal USB cable. What kind of USB connector is on the start of the cable? What kind of USB connector is on the end of the cable?
 <!--COMPONENT/-->
+<!--RELATION-->
+#### relation USB Cable
+* inherits [USB](#usb)
+* inherits [Cable](#cable)
+<!--RELATION/-->
 <!--COMPONENT-->
 ### <a id ="serdes-test-sma-connectors"></a>SERDES Test SMA Connectors (J9-J26)
 @todo To be copied from board documentation.
@@ -86,6 +91,18 @@ A sensor that is capable of measuring the air pressure of its environment. What 
 ### <a id ="solenoid-actuator"></a>Solenoid Actuator
 A solenoid actuator capable of being in an open or closed state. Close! Open!
 <!--COMPONENT/-->
+<!--RELATION-->
+#### relation Temperature Sensor
+* inherits [Sensor](#sensor)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Pressure Sensor
+* inherits [Sensor](#sensor)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Solenoid Actuator
+* inherits [Actuator](#actuator)
+<!--RELATION/-->
 <!--SUBSYSTEM RTS Hardware Artifacts/-->
 <!--SUBSYSTEM Physical Architecture-->
 ## <a id ="physical-architecture"></a>Physical Architecture
@@ -139,4 +156,76 @@ The fully assembled HARDENS demonstrator hardware with all component present.
 ### <a id ="developer-machine"></a>Developer Machine
 The computer used by a developer to interface with the demonstrator, typically for driving the demonstrator's UI and programming and debugging the board.
 <!--COMPONENT/-->
+<!--RELATION-->
+#### relation Demonstrator
+* client of [Board](#board)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Board
+* client of [UI](#ui)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Board
+* client of [UI-C](#ui-c)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Board
+* client of [Prog-C](#prog-c)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Board
+* client of [Debug-C](#debug-c)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Board
+* client of [TS1](#ts1)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Board
+* client of [TS2](#ts2)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Board
+* client of [PS1](#ps1)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Board
+* client of [PS2](#ps2)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Board
+* client of [SA1](#sa1)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Board
+* client of [SA2](#sa2)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation UI-C
+* client of [Developer Machine](#developer-machine)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Prog-C
+* client of [Developer Machine](#developer-machine)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Debug-C
+* client of [Developer Machine](#developer-machine)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation ECP5-5G Device
+* inherits [FPGA](#fpga)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Board
+* contains [ECP5-5G](#ecp5-5g)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Board
+* inherits [PCB](#pcb)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation FPGA Dev Board
+* contains [J2](#j2)
+<!--RELATION/-->
 <!--SUBSYSTEM Physical Architecture/-->
