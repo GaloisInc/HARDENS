@@ -26,6 +26,22 @@ All correctness and security properties of the RTS system are specified in this 
 ## <a id ="ieee-std-603-2018-characteristics"></a>IEEE Std 603-2018 Characteristics (Characteristics)
 The IEEE 603-2018 requirements (known as "characteristics" in the standard) which the RTS demonstrator system must fulfill.
 
+<!--RELATION-->
+#### relation RTS
+* contains [Architecture](#architecture)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation RTS
+* contains [Hardware](#hardware)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation RTS
+* contains [Properties](#properties)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation RTS
+* contains [Characteristics](#characteristics)
+<!--RELATION/-->
 <!--SUBSYSTEM IEEE Std 603-2018 Characteristics/--><!-- title: Reactor Trip System high-assurance demonstrator. -->
 <!-- project: High Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS) -->
 <!-- copyright (C) 2021 Galois -->

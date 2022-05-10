@@ -67,4 +67,72 @@ inherit Machine-generated Hardware @todo kiniry Add an explanation.
 ## <a id ="dataflow-of-rts-implementation-artifacts"></a>Dataflow of RTS Implementation Artifacts (Dataflow)
 This specification, which comes from the Galois HARDENS proposal, describes the relationships between various levels of specifications, implementations, and assurance artifacts for the HARDENS demonstrator. indexing proposal_figure: 3 figure_name: Dataflow of RTS Implementation Artifacts.
 
+<!--RELATION-->
+#### relation CryptolToC
+* client of [CryptolSpec](#cryptolspec)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation CryptolToSystemVerilog
+* client of [CryptolSpec](#cryptolspec)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation SynthSW
+* client of [CryptolToC](#cryptoltoc)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation SynthHW
+* client of [CryptolToSystemVerilog](#cryptoltosystemverilog)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation SynthHW
+* client of [BSC](#bsc)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation CompCert
+* client of [SynthSoftImpl](#synthsoftimpl)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation CompCert
+* client of [SoftImpl](#softimpl)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation BSC
+* inherits [Compiler](#compiler)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation BSC
+* client of [HWImpl](#hwimpl)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation SymbiFlow
+* client of [SynthHW](#synthhw)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation SymbiFlow
+* client of [CPU](#cpu)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Binaries
+* client of [CompCert](#compcert)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation RTL
+* client of [SymbiFLow](#symbiflow)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation RTL
+* contains [Soft-core RISC-V CPU](#soft-core-risc-v-cpu)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Bitstream
+* contains [SynthHW](#synthhw)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation Bitstream
+* contains [CPU](#cpu)
+<!--RELATION/-->
+<!--RELATION-->
+#### relation BitStream
+* client of [SymbiFlow](#symbiflow)
+<!--RELATION/-->
 <!--SUBSYSTEM Dataflow of RTS Implementation Artifacts/-->
