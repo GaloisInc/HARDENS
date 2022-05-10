@@ -98,25 +98,23 @@ component Instrumentation 4
 @todo kiniry Add an explanation.
 
 // Top-level subsystems.
-// Lando currently doesn't support the relations below
-// relation RTS_System_Arch contains Root
-// relation RTS_System_Arch contains Actuation Logic
-// relation RTS_System_Arch contains Computation
-// relation RTS_System_Arch contains Hardware
-// relation RTS_System_Arch contains Instrumentation
+relation RTS_System_Arch contains Root
+relation RTS_System_Arch contains Actuation Logic
+relation RTS_System_Arch contains Computation
+relation RTS_System_Arch contains Hardware
+relation RTS_System_Arch contains Instrumentation
 
-// // Nested subsystems.
-// relation Hardware contains FPGA
-// relation Hardware contains Actuators
-// relation Hardware contains Sensors
+// Nested subsystems.
+relation Hardware contains FPGA
+relation Hardware contains Actuators
+relation Hardware contains Sensors
 
-// // Client-supplier relations.
-// relation Root client Actuation Logic
-// relation Root client Computation
+// Client-supplier relations.
+relation Root client Actuation Logic
+relation Root client Computation
 
-// relation Computation client Hardware
-// relation Actuation Logic client Hardware
-// relation Instrumentation client Hardware
-// relation Instrumentation client Actuation Logic
-// relation Actuation Logic client Instrumentation
-
+relation Computation client Hardware
+relation Actuation Logic client Hardware
+relation Instrumentation client Hardware
+relation Instrumentation client Actuation Logic
+relation Actuation Logic client Instrumentation

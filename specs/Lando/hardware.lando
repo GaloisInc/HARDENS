@@ -49,9 +49,6 @@ component Microphone Board/GPIO Header (J30)
 component Prototype Area
 @todo To be copied from board documentation.
 
-component GPIO Headers (J5_and_J8)
-@todo To be copied from board documentation.
-
 component ECP5-5G Device (U3)
 @todo To be copied from board documentation.
 
