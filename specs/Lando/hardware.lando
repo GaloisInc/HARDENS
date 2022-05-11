@@ -48,9 +48,6 @@ component Microphone Board/GPIO Header (J30)
 component Prototype Area
 @todo To be copied from board documentation.
 
-component GPIO Headers (J5_and_J8)
-@todo To be copied from board documentation.
-
 component ECP5-5G Device (U3)
 @todo To be copied from board documentation.
 
@@ -63,15 +60,7 @@ component Mini USB Programming (J2)
 component Lattice ECP-5 FPGA Development Board (Board)
 @todo To be copied from board documentation.
 
-relation ECP5-5G Device inherit FPGA
-relation Board contains ECP5-5G
-relation Board inherit PCB
-
 // @todo Add all board I/O and devices listed above.
-
-relation FPGA Dev Board contains J2
-
-// relation FPGA Dev Board contains etc.
 
 component Temperature Sensor
 A sensor that is capable of measuring the temperature of its environment.
@@ -133,6 +122,11 @@ component HARDENS Demonstrator (Demonstrator)
 The fully assembled HARDENS demonstrator hardware with all component
 present.
 
+component Developer Machine
+The computer used by a developer to interface with the demonstrator,
+typically for driving the demonstrator's UI and programming and
+debugging the board.
+
 relation Demonstrator client Board
 relation Board client UI
 relation Board client UI-C
@@ -144,15 +138,11 @@ relation Board client PS1
 relation Board client PS2
 relation Board client SA1
 relation Board client SA2
-
-component Developer Machine
-The computer used by a developer to interface with the demonstrator,
-typically for driving the demonstrator's UI and programming and
-debugging the board.
-
 relation UI-C client Developer Machine
 relation Prog-C client Developer Machine
 relation Debug-C client Developer Machine
-
-
+relation ECP5-5G Device inherit FPGA
+relation Board contains ECP5-5G
+relation Board inherit PCB
+relation FPGA Dev Board contains J2
 

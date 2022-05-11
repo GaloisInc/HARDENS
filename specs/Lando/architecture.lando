@@ -98,7 +98,6 @@ component Instrumentation 4
 @todo kiniry Add an explanation.
 
 // Top-level subsystems.
-
 relation RTS_System_Arch contains Root
 relation RTS_System_Arch contains Actuation Logic
 relation RTS_System_Arch contains Computation
@@ -119,4 +118,3 @@ relation Actuation Logic client Hardware
 relation Instrumentation client Hardware
 relation Instrumentation client Actuation Logic
 relation Actuation Logic client Instrumentation
-
