@@ -27,6 +27,7 @@ DMEMORY_SIZE ?= 0x03000
 
 TOPFILE   ?= src_BSV/Top.bsv
 TOPMODULE ?= mkTop
+TARGET ?= verilator
 
 BSCFLAGS += -keep-fires
 BSCFLAGS += -aggressive-conditions
@@ -37,6 +38,9 @@ BSCFLAGS += -unspecified-to 0
 BSCFLAGS += -parallel-sim-link 8
 # BSCFLAGS += -show-schedule
 # BSCFLAGS += -no-inline-rwire
+ifeq ($(TARGET),verilator)
+BSCFLAGS += -D SIMULATION
+endif
 
 BSC_C_FLAGS += -Xc++  -D_GLIBCXX_USE_CXX11_ABI=0
 BSC_C_FLAGS += -Xl -v
@@ -171,8 +175,7 @@ design.json: verilator
 	yosys -p "synth_ecp5 -top top -json $@ -top mkNervSoC" test/*.v test/*.sv
 
 design.config: design.json
-	nextpnr-ecp5 --json $< --textcfg $@ --um5g-85k --package CABGA381 --lpf ecp5.lpf --lpf-allow-unconstrained
-# TODO: constrain pins
+	nextpnr-ecp5 --json $< --textcfg $@ --um5g-85k --package CABGA381 --lpf ecp5.lpf
 
 design.bit: design.config
 	ecppack --svf design.svf $< $@
