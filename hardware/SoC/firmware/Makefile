@@ -46,6 +46,18 @@ endif
 ASFLAGS  += -g $(ARCH) $(ABI) -Wa,-Ilegacy
 CFLAGS += $(OPT) -g3 $(ARCH) $(ABI) $(COMPILER_FLAGS) $(WARNINGS) $(INCLUDES) -DPRINTF_INCLUDE_CONFIG_H
 LDFLAGS	 += -Wl,-Bstatic,-T,sections.ld,--strip-debug -nostartfiles -nostdlib $(ARCH) $(ABI)
+
+
+ifneq ($(SELF_TEST_PERIOD_SEC),)
+CFLAGS += -DSELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC)
+endif
+
+SELF_TEST ?= Enabled
+
+ifeq ($(SELF_TEST),Enabled)
+CFLAGS += -DENABLE_SELF_TEST
+endif
+
 #
 # Define all object files.
 #
