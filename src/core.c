@@ -252,7 +252,7 @@ int core_step(struct core_state *c) {
     switch (rts.type) {
     case INSTRUMENTATION_COMMAND:
       err |= send_instrumentation_command(rts.instrumentation_division,
-                                          &rts.cmd.instrumentation);
+                                          &(rts.cmd.instrumentation));
       break;
 
     case ACTUATION_COMMAND:

@@ -58,7 +58,7 @@ uint8_t soc_getchar(void)
   int startime = time_in_ms();
   int delay_ms = 0;
   // Wait 1s for each character
-  while (1 && (delay_ms < 2000)) {
+  while ((delay_ms < 2000)) {
     if (*data_rdy){
         return (uint8_t)(*rx_data);
     }

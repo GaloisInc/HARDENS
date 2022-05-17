@@ -40,120 +40,132 @@ void update_display()
 #endif
 }
 
-/**
- * Return first space-separated substring
- * TODO: make more robust (effectively we need a custom sscanf)
- */
-size_t split_string(size_t in_idx, size_t max_len, char in_array[], char out_array[])
-{
-  printf(">>>in_array:%s<<<\n",in_array);
-  size_t out_idx = in_idx;
-  int number_of_bytes = 0;
-
-  for (size_t i = 0; i < max_len; i++) {
-    out_array[i] = 0;
-  }
-  
-  for (size_t i = in_idx; i < max_len; i++) {
-    if ((in_array[i] == ' ') || (in_array[i] == '\n') || (in_array[i] == '\r') || ((in_array[i] == '\t'))) {
-      // check for termination
-      if (number_of_bytes == 0) {
-        // we just started, continue but increment in_idx
-        in_idx++;
-        continue;
-      } else {
-        // we reached the end of segment
-        break;
-      }
-    } else {
-      // increment out index
-      out_idx++;
-      number_of_bytes++;
-    }
-    memcpy(out_array, &in_array[in_idx], number_of_bytes);
-    // terminate string
-    in_array[number_of_bytes] = '\n';
-  }
-
-  printf(">>>out_array:%s<<<\n",out_array);
-  return out_idx;
-}
-
 int read_rts_command(struct rts_command *cmd)
 {
-  char line[256] = {0};
-  char substr[256] = {0};
+  const char delimiter[2] = " ";
+  char line[254] = {0};
+  char *token = NULL;
   int ok = 0;
+  int linelen = 0;
 
   // @todo podhrmic: make conditional on self-test *not* running
   printf("\nEnter command and press enter:\n");
-  delay_ms(1000);
-
+  memset(line,0,sizeof(line));
   for (unsigned int i = 0; i < sizeof(line); i++) {
     line[i] = soc_getchar();
+    linelen = i;
     if (line[i] == 0 || line[i] == '\n') {
       break;
     }
   }
-  
-  printf("> %s\n",line);
+  printf(">>>%s<<<[%d]\n",line, linelen);
+
 #if CLEAN_SCREEN
   printf("\e[%d;1H\e[2K> ", NLINES+1);
 #endif
 
-  int index = 2;
-  switch (line[0]) {
-    case 'A':
-      cmd->type = ACTUATION_COMMAND;
-      // "A %hhd %hhd", &device, &on
-      index = split_string(index, sizeof(line), line, substr);
-      cmd->cmd.act.device = atoi(substr);
-      split_string(index, sizeof(line), line, substr);
-      cmd->cmd.act.on = atoi(substr);
-      printf("ACTUATION_COMMAND dev=%d on=%d\n",cmd->cmd.act.device, cmd->cmd.act.on);
-      ok = 1;
-      break;
-    // case 'M':
-    //   cmd->type = INSTRUMENTATION_COMMAND;
-    //   // "M %hhd %hhd", &div, &on
-    //   //split_string(line, sizeof(line), substr);
-    //   cmd->instrumentation_division = atoi(substr);
-    //   //memcpy(line, substr, sizeof(substr));
-    //   cmd->cmd.instrumentation.type = SET_MAINTENANCE;
-    //   //split_string(line, sizeof(line), substr);
-    //   cmd->cmd.instrumentation.cmd.maintenance.on = atoi(substr);
-    //   ok = 1;
-    //   break;
-    // case 'B':
-    //   cmd->type = INSTRUMENTATION_COMMAND;
-    //   // "B %hhd %hhd %hhd", &div, &ch, &mode
-    //   //split_string(line, sizeof(line), substr);
-    //   cmd->instrumentation_division = atoi(substr);
-    //   //memcpy(line, substr, sizeof(substr));
-    //   cmd->cmd.instrumentation.type = SET_MODE;
-    //   //split_string(line, sizeof(line), substr);
-    //   cmd->cmd.instrumentation.cmd.mode.channel = atoi(substr);
-    //   //memcpy(line, substr, sizeof(substr));
-    //   //split_string(line, sizeof(line), substr);
-    //   cmd->cmd.instrumentation.cmd.mode.mode_val = atoi(substr);
-    //   ok = 1;
-    //   break;
-    // case 'S':
-    //   cmd->type = INSTRUMENTATION_COMMAND;
-    //   // "S %hhd %hhd %d", &div, &ch, &val
-    //   //split_string(line, sizeof(line), substr);
-    //   cmd->instrumentation_division = atoi(substr);
-    //   cmd->cmd.instrumentation.type = SET_SETPOINT;
-    //   //memcpy(line, substr, sizeof(substr));
-    //   //split_string(line, sizeof(line), substr);
-    //   cmd->cmd.instrumentation.cmd.setpoint.channel = atoi(substr);
-    //   //memcpy(line, substr, sizeof(substr));
-    //   //split_string(line, sizeof(line), substr);
-    //   cmd->cmd.instrumentation.cmd.setpoint.val = atoi(substr);
-    //   ok = 1;
-    //   break;
-    default:
-      break;
+  if (linelen < 4) {
+    // Too short to be a valid command. "A 1 1\n" is the shortest commnand
+    return ok;
+  }
+
+  /* get the first token */
+  printf("About to call strtok\n");
+  token = strtok(line, delimiter);
+  printf("strtok called\n");
+
+  if (token != NULL) {
+    printf("Command = %s\n",token);
+    switch (token[0]) {
+      case 'A':
+        cmd->type = ACTUATION_COMMAND;
+        // "A %hhd %hhd", &device, &on
+        token = strtok(NULL, delimiter);
+        if (token != NULL) {
+          printf("cmd->cmd.act.device = %s\n",token);
+          cmd->cmd.act.device = (uint8_t)atoi(token);
+          token = strtok(NULL, delimiter);
+          if (token != NULL) {
+            printf("cmd->cmd.act.on = %s\n",token);
+            cmd->cmd.act.on = (uint8_t)atoi(token);
+            printf("ACTUATION_COMMAND dev=%u on=%u\n",
+                  cmd->cmd.act.device, cmd->cmd.act.on);
+            ok = 1;
+          }
+        }
+        break;
+      case 'M':
+        cmd->type = INSTRUMENTATION_COMMAND;
+        cmd->cmd.instrumentation.type = SET_MAINTENANCE;
+        // "M %hhd %hhd", &div, &on
+        token = strtok(NULL, delimiter);
+        if (token != NULL) {
+          printf("cmd->instrumentation_division = %s\n",token);
+          cmd->instrumentation_division = (uint8_t)atoi(token);
+          token = strtok(NULL, delimiter);
+          if (token != NULL) {
+            printf("cmd->cmd.instrumentation.cmd.maintenance.on = %s\n",token);
+            cmd->cmd.instrumentation.cmd.maintenance.on = (uint8_t)atoi(token);
+            printf("INSTRUMENTATION_COMMAND MAINTENANCE div=%u on=%u\n",
+                  cmd->instrumentation_division,
+                  cmd->cmd.instrumentation.cmd.maintenance.on);
+            ok = 1;
+          }
+        }
+        break;
+      case 'B':
+        cmd->type = INSTRUMENTATION_COMMAND;
+        cmd->cmd.instrumentation.type = SET_MODE;
+        // "B %hhd %hhd %hhd", &div, &ch, &mode
+        token = strtok(NULL, delimiter);
+        if (token != NULL) {
+          printf("cmd->instrumentation_division = %s\n",token);
+          cmd->instrumentation_division = (uint8_t)atoi(token);
+          token = strtok(NULL, delimiter);
+          if (token != NULL) {
+            printf("cmd->cmd.instrumentation.cmd.mode.channel = %s\n",token);
+            cmd->cmd.instrumentation.cmd.mode.channel = (uint8_t)atoi(token);
+            token = strtok(NULL, delimiter);
+            if (token != NULL) {
+              printf("cmd->cmd.instrumentation.cmd.mode.mode_val = %s\n",token);
+              cmd->cmd.instrumentation.cmd.mode.mode_val = (uint8_t)atoi(token);
+              printf("INSTRUMENTATION_COMMAND MODE div=%u channel=%u mode=%u\n",
+                  cmd->instrumentation_division,
+                  cmd->cmd.instrumentation.cmd.mode.channel,
+                  cmd->cmd.instrumentation.cmd.mode.mode_val);
+              ok = 1;
+            }
+          }
+        }
+        break;
+      case 'S':
+        cmd->type = INSTRUMENTATION_COMMAND;
+        cmd->cmd.instrumentation.type = SET_SETPOINT;
+        // "S %hhd %hhd %d", &div, &ch, &val
+        token = strtok(NULL, delimiter);
+        if ((token != NULL) && (token[0] != '\n')) {
+          printf("cmd->instrumentation_division = %s\n",token);
+          cmd->instrumentation_division = (uint8_t)atoi(token);
+          token = strtok(NULL, delimiter);
+          if ((token != NULL) && (token[0] != '\n')) {
+            printf("cmd->cmd.instrumentation.cmd.setpoint.channel = %s\n",token);
+            cmd->cmd.instrumentation.cmd.setpoint.channel = (uint8_t)atoi(token);
+            token = strtok(NULL, delimiter);
+            if ((token != NULL) && (token[0] != '\n')) {
+              printf("cmd->cmd.instrumentation.cmd.setpoint.val = %s\n",token);
+              cmd->cmd.instrumentation.cmd.setpoint.val = (uint32_t)atoi(token);
+              printf("INSTRUMENTATION_COMMAND SETPOINT div=%u channel=%u val=%u\n",
+                  cmd->instrumentation_division,
+                  cmd->cmd.instrumentation.cmd.setpoint.channel,
+                  cmd->cmd.instrumentation.cmd.setpoint.val);
+              ok = 1;
+            }
+          }
+        }
+        break;
+      default:
+        break;
+    }
   }
   return ok;
 }
@@ -258,7 +270,7 @@ int main(void)
   printf("\e[%d;3H\e[2K> ", NLINES+1);
 #endif
 
-  struct rts_command *cmd = (struct rts_command *)malloc(sizeof(*cmd));
+  //struct rts_command cmd;// = (struct rts_command *)malloc(sizeof(*cmd));
   core_init(&core);
   sense_actuate_init(0, &instrumentation[0], &actuation_logic[0]);
   sense_actuate_init(1, &instrumentation[0], &actuation_logic[0]);
@@ -266,6 +278,8 @@ int main(void)
   char line[256];
   while (1)
   {
+    //read_rts_command(&cmd);
+
     update_sensors();
     sprintf(line, "HW ACTUATORS 0x%X", read_reg(GPIO_REG));
     set_display_line(&core.ui, 8, line, 0);
@@ -274,7 +288,7 @@ int main(void)
     char line[256];
     sprintf(line, "Uptime: [%u]s\n",time_in_s());
     set_display_line(&core.ui, 9, line, 0);
-    update_display();
+    //update_display();
     sense_actuate_step_0(&instrumentation[0], &actuation_logic[0]);
     sense_actuate_step_1(&instrumentation[2], &actuation_logic[1]);
   }
