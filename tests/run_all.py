@@ -4,7 +4,6 @@
 
 import subprocess
 import glob
-import sys
 import os
 
 # Turn off screen clearing ANSI
@@ -26,9 +25,9 @@ for test in glob.glob("scenarios/*"):
     fn, ext = os.path.splitext(test)
     if ext == ".cases":
         continue
-    bin = "./rts.no_self_test"
+    bin = "../src/rts.no_self_test"
     if fn in NEEDS_SELF_TEST:
-        bin = "./rts"
+        bin = "../src/rts.self_test"
     os.environ["RTS_BIN"] = bin
 
     print(f"{fn} ({bin})")

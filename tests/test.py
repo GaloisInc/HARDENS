@@ -19,11 +19,13 @@ def main():
     if len(sys.argv) > 2:
         cases_filename = sys.argv[2]
         with open(cases_filename) as cases_file:
+            print(f"Opening {cases_filename}...")
             cases = cases_file.readlines()
             if QUICK is not None and len(cases) > 4:
                 cases = cases[0:3]
             cases = enumerate(cases)
     for (i,case) in cases:
+        print(f"Running case {i}")
         if run(script, case.strip().split(" ")):
             continue
         else:
