@@ -91,7 +91,6 @@ int update_ui_instr(struct ui_values *ui) {
       continue;
 
     for (uint8_t j = 0; j < NDIVISIONS; ++j) {
-
       if (ui->maintenance[j])
         continue;
 
@@ -238,6 +237,9 @@ void core_init(struct core_state *c) {
 int core_step(struct core_state *c) {
   int err = 0;
   struct rts_command rts;
+#ifndef ENABLE_SELF_TEST
+  time_in_s();
+#endif
 
   if (!c->error) {
     // Actuate devices if necessary

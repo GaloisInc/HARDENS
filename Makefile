@@ -37,7 +37,12 @@ $(info Choosing plaform $(PLATFORM))
 ifeq ($(PLATFORM),Posix)
 
 rts:
-	make -C src rts
+	make -C src clean
+	SELF_TEST=Enabled make -C src rts
+	mv src/rts src/rts.self_test
+	make -C src clean
+	SELF_TEST=Disabled make -C src rts
+	mv src/rts src/rts.no_self_test
 
 clean:
 	make -C src clean

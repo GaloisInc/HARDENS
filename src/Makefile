@@ -97,7 +97,7 @@ CFLAGS += -DPLATFORM_HOST
 CC ?= clang
 CXX ?= clang++
 
-SENSORS ?=Simulated
+SENSORS ?= Simulated
 # Simulated sensor parameters:
 T0 ?= 200 # Initial temperature reading (deg. F)
 P0 ?= 1152600 # Initial pressure reading (10^-5 lb/in^2)

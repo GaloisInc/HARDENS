@@ -105,12 +105,18 @@ int read_rts_command(struct rts_command *cmd) {
     cmd->type = ACTUATION_COMMAND;
     cmd->cmd.act.device = device;
     cmd->cmd.act.on = on;
+    DEBUG_PRINTF(("<main.c> read_rts_command ACTUATION_COMMAND dev=%u on=%u\n",
+                  cmd->cmd.act.device, cmd->cmd.act.on));
     ok = 1;
   } else if (2 == (ok = sscanf(line, "M %hhd %hhd", &div, &on))) {
     cmd->type = INSTRUMENTATION_COMMAND;
     cmd->instrumentation_division = div;
     cmd->cmd.instrumentation.type = SET_MAINTENANCE;
     cmd->cmd.instrumentation.cmd.maintenance.on = on;
+    DEBUG_PRINTF(("<main.c> read_rts_command INSTRUMENTATION_COMMAND MAINTENANCE div=%u on=%u, type=%u\n",
+                  cmd->instrumentation_division,
+                  cmd->cmd.instrumentation.cmd.maintenance.on,
+                  cmd->cmd.instrumentation.type));
     ASSERT(on == 0 || on == 1);
     ok = 1;
   } else if (3 == (ok = sscanf(line, "B %hhd %hhd %hhd", &div, &ch, &mode))) {
@@ -119,6 +125,11 @@ int read_rts_command(struct rts_command *cmd) {
     cmd->cmd.instrumentation.type = SET_MODE;
     cmd->cmd.instrumentation.cmd.mode.channel = ch;
     cmd->cmd.instrumentation.cmd.mode.mode_val = mode;
+    DEBUG_PRINTF(("<main.c> read_rts_command INSTRUMENTATION_COMMAND MODE div=%u channel=%u mode=%u type=%u\n",
+                  cmd->instrumentation_division,
+                  cmd->cmd.instrumentation.cmd.mode.channel,
+                  cmd->cmd.instrumentation.cmd.mode.mode_val,
+                  cmd->cmd.instrumentation.type));
     ok = 1;
   } else if (3 == (ok = sscanf(line, "S %hhd %hhd %d", &div, &ch, &val))) {
     cmd->type = INSTRUMENTATION_COMMAND;
@@ -126,20 +137,32 @@ int read_rts_command(struct rts_command *cmd) {
     cmd->cmd.instrumentation.type = SET_SETPOINT;
     cmd->cmd.instrumentation.cmd.setpoint.channel = ch;
     cmd->cmd.instrumentation.cmd.setpoint.val = val;
+    DEBUG_PRINTF(("<main.c> read_rts_command INSTRUMENTATION_COMMAND SETPOINT div=%u channel=%u val=%u\n",
+                  cmd->instrumentation_division,
+                  cmd->cmd.instrumentation.cmd.setpoint.channel,
+                  cmd->cmd.instrumentation.cmd.setpoint.val));
     ok = 1;
 #ifndef SIMULATE_SENSORS
   } else if (3 == (ok = sscanf(line, "V %hhd %hhd %d", &sensor, &ch, &val))) {
     if (sensor < 2 && ch < 2)
       sensors[ch][sensor] = val;
+    DEBUG_PRINTF(("<main.c> read_rts_command UPDATE SENSORS sensor=%d, ch=%d, val=%d\n",
+          sensor,ch,val));
 #endif
   } else if (line[0] == 'Q') {
+    // printf("<main.c> read_rts_command QUIT\n");
     exit(0);
   } else if (line[0] == 'D') {
+    DEBUG_PRINTF(("<main.c> read_rts_command UPDATE DISPLAY\n");
     update_display();
   } else if (3 == (ok = sscanf(line, "ES %hhd %hhd %hhd", &sensor, &ch, &mode))) {
     error_sensor_mode[ch][sensor] = mode;
+    DEBUG_PRINTF(("<main.c> read_rts_command ERROR SENSOR sensor=%d, ch=%d, mode=%d\n",
+          sensor,ch,mode));
   } else if (2 == (ok = sscanf(line, "EI %hhd %hhd", &div, &mode))) {
     error_instrumentation_mode[div] = mode;
+    DEBUG_PRINTF(("<main.c> read_rts_command ERROR INSTRUMENTATION div=%d, mode=%d\n",
+          div,mode));
   }
 
   if (line)
