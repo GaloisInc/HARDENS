@@ -261,15 +261,16 @@ module mkNervSoC (NervSoC_IFC);
             else
                begin
                   // generate_sensor_trips
+                  // NOTE: the values and setpoints are in reverse order.
                   Vector#(3, Bit#(32)) vals = newVector;
-                  vals[0] = instr_hand_vals[0];
+                  vals[2] = instr_hand_vals[0];
                   vals[1] = instr_hand_vals[1];
-                  vals[2] = instr_hand_vals[2];
+                  vals[0] = instr_hand_vals[2];
 
                   Vector#(3, Bit#(32)) setpoints = newVector;
-                  setpoints[0] = instr_hand_setpoints[0];
+                  setpoints[2] = instr_hand_setpoints[0];
                   setpoints[1] = instr_hand_setpoints[1];
-                  setpoints[2] = instr_hand_setpoints[2];
+                  setpoints[0] = instr_hand_setpoints[2];
 
                   let res = signExtend(pack(
                               instr_hand.sensors.generate_sensor_trips(vals, setpoints)
@@ -328,23 +329,24 @@ module mkNervSoC (NervSoC_IFC);
                // method Bool is_channel_tripped (Bit #(2) mode, Bool sensor_tripped);
                let mode = wdata[2:1];
                let sensor_tripped = unpack(wdata[3]);
-               rg_instr_gen_res <= signExtend(pack(
+               rg_instr_gen_res <= zeroExtend(pack(
                                     instr_gen.channel.is_channel_tripped(mode, sensor_tripped)
                                     ));
                end
             else
                begin
                   // generate_sensor_trips
+                  // NOTE: the values and setpoints are in reverse order.
                   Vector#(3, Bit#(32)) vals = newVector;
-                  vals[0] = instr_gen_vals[0];
+                  vals[2] = instr_gen_vals[0];
                   vals[1] = instr_gen_vals[1];
-                  vals[2] = instr_gen_vals[2];
+                  vals[0] = instr_gen_vals[2];
 
                   Vector#(3, Bit#(32)) setpoints = newVector;
-                  setpoints[0] = instr_gen_setpoints[0];
+                  setpoints[2] = instr_gen_setpoints[0];
                   setpoints[1] = instr_gen_setpoints[1];
-                  setpoints[2] = instr_gen_setpoints[2];
-                  let res = signExtend(pack(
+                  setpoints[0] = instr_gen_setpoints[2];
+                  let res = zeroExtend(pack(
                               instr_gen.sensors.generate_sensor_trips(vals, setpoints)
                            ));
                   res[31] = 1;
@@ -401,12 +403,12 @@ module mkNervSoC (NervSoC_IFC);
                if (wdata[1] == 0)
                   begin
                      // Actuate D0
-                     rg_actuation_res <= signExtend( pack(actuation_gen.d0.actuate_d0(trips, old)) );
+                     rg_actuation_res <= zeroExtend( pack(actuation_gen.d0.actuate_d0(trips, old)) );
                   end
                else
                   begin
                      // Actuate D1
-                     rg_actuation_res <= signExtend( pack(actuation_gen.d1.actuate_d1(trips, old)) );
+                     rg_actuation_res <= zeroExtend( pack(actuation_gen.d1.actuate_d1(trips, old)) );
                   end
             end
          actuation_reg_addr_gen_trip_0:
@@ -500,7 +502,7 @@ module mkNervSoC (NervSoC_IFC);
          (instr_reg_addr_gen_base <= d_addr && d_addr < actuation_reg_addr_gen_base):
             put_data <- fn_instrumentation_generated(d_addr, mask, wdata);
          // Actuation Generated
-         (actuation_reg_addr_gen_base <= d_addr && d_addr < io_top_addr):
+         (actuation_reg_addr_gen_base <= d_addr && d_addr <= io_top_addr):
             put_data <- fn_actuation(d_addr, mask, wdata);
          default:
             // Regular memory read (no IO)

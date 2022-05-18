@@ -147,10 +147,13 @@ int set_display_line(struct ui_values *ui, uint8_t line_number, char *display, u
 
 #ifdef ENABLE_SELF_TEST
 int end_test(struct test_state *test, struct ui_values *ui) {
+    static int cnt = 0;
     int passed =
          test->test_device_result[test->test_device]
       == (test->self_test_expect || test->actuation_old_vote);
     test->failed = !passed;
+    DEBUG_PRINTF(("<core.c> end_test #%d: test->test_device_result[%u]=0x%X\n", cnt, test->test_device, test->test_device_result[test->test_device]));
+    DEBUG_PRINTF(("<core.c> end_test #%d: (test->self_test_expect || test->actuation_old_vote)=0x%X\n", cnt, (test->self_test_expect || test->actuation_old_vote)));
 
     // Reset state
     set_test_running(0);
@@ -166,7 +169,8 @@ int end_test(struct test_state *test, struct ui_values *ui) {
       set_display_line(ui, 16, (char*)fail, 0);
       set_display_line(ui, 20, (char*)"A TEST FAILED", 0);
     }
-
+    DEBUG_PRINTF(("<core.c> end_test #%d: Passed: %d\n", cnt, passed));
+    cnt++;
     return passed;
 }
 

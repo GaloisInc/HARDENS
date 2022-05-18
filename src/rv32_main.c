@@ -288,7 +288,7 @@ int main(void)
     char line[256];
     sprintf(line, "Uptime: [%u]s\n",time_in_s());
     set_display_line(&core.ui, 9, line, 0);
-    //update_display();
+    update_display();
     sense_actuate_step_0(&instrumentation[0], &actuation_logic[0]);
     sense_actuate_step_1(&instrumentation[2], &actuation_logic[1]);
   }

@@ -20,6 +20,16 @@ uint8_t Actuate_D0(uint8_t trips[3][4], uint8_t old) {
         memcpy((uint8_t *)actuate_d0.trips + b, (uint8_t *)trips + (11 - b), 1);
     }
     actuate_d0.eval();
+    DEBUG_PRINTF(("<actuation_unit_generated_SystemVerilog.c> actuate_base: device=0x0, old=0x%X, out=0x%X,trips=[",
+                old, actuate_d0.out));
+    for (int i = 0; i < 3; ++i) {
+        DEBUG_PRINTF(("["));
+        for (int div = 0; div < 4; ++div) {
+        DEBUG_PRINTF(("%u,",trips[i][div]));
+        }
+        DEBUG_PRINTF(("],"));
+    }
+    DEBUG_PRINTF(("]\n"));
     return actuate_d0.out;
 }
 
@@ -29,6 +39,16 @@ uint8_t Actuate_D1(uint8_t trips[3][4], uint8_t old) {
         memcpy((uint8_t *)actuate_d1.trips + b, (uint8_t *)trips + (11 - b), 1);
     }
     actuate_d1.eval();
+    DEBUG_PRINTF(("<actuation_unit_generated_SystemVerilog.c> actuate_base: device=0x1, old=0x%X, out=0x%X,trips=[",
+                old, actuate_d1.out));
+    for (int i = 0; i < 3; ++i) {
+        DEBUG_PRINTF(("["));
+        for (int div = 0; div < 4; ++div) {
+        DEBUG_PRINTF(("%u,",trips[i][div]));
+        }
+        DEBUG_PRINTF(("],"));
+    }
+    DEBUG_PRINTF(("]\n"));
     return actuate_d1.out;
 }
 #else
@@ -54,7 +74,7 @@ uint8_t actuate_base(uint8_t trips[3][4], uint8_t old, uint8_t id)
     write_reg(ACTUATION_REG_GENERATED_BASE, (uint32_t)( id << 1 | old));
 
     // Get actuation results (only the last bit is pertinent for True/false)
-    uint8_t res = (uint8_t) (read_reg(ACTUATION_REG_GENERATED_RESULT) & 1);
+    uint8_t res = (uint8_t) (read_reg(ACTUATION_REG_GENERATED_RESULT) & 0x1);
 
     DEBUG_PRINTF(("<actuation_unit_generated_SystemVerilog.c> actuate_base: device=0x%X, old=0x%X, out=0x%X,trips=[", id, old, res));
     for (int i = 0; i < 3; ++i) {

@@ -58,6 +58,12 @@ ifeq ($(SELF_TEST),Enabled)
 CFLAGS += -DENABLE_SELF_TEST
 endif
 
+DEBUG_PRINT ?= Enabled
+
+ifeq ($(DEBUG_PRINT),Enabled)
+CFLAGS += -DDEBUG
+endif
+
 #
 # Define all object files.
 #
