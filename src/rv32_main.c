@@ -21,34 +21,32 @@
 
 extern struct instrumentation_state instrumentation[4];
 
-#define CLEAN_SCREEN 0
-
 void update_display()
 {
-#if CLEAN_SCREEN
+#if CLEAR_SCREEN
   // This starts printing from the top of the screen
   printf("\e[s\e[1;1H");//\e[2J");
 #endif
   for (int line = 0; line < NLINES; ++line) {
-#if CLEAN_SCREEN
+#if CLEAR_SCREEN
     printf("\e[0K");
 #endif
     printf("%s%s", core.ui.display[line], line == NLINES-1 ? "" : "\n");
   }
-#if CLEAN_SCREEN
+#if CLEAR_SCREEN
   printf("\e[u");
 #endif
 }
 
 int read_rts_command(struct rts_command *cmd)
 {
+  int ok = 0;
+#ifndef ENABLE_SELF_TEST
   const char delimiter[2] = " ";
   char line[254] = {0};
   char *token = NULL;
-  int ok = 0;
   int linelen = 0;
 
-  // @todo podhrmic: make conditional on self-test *not* running
   printf("\nEnter command and press enter:\n");
   memset(line,0,sizeof(line));
   for (unsigned int i = 0; i < sizeof(line); i++) {
@@ -60,7 +58,7 @@ int read_rts_command(struct rts_command *cmd)
   }
   printf(">>>%s<<<[%d]\n",line, linelen);
 
-#if CLEAN_SCREEN
+#if CLEAR_SCREEN
   printf("\e[%d;1H\e[2K> ", NLINES+1);
 #endif
 
@@ -167,6 +165,7 @@ int read_rts_command(struct rts_command *cmd)
         break;
     }
   }
+#endif /* #ifndef ENABLE_SELF_TEST */
   return ok;
 }
 
@@ -264,7 +263,7 @@ int send_actuation_command(uint8_t id, struct actuation_command *cmd)
 
 int main(void)
 {
-#if CLEAN_SCREEN
+#if CLEAR_SCREEN
   // Prep the screen
   printf("\e[1;1H\e[2J");
   printf("\e[%d;3H\e[2K> ", NLINES+1);

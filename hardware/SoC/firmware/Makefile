@@ -58,10 +58,17 @@ ifeq ($(SELF_TEST),Enabled)
 CFLAGS += -DENABLE_SELF_TEST
 endif
 
-DEBUG_PRINT ?= Enabled
+DEBUG_PRINT ?= Disabled
 
 ifeq ($(DEBUG_PRINT),Enabled)
 CFLAGS += -DDEBUG
+endif
+
+CLEAR_SCREEN ?= Enabled
+ifeq ($(CLEAR_SCREEN),Enabled)
+CFLAGS += -DCLEAR_SCREEN=1
+else
+CFLAGS += -DCLEAR_SCREEN=0
 endif
 
 #

@@ -32,7 +32,6 @@ struct testcase {
   uint8_t device;
   uint8_t expect;
 } tests[] = {
-// TODO: remove the data for FPGA deployment (too large)
 // Test data generated from Cryptol RTS::SelfTestOracleHalf
 #include "self_test_data/tests.inc.c"
 };

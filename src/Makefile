@@ -71,7 +71,7 @@ EXTRA_SRC=
 ## On the Posix plaform,
 ## Parallel: pthread-based implementation to simulate the concurrency SoC
 ## Sequential:  a single-threaded implementation
-EXECUTION ?= Sequential#Parallel
+EXECUTION ?= Parallel
 
 SRC+=\
   core.c \
@@ -138,7 +138,7 @@ ifeq ($(SELF_TEST),Enabled)
 CFLAGS += -DENABLE_SELF_TEST
 endif
 
-DEBUG_PRINT ?= Enabled
+DEBUG_PRINT ?= Disabled
 ifeq ($(DEBUG_PRINT),Enabled)
 CFLAGS += -DDEBUG
 endif
