@@ -63,16 +63,19 @@ jobs:
             pip3 install -r requirements.txt &&
             RTS_DEBUG=1 QUICK=1 python3 ./run_all.py
 
-  # rts_riscv:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
-  #     - uses: addnab/docker-run-action@v3
-  #       with:
-  #         username: ${{ secrets.ARTIFACTORY_USERNAME }}
-  #         password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-  #         registry: artifactory.galois.com:5015
-  #         image: artifactory.galois.com:5015/hardens
-  #         options: -v ${{ github.workspace }}:/HARDENS
-  #         run: |
-  #           make -C hardware/SoC verilator
+  rts_riscv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
+      - uses: addnab/docker-run-action@v3
+        with:
+          username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry: artifactory.galois.com:5015
+          image: artifactory.galois.com:5015/hardens
+          options: -v ${{ github.workspace }}:/HARDENS
+          run: |
+            make rts
+            make clean
+            PLATFORM=RV32_bare_metal make rts
+

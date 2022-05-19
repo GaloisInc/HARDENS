@@ -20,7 +20,7 @@ EXECUTION ?= Parallel
 # Use Verilator to simulate hardware implemented modules
 HW ?= Simulated
 # Should sensors be simulated?
-SENSORS ?=
+SENSORS ?= NotSimulated
 
 ######################################
 # Config for RV32_bare_metal only
@@ -40,10 +40,10 @@ rts:
 	mkdir -p src/generated/SystemVerilog
 	mkdir -p src/generated/C
 	make -C src clean
-	SELF_TEST=Enabled make -C src rts
+	SENSORS=$(SENSORS) SELF_TEST=Enabled make -C src rts
 	mv src/rts src/rts.self_test
 	make -C src clean
-	SELF_TEST=Disabled make -C src rts
+	SENSORS=$(SENSORS) SELF_TEST=Disabled make -C src rts
 	mv src/rts src/rts.no_self_test
 
 clean:
