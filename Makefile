@@ -37,6 +37,8 @@ $(info Choosing plaform $(PLATFORM))
 ifeq ($(PLATFORM),Posix)
 
 rts:
+	mkdir -p src/generated/SystemVerilog
+	mkdir -p src/generated/C
 	make -C src clean
 	SELF_TEST=Enabled make -C src rts
 	mv src/rts src/rts.self_test
