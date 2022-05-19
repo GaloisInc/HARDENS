@@ -4,7 +4,6 @@
 import subprocess
 import glob
 import os
-import time
 
 # Turn off screen clearing ANSI
 os.environ["RTS_NOCLEAR"] = "1"
@@ -36,4 +35,3 @@ for test in sorted(glob.glob("scenarios/*")):
         subprocess.run(["./test.py", fn, fn + ".cases"],check=True)
     else:
         subprocess.run(["./test.py", fn],check=True)
-    time.sleep(10)
