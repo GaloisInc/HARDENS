@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 # Top level driver for end-to-end testing
-
 import subprocess
 import glob
 import os
@@ -33,6 +32,6 @@ for test in glob.glob("scenarios/*"):
     print(f"{fn} ({bin})")
 
     if os.path.exists(fn + ".cases"):
-        subprocess.run(["./test.py", fn, fn + ".cases"])
+        subprocess.run(["./test.py", fn, fn + ".cases"],check=True)
     else:
-        subprocess.run(["./test.py", fn])
+        subprocess.run(["./test.py", fn],check=True)
