@@ -39,7 +39,7 @@ jobs:
           #password: ${{ secrets.ARTIFACTORY_PASSWORD }}
           #registry: artifactory.galois.com:5015
           image: framac/frama-c:dev
-          options: -v ${{ github.workspace }}:/HARDENS
+          options: --network host --privileged -v ${{ github.workspace }}:/HARDENS
           # name: Lando specs
           # run: make -C specs
           run: |
