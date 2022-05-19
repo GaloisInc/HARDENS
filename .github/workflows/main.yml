@@ -26,10 +26,10 @@ jobs:
           options: -v ${{ github.workspace }}:/HARDENS
           # name: Lando specs
           # run: make -C specs
-      - name: Saw proofs
-        run: make -C saw
-      - name: Cryptol proofs
-        run: make -C models
+          #- name: Saw proofs
+          run: make -C saw
+          #- name: Cryptol proofs
+          run: make -C models
   job2:
     runs-on: ubuntu-latest
     steps:
