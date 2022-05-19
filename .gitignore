@@ -8,7 +8,7 @@
 *.asm
 .vscode
 src/wp-session/
-src/generated/
+src/generated/SystemVerilog/verilator/
 src/handwritten/SystemVerilog/verilator/
 src/self_test_data/
 src/rts*

@@ -13,21 +13,21 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # prove_specs:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
-  #     - uses: addnab/docker-run-action@v3
-  #       with:
-  #         username: ${{ secrets.ARTIFACTORY_USERNAME }}
-  #         password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-  #         registry: artifactory.galois.com:5015
-  #         image: artifactory.galois.com:5015/hardens
-  #         options: -v ${{ github.workspace }}:/HARDENS
-  #         # TODO: run: make -C specs
-  #         run: |
-  #           make -C saw
-  #           make -C models
+  prove_specs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
+      - uses: addnab/docker-run-action@v3
+        with:
+          username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry: artifactory.galois.com:5015
+          image: artifactory.galois.com:5015/hardens
+          options: -v ${{ github.workspace }}:/HARDENS
+          # TODO: run: make -C specs
+          run: |
+            make -C saw
+            make -C models
 
   prove_framac:
     runs-on: ubuntu-latest
@@ -46,16 +46,17 @@ jobs:
             cp -r /HARDENS/ /tmp
             make -C /tmp/HARDENS/src -f frama_c.mk
 
-  # build_rts:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
-  #     - uses: addnab/docker-run-action@v3
-  #       with:
-  #         username: ${{ secrets.ARTIFACTORY_USERNAME }}
-  #         password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-  #         registry: artifactory.galois.com:5015
-  #         image: artifactory.galois.com:5015/hardens
-  #         options: -v ${{ github.workspace }}:/HARDENS
-  #         run: |
-  #           make clean; make rts
+  rts_posix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
+      - uses: addnab/docker-run-action@v3
+        with:
+          username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry: artifactory.galois.com:5015
+          image: artifactory.galois.com:5015/hardens
+          options: -v ${{ github.workspace }}:/HARDENS
+          run: |
+            make rts
+            cd tests && RTS_DEBUG=1 QUICK=1 python3 ./run_all.py
