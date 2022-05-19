@@ -36,4 +36,4 @@ for test in sorted(glob.glob("scenarios/*")):
         subprocess.run(["./test.py", fn, fn + ".cases"],check=True)
     else:
         subprocess.run(["./test.py", fn],check=True)
-    time.sleep(1)
+    time.sleep(10)
