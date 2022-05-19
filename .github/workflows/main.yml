@@ -14,6 +14,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   job1:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume 
       - uses: addnab/docker-run-action@v3
