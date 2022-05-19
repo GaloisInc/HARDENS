@@ -13,10 +13,10 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  job1:
+  prove_specs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume 
+      - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
       - uses: addnab/docker-run-action@v3
         with:
           username: ${{ secrets.ARTIFACTORY_USERNAME }}
@@ -24,16 +24,15 @@ jobs:
           registry: artifactory.galois.com:5015
           image: artifactory.galois.com:5015/hardens
           options: -v ${{ github.workspace }}:/HARDENS
-          # name: Lando specs
-          # run: make -C specs
+          # TODO: run: make -C specs
           run: |
             make -C saw
             make -C models
 
-  job2:
+  prove_framac:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume 
+      - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
       - uses: addnab/docker-run-action@v3
         with:
           #username: ${{ secrets.ARTIFACTORY_USERNAME }}
@@ -45,14 +44,17 @@ jobs:
           # run: make -C specs
           run: |
             make -C /HARDENS/src -f frama_c.mk
-  
-  # job2:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume 
-  #     - uses: addnab/docker-run-action@v3
-  #       with:
-  #         image: framac/frama-c:dev
-  #         options: -v ${{ github.workspace }}:/HARDENS
-  #       - name: Frama-C proofs
-  #         run: make -C /HARDENS/src -f frama_c.mk
+
+  build_rts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
+      - uses: addnab/docker-run-action@v3
+        with:
+          username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry: artifactory.galois.com:5015
+          image: artifactory.galois.com:5015/hardens
+          options: -v ${{ github.workspace }}:/HARDENS
+          run: |
+            make clean; make rts
