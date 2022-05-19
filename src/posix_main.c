@@ -153,7 +153,7 @@ int read_rts_command(struct rts_command *cmd) {
     // printf("<main.c> read_rts_command QUIT\n");
     exit(0);
   } else if (line[0] == 'D') {
-    DEBUG_PRINTF(("<main.c> read_rts_command UPDATE DISPLAY\n");
+    DEBUG_PRINTF(("<main.c> read_rts_command UPDATE DISPLAY\n"));
     update_display();
   } else if (3 == (ok = sscanf(line, "ES %hhd %hhd %hhd", &sensor, &ch, &mode))) {
     error_sensor_mode[ch][sensor] = mode;
