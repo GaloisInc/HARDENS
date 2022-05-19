@@ -43,7 +43,7 @@ jobs:
           # name: Lando specs
           # run: make -C specs
           run: |
-            cp /HARDENS/src /tmp
+            cp -r /HARDENS/src /tmp
             make -C /tmp/src -f frama_c.mk
 
   # build_rts:
