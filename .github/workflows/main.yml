@@ -43,8 +43,8 @@ jobs:
           # name: Lando specs
           # run: make -C specs
           run: |
-            mkdir -P /HARDENS/src/wp-session/script
-            mkdir -P /HARDENS/src/wp-session/cache
+            mkdir -p /HARDENS/src/wp-session/script &&
+            mkdir -p /HARDENS/src/wp-session/cache &&
             make -C /HARDENS/src -f frama_c.mk
 
   build_rts:
