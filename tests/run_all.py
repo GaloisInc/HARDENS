@@ -20,7 +20,7 @@ NEEDS_SELF_TEST=[
     "scenarios/exceptional_4e",
     ]
 
-for test in glob.glob("scenarios/*"):
+for test in sorted(glob.glob("scenarios/*")):
     fn, ext = os.path.splitext(test)
     if ext == ".cases":
         continue
