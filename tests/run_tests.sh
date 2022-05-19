@@ -40,5 +40,5 @@ NO_SELF_TEST=(
 
 for file in ${NO_SELF_TEST[@]}
 do
-    QUICK=1 RTS_NOCLEAR=1 RTS_DEBUG=1 RTS_BIN=../src/rts.no_self_test ./test.py $file
+    QUICK=1 RTS_NOCLEAR=1 RTS_DEBUG=1 RTS_BIN=../src/rts.no_self_test ./test.py scenarios/$file
 done
