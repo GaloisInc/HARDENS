@@ -26,10 +26,17 @@ jobs:
           options: -v ${{ github.workspace }}:/HARDENS
           # name: Lando specs
           # run: make -C specs
-          #- name: Saw proofs
-      - run: make -C saw
-          #- name: Cryptol proofs
-      - run: make -C models
+          name: Saw proofs
+          run: make -C saw
+      - uses: addnab/docker-run-action@v3
+        with:
+          username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          registry: artifactory.galois.com:5015
+          image: artifactory.galois.com:5015/hardens
+          options: -v ${{ github.workspace }}:/HARDENS
+          name: Cryptol proofs
+          un: make -C models
   
   # job2:
   #   runs-on: ubuntu-latest
