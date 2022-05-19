@@ -1,9 +1,0 @@
-[ { "prover": "Z3:4.8.8", "verdict": "timeout", "time": 10. },
-  { "prover": "Alt-Ergo:2.4.1", "verdict": "timeout", "time": 10. },
-  { "prover": "script", "verdict": "valid" },
-  { "header": "Definition", "tactic": "Wp.unfold", "params": {},
-    "select": { "select": "inside-goal", "occur": 0,
-                "target": "(L_Actuate_D0_generated_C Mint_0\n  (shift_uint8 (shift_A4_uint8 trips4819_0 0) 0)\n  (shift_uint8 (shift_A4_uint8 trips4819_0 1) 0) (old4820_0!=0))",
-                "pattern": "L_Actuate_D0_generated_C$Mintshift_uint8" },
-    "children": { "Unfold 'L_Actuate_D0_generated_C'": [ { "prover": "qed",
-                                                           "verdict": "valid" } ] } } ]
