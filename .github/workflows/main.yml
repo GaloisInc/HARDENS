@@ -33,10 +33,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
-      - uses: addnab/docker-run-action@v3
-        run: |
+      - run: |
             mkdir -p src/wp-session/script &&
             mkdir -p src/wp-session/cache
+      - uses: addnab/docker-run-action@v3
         with:
           image: framac/frama-c:dev
           options: -v ${{ github.workspace }}:/HARDENS
