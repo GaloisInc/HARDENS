@@ -30,13 +30,14 @@ jobs:
           run: make -C saw
           #- name: Cryptol proofs
           run: make -C models
-  job2:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume 
-      - uses: addnab/docker-run-action@v3
-        with:
-          image: framac/frama-c:dev
-          options: -v ${{ github.workspace }}:/HARDENS
-        - name: Frama-C proofs
-          run: make -C /HARDENS/src -f frama_c.mk
+  
+  # job2:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume 
+  #     - uses: addnab/docker-run-action@v3
+  #       with:
+  #         image: framac/frama-c:dev
+  #         options: -v ${{ github.workspace }}:/HARDENS
+  #       - name: Frama-C proofs
+  #         run: make -C /HARDENS/src -f frama_c.mk
