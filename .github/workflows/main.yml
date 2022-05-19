@@ -33,9 +33,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
-      - run: |
-            mkdir -p src/wp-session/script &&
-            mkdir -p src/wp-session/cache
+      # - run: |
+      #       mkdir -p src/wp-session/script &&
+      #       mkdir -p src/wp-session/cache
       - uses: addnab/docker-run-action@v3
         with:
           image: framac/frama-c:dev
@@ -43,7 +43,8 @@ jobs:
           # name: Lando specs
           # run: make -C specs
           run: |
-            make -C /HARDENS/src -f frama_c.mk
+            cp /HARDENS/src /tmp
+            make -C /tmp/src -f frama_c.mk
 
   # build_rts:
   #   runs-on: ubuntu-latest
