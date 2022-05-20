@@ -16,8 +16,12 @@ jobs:
   prove_specs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
-      - uses: addnab/docker-run-action@v3
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Prove specs
+        uses: addnab/docker-run-action@v3
         with:
           username: ${{ secrets.ARTIFACTORY_USERNAME }}
           password: ${{ secrets.ARTIFACTORY_PASSWORD }}
@@ -32,25 +36,28 @@ jobs:
   prove_framac:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
-      # - run: |
-      #       mkdir -p src/wp-session/script &&
-      #       mkdir -p src/wp-session/cache
-      - uses: addnab/docker-run-action@v3
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Run Frama-C proofs
+        uses: addnab/docker-run-action@v3
         with:
           image: framac/frama-c:dev
           options: -v ${{ github.workspace }}:/HARDENS
-          # name: Lando specs
-          # run: make -C specs
           run: |
             cp -r /HARDENS/ /tmp
             make -C /tmp/HARDENS/src -f frama_c.mk
 
-  rts_posix:
+  rts_posix_scenarios:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
-      - uses: addnab/docker-run-action@v3
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Build RTS and run test scenarios
+        uses: addnab/docker-run-action@v3
         with:
           username: ${{ secrets.ARTIFACTORY_USERNAME }}
           password: ${{ secrets.ARTIFACTORY_PASSWORD }}
@@ -63,11 +70,15 @@ jobs:
             pip3 install -r requirements.txt &&
             RTS_DEBUG=1 QUICK=1 python3 ./run_all.py
 
-  rts_riscv:
+  rts_riscv_scenarios:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2 # Required to mount the Github Workspace to a volume
-      - uses: addnab/docker-run-action@v3
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Build RTS and run test scenarios
+        uses: addnab/docker-run-action@v3
         with:
           username: ${{ secrets.ARTIFACTORY_USERNAME }}
           password: ${{ secrets.ARTIFACTORY_PASSWORD }}
@@ -77,4 +88,3 @@ jobs:
           run: |
             make rts
             PLATFORM=RV32_bare_metal make rts
-
