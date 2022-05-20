@@ -372,3 +372,5 @@ In order to fulfill (1) above, the final report must be both:
 In order to help certification actors review a model-based system and
 its assurance case, we intend to provide a chapter in the report that
 characterizes a workflow and set of best practices for such a review.
+
+The final report is available in overleaf: https://git.overleaf.com/623259a297f75c655f6d1f47
