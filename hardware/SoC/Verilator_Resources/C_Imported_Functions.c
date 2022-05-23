@@ -147,6 +147,7 @@ uint8_t c_i2c_request (uint8_t slaveaddr, uint8_t data) {
     clock_gettime(CLOCK_REALTIME, &tp);
     uint32_t t = tp.tv_sec*1000 + tp.tv_nsec/1000000;
 
+#ifdef SIMULATE_SENSORS
     if (!initialized) {
         last_update = t;
         last[0][T] = T0;
@@ -178,6 +179,7 @@ uint8_t c_i2c_request (uint8_t slaveaddr, uint8_t data) {
     sensors[1][T] = last[1][T];
     sensors[0][P] = last[0][P];
     sensors[1][P] = last[1][P];
+#endif
 
     if (slaveaddr & 0x1) {
         // Write request

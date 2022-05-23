@@ -110,6 +110,11 @@ VERILATOR_FLAGS += -CFLAGS -O3
 VERILATOR_FLAGS += -CFLAGS -DVL_DEBUG
 VERILATOR_FLAGS += -LDFLAGS -static
 
+SENSORS ?= Simulated
+ifeq ($(SENSORS),Simulated)
+VERILATOR_FLAGS += -CFLAGS -DSIMULATE_SENSORS
+endif
+
 verilator: verilog
 	@echo "INFO: Link for Verilator ..."
 	@echo "INFO: For convenience (single -I flag to verilator) copy all Verilog files into $(VERILATOR_RTL_DIR)/"
