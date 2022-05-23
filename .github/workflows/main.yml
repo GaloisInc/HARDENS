@@ -28,10 +28,10 @@ jobs:
           registry: artifactory.galois.com:5015
           image: artifactory.galois.com:5015/hardens
           options: -v ${{ github.workspace }}:/HARDENS
-          # TODO: run: make -C specs
           run: |
             make -C saw
             make -C models
+            make -C specs
 
   prove_framac:
     runs-on: ubuntu-latest

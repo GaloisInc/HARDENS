@@ -293,4 +293,7 @@ COPY --from=builder /usr/local/share/ /usr/local/share/
 RUN cat ${VERSION_LOG}
 WORKDIR /HARDENS
 
+# Install java so we can run lando
+RUN apt-get install -y default-jre
+
 ENV PATH="/tools/lando:/tools:/tools/z3/bin:/tools/bsc-2021.07-ubuntu-20.04/bin:/opt/riscv/bin:/opt/bin:${PATH}"
