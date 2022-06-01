@@ -19,9 +19,6 @@ import I2C :: *;
 import RS232 :: *;
 import GetPut::*;
 
-// This define marks simulation
-// TODO: create a switch in the makefile
-//`define SIMULATION
 
 // ================================================================
 // Top
@@ -35,7 +32,7 @@ import "BDPI" function ActionValue #(Bit #(8)) c_i2c_request (Bit #(8) addr,
 (* synthesize *)
 module mkTop (Empty);
 
-   Reg #(Bit #(32)) rg_gpio <- mkReg (0);
+   Reg #(Bit #(8)) rg_gpio <- mkReg (0);
 
    NervSoC_IFC nerv_soc <- mkNervSoC;
 
@@ -76,6 +73,7 @@ module mkTop (Empty);
             nerv_soc.set_uart_rx_byte(ch);
          end
       end
+      rg_console_in_poll <= rg_console_in_poll + 1;
    endrule
    end
 `endif

@@ -27,7 +27,7 @@ import Actuation_Generated_BVI::*;
 
 interface NervSoC_IFC;
    // This sets the name of the result
-   method Bit #(32) gpio;
+   method Bit #(8) gpio;
    // TX -> a byte to be send
    method ActionValue#(Bit #(8)) get_uart_tx_byte;
    // RX -> a byte to be received
@@ -134,7 +134,7 @@ module mkNervSoC (NervSoC_IFC);
    */
    // Memory size
    Integer imemory_size = 'h07000;
-   Integer dmemory_size = 'h03000;
+   Integer dmemory_size = 'h07000;
 
    // Nerv has Harward architecture (separate data and instruction memory),
    // so in order to properly initialize global symbols, we need to load
@@ -540,7 +540,7 @@ module mkNervSoC (NervSoC_IFC);
    * ////////////////////////////////////////////////////////////////
    */
    // set GPIO
-   method Bit #(32) gpio = rg_gpio;
+   method Bit #(8) gpio = rg_gpio[7:0];
 
    // TX -> a byte to be send
    method ActionValue#(Bit #(8)) get_uart_tx_byte () if (rg_uart_tx_data_ready);

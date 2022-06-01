@@ -73,9 +73,12 @@ rts:
 
 else # DEV_BOARD = LFE5UM5G_85F_EVN ?
 ifeq ($(DEV_BOARD),LFE5UM5G_85F_EVN)
+# Core freq with 12MHz clock in
+# Since we have 5 CPU states, it should be 12MHZ/5 = 2400000
+CORE_FREQ=2400000
 
 rts:
-	PROG=main make -C hardware/SoC/ design.config
+	CORE_FREQ=$(CORE_FREQ) PROG=main make -C hardware/SoC/ prog
 
 else
 $(info Unsupported dev board!)

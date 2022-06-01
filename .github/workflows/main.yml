@@ -88,3 +88,4 @@ jobs:
           run: |
             make rts
             PLATFORM=RV32_bare_metal make rts
+# TODO: run scenarios
