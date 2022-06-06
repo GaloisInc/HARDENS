@@ -1,6 +1,3 @@
 [submodule "hardware/nerv"]
 	path = hardware/nerv
 	url = https://github.com/YosysHQ/nerv.git
-[submodule "report"]
-	path = report
-	url = https://git.overleaf.com/623259a297f75c655f6d1f47
