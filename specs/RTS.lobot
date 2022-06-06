@@ -79,10 +79,10 @@ type compiler =
 
 -- We target three different ISAs in software compilation because our
 -- development platforms for the POSIX-based virtual platform is
--- either ARM or x86-based and the SoC digital twin and deployment
+-- either ARM or X86-based and the SoC digital twin and deployment
 -- platform are RISC-V-based.
 type isa =
-  { ARM, x86, RV32 }
+  { ARM, X86, RV32 }
 
 -- The feature model of the RTS demonstrator itself.
 
