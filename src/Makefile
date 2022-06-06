@@ -71,7 +71,7 @@ EXTRA_SRC=
 ## On the Posix plaform,
 ## Parallel: pthread-based implementation to simulate the concurrency SoC
 ## Sequential:  a single-threaded implementation
-EXECUTION ?= Sequential#Parallel
+EXECUTION ?= Parallel
 
 SRC+=\
   core.c \
@@ -97,7 +97,7 @@ CFLAGS += -DPLATFORM_HOST
 CC ?= clang
 CXX ?= clang++
 
-SENSORS ?=Simulated
+SENSORS ?= Simulated
 # Simulated sensor parameters:
 T0 ?= 200 # Initial temperature reading (deg. F)
 P0 ?= 1152600 # Initial pressure reading (10^-5 lb/in^2)
@@ -132,11 +132,17 @@ ifneq ($(SELF_TEST_PERIOD_SEC),)
 CFLAGS += -DSELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC)
 endif
 
-SELF_TEST =? Enabled
+SELF_TEST ?= Enabled
 
 ifeq ($(SELF_TEST),Enabled)
 CFLAGS += -DENABLE_SELF_TEST
 endif
+
+DEBUG_PRINT ?= Disabled
+ifeq ($(DEBUG_PRINT),Enabled)
+CFLAGS += -DDEBUG
+endif
+
 
 BUILD_MSG = BUILD CC=$(CC) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) SELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC) SELF_TEST=$(SELF_TEST)
 

@@ -42,6 +42,8 @@ interface Nerv_IFC;
    
    (* always_ready, always_enabled *)
    method Action m_dmem_rdata (Bit #(32) xd);
+
+   method Bool m_dmem_valid;
 endinterface
 
 // ================================================================
@@ -54,6 +56,7 @@ module mkNerv (Nerv_IFC);
    method Action m_stall (Bool b) = nerv_BVI.m_stall (b);
 
    method Bool m_trap = nerv_BVI.m_trap;
+   method Bool m_dmem_valid = nerv_BVI.m_dmem_valid;
 
    method Bit #(32) m_imem_addr = nerv_BVI.m_imem_addr;
    method Action m_imem_data (Bit #(32) xi) = nerv_BVI.m_imem_data (xi);

@@ -20,7 +20,7 @@ EXECUTION ?= Parallel
 # Use Verilator to simulate hardware implemented modules
 HW ?= Simulated
 # Should sensors be simulated?
-SENSORS ?=
+SENSORS ?= NotSimulated
 
 ######################################
 # Config for RV32_bare_metal only
@@ -37,7 +37,14 @@ $(info Choosing plaform $(PLATFORM))
 ifeq ($(PLATFORM),Posix)
 
 rts:
-	make -C src rts
+	mkdir -p src/generated/SystemVerilog
+	mkdir -p src/generated/C
+	make -C src clean
+	SENSORS=$(SENSORS) SELF_TEST=Enabled make -C src rts
+	mv src/rts src/rts.self_test
+	make -C src clean
+	SENSORS=$(SENSORS) SELF_TEST=Disabled make -C src rts
+	mv src/rts src/rts.no_self_test
 
 clean:
 	make -C src clean
@@ -66,9 +73,12 @@ rts:
 
 else # DEV_BOARD = LFE5UM5G_85F_EVN ?
 ifeq ($(DEV_BOARD),LFE5UM5G_85F_EVN)
+# Core freq with 12MHz clock in
+# Since we have 5 CPU states, it should be 12MHZ/5 = 2400000
+CORE_FREQ=2400000
 
 rts:
-	PROG=main make -C hardware/SoC/ design.config
+	CORE_FREQ=$(CORE_FREQ) PROG=main make -C hardware/SoC/ prog
 
 else
 $(info Unsupported dev board!)
@@ -81,15 +91,7 @@ $(info Unsupported platform!)
 endif # PLATFORM=RV32_bare_metal ?
 endif # PLATFORM=posix ?
 
-.PHONY: rts all clean docs_clean
-
-docs:   README.pdf Assurance.pdf Toolchain.pdf
-
-%.pdf: %.md
-	pandoc -f markdown -t latex -o `basename $< .md`.pdf $<
-
-docs_clean:
-	rm -f README.pdf Assurance.pdf Toolchain.pdf
+.PHONY: rts all clean
 
 check:
 	make -C models

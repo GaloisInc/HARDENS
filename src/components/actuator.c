@@ -49,13 +49,16 @@ int actuate_devices(void)
 
     if (do_test && d == get_test_device()) {
       if (!is_actuate_test_complete(get_test_device())) {
+        DEBUG_PRINTF(("<actuator.c> actuate_devices: set_actuate_test_result(0x%X, ActuateActuator(0x%X))\n",
+                d, test_votes));
         set_actuate_test_result(d, ActuateActuator(test_votes));
         set_actuate_test_complete(d, 1);
       }
     }
 
     // Call out to actuation policy
-    DEBUG_PRINTF(("<actuator.c> actuate_devices: Call out to actuation policy\n"));
+    DEBUG_PRINTF(("<actuator.c> actuate_devices: Call out to actuation policy, set_actuate_device(0x%X, ActuateActuator(0x%X))\n",
+                d, votes));
     err |= set_actuate_device(d, ActuateActuator(votes));
   }
 

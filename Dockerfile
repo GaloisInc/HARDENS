@@ -32,7 +32,7 @@ RUN echo "Installed tools:" >> ${VERSION_LOG}
 
 # Yosys
 ARG TOOL=yosys
-ARG TAG=yosys-0.13
+ARG TAG=yosys-0.17
 ARG REPO=https://github.com/YosysHQ/yosys.git
 RUN git clone ${REPO} /tmp/${TOOL}
 WORKDIR /tmp/${TOOL}
@@ -44,7 +44,7 @@ RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # Trellis
 ARG TOOL=prjtrellis
-ARG TAG=1.1
+ARG TAG=1.2.1
 ARG REPO=https://github.com/YosysHQ/prjtrellis.git
 RUN git clone --recursive ${REPO} /tmp/${TOOL}
 WORKDIR /tmp/${TOOL}/libtrellis
@@ -58,7 +58,7 @@ RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # nextpnr
 ARG TOOL=nextpnr
-ARG TAG=nextpnr-0.1
+ARG TAG=nextpnr-0.3
 ARG REPO=https://github.com/YosysHQ/nextpnr.git
 RUN git clone ${REPO} /tmp/${TOOL}
 WORKDIR /tmp/${TOOL}
@@ -292,5 +292,8 @@ COPY --from=builder /usr/local/lib/python2.7/dist-packages/ /usr/local/lib/pytho
 COPY --from=builder /usr/local/share/ /usr/local/share/
 RUN cat ${VERSION_LOG}
 WORKDIR /HARDENS
+
+# Install java so we can run lando
+RUN apt-get install -y default-jre
 
 ENV PATH="/tools/lando:/tools:/tools/z3/bin:/tools/bsc-2021.07-ubuntu-20.04/bin:/opt/riscv/bin:/opt/bin:${PATH}"

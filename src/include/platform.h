@@ -13,7 +13,7 @@ extern uint32_t sensors[2][2];
 extern uint32_t sensors_demux[2][2][2];
 
 extern uint8_t trip_signals[NTRIP][4];
-extern struct instrumentation_command *inst_command_buf[4];
+extern struct instrumentation_command inst_command_buf[4];
 
 extern uint8_t actuator_state[NDEV];
 extern uint8_t device_actuation_logic[2][NDEV];

@@ -57,7 +57,7 @@ extern "C" {
 #endif
 
 #ifndef SENSOR_UPDATE_MS
-#define SENSOR_UPDATE_MS 5000
+#define SENSOR_UPDATE_MS 60000
 #endif
 
 // Functions for I/O
