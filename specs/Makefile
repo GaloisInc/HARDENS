@@ -1,9 +1,10 @@
 LANDO=java -jar ../assets/lando-2.0-12-Jan-2022-29a47e19-jar-with-dependencies.jar
 LOBOT=/tools/lando/source/lobot/dist-newstyle/build/x86_64-linux/ghc-8.8.4/lobot-0.1/x/lobot/build/lobot/lobot
+OBJS := $(patsubst %.lando,%.md,$(wildcard Lando/*.lando))
 
 .PHONY: all validate
 
-all: validate
+all: $(OBJS)
 
 validate: validate_lando validate_lobot
 
@@ -23,3 +24,10 @@ validate_lando:
 
 validate_lobot:
 	$(LOBOT) RTS.lobot
+
+%.md : %.lando
+	@echo "Converting $< to $@"
+	@$(LANDO) convert --to markdown $< $@
+
+clean :
+	@rm -rf $(OBJS)

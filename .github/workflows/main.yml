@@ -31,6 +31,8 @@ jobs:
           run: |
             make -C saw
             make -C models
+            make -C specs validate
+            make -C specs clean
             make -C specs
 
   prove_framac:
