@@ -9,14 +9,14 @@ outlined below.
 To run all the tests, just run:
 
 ``` sh
-python3 ./run_all.py
+make
 ```
 
 Some tests have a large number of cases. As the implementation and tests
 are symmetric, you can do a quick sanity run by setting the `QUICK` environment variable, i.e.:
 
 ``` sh
-QUICK=1 python3 ./run_all.py
+QUICK=1 make
 ```
 
 Individual tests can be run (and debugged) by using the `test.py` script:

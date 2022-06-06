@@ -82,7 +82,7 @@ type compiler =
 -- either ARM or x86-based and the SoC digital twin and deployment
 -- platform are RISC-V-based.
 type isa =
-  { ARM, X86, RV32 }
+  { ARM, x86, RV32 }
 
 -- The feature model of the RTS demonstrator itself.
 
