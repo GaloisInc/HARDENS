@@ -19,9 +19,6 @@ import I2C :: *;
 import RS232 :: *;
 import GetPut::*;
 
-// This define marks simulation
-// TODO: create a switch in the makefile
-`define SIMULATION
 
 // ================================================================
 // Top
@@ -31,11 +28,11 @@ import "BDPI" function ActionValue #(Bit #(8)) c_trygetchar (Bit #(8) dummy);
 import "BDPI" function ActionValue #(Bit #(8)) c_i2c_request (Bit #(8) addr,
                                                               Bit #(8) data);
 
-// (* clock_prefix="clk", reset_prefix="btn" *) if needed
+(* clock_prefix="CLK", reset_prefix="RST_N" *)
 (* synthesize *)
 module mkTop (Empty);
 
-   Reg #(Bit #(32)) rg_gpio <- mkReg (0);
+   Reg #(Bit #(8)) rg_gpio <- mkReg (0);
 
    NervSoC_IFC nerv_soc <- mkNervSoC;
 
@@ -44,6 +41,7 @@ module mkTop (Empty);
    // and look into proper use of I2C module
    I2CController #(1) i2c_controller <- mkI2CController();
    UART #(4) uart <- mkUART(8, NONE, STOP_1, 16);
+   //uart.RS232.sout ?
 
    // ================================================================
    // UART console I/O
@@ -52,9 +50,9 @@ module mkTop (Empty);
    // Poll terminal input and relay any chars into system console input.
    // Note: rg_console_in_poll is used to poll only every N cycles, whenever it wraps around to 0.
    // Note: if the SoC starts dropping bytes, try increasing the register size
+   Reg #(Bit #(12)) rg_console_in_poll <- mkReg (0);
 `ifdef SIMULATION
    begin
-   Reg #(Bit #(12)) rg_console_in_poll <- mkReg (0);
    rule uart_rx;
       if (rg_console_in_poll == 0) begin
          Bit #(8) ch <- c_trygetchar (?);
@@ -66,6 +64,7 @@ module mkTop (Empty);
    endrule
    end
 `else
+   // FPGA
    begin
    rule uart_rx;
       if (rg_console_in_poll == 0) begin
@@ -74,6 +73,7 @@ module mkTop (Empty);
             nerv_soc.set_uart_rx_byte(ch);
          end
       end
+      rg_console_in_poll <= rg_console_in_poll + 1;
    endrule
    end
 `endif

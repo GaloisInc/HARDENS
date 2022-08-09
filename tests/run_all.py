@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
 # Top level driver for end-to-end testing
-
 import subprocess
 import glob
-import sys
 import os
 
 # Turn off screen clearing ANSI
@@ -22,18 +20,18 @@ NEEDS_SELF_TEST=[
     "scenarios/exceptional_4e",
     ]
 
-for test in glob.glob("scenarios/*"):
+for test in sorted(glob.glob("scenarios/*")):
     fn, ext = os.path.splitext(test)
     if ext == ".cases":
         continue
-    bin = "./rts.no_self_test"
+    bin = "../src/rts.no_self_test"
     if fn in NEEDS_SELF_TEST:
-        bin = "./rts"
+        bin = "../src/rts.self_test"
     os.environ["RTS_BIN"] = bin
 
     print(f"{fn} ({bin})")
 
     if os.path.exists(fn + ".cases"):
-        subprocess.run(["./test.py", fn, fn + ".cases"])
+        subprocess.run(["./test.py", fn, fn + ".cases"],check=True)
     else:
-        subprocess.run(["./test.py", fn])
+        subprocess.run(["./test.py", fn],check=True)

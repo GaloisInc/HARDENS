@@ -46,6 +46,35 @@ endif
 ASFLAGS  += -g $(ARCH) $(ABI) -Wa,-Ilegacy
 CFLAGS += $(OPT) -g3 $(ARCH) $(ABI) $(COMPILER_FLAGS) $(WARNINGS) $(INCLUDES) -DPRINTF_INCLUDE_CONFIG_H
 LDFLAGS	 += -Wl,-Bstatic,-T,sections.ld,--strip-debug -nostartfiles -nostdlib $(ARCH) $(ABI)
+
+
+ifneq ($(SELF_TEST_PERIOD_SEC),)
+CFLAGS += -DSELF_TEST_PERIOD_SEC=$(SELF_TEST_PERIOD_SEC)
+endif
+
+SELF_TEST ?= Enabled
+
+ifeq ($(SELF_TEST),Enabled)
+CFLAGS += -DENABLE_SELF_TEST
+endif
+
+DEBUG_PRINT ?= Disabled
+
+ifeq ($(DEBUG_PRINT),Enabled)
+CFLAGS += -DDEBUG
+endif
+
+CLEAR_SCREEN ?= Enabled
+ifeq ($(CLEAR_SCREEN),Enabled)
+CFLAGS += -DCLEAR_SCREEN=1
+else
+CFLAGS += -DCLEAR_SCREEN=0
+endif
+
+CORE_FREQ ?= 100000
+CFLAGS += -DCORE_FREQ=$(CORE_FREQ)
+$(info CORE_FREQ=$(CORE_FREQ))
+
 #
 # Define all object files.
 #
@@ -74,20 +103,6 @@ firmware.elf  : $(OBJS) Makefile
 	@$(LD) -o $@ $(LDFLAGS) $(OBJS) $(LDLIBS)
 	@$(OBJDUMP) -S -D firmware.elf > firmware.asm
 	@echo Completed $@
-	@cp firmware.elf text.elf
-	@$(OBJCOPY) -j .text text.elf
-	@$(OBJDUMP) -S -D text.elf > text.asm
-# To remove .text from the firmware:
-#	@$(OBJCOPY) firmware.elf firmware.elf
-#	@$(OBJCOPY) -R *text firmware.elf
-#	@$(OBJDUMP) -S -D firmware.elf > firmware.asm
-# Old attempt to create a better DMEM
-#	@cp $(PROG).elf dmem.elf
-#	@$(OBJCOPY) -R text dmem.elf
-#	@$(OBJCOPY) -R .text dmem.elf
-#	@$(OBJDUMP) -S -D dmem.elf > dmem.asm
-#	@mv dmem.elf $(PROG).elf
-#	@$(OBJDUMP) -S -D $(PROG).elf > $(PROG).asm
 
 clean :
 	@rm -f $(OBJS)

@@ -145,9 +145,9 @@ uint8_t c_i2c_request (uint8_t slaveaddr, uint8_t data) {
 
     struct timespec tp;
     clock_gettime(CLOCK_REALTIME, &tp);
-    uint32_t t0 = last_update;
     uint32_t t = tp.tv_sec*1000 + tp.tv_nsec/1000000;
 
+#ifdef SIMULATE_SENSORS
     if (!initialized) {
         last_update = t;
         last[0][T] = T0;
@@ -159,18 +159,18 @@ uint8_t c_i2c_request (uint8_t slaveaddr, uint8_t data) {
         sensors[0][P] = last[0][P];
         sensors[1][P] = last[1][P];
         initialized = 1;
-    } else if (t - t0 > SENSOR_UPDATE_MS) {
+    } else if (t - last_update > SENSOR_UPDATE_MS) {
         for (int s = 0; s < 2; ++s) {
-        last[s][T] += (rand() % 3) - 1;
-        // TODO: Temp sensor resolution is -25..85C
-        // Don't stray too far from our steam table
-        last[s][T] = min(last[s][T], 300);
-        last[s][T] = max(last[s][T], 25);
+            last[s][T] += (rand() % 3) - 1;
+            // TODO: Temp sensor resolution is -25..85C
+            // Don't stray too far from our steam table
+            last[s][T] = min(last[s][T], 300);
+            last[s][T] = max(last[s][T], 25);
 
-        last[s][P] += (rand() % 7) - 3 + P_BIAS;
-        // Don't stray too far from our steam table
-        last[s][P] = min(last[s][P], 5775200);
-        last[s][P] = max(last[s][P], 8000);
+            last[s][P] += (rand() % 3) - 1 + P_BIAS;
+            // Don't stray too far from our steam table
+            last[s][P] = min(last[s][P], 5775200);
+            last[s][P] = max(last[s][P], 8000);
         }
         last_update = t;
     }
@@ -179,6 +179,7 @@ uint8_t c_i2c_request (uint8_t slaveaddr, uint8_t data) {
     sensors[1][T] = last[1][T];
     sensors[0][P] = last[0][P];
     sensors[1][P] = last[1][P];
+#endif
 
     if (slaveaddr & 0x1) {
         // Write request

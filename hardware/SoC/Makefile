@@ -19,7 +19,7 @@ else
   $(info  INFO: BLUESPEC_HOME is $(BLUESPEC_HOME))
 endif
 
-IMEMORY_SIZE ?= 0x060FF
+IMEMORY_SIZE ?= 0x07000
 DMEMORY_SIZE ?= 0x03000
 
 
@@ -27,6 +27,7 @@ DMEMORY_SIZE ?= 0x03000
 
 TOPFILE   ?= src_BSV/Top.bsv
 TOPMODULE ?= mkTop
+TARGET ?= verilator
 
 BSCFLAGS += -keep-fires
 BSCFLAGS += -aggressive-conditions
@@ -37,6 +38,9 @@ BSCFLAGS += -unspecified-to 0
 BSCFLAGS += -parallel-sim-link 8
 # BSCFLAGS += -show-schedule
 # BSCFLAGS += -no-inline-rwire
+ifeq ($(TARGET),verilator)
+BSCFLAGS += -D SIMULATION
+endif
 
 BSC_C_FLAGS += -Xc++  -D_GLIBCXX_USE_CXX11_ABI=0
 BSC_C_FLAGS += -Xl -v
@@ -46,24 +50,24 @@ BSC_C_FLAGS += -Xc -O3 -Xc++ -O3
 # Search path for .bsv files
 
 BSCPATH = src_BSV
+VSCPATH = src_Verilog
 
 # Path for standard bsc libs
-BSCPATH := $(BSCPATH):+
+BSCPATH_V := $(BSCPATH):+
 
 # ================================================================
 # Verilog generation (common for all verilog simulator targets)
 BUILD_V_DIR = build_v
 VERILOG_DIR = verilog
 BSCDIRS_V = -vdir $(VERILOG_DIR)  -bdir $(BUILD_V_DIR)  -info-dir $(BUILD_V_DIR)
-BSCPATH_V = $(BSCPATH)
 
 FIRMWARE_DIR = firmware
-PROG 	?= main
+PROG 	?= demo
+CORE_FREQ ?= 1333333
 
-# TODO: properly storing sdata in FLASH could help keep the dmem smaller
 dmem_contents.memhex32:
 	PROG=$(PROG) make -C $(FIRMWARE_DIR) clean
-	PROG=$(PROG) make -C $(FIRMWARE_DIR) firmware.elf
+	CORE_FREQ=$(CORE_FREQ) PROG=$(PROG) make -C $(FIRMWARE_DIR) firmware.elf
 	@riscv64-unknown-elf-elf2hex --bit-width 32 --input $(FIRMWARE_DIR)/firmware.elf --output $(FIRMWARE_DIR)/intermediate.hex
 	@./pyhex2memhex.py --input $(FIRMWARE_DIR)/intermediate.hex --output $(FIRMWARE_DIR)/firmware.memhex32 --maxlen $(DMEMORY_SIZE)
 	@mv $(FIRMWARE_DIR)/firmware.memhex32 $@
@@ -71,11 +75,7 @@ dmem_contents.memhex32:
 	@rm $(FIRMWARE_DIR)/intermediate.hex
 
 imem_contents.memhex32: dmem_contents.memhex32
-	@riscv64-unknown-elf-elf2hex --bit-width 32 --input $(FIRMWARE_DIR)/text.elf --output $(FIRMWARE_DIR)/intermediate.hex
-	@./pyhex2memhex.py --input $(FIRMWARE_DIR)/intermediate.hex --output $(FIRMWARE_DIR)/text.memhex32 --maxlen $(IMEMORY_SIZE)
-	@mv $(FIRMWARE_DIR)/text.memhex32 $@
-	@cp $(FIRMWARE_DIR)/text.asm .
-	@rm $(FIRMWARE_DIR)/intermediate.hex
+	@cp $< $@
 
 verilog: dmem_contents.memhex32 imem_contents.memhex32
 	mkdir -p $(BUILD_V_DIR)
@@ -83,6 +83,29 @@ verilog: dmem_contents.memhex32 imem_contents.memhex32
 	@echo INFO: Verilog generation ...
 	bsc -u -elab -verilog  $(BSCDIRS_V)  $(BSCFLAGS) -p +:%/Libraries/FPGA/Misc -p $(BSCPATH_V) $(TOPFILE)
 	@echo INFO: Finished Verilog generation
+
+verilog_fpga: dmem_contents.memhex32 imem_contents.memhex32
+	mkdir -p $(BUILD_V_DIR)
+	mkdir -p $(VERILOG_DIR)
+	@echo INFO: Verilog generation ...
+	bsc -u -elab -verilog  $(BSCDIRS_V)  $(BSCFLAGS) -p +:%/Libraries/FPGA/Misc -p $(BSCPATH_V) src_BSV/FpgaTop.bsv
+	@echo INFO: Finished Verilog generation
+
+verilog_modules:
+	@echo "Copying over handwritten modules"
+	cp -p ../../src/handwritten/SystemVerilog/instrumentation_impl.sv $(VERILOG_DIR)/Is_Ch_Tripped.sv
+	sed 's/Is_Ch_Tripped/Is_Ch_Tripped_Handwritten/' $(VERILOG_DIR)/Is_Ch_Tripped.sv > $(VERILOG_DIR)/out.sv
+	mv $(VERILOG_DIR)/out.sv $(VERILOG_DIR)/Is_Ch_Tripped_Handwritten.sv
+	sed 's/Generate_Sensor_Trips/Generate_Sensor_Trips_Handwritten/' $(VERILOG_DIR)/Is_Ch_Tripped_Handwritten.sv > $(VERILOG_DIR)/out.sv
+	mv $(VERILOG_DIR)/out.sv $(VERILOG_DIR)/Is_Ch_Tripped_Handwritten.sv
+	@echo "Copying over generated modules"
+	cp -p ../../src/generated/SystemVerilog/instrumentation_impl.sv $(VERILOG_DIR)/Is_Ch_Tripped.sv
+	sed 's/Is_Ch_Tripped/Is_Ch_Tripped_Generated/' $(VERILOG_DIR)/Is_Ch_Tripped.sv > $(VERILOG_DIR)/out.sv
+	mv $(VERILOG_DIR)/out.sv $(VERILOG_DIR)/Is_Ch_Tripped_Generated.sv
+	sed 's/Generate_Sensor_Trips/Generate_Sensor_Trips_Generated/' $(VERILOG_DIR)/Is_Ch_Tripped_Generated.sv > $(VERILOG_DIR)/out.sv
+	mv $(VERILOG_DIR)/out.sv $(VERILOG_DIR)/Is_Ch_Tripped_Generated.sv
+	cp -p ../../src/generated/SystemVerilog/actuation_unit_impl.sv $(VERILOG_DIR)/Actuate_D0.sv
+	rm $(VERILOG_DIR)/Is_Ch_Tripped.sv
 
 # ================================================================
 # FOR VERILATOR
@@ -107,29 +130,22 @@ VERILATOR_FLAGS += -CFLAGS -O3
 VERILATOR_FLAGS += -CFLAGS -DVL_DEBUG
 VERILATOR_FLAGS += -LDFLAGS -static
 
-verilator: verilog
+SENSORS ?= Simulated
+ifeq ($(SENSORS),Simulated)
+VERILATOR_FLAGS += -CFLAGS -DSIMULATE_SENSORS
+endif
+
+verilator: verilog verilog_modules
 	@echo "INFO: Link for Verilator ..."
 	@echo "INFO: For convenience (single -I flag to verilator) copy all Verilog files into $(VERILATOR_RTL_DIR)/"
 	mkdir -p $(VERILATOR_RTL_DIR)
 	cp -p  $(VERILATOR_RESOURCES)/verilator_wrapper.v    $(VERILATOR_RTL_DIR)/
 	cp -p  $(VERILATOR_RESOURCES)/*.c    $(VERILATOR_RTL_DIR)/
 	cp -p  $(VERILATOR_RESOURCES)/*.h    $(VERILATOR_RTL_DIR)/
-	cp -p  $(VERILOG_DIR)/*.v                                   $(VERILATOR_RTL_DIR)/
-	cp -p  $(NERV_REPO)/nerv.sv                          $(VERILATOR_RTL_DIR)/
+	cp -p  $(VERILOG_DIR)/*.v            $(VERILATOR_RTL_DIR)/
+	cp -p  $(VERILOG_DIR)/*.sv            $(VERILATOR_RTL_DIR)/
+	cp -p  $(NERV_REPO)/nerv.sv          $(VERILATOR_RTL_DIR)/
 	cp -p  $(BLUESPEC_HOME)/lib/Verilog/*.v  $(VERILATOR_RTL_DIR)/
-	@echo "Copying over handwritten modules"
-	cp -p ../../src/handwritten/SystemVerilog/instrumentation_impl.sv $(VERILATOR_RTL_DIR)/Is_Ch_Tripped.sv
-	sed 's/Is_Ch_Tripped/Is_Ch_Tripped_Handwritten/' $(VERILATOR_RTL_DIR)/Is_Ch_Tripped.sv > $(VERILATOR_RTL_DIR)/out.sv
-	mv $(VERILATOR_RTL_DIR)/out.sv $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Handwritten.sv
-	sed 's/Generate_Sensor_Trips/Generate_Sensor_Trips_Handwritten/' $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Handwritten.sv > $(VERILATOR_RTL_DIR)/out.sv
-	mv $(VERILATOR_RTL_DIR)/out.sv $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Handwritten.sv
-	@echo "Copying over generated modules"
-	cp -p ../../src/generated/SystemVerilog/instrumentation_impl.sv $(VERILATOR_RTL_DIR)/Is_Ch_Tripped.sv
-	sed 's/Is_Ch_Tripped/Is_Ch_Tripped_Generated/' $(VERILATOR_RTL_DIR)/Is_Ch_Tripped.sv > $(VERILATOR_RTL_DIR)/out.sv
-	mv $(VERILATOR_RTL_DIR)/out.sv $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Generated.sv
-	sed 's/Generate_Sensor_Trips/Generate_Sensor_Trips_Generated/' $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Generated.sv > $(VERILATOR_RTL_DIR)/out.sv
-	mv $(VERILATOR_RTL_DIR)/out.sv $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Generated.sv
-	cp -p ../../src/generated/SystemVerilog/actuation_unit_impl.sv $(VERILATOR_RTL_DIR)/Actuate_D0.sv
 	@echo "INFO: Generating sim_main.cpp for TOPMODULE = $(TOPMODULE)"
 	sed  's/TOPMODULE/mkTop/g' \
 		$(VERILATOR_RESOURCES)/sim_main_template.cpp \
@@ -157,42 +173,34 @@ exe: verilator
 # ================================================================
 # TODO @podhrmic Define CORE_FREQ and TICKS_TO_MS_MULTIPLIER for the FPGA
 
-SYNTH_DIR = test
-design.json: verilator
+SYNTH_DIR = Fpga_RTL
+design.json: verilog_fpga verilog_modules
 	mkdir -p $(SYNTH_DIR)
-	cp $(NERV_REPO)/nerv.sv $(SYNTH_DIR)/.
-	cp $(BLUESPEC_HOME)/lib/Verilog/ResetInverter.v $(SYNTH_DIR)/.
-	cp $(BLUESPEC_HOME)/lib/Verilog/SizedFIFO.v $(SYNTH_DIR)/.
-	cp $(BLUESPEC_HOME)/lib/Verilog/Counter.v $(SYNTH_DIR)/.
+	cp $(VSCPATH)/*.v $(SYNTH_DIR)/
+	cp $(NERV_REPO)/nerv.sv $(SYNTH_DIR)/
+	cp $(BLUESPEC_HOME)/lib/Verilog/ResetInverter.v $(SYNTH_DIR)/
+	cp $(BLUESPEC_HOME)/lib/Verilog/SizedFIFO.v $(SYNTH_DIR)/
+	cp $(BLUESPEC_HOME)/lib/Verilog/Counter.v $(SYNTH_DIR)/
 	cp $(VERILOG_DIR)/*.v $(SYNTH_DIR)/
-	cp $(VERILATOR_RTL_DIR)/Actuate_D0.sv $(SYNTH_DIR)/.
-	cp $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Handwritten.sv $(SYNTH_DIR)/.
-	cp $(VERILATOR_RTL_DIR)/Is_Ch_Tripped_Generated.sv $(SYNTH_DIR)/.
-# Trick to be able to load two different binaries
-	sed 's/RegFileLoad #(.file('\"'i/RegFileLoadI #(.file('\"'i/' $(SYNTH_DIR)/mkNervSoC.v > out.v
-	sed 's/RegFileLoad #(.file('\"'d/RegFileLoadD #(.file('\"'d/' out.v > $(SYNTH_DIR)/mkNervSoC.v
-# Dmem
-	sed 's/'\"\"'/'\"imem_contents.memhex32\"'/' $(BLUESPEC_HOME)/lib/Verilog/RegFileLoad.v > $(SYNTH_DIR)/RegFileLoadI.v
-	sed 's/module RegFileLoad/module RegFileLoadI/' $(SYNTH_DIR)/RegFileLoadI.v > out.v
-	mv out.v $(SYNTH_DIR)/RegFileLoadI.v
-# Imem
-	sed 's/'\"\"'/'\"dmem_contents.memhex32\"'/' $(BLUESPEC_HOME)/lib/Verilog/RegFileLoad.v > $(SYNTH_DIR)/RegFileLoadD.v
-	sed 's/module RegFileLoad/module RegFileLoadD/' $(SYNTH_DIR)/RegFileLoadD.v > out.v
-	mv out.v $(SYNTH_DIR)/RegFileLoadD.v
-# Run the actual synthesis
-	yosys -l design_ys.log -s yosys.txt
-
-#	yosys -l design_ys.log -p "read_verilog verilog/*.v $(VERILATOR_RTL_DIR)/nerv.sv $(VERILATOR_RTL_DIR)/ResetInverter.v $(VERILATOR_RTL_DIR)/SizedFIFO.v $(VERILATOR_RTL_DIR)/RegFileLoad.v $(VERILATOR_RTL_DIR)/Counter.v; proc; synth_ecp5 -json $@ -top mkTop"
-#	yosys -l design_ys.log -p "synth_ecp5 -json $@" $(VERILATOR_RTL_DIR)/SizedFIFO.v $(VERILATOR_RTL_DIR)/nerv.sv verilog/*.v $(VERILATOR_RTL_DIR)/ResetInverter.v $(VERILATOR_RTL_DIR)/RegFileLoad.v
-#	yosys -l design_ys.log -p "synth_ecp5 -json $@" $(BLUESPEC_HOME)/lib/Verilog/SizedFIFO.v $(NERV_REPO)/nerv.sv verilog/*.v $(BLUESPEC_HOME)/lib/Verilog/ResetInverter.v $(BLUESPEC_HOME)/lib/Verilog/RegFileLoad.v
-#yosys -l design_ys.log -p "read_verilog $(BLUESPEC_HOME)/lib/Verilog/SizedFIFO.v; proc; read_verilog $(NERV_REPO)/nerv.sv verilog/*.v $(BLUESPEC_HOME)/lib/Verilog/ResetInverter.v $(BLUESPEC_HOME)/lib/Verilog/RegFileLoad.v; synth_ecp5 -json $@"
+	cp $(VERILOG_DIR)/*.sv $(SYNTH_DIR)/
+	cp $(BLUESPEC_HOME)/lib/Verilog/BRAM1Load.v $(SYNTH_DIR)/
+	cp $(BLUESPEC_HOME)/lib/Verilog/TriState.v $(SYNTH_DIR)/
+	cp $(BLUESPEC_HOME)/lib/Verilog/FIFO2.v $(SYNTH_DIR)/
+	cp $(BLUESPEC_HOME)/lib/Verilog/SizedFIFO0.v $(SYNTH_DIR)/
+	yosys -p "synth_ecp5 -top top -json $@ -top top" $(SYNTH_DIR)/*.v $(SYNTH_DIR)/*.sv
 
 design.config: design.json
-	nextpnr-ecp5 --json $< --textcfg $@ --um5g-85k --package CABGA381 --lpf ecp5.lpf --lpf-allow-unconstrained
-# TODO: constrain pins
+	nextpnr-ecp5 --json $< --textcfg $@ --um5g-85k --package CABGA381 --lpf ecp5.lpf
 
-design.bit: design.config
-	ecppack --svf design.svf $< $@
+design.svf: design.config
+	ecppack --svf design.svf $<
+
+prog:
+	ecppack --svf design.svf design.config
+	openocd -f /opt/share/trellis/misc/openocd/ecp5-evn.cfg -c "transport select jtag; init; svf design.svf; exit"
+
+open:
+	openocd -f /opt/share/trellis/misc/openocd/ecp5-evn.cfg
 
 clean:
 	rm -r -f  *~   */*~  build*  obj_dir \

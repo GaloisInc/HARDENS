@@ -1,9 +1,0 @@
-[ { "prover": "Z3:4.8.8", "verdict": "timeout", "time": 10. },
-  { "prover": "Alt-Ergo:2.4.1", "verdict": "timeout", "time": 10. },
-  { "prover": "script", "verdict": "valid" },
-  { "header": "Split", "tactic": "Wp.split", "params": {},
-    "select": { "select": "clause-step", "at": 3, "kind": "have",
-                "target": "(sensor_tripped4758_0=0) \\/ (sensor_tripped4758_0=1)",
-                "pattern": "|==$sensor_tripped47580$sensor_tripped4758" },
-    "children": { "Case 1/2": [ { "prover": "qed", "verdict": "valid" } ],
-                  "Case 2/2": [ { "prover": "qed", "verdict": "valid" } ] } } ]

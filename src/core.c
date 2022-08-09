@@ -32,7 +32,6 @@ struct testcase {
   uint8_t device;
   uint8_t expect;
 } tests[] = {
-// TODO: remove the data for FPGA deployment (too large)
 // Test data generated from Cryptol RTS::SelfTestOracleHalf
 #include "self_test_data/tests.inc.c"
 };
@@ -92,7 +91,6 @@ int update_ui_instr(struct ui_values *ui) {
       continue;
 
     for (uint8_t j = 0; j < NDIVISIONS; ++j) {
-
       if (ui->maintenance[j])
         continue;
 
@@ -147,10 +145,13 @@ int set_display_line(struct ui_values *ui, uint8_t line_number, char *display, u
 
 #ifdef ENABLE_SELF_TEST
 int end_test(struct test_state *test, struct ui_values *ui) {
+    static int cnt = 0;
     int passed =
          test->test_device_result[test->test_device]
       == (test->self_test_expect || test->actuation_old_vote);
     test->failed = !passed;
+    DEBUG_PRINTF(("<core.c> end_test #%d: test->test_device_result[%u]=0x%X\n", cnt, test->test_device, test->test_device_result[test->test_device]));
+    DEBUG_PRINTF(("<core.c> end_test #%d: (test->self_test_expect || test->actuation_old_vote)=0x%X\n", cnt, (test->self_test_expect || test->actuation_old_vote)));
 
     // Reset state
     set_test_running(0);
@@ -166,7 +167,8 @@ int end_test(struct test_state *test, struct ui_values *ui) {
       set_display_line(ui, 16, (char*)fail, 0);
       set_display_line(ui, 20, (char*)"A TEST FAILED", 0);
     }
-
+    DEBUG_PRINTF(("<core.c> end_test #%d: Passed: %d\n", cnt, passed));
+    cnt++;
     return passed;
 }
 
@@ -235,6 +237,9 @@ void core_init(struct core_state *c) {
 int core_step(struct core_state *c) {
   int err = 0;
   struct rts_command rts;
+#ifndef ENABLE_SELF_TEST
+  time_in_s();
+#endif
 
   if (!c->error) {
     // Actuate devices if necessary
@@ -252,7 +257,7 @@ int core_step(struct core_state *c) {
     switch (rts.type) {
     case INSTRUMENTATION_COMMAND:
       err |= send_instrumentation_command(rts.instrumentation_division,
-                                          &rts.cmd.instrumentation);
+                                          &(rts.cmd.instrumentation));
       break;
 
     case ACTUATION_COMMAND:

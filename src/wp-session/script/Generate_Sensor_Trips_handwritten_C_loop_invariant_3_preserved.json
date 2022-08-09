@@ -1,3 +1,0 @@
-[ { "prover": "Z3:4.8.8", "verdict": "timeout", "time": 10. },
-  { "prover": "Alt-Ergo:2.4.1", "verdict": "timeout", "time": 10. },
-  { "prover": "script", "verdict": "timeout", "time": 10. } ]

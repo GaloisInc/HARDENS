@@ -14,6 +14,7 @@
 #define UART_REG_TX             0x02000000
 #define UART_REG_RX             0x02000004
 #define UART_REG_DATA_READY     0x02000008
+#define MIN_PRINT_DELAY_TICKS 1000
 
 #define I2C_REG_ADDR            0x03000000
 #define I2C_REG_DATA            0x03000004
@@ -58,7 +59,9 @@
 #endif
 
 #ifndef TICKS_TO_MS_MULTIPLIER
-#define TICKS_TO_MS_MULTIPLIER 8
+// Should be 1 for FPGA
+#define TICKS_TO_MS_MULTIPLIER 3
+//#define TICKS_TO_MS_MULTIPLIER 8
 #endif
 
 /**
