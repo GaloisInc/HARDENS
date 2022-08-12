@@ -5,7 +5,7 @@
  */
 package id Actions 'RTS Actions' {
   package id Internal 'RTS Internal Actions' {
-    action def id IA 'Intenral Action' {
+    action def id IA 'Internal Action' {
       doc /* Actions internal to the RTS */
     }
     action id Trip 'Signal Trip' : IA {

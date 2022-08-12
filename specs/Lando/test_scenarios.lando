@@ -105,10 +105,11 @@ displays the updated state.
 Normal Self-Test Behavior 14 - Demonstrate Periodic Continual Self-test of Safety Signal Path
 The system starts, eventually the UI displays that self test has run.
 
-Normal Behavior Full Self-Test
-The system selects two instrumentation divisions and a device, the system
-simulates inputs to the selected instrumentation divisions, the system checks
-that the correct actuation signal would be sent to the selected device.
+Normal Self-Test Behavior 15 - Full Self-Test
+The system selects two instrumentation divisions and a device, the
+system simulates inputs to the selected instrumentation divisions, the
+system checks that the correct actuation signal would be sent to the
+selected device.
 
 // Exceptional behaviors are *predictable* system behaviors triggered
 // by external environment affects.  Examples include a CPU, OS,
@@ -131,73 +132,90 @@ Exceptional Behavior 1b - Cause Actuator 2 to Fail
 Manually actuate Actuator 2, the actuator fails, an error is indicated.
 
 // This is not detectable
-Exceptional Behavior 1c - Non-determinisitically Cause an Actuator to Eventually Fail
-Repeatedly manually actuate/unactuate an Actuator, the actuator fails, an error is indicated.
+Exceptional Behavior 1c - Non-deterministically Cause an Actuator to Eventually Fail
+Repeatedly manually actuate/de-actuate an Actuator, the actuator fails,
+an error is indicated.
 
 Exceptional Behavior 2a - Cause Temperature Sensor 1 to Fail
-Instrumentation units 1 and 2 reports temperature readings that are inconsistent with Instrumentation units 3 and 4, the
-discrepancy is indicated on the UI.
+Instrumentation units 1 and 2 report temperature readings that are
+inconsistent with Instrumentation units 3 and 4, the discrepancy is
+indicated on the UI.
 
 Exceptional Behavior 2b - Cause Temperature Sensor 2 to Fail
-Instrumentation units 1 and 2 reports temperature readings that are inconsistent with Instrumentation units 3 and 4, the
-discrepancy is indicated on the UI.
+Instrumentation units 1 and 2 report temperature readings that are
+inconsistent with Instrumentation units 3 and 4, the discrepancy is
+indicated on the UI.
 
 Exceptional Behavior 2c - Non-deterministically Cause a Temperature Sensor to Eventually Fail
-Instrumentation units 1 and 2 reports temperature readings that are inconsistent with Instrumentation units 3 and 4, the
-discrepancy is indicated on the UI.
+Instrumentation units 1 and 2 report temperature readings that are
+inconsistent with Instrumentation units 3 and 4, the discrepancy is
+indicated on the UI.
 
 Exceptional Behavior 3a - Cause Pressure Sensor 1 to Fail
-Instrumentation units 1 and 2 reports pressure readings that are inconsistent with Instrumentation units 3 and 4, the
-discrepancy is indicated on the UI.
+Instrumentation units 1 and 2 report pressure readings that are
+inconsistent with Instrumentation units 3 and 4, the discrepancy is
+indicated on the UI.
 
 Exceptional Behavior 3b - Cause Pressure Sensor 2 to Fail
-Instrumentation units 1 and 2 reports pressure readings that are inconsistent with Instrumentation units 3 and 4, the
-discrepancy is indicated on the UI.
+Instrumentation units 1 and 2 report pressure readings that are
+inconsistent with Instrumentation units 3 and 4, the discrepancy is
+indicated on the UI.
 
 Exceptional Behavior 3c - Non-deterministically Cause a Pressure Sensor to Eventually Fail
-Temperature Sensor 1 or Temperature Sensor 2 report inconsistent values,
-discrepancy is indicated on the UI.
+Temperature Sensor 1 or Temperature Sensor 2 report inconsistent
+values, the discrepancy is indicated on the UI.
 
 // Can be further refined, e.g.:
-// Sensor values are read by Instrumnetation Unit 1, the unit generates the wrong trip signal,
+// Sensor values are read by Instrumentation Unit 1, the unit generates the wrong trip signal,
 Exceptional Behavior 4a - Cause Instrumentation Unit 1 to Fail
-Instrumentation unit 1 fails, self test indicates that a test has failed.
+Instrumentation unit 1 fails, self test indicates that a test has
+failed.
 
 // Can be further refined, e.g.:
-// Sensor values are read by Instrumnetation Unit 1, the unit generates the wrong trip signal,
+// Sensor values are read by Instrumentation Unit 1, the unit generates the wrong trip signal,
 Exceptional Behavior 4b - Cause Instrumentation Unit 2 to Fail
-Instrumentation unit 2 fails, self test indicates that a test has failed.
+Instrumentation unit 2 fails, self test indicates that a test has
+failed.
 
 // Can be further refined, e.g.:
-// Sensor values are read by Instrumnetation Unit 1, the unit generates the wrong trip signal,
+// Sensor values are read by Instrumentation Unit 1, the unit generates the wrong trip signal,
 Exceptional Behavior 4c - Cause Instrumentation Unit 3 to Fail
-Instrumentation unit 3 fails, self test indicates that a test has failed.
+Instrumentation unit 3 fails, self test indicates that a test has
+failed.
 
 // Can be further refined, e.g.:
-// Sensor values are read by Instrumnetation Unit 1, the unit generates the wrong trip signal,
+// Sensor values are read by Instrumentation Unit 1, the unit generates the wrong trip signal,
 Exceptional Behavior 4d - Cause Instrumentation Unit 4 to Fail
-Instrumentation unit 4 fails, self test indicates that a test has failed.
+Instrumentation unit 4 fails, self test indicates that a test has
+failed.
 
 Exceptional Behavior 4e - Non-Deterministically Cause Instrumentation Unit to Eventually Fail
-At least one instrumentation unit fails to generate the appropriate trip signal, self test runs,
-self test indicates that a test has failed.
+At least one instrumentation unit fails to generate the appropriate
+trip signal, self test runs, self test indicates that a test has
+failed.
 
 Exceptional Behavior 5a - Cause Temperature Demultiplexor 1 to Fail
-At least one of Instrumentation units 1 or 2 report temperature readings inconsistent with instrumentation units 3 and 4.
+At least one of Instrumentation units 1 or 2 report temperature
+readings inconsistent with instrumentation units 3 and 4.
 
 Exceptional Behavior 5b - Cause Temperature Demultiplexor 2 to Fail
-At least one of Instrumentation units 3 or 4 report temperature readings inconsistent with instrumentation units 1 and 2.
+At least one of Instrumentation units 3 or 4 report temperature
+readings inconsistent with instrumentation units 1 and 2.
 
 Exceptional Behavior 5c - Cause Pressure Demultiplexor 1 to Fail
-At least one of Instrumentation units 1 and 2 report pressure readings inconsistent with instrumentation units 3 and 4.
+At least one of Instrumentation units 1 and 2 report pressure readings
+inconsistent with instrumentation units 3 and 4.
 
 Exceptional Behavior 5d - Cause Pressure Demultiplexor 2 to Fail
-At least one of Instrumentation units 3 and 4 report pressure readings inconsistent with instrumentation units 1 and 2.
+At least one of Instrumentation units 3 and 4 report pressure readings
+inconsistent with instrumentation units 1 and 2.
 
 Exceptional Behavior 5e - Cause a Temperature Demultiplexor to Eventually Fail
-All instrumentation units report consistent temperature readings, a demultiplexor fails, at least one of the
-instrumentation units reports an inconsistent temperature reading.
+All instrumentation units report consistent temperature readings, a
+demultiplexor fails, at least one of the instrumentation units reports
+an inconsistent temperature reading.
 
 Exceptional Behavior 5f - Cause a Pressure Demultiplexor to Eventually Fail
-All instrumentation units report consistent temperature readings, a demultiplexor fails, at least one of the
-instrumentation units reports an inconsistent pressure reading.
+All instrumentation units report consistent temperature readings, a
+demultiplexor fails, at least one of the instrumentation units reports
+an inconsistent pressure reading.
