@@ -283,16 +283,16 @@ RUN cd /tools/${TOOL}/source/lobot/ && cabal v2-build
 ENV PATH="/tools/${TOOL}:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
-
 # DocumentationEnricher
-# ARG TOOL=DER
-# ARG TAG=1.0.0
-# ARG REPO=https://github.com/SimplisticCode/DER
-# RUN git clone ${REPO} /tools/${TOOL}
-# WORKDIR /tools/${TOOL}
-# RUN ./build.sh -r
-# ENV PATH="/tools/${TOOL}:${PATH}"
-# RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+ARG TOOL=der
+ARG TAG=0.1.4
+ARG REPO=https://github.com/SimplisticCode/DER/releases/download/v1.1.4/
+WORKDIR /tmp
+RUN wget ${REPO}/${TOOL}-${TAG}.zip
+RUN unzip ${TOOL}-${TAG}.zip
+RUN    mv ${TOOL}-${TAG} /tools/${TOOL}
+ENV PATH="/tools/${TOOL}/bin:${PATH}"
+RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # Runner
 FROM base as runner
@@ -308,4 +308,4 @@ WORKDIR /HARDENS
 # Install java so we can run lando
 RUN apt-get install -y default-jre
 
-ENV PATH="/tools/lando:/tools:/tools/z3/bin:/tools/bsc-2021.07-ubuntu-20.04/bin:/opt/riscv/bin:/opt/bin:${PATH}"
+ENV PATH="/tools/der/bin:/tools/lando:/tools:/tools/z3/bin:/tools/bsc-2021.07-ubuntu-20.04/bin:/opt/riscv/bin:/opt/bin:${PATH}"
