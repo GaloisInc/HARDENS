@@ -1,11 +1,11 @@
 # Base
-FROM ubuntu:21.04 as base
+FROM ubuntu:22.04 as base
 ARG DEBIAN_FRONTEND=noninteractive
 RUN mkdir /tools
 WORKDIR /
 
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y wget git python pip \
+RUN apt-get install -y wget git python3 pip \
     python3-dev software-properties-common \
     iproute2 usbutils srecord \
     build-essential clang bison flex \
@@ -23,7 +23,8 @@ RUN apt-get install -y wget git python pip \
     libftdi1-2 libftdi1-dev libhidapi-libusb0 libhidapi-dev libudev-dev make g++ \
     libc++-dev libc++abi-dev nodejs python2 npm \
     iverilog verilator \
-    vim mercurial libboost-program-options-dev
+    vim mercurial libboost-program-options-dev \
+    texlive-full
 
 # Builder
 FROM base as builder
@@ -281,6 +282,17 @@ RUN ./lando.sh -r
 RUN cd /tools/${TOOL}/source/lobot/ && cabal v2-build
 ENV PATH="/tools/${TOOL}:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
+
+# DocumentationEnricher
+# ARG TOOL=DER
+# ARG TAG=1.0.0
+# ARG REPO=https://github.com/SimplisticCode/DER
+# RUN git clone ${REPO} /tools/${TOOL}
+# WORKDIR /tools/${TOOL}
+# RUN ./build.sh -r
+# ENV PATH="/tools/${TOOL}:${PATH}"
+# RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # Runner
 FROM base as runner
