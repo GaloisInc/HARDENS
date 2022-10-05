@@ -1,11 +1,11 @@
 # Base
-FROM ubuntu:21.04 as base
+FROM ubuntu:22.04 as base
 ARG DEBIAN_FRONTEND=noninteractive
 RUN mkdir /tools
 WORKDIR /
 
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y wget git python pip \
+RUN apt-get install -y wget git python3 pip \
     python3-dev software-properties-common \
     iproute2 usbutils srecord \
     build-essential clang bison flex \
@@ -23,7 +23,8 @@ RUN apt-get install -y wget git python pip \
     libftdi1-2 libftdi1-dev libhidapi-libusb0 libhidapi-dev libudev-dev make g++ \
     libc++-dev libc++abi-dev nodejs python2 npm \
     iverilog verilator \
-    vim mercurial libboost-program-options-dev
+    vim mercurial libboost-program-options-dev \
+    texlive-full
 
 # Builder
 FROM base as builder
@@ -282,6 +283,17 @@ RUN cd /tools/${TOOL}/source/lobot/ && cabal v2-build
 ENV PATH="/tools/${TOOL}:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
+# DocumentationEnricher
+ARG TOOL=der
+ARG TAG=0.1.4
+ARG REPO=https://github.com/SimplisticCode/DER/releases/download/v1.1.4/
+WORKDIR /tmp
+RUN wget ${REPO}/${TOOL}-${TAG}.zip
+RUN unzip ${TOOL}-${TAG}.zip
+RUN    mv ${TOOL}-${TAG} /tools/${TOOL}
+ENV PATH="/tools/${TOOL}/bin:${PATH}"
+RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
 # Runner
 FROM base as runner
 COPY --from=builder /opt/ /opt/
@@ -296,4 +308,4 @@ WORKDIR /HARDENS
 # Install java so we can run lando
 RUN apt-get install -y default-jre
 
-ENV PATH="/tools/lando:/tools:/tools/z3/bin:/tools/bsc-2021.07-ubuntu-20.04/bin:/opt/riscv/bin:/opt/bin:${PATH}"
+ENV PATH="/tools/der/bin:/tools/lando:/tools:/tools/z3/bin:/tools/bsc-2021.07-ubuntu-20.04/bin:/opt/riscv/bin:/opt/bin:${PATH}"
