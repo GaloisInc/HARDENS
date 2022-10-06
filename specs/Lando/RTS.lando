@@ -9,8 +9,8 @@ The overall shape of the Reactor Trip System (RTS) is an archetypal
 subsystem. They are read by the `Instrumentation` subsystem, which
 contains four separate and independent `Instrumentation`
 components. The "Compute" part of the architecture is spread across
-the `Actuation Logic` subsystem—which contains the two `Voting`
-components which perform the actuation logic itself—and the `Root`
+the `Actuation Logic` subsystem, which contains the two `Voting`
+components which perform the actuation logic itself, and the `Root`
 subsystem which contains the core computation and I/O components, and
 the two separate and independent devices that drive actuators.
 
