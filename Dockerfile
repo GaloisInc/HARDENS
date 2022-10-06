@@ -1,5 +1,5 @@
 # Base
-FROM ubuntu:22.04 as base
+FROM ubuntu:21.04 as base
 ARG DEBIAN_FRONTEND=noninteractive
 RUN mkdir /tools
 WORKDIR /
