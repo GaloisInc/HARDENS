@@ -238,7 +238,7 @@ rts_configs : kind of rts
 -- the assurance case we describe is realizable, and (c) our entire
 -- feature model is consistent and complete.
 
--- Bottom completeness check.
+-- Bottom consistency check.
 check_bottom : check
   on r : rts_configs
   that false
