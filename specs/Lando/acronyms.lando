@@ -20,64 +20,83 @@ component Central Processing Unit (CPU)
 A CPU is the electronic circuitry that executes instructions comprising a computer program.
 
 component Continuous Verification (CV)
-@todo kiniry Add an explanation.
+The integration of dynamic or static anlasis for property verification
+in a Continuous Integration system, such as GitHub Actions or GitLab
+CI/CD.
 
 component Communicating Sequential Processes (CSP)
-@todo kiniry Add an explanation.
+A formal method developed by C.A.R. Hoare for specifying and reasoning
+about concurrent, possibly distributed systems.
 
 component Digital Engineering (DE)
-@todo kiniry Add an explanation.
+The use of digital models to simulate, emulate, or reason about
+digital or physical manifestations.
 
 component Digital Instrumentation \& Control (diandc)
-@todo kiniry Add an explanation.
+A digitally-based (computational) system that provides a view on, and
+control of, a plant.
 
 component Defense Industrial Base (DIB)
-@todo kiniry Add an explanation.
+Companies that provide products and services to the military or
+Department of Defense.
 
 component Department of Defense (DoD)
-@todo kiniry Add an explanation.
+The U.S. agency responsible for keeping the U.S.A. and its citizens
+safe from enemy nation states.
 
 component Domain Specific Language (DSL)
-@todo kiniry Add an explanation.
+A programming or specification language that focuses on one particular
+domain of knowledge, in contrast to general purpose languages.
 
 component Electronic Design Automation (EDA)
-@todo kiniry Add an explanation.
+Tools and technologies used to specify, reasoning about, build, and
+test electronic systems at the macro- to nano-scale.
 
 component Field Programmable Gate Array (FPGA)
-@todo kiniry Add an explanation.
+A reprogrammable piece of hardware which typically contains many
+similar functional subcomponents whose configuration and assembly
+permit the overall device to behave in a myriad of different ways.
 
 component Gnu Compiler Collection (GCC)
-@todo kiniry Add an explanation.
+The original open source compiler from the Free Software Foundation,
+which supports many different programming languages, including C and
+C++.
 
 component Government Furnished Equipment (GFE)
-@todo kiniry Add an explanation.
+Equipment purchased and furnished by the government to a government
+contractor.
 
 component Galois Low-energy Asynchronous Secure SoC for Computer Vision (GLASS-CV)
-@todo kiniry Add an explanation.
+A low-power, asynchronous RISC-V-based SoC that also contained a few
+Domain Specific Accellerators, including some AI processing that is
+particular good for image processing.
 
 component General Purpose I/O (GPIO)
-@todo kiniry Add an explanation.
+A simple, general-purpose I/O channel commonly used on simple
+development PCBs.
 
 component High-Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS)
-@todo kiniry Add an explanation.
+A Galois project that focuses on the development of a high-assurance,
+safety-critical demonstration system for the Nuclear Regulatory
+Commission using Rigorous Digital Engineering.
 
 component Hardware Description Language (HDL)
-@todo kiniry Add an explanation.
-
-component Hash-based Message Authentication Code (HMAC)
-@todo kiniry Add an explanation.
+A programming and specification language which focuses on creating,
+describing, or reasoning about hardware implementations.
 
 component Higher-Order Logic (HOL)
-@todo kiniry Add an explanation.
-
-component Hardware Security Module (HSM)
-@todo kiniry Add an explanation.
+The branches of logic that permits types to contain arbitrarily
+expressive prediates and types, including funtion types, dependent
+types, polymorphic types, and kinds across arbitrary universes.
 
 component Intelligence Community (IC)
-@todo kiniry Add an explanation.
+The U.S. Government agencies responsible for the collection of, and
+processing of, secret intelligence (e.g., the CIA and NSA).
 
 component Integrated Development Environment (IDE)
-@todo kiniry Add an explanation.
+A tool used by programmers and others to perform nearly every stage of
+the a development lifecycle (e.g., ideation, design, development,
+debugging, deployment, etc.).
 
 component Intellectual Property (IP)
 @todo kiniry Add an explanation.
