@@ -99,122 +99,153 @@ the a development lifecycle (e.g., ideation, design, development,
 debugging, deployment, etc.).
 
 component Intellectual Property (IP)
-@todo kiniry Add an explanation.
+In the context of hardware design, reusable hardware design components
+that are typically proprietary and licensed for use.
 
 component Instruction Set Architecture (ISA)
-@todo kiniry Add an explanation.
+The collection of instructions and their meaning which define a
+particular kind of CPU, such as the x86, ARM, or RISC-V ISAs.
 
 component Intermediate Representation (IR)
-@todo kiniry Add an explanation.
+An abstract representation, typically optimized for computational
+purposes rathar than human readability and found within compiler-like
+tools, of a particular domain.
 
 component Java Modeling Language (JML)
-@todo kiniry Add an explanation.
+A behavioral interface specification language which facilitates
+model-based software engineering in the Java programming language.
 
 component Low Level Virtual Machine (LLVM)
-@todo kiniry Add an explanation.
+The IR of the Clang compiler tool suite.
 
 component Model-Based Engineering (MBE)
-@todo kiniry Add an explanation.
+Any kind of engineering that uses formal models as a part of the
+development process or methodology.
 
 component Model-Based Systems Engineering (MBSE)
-@todo kiniry Add an explanation.
+Systems engineering that puts models at the center of the engineering
+activity.
 
 component Natural Language Processing (NLP)
-@todo kiniry Add an explanation.
+The interpretation of spoken or written human languages by
+computational algorithms or mathematics.
 
 component Nuclear Regulatory Commission (NRC)
-@todo kiniry Add an explanation.
+The U.S. Government agency responsible for the regulation of Nuclear
+Power Plants.
 
 component National Security Agency (NSA)
-@todo kiniry Add an explanation.
+The U.S. Government agency responsible for keeping America and its
+citizens safe from enemy foreign states.
 
 component Nuclear Power Plant (NPP)
-@todo kiniry Add an explanation.
+A power plant that uses nuclear reactions to create electrical power.
 
 component Object Constraint Language (OCL)
-@todo kiniry Add an explanation.
+An OMG standard formal property language which is used to express
+assertions on UML and SysML version 1 models.
 
 component Open Systems Architecture (OSA)
-@todo kiniry Add an explanation.
+A style of architecture design wherein subsystems, components, and
+their interfaces and communication mechanisms are all based upon open
+standards.
 
 component Power Performance Area and Security (PPAS)
-@todo kiniry Add an explanation.
+The four measurable tradeoff dimensions of a hardware system which are
+often used to perform trade-studies in hardware digital design.
 
 component Rigorous Digital Engineering (RDE)
-@todo kiniry Add an explanation.
+Model-based engineering leveraging the power of applied formal methods.
 
 component Register Transfer Level (RTL)
-@todo kiniry Add an explanation.
+A low-level representation of a hardware design whose fundamental
+components are registers to hold state and wires to transmit
+information.
 
 component Reactor Trip System (RTS)
-@todo kiniry Add an explanation.
+A component protection system of an NPP that is meant to keep a
+reaction vessel in a safe operating envelope.
 
 component Software Analysis Workbench (SAW)
-@todo kiniry Add an explanation.
+A formal reasoning tool created by Galois which permits reasoning
+about software and hardware implementations using automated SMT
+solving.
 
 component Safety Critical Application Development Environment (SCADE)
-@todo kiniry Add an explanation.
-
-component Secure Hash Algorithm (SHA)
-@todo kiniry Add an explanation.
+A formal specification language, and earlier version of which is known
+as LUSTRE, used to specify, reason about, and generate code for,
+discrete event systems, such as control systems.
 
 component Satisfiability Modulo Theories (SMT)
-@todo kiniry Add an explanation.
+A subdiscipline of theorem proving that focuses on the definition of,
+and building tools that support, automatic logical reasoning
+(primarily satisfiability checking) of propositions with regards to
+specific theories.
 
 component Secret Ninja Formal Methods (SNFM)
-@todo kiniry Add an explanation.
-
-component Statement of Work (SoW)
-@todo kiniry Add an explanation.
+The teaching and practice of using formal methods, typically through
+the use of tools that are formally grounded, but expose no mathematical
+foundations to the user.
 
 component SystemVerilog (SV)
-@todo kiniry Add an explanation.
+An object-oriented HDL, which has the Verilog language as a
+sublanguage, standardized in 2004 by the IEEE.
 
 component SystemVerilog Assertions (SVA)
-@todo kiniry Add an explanation.
+The propositional, temporal assertion language for SystemVerilog.
 
 component Size Weight and Power (SWaP)
-@todo kiniry Add an explanation.
+The three measurable tradeoff dimensions of a hardware system which are
+often used to perform trade-studies in hardware physical design.
 
 component System Modeling Language (SysML)
-@todo kiniry Add an explanation.
+A broad-spectrum system modeling language whose current version
+(version 1) is realized as a UML profile and has only a graphical
+concrete syntax, but whose new version under development (version 2)
+is wholly new, decoupled from that past, and has both a graphical and
+concrete textual syntax.
 
 component System-on-Chip (SoC)
-@todo kiniry Add an explanation.
+An ASIC which typically contains more than just a CPU, but also
+memory, I/O devices, a cryptographic hardware security module, and
+more.
 
 component System Security Integration Through Hardware and Firmware (SSITH)
-@todo kiniry Add an explanation.
+A DARPA MTO program that ran from 2017-2021 whose focus was on
+creating new security-centric hardware IP to protect systems against a
+wide class of software vulnerabilities.
 
 component User Interface (UI)
-@todo kiniry Add an explanation.
+The graphical or textual interface to a system or tool that is
+commonly used by humans.
 
 component Unified Modeling Language (UML)
-@todo kiniry Add an explanation.
+The de facto standard graphical modeling language for software
+systems, introduced in the mid-90s.
 
 component Universal Serial Bus (USB)
-@todo kiniry Add an explanation.
-
-component United States Government (USG)
-@todo kiniry Add an explanation.
-
-component Unified Theories of Programming (UTP)
-@todo kiniry Add an explanation.
+A high-speed serial bus which conforms to a suite of IEEE cabling
+standards, and are commonly used to community between devices and
+peripherals, such as to program and control FPGA development boards.
 
 component Universal Verification Methodology (UVM)
-@todo kiniry Add an explanation.
+An object-oriented framework written in SystemVerilog which is used to
+write, assemble, and run tests against a hardware design.
 
 component User eXperience (UX)
-@todo kiniry Add an explanation.
+The user-centric design and behavioral of an interface.
 
 component Verilog
-@todo kiniry Add an explanation.
-
-component Vienna Development Method (VDM)
-@todo kiniry Add an explanation.
+An HDL used to specify, program, and test low-level hardware designs,
+such as those loaded into an FPGA or those that are physically
+realized in an ASIC.
 
 component Very High Speed Integrated Circuit (VHSIC)
-@todo kiniry Add an explanation.
+An ASIC.
 
 component VHSIC Hardware Description Language (VHDL)
-@todo kiniry Add an explanation.
+An HDL used to specify, program, and test low-level hardware designs,
+such as those loaded into an FPGA or those that are physically
+realized in an ASIC.
+
 
