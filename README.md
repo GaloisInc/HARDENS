@@ -255,8 +255,8 @@ tools to this container as necessary during project execution.
 
 ### HARDENS Container
 
-To build and run the core HARDENS Docker image, use the `build_docker.sh` script and then
-`docker run` commands.
+To build and run the core HARDENS Docker image, use the
+`build_docker.sh` script and then `docker run` commands.
 
 ```
 $ ./build_docker.sh
@@ -269,6 +269,14 @@ directory in order to bind your sandbox properly into the container.
 
 ```
 $ docker run -d -it --name HARDENS --network host --privileged -v $PWD:/HARDENS hardens:latest
+```
+
+If you have stopped a container running and it lists as "exited" when
+you run a `docker container ls`, then you can restart it with the
+following command.
+
+```
+$ docker start HARDENS
 ```
 
 After running such a detacted container, attach to it for interactive
@@ -284,6 +292,8 @@ $ docker pull artifactory.galois.com:5015/hardens:latest
 $ docker run --network host --privileged -v $PWD:/HARDENS -it artifactory.galois.com:5015/hardens:latest
 ```
 
+The helper script `run_docker.sh` executed the above detacted run
+command, using Galois's `artifactory` docker image name.
 
 ### SysMLv2 Container
 
@@ -345,27 +355,48 @@ and tools of model-driven engineering in the large.  This means that
 we will be reviewing technologies that are used in the project as well
 as those that are commonly used for MDE for hardware, firmware,
 software, systems, safety, and security engineering.  Tools reviewed
-will include 
+will include all mainstream MBSE tools, tools that we use for
+demonstrating correct-by-construction components and subsystems, and a
+variety of assurance tools.
+
+There are three versions of the HARDENS talk:
+ 1. A [short version summarizing the HARDENS
+    project](docs/HARDENS_HCSS_May_2022.pdf), which was given at HCSS
+    in May 2022.
+ 2. A [90 minute
+    version](docs/HARDENS_Galois_Explaining_RDE_by_Example_May_2022.pdf)
+    which was used to give a presentation at Galois in May 2022 about
+    Rigorous Digital Engienering.  Friends of Galois attended this
+    talk as well.
+ 3. A [six hour version that was the final presentation for the entire
+    project to the NRC](docs/HARDENS_NRC_Oct_2022.pdf), given on 12
+    October 2022.
+
+These presentations were all written using Apple Keynote.  The
+canonical source for the final presentation is found in the file
+[HARDENS.key](docs/HARDENS.key).  A Powerpoint version of the slide
+deck is also exported from Keynote and in the same directory. No
+attempt has been made to make sure the exported Powerpoint is pretty.
 
 ## Final Report
 
 Our final report for HARDENS must have the following characteristics:
- 1. [ ] it must be well-suited to fit into the document-centric
+ 1. [X] it must be well-suited to fit into the document-centric
         certification process used by the NRC and other similar
         government agencies,
- 2. [ ] it must completely describe the framing for the project, the
+ 2. [X] it must completely describe the framing for the project, the
         technical work, the safety and correctness assurance case of
         the RTS demonstrator, and the manner in which the document can
         be read, the R&D can/should be reviewed, etc.
- 3. [ ] It must include all formal specifications and assurance
+ 3. [X] It must include all formal specifications and assurance
         artifacts as nicely typeset, hyper-textual cross-referenced
         appendix chapters.
 
 In order to fulfill (1) above, the final report must be both:
- 1. [ ] a polished, high-quality, hyperlinked HTML webpage, or set of
+ 1. [X] a polished, high-quality, hyperlinked HTML webpage, or set of
         webpages that compile into a single webpage, that contains the
         entire report, includes its technical appendices, and
- 2. [ ] a polished, high-quality, hyperlinked PDF document that can be
+ 2. [X] a polished, high-quality, hyperlinked PDF document that can be
         printed on paper and, in that form, it just as easy to read
         front-to-back and to follow cross-references therein.
 
@@ -373,4 +404,7 @@ In order to help certification actors review a model-based system and
 its assurance case, we intend to provide a chapter in the report that
 characterizes a workflow and set of best practices for such a review.
 
-The final report is available in overleaf: https://git.overleaf.com/623259a297f75c655f6d1f47
+The final report is available [via
+Overleaf](https://git.overleaf.com/623259a297f75c655f6d1f47) as well
+as a submodule on this project.
+
