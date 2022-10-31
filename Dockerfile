@@ -256,6 +256,25 @@ RUN \
 
 ENV PATH="/tools/:${PATH}"
 
+# NuSMV
+# wget https://nusmv.fbk.eu/distrib/NuSMV-2.6.0-linux64.tar.gz
+# tar xzf NuSMV-2.6.0-linux64.tar.gz
+# cp NuSMV-2.6.0-Linux/bin/* /usr/local/bin/
+
+# JKind-1
+# wget https://github.com/andreaskatis/jkind-1/releases/download/v2.0/jkind
+# wget https://github.com/andreaskatis/jkind-1/releases/download/v2.0/jkind.jar
+# wget https://github.com/andreaskatis/jkind-1/releases/download/v2.0/jlustre2kind
+# wget https://github.com/andreaskatis/jkind-1/releases/download/v2.0/jrealizability
+# chmod 755 jkind jlustre2kind jrealizability
+# cp * /usr/local/bin/
+
+# Kind 2
+# wget https://github.com/kind2-mc/kind2/releases/download/v1.6.0/kind2-v1.6.0-linux-x86_64.tar.gz
+# wget https://github.com/kind2-mc/kind2/releases/download/v1.6.0/user_documentation.pdf
+# tar xzf kind2-v1.6.0-linux-x86_64.tar.gz
+# mv kind2 /usr/local/bin/
+
 # Fret
 # ARG TOOL=fret
 # ARG TAG=7dbfbf65d8b7f96e9f1fdca2dd19a2a2387d2674
