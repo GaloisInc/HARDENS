@@ -14,8 +14,10 @@ package id Architecture 'RTS Architecture' {
     // overall RTS architecture shape from
   }
 
-  /** Note that this is the *systems* architecture, which is different
-      than our software, hardware, or data architectures. */
+  /**
+   * Note that this is the *systems* architecture, which is different
+   * than our software, hardware, or data architectures. 
+   */
   package id RTS_System_Arch 'RTS System Architecture' {
 
     package Sensor {
@@ -132,6 +134,15 @@ package id Architecture 'RTS Architecture' {
         out mode: TripModeCommand;
       }
 
+      part def PressureTable {
+       	doc /* The saturation table gives us the saturation pressure margin given
+       	     * the current temperature and pressure, hence the output is pressure
+       	     */
+       	port temperatureInput: ~TemperatureOutPort;
+       	port pressureInput: ~PressureOutPort;
+      	port saturationMarginOutput: PressureOutPort;
+      }
+        
       part def InstrumentationUnit {
         // setpoints
         attribute tempSetpoint : TemperatureValue;
@@ -148,6 +159,7 @@ package id Architecture 'RTS Architecture' {
         // Inputs
         port temperatureInput: ~TemperatureOutPort;
         port pressureInput: ~PressureOutPort;
+        port saturationMarginInput: ~PressureOutPort;
         port tripMode: ~TripModePort;               
 
         // Outputs
@@ -237,6 +249,11 @@ package id Architecture 'RTS Architecture' {
         part instrumentationUnit3 : InstrumentationUnit;
         part instrumentationUnit4 : InstrumentationUnit;
 
+        part table1 : PressureTable;
+        part table2 : PressureTable;
+        part table3 : PressureTable;
+        part table4 : PressureTable;
+
         part tempDemux1 : TempSensor::Demux;
         part tempDemux2 : TempSensor::Demux;
 
@@ -262,6 +279,23 @@ package id Architecture 'RTS Architecture' {
         connect pressureSensor2.output to pressureDemux2.input;
         connect pressureDemux1.output1 to instrumentationUnit3.pressureInput;
         connect pressureDemux1.output2 to instrumentationUnit4.pressureInput;
+
+        // Saturation Margin Calculation
+        connect pressureDemux1.output1 to table1.pressureInput;
+        connect tempDemux1.output1 to table1.temperatureInput;
+        connect table1.saturationMarginOutput to instrumentationUnit1.saturationMarginInput;
+        
+        connect pressureDemux1.output2 to table2.pressureInput;
+        connect tempDemux1.output2 to table2.temperatureInput;
+        connect table2.saturationMarginOutput to instrumentationUnit2.saturationMarginInput;
+        
+        connect pressureDemux2.output1 to table3.pressureInput;
+        connect tempDemux2.output1 to table3.temperatureInput;
+        connect table3.saturationMarginOutput to instrumentationUnit3.saturationMarginInput;
+        
+        connect pressureDemux2.output2 to table4.pressureInput;
+        connect tempDemux2.output2 to table4.temperatureInput;
+        connect table4.saturationMarginOutput to instrumentationUnit4.saturationMarginInput;
       }
 
 

@@ -167,25 +167,28 @@ to run the script.
 ## Building
 
 Run `make rts` to generate an executable simulator. To regenerate
-`SystemVerilog` or `C` functions after an update to the Cryptol model, you can
-run `REGEN_SOURCES=1 make <target>`; by default, the checked-in existing
-generated code will be used.
+`SystemVerilog` or `C` functions after an update to the Cryptol model,
+you can run `REGEN_SOURCES=1 make <target>`; by default, the
+checked-in existing generated code will be used.
 
-## Verification with Frama-c 
+## Verification with Frama-C
 
-ACSL contracts are provided for the components implemented under `generated` and
-`handwritten` and their callers. To verify that implementations satisfy their contracts, run
+ACSL contracts are provided for the components implemented under
+`generated` and `handwritten` and their callers. To verify that
+implementations satisfy their contracts, run
 
 `make -f frama_c.mk`
 
 ## Concurrency
 
-The RTS implementation is a concurrent system comprising two instrumentation +
-actuation logic modules plus a core logic controller.
+The RTS implementation is a concurrent system comprising two
+instrumentation + actuation logic modules plus a core logic
+controller.
 
-Consulting the SysMLv2 architecture, the principal ways in which processes
-communicate is via input and output values (e.g. passing trip signal values from
-the instrumentation divisions to the actuation unit. Each writable memory
-location has a unique writer, and system states inbetween individual writes are
-consistent. Therefore, it is only necessary to guarantee that individual writes
-(to shared locations) are made atomically.
+Consulting the SysMLv2 architecture, the principal ways in which
+processes communicate is via input and output values (e.g., passing
+trip signal values from the instrumentation divisions to the actuation
+unit. Each writable memory location has a unique writer, and system
+states inbetween individual writes are consistent. Therefore, it is
+only necessary to guarantee that individual writes (to shared
+locations) are made atomically.

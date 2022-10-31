@@ -4,7 +4,7 @@
  */
 package 'RTS Hardware Artifacts' {
   private import 'Project Glossary'::*;
-  //import Architecture::RTS_System_Arch::Hardware::*;
+  import 'RTS Instrumentation Physical Architecture'::*;
   private import ScalarValues::*;
 
   part def 'SERDES Test SMA Connector' :> Connector;
