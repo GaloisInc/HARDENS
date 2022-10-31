@@ -1,4 +1,4 @@
-package 'Kiniry RTS System Architecture Draft' {
+package 'RTS Simplified System Architecture' {
   private import 'Project Glossary'::*;
 
   // doc id sys_arch_doc

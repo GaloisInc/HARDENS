@@ -306,6 +306,19 @@ $ docker pull gorenje/sysmlv2-jupyter:latest
 $ docker run -d -it --name SysMLv2 --network host -v $PWD:/HARDENS gorenje/sysmlv2-jupyter:latest
 ```
 
+The Docker container contains snapshots of various tools that are not
+necessarily the latest releases or development versions of said tools.
+We include these particular versions because they are the versions
+used for development of the demonstrator, in alignment with our
+*Tool Dependencies* recommendations, **Tool Metadata**, **Tool
+Availability**, and **Evaluation Platform**.
+
+In particular, the version of Lando shipped in the image is incapable
+of converting Lando input files into hyperlinked Markdown, as we
+provide in [specs/Lando/](specs/Lando/).  This is partly due to the
+fact that the new version of Lando is not ready for release and is
+only available via Galois's private GitLab server.
+
 ## Lattice ECP5 evaluation board
 
 We are using an ECP5-5G FPGA board for the RTS demonstrator.
