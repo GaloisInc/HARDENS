@@ -15,7 +15,7 @@ specification that looks and tastes like English, to the software and
 hardware binary level.  In between high-level specifications and
 our lowest level, closest to the hardware implementation (in the case
 of HARDENS, C source code compiled to RISC-V binaries using Clang
-running on on a custom HARDENS three-core RISC-V SoC  implemented as
+running on on a custom HARDENS three-core RISC-V SoC implemented as
 softcore IP synthesized to and running on a COTS Lattice FPGA) are a
 variety of **Rigorous Digital Twins**.
 
@@ -77,7 +77,7 @@ We build confidence in the correctness of the requirements by
 utilizing FRET's realizability checker, which verifies that for a set
 of input values satisfying the requirements, a set of _output_ values
 exists that satisfy the requirements.  Dually, the tool identifies
-inputs for which no output is feasible, which helps to narrow down
+inputs for which no output is feasible, which helps narrow down
 subsets of requirements that are inconsistent.
 
 ## Executable Behavioral Specification
@@ -140,7 +140,7 @@ functions/features directly from the Cryptol model.  For each such
 function, we use SAW to prove that the generated component exactly
 matches its specification.  It is worth mentioning here that this is
 not limited to unit/component-level verification of C functions or
-SystemVerilog modules.  This approach also support integration and
+SystemVerilog modules.  This approach also supports integration and
 system assurance.  For example, the self-test functionality executes a
 series of integration and system test cases technically extracted
 directly from the Cryptol model.

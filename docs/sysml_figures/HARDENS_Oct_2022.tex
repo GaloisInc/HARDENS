@@ -1,0 +1,2664 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+    \usepackage{iftex}
+    \ifPDFTeX
+    	\usepackage[T1]{fontenc}
+    	\usepackage{mathpazo}
+    \else
+    	\usepackage{fontspec}
+    \fi
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{HARDENS\_Oct\_2022}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb. 
+    \makeatletter
+        \newbox\Wrappedcontinuationbox 
+        \newbox\Wrappedvisiblespacebox 
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}} 
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}} 
+        \newcommand*\Wrappedcontinuationindent {3ex } 
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox} 
+        % Take advantage of the already applied Pygments mark-up to insert 
+        % potential linebreaks for TeX processing. 
+        %        {, <, #, %, $, ' and ": go to next line. 
+        %        _, }, ^, &, >, - and ~: stay at end of broken line. 
+        % Use of \textquotesingle for straight quote. 
+        \newcommand*\Wrappedbreaksatspecials {% 
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}% 
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}% 
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}% 
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}% 
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}% 
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}% 
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}% 
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}% 
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}% 
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}% 
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}% 
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}% 
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}% 
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}% 
+        } 
+        % Some characters . , ; ? ! / are not pygmentized. 
+        % This macro makes them "active" and they will insert potential linebreaks 
+        \newcommand*\Wrappedbreaksatpunct {% 
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}% 
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}% 
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}% 
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}% 
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}% 
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}% 
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}% 
+            \catcode`\.\active
+            \catcode`\,\active 
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active 
+            \lccode`\~`\~ 	
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+        
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active 	
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+    
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \hypertarget{hardens}{%
+\section{HARDENS}\label{hardens}}
+
+\emph{Copyright (C) Galois 2021-2022}
+
+\emph{Principal Investigator: Joe Kiniry
+\href{mailto:kiniry@galois.com}{\nolinkurl{kiniry@galois.com}}}
+
+\emph{Project Lead: Andrew Bivin
+\href{mailto:abivin@galois.com}{\nolinkurl{abivin@galois.com}}}
+
+\emph{Research Engineers: Alexander Bakst
+\href{mailto:abakst@galois.com}{\nolinkurl{abakst@galois.com}} and
+Michal Podhradsky
+\href{mailto:mpodhradsky@galois.com}{\nolinkurl{mpodhradsky@galois.com}}}
+
+Repository for the HARDENS project for the
+\href{https://www.nrc.gov/about-nrc.html}{Nuclear Regulatory
+Commission}.
+
+\begin{verbatim}
+This work is supported by the U.S. Nuclear Regulatory Commission (NRC), 
+Office of Nuclear Regulatory Research, under contract/order number 31310021C0014.
+
+All material is considered in development and not a finalized product. 
+
+Any opinions, findings, conclusions or recommendations expressed in
+this material are those of the author(s) and do not necessarily
+reflect the views of the NRC.
+\end{verbatim}
+
+\hypertarget{project-overview}{%
+\subsection{Project Overview}\label{project-overview}}
+
+The goal of HARDENS is to provide to the NRC expert technical services
+in order to (1) develop a better understanding of how Model-Based
+Systems Engineering (MBSE) methods and tools can support regulatory
+reviews of adequate design and design assurance, and (2) identify any
+barriers or gaps associated with MBSE in a regulatory review of Digital
+Instrumentation and Control Systems for existing Nuclear Power Plants
+(NPPs).
+
+In the HARDENS project Galois will demonstrate to the Nuclear Regulatory
+Commission (NRC) cutting- edge capabilities in the model-based design,
+validation, and verification of safety-critical, mission-critical,
+high-assurance systems. Our demonstrator includes high-assurance
+software and hardware, includes open source RISC-V Central Processing
+Units (CPUs), and lays the groundwork for a high-assurance reusable
+product for safety critical Digital Instrumentation and Control Systems
+systems in NPPs.
+
+Details about the HARDENS project are found in our
+\href{docs/HARDENS.pdf}{original proposal}, which was written in
+response to the \href{docs/RFP.pdf}{original NRC RFP}.
+
+This document summarizes the current state of affairs of the project and
+demonstrator.
+
+\hypertarget{executive-summary}{%
+\subsection{Executive Summary}\label{executive-summary}}
+
+In the \textbf{High Assurance Rigorous Digital Engineering for Nuclear
+Safety} (HARDENS) project, Galois has developed a high-assurance,
+safety-critical demonstration system for the Nuclear Regulatory
+Commission using Rigorous Digital Engineering (RDE). The system in
+question is a Digital Instrumentation and Control (DI\&C) system for
+Nuclear Power Plants (NPPs), and is called the Reactor Trip System
+(RTS).
+
+RDE is the combination of \emph{Model-based Engineering}, \emph{Digital
+Engineering}, and \emph{Applied Formal Methods}. The engineering focus
+of RDE is broad, as we have used it to perform \emph{software, firmware,
+hardware, systems, domain, requirements, product line, safety, and
+security engineering} of \emph{high-assurance, secure-by-design
+systems}. The HARDENS project includes nearly all of these kinds of
+engineering, but for security engineering at this time.
+
+To our knowledge, this demonstrator is the most rigorously specified and
+assured system of its kind that includes formally assured software and
+hardware for a safety-critical system.
+
+\emph{Model-based Engineering} focuses on the use of semi-formal and
+formal models and their properties to describe aspects of a system
+independent of a particular implementation. Models are connected to each
+other through a variety of relations (refinement, containment,
+subtyping/subsumption/implication, traceability, etc.), models are
+either or both denotational or operational (and thus executable), and
+models are used to specify, examine, understand, and reason about a
+system well-prior to a line of code ever being written. Models are used
+for rigorous validation---through automatic model-based test bench
+generation and bisimulation---and formal verification---through
+automatic model-based verification bench generation.
+
+The models used in HARDENS include, from most to least abstract: - a
+Lando high-level system specification model, which includes within it: +
+a domain engineering model, + a requirements engineering model, which
+includes: * derived certification requirements, * contractual
+requirements, * safety requirements, and * correctness requirements. + a
+product line (feature) model, + a static system model, + a dataflow
+model of the RDE methodology, + a system event model, + a system
+scenario model (including all normal and exceptional behaviors), + a
+hardware, software, and evidence Bill of Materials (BOMs), - a SysMLv2
+system model, which includes within it, as refined directly from the
+Lando model: + a stakeholder model, + a domain engineering model, + a
+requirements engineering model, + property specifications for all
+correctness and safety properties derived from the formal requirements
+model, + a product line (feature/variant) model, + a static system model
+that includes both the software and hardware manifestations of the
+system, + a system action model, and + a validation and verification
+assurance case model. - a formal requirements model expressed in JPL's
+FRET tool, as refined from the Lando and SysMLv2 requirements models
+above, - a Cryptol model of the entire system, including all subsystems
+and components, including formal, executable digital twin models of the
+system's sensors, actuators, and compute infrastructure, and this
+Cryptol model includes a refinement of all formal requirements from FRET
+into Cryptol properties (theorems) about the Cryptol model itself, - a
+model of the semantics of the RISC-V instruction set, - a model-based
+specification of critical portions of the RTS's software stack expressed
+in ACSL, - an executable and synthesizable Bluespec System Verilog model
+of a family of RISC-V-based SoCs, and - a System Verilog executable and
+synthesizable model of a simple, in-order 32-bit RISC-V CPU (NERV, from
+YosysHQ).
+
+Digital Engineering focuses on the use of \emph{digital twins} of
+physical systems, subsystems, and their components. A digital twin is
+typically an executable model that has known and measurable objective
+fidelity in relation to the models or systems that relate to the twin.
+For example, an executable Cryptol or SCADE model are a digital twins.
+
+The HARDENS system includes several digital twins, including simulation
+and emulation of the system hardware (CPUs and SoCs), software
+implementation, and system model.
+
+Applied formal methods are the sensible use of formal methods concepts,
+tools, and technologies to formally specifying and reasoning about
+systems and their properties. In the context of RDE and the HARDENS
+project, we use formal methods to achieve the following assurance: -
+critical components of the RTS are automatically synthesized from
+Cryptol model into both formally verifiable C implementations and
+formally verifiable System Verilog implementations, - automatically
+generated C code and hand-written implementations of the same models are
+used to fulfill safety-critical redundancy and fault-tolerance
+requirements, and all of those implementations are formally verified
+both against their model, as well as verified against each other as
+being equivalent, using Frama-C and Galois's SAW tool, - the RISC-V CPU
+is formally verified against the RISC-V ISA specification using the
+Yosys open source verification tool, - the RISC-V-based SoC is
+rigorously assured against the automatically generated end-to-end test
+bench, - the formal requirements specified in FRET are formally verified
+for consistency, completeness, and realizability using SAT and SMT
+solvers, - the refinement of these requirements into Cryptol properties
+are used as model validation theorems to rigorously check and formally
+verifying that the Cryptol model conforms to the requirements, - the
+Cryptol model is used to automatically generate a component-level and
+end-to-end test bench (in C) for the entire system, and that test bench
+is executed on all digital twins and (soon) the full hardware
+implementation as well, and - all models and assurance artifacts are
+traceable and sit in a semi-formal refinement hierarchy that spans
+semi-formal system specification written in precise natural language all
+of the way down for formally assured source code (in verifiable C), (a
+side-effect of the optional use of CompCert) binaries, and hardware
+designs (in System Verilog and Bluespec System Verilog).
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+cm}{/** Semantic properties are annotation to model and system artifacts}
+\PY{c+cm}{    used to semantically markup those artifacts for documentation,}
+\PY{c+cm}{    traceability, and more. */}
+\PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{Semantic} \PY{n}{Properties}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+  \PY{n}{doc} \PY{c+cm}{/* Semantic Properties are used to document arbitrary }
+\PY{c+cm}{         constructs in our specifications and implementations.}
+\PY{c+cm}{         @see https://www.kindsoftware.com/documents/whitepapers/code\PYZus{}standards/properties.html}
+\PY{c+cm}{       */}
+  \PY{k+kn}{import} \PY{n+nn}{ScalarValues}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+
+  \PY{c+cm}{/* @todo kiniry The scope of every attribute needs to be tightened. */}
+
+  \PY{n}{attribute} \PY{n}{def} \PY{n}{id} \PY{n}{SP} \PY{err}{\PYZsq{}}\PY{n}{Semantic} \PY{n}{Property}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{attribute} \PY{n}{def} \PY{n}{id} \PY{n}{SPD} \PY{err}{\PYZsq{}}\PY{n}{Semantic} \PY{n}{Property} \PY{n}{with} \PY{n}{Description}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} 
+    \PY{err}{\PYZsq{}}\PY{n}{Semantic} \PY{n}{Property}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{attribute} \PY{n}{description}\PY{p}{:} \PY{n}{String}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{attribute} \PY{n}{def} \PY{n}{Exception} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{String}\PY{p}{;}
+
+  \PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{Meta}\PY{o}{\PYZhy{}}\PY{n}{Information}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Author} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SP} \PY{p}{\PYZob{}}
+      \PY{n}{author}\PY{p}{:} \PY{n}{String}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Lando} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SP} \PY{p}{\PYZob{}}
+      \PY{n}{summary}\PY{p}{:} \PY{n}{String}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Bug} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SPD}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Copyright} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SP} \PY{p}{\PYZob{}}
+      \PY{n}{copyright}\PY{p}{:} \PY{n}{String}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Description} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SPD}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{History} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SPD}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{License} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SP} \PY{p}{\PYZob{}}
+      \PY{n}{license}\PY{p}{:} \PY{n}{String}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Title} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SP} \PY{p}{\PYZob{}}
+      \PY{n}{title}\PY{p}{:} \PY{n}{String}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+  \PY{p}{\PYZcb{}}
+
+  \PY{n}{attribute} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Author} \PY{n}{Description} \PY{n}{Scope} \PY{n}{Triple}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SPD} \PY{p}{\PYZob{}}
+    \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{Meta}\PY{o}{\PYZhy{}}\PY{n}{Information}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{author}\PY{p}{:} \PY{n}{Author}\PY{p}{;} 
+    \PY{n}{attribute} \PY{n}{scope}\PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{Pending} \PY{n}{Work}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Idea} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Author} \PY{n}{Description} \PY{n}{Scope} \PY{n}{Triple}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{n}{classifier}\PY{p}{:} \PY{n}{String}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Review} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Author} \PY{n}{Description} \PY{n}{Scope} \PY{n}{Triple}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Todo} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Author} \PY{n}{Description} \PY{n}{Scope} \PY{n}{Triple}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  
+  \PY{n}{attribute} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Rich} \PY{n}{Assertion}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SPD} \PY{p}{\PYZob{}}
+    \PY{n}{attribute} \PY{n}{label}\PY{p}{:} \PY{n}{String}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{expression}\PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{exception} \PY{p}{:} \PY{n}{Exception}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+
+  \PY{n}{attribute} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Expression} \PY{n}{Description} \PY{n}{Pair}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SPD} \PY{p}{\PYZob{}}
+    \PY{n}{attribute} \PY{n}{expression}\PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+    
+  \PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{Formal} \PY{n}{Specifications}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{k+kn}{import} \PY{n+nn}{Collections}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+    \PY{k+kd}{enum} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Modifies} \PY{n}{Frame}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{n}{SINGLE\PYZus{}ASSIGNMENT}\PY{p}{;}
+      \PY{n}{QUERY}\PY{p}{;}
+      \PY{n}{EXPRESSION}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Ensures} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Rich} \PY{n}{Assertion}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Generate} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Expression} \PY{n}{Description} \PY{n}{Pair}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Invariant} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Expression} \PY{n}{Description} \PY{n}{Pair}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{n}{exception}\PY{p}{:} \PY{n}{Exception}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Modify} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Expression} \PY{n}{Description} \PY{n}{Pair}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{k+kd}{enum} \PY{n}{kind}\PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Modifies} \PY{n}{Frame}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{requires} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Rich} \PY{n}{Assertion}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+    
+  \PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{Concurrency} \PY{n}{Control}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{k+kn}{import} \PY{n+nn}{Collections}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Locks} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Set}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Timeout} \PY{p}{\PYZob{}}
+      \PY{n}{attribute} \PY{n}{timeout}\PY{p}{:} \PY{n}{Natural}\PY{p}{;}
+      \PY{n}{attribute} \PY{n}{exception}\PY{p}{:} \PY{n}{String}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Concurrency} \PY{n}{Semantic} \PY{n}{Property}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Semantic} \PY{n}{Property}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{n}{attribute} \PY{n}{locks}\PY{p}{:} \PY{n}{Locks}\PY{p}{;}
+      \PY{n}{attribute} \PY{n}{failure}\PY{p}{:} \PY{n}{Exception}\PY{p}{;}
+      \PY{n}{attribute} \PY{n}{atomic}\PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+      \PY{n}{attribute} \PY{n}{special}\PY{p}{:} \PY{n}{String}\PY{p}{;}
+      \PY{n}{attribute} \PY{n}{timeout}\PY{p}{:} \PY{n}{Timeout}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Concurrent} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Concurrency} \PY{n}{Semantic} \PY{n}{Property}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{n}{attribute} \PY{n}{threadcountlimit}\PY{p}{:} \PY{n}{Positive}\PY{p}{;}
+      \PY{n}{attribute} \PY{n}{broken}\PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Sequential} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Concurrency} \PY{n}{Semantic} \PY{n}{Property}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Guarded} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Concurrency} \PY{n}{Semantic} \PY{n}{Property}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{n}{attribute} \PY{n}{semaphore\PYZus{}count}\PY{p}{:} \PY{n}{Positive}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+  \PY{p}{\PYZcb{}}
+   
+  \PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{Usage} \PY{n}{Information}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Parameter} \PY{n}{Spec}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{n}{parameter\PYZus{}name}\PY{p}{:} \PY{n}{String}\PY{p}{;}
+      \PY{n}{precondition}\PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+      \PY{n}{description}\PY{p}{:} \PY{n}{String}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Return} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{String}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Exception} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Expression} \PY{n}{Description} \PY{n}{Pair}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{n}{exception}\PY{p}{:} \PY{n}{Exception}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+  \PY{p}{\PYZcb{}}
+    
+  \PY{k+kn}{package} \PY{n+nn}{Versioning} \PY{p}{\PYZob{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Version} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{String}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Deprecated} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{String}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Since} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{String}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  
+  \PY{n}{attribute} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Feature} \PY{n}{Name} \PY{n}{Description} \PY{n}{Pair}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{feature\PYZus{}name}\PY{p}{:} \PY{n}{String}\PY{p}{;}
+    \PY{n}{description}\PY{p}{:} \PY{n}{String}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{k+kn}{package} \PY{n+nn}{Inheritance} \PY{p}{\PYZob{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Hides} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Feature} \PY{n}{Name} \PY{n}{Description} \PY{n}{Pair}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Overrides} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Feature} \PY{n}{Name} \PY{n}{Description} \PY{n}{Pair}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+    
+  \PY{k+kn}{package} \PY{n+nn}{Documentation} \PY{p}{\PYZob{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Design} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Author} \PY{n}{Description} \PY{n}{Scope} \PY{n}{Triple}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Equivalent} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{String}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Example} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{String}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{See} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{String}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+    
+  \PY{k+kn}{package} \PY{n+nn}{Dependencies} \PY{p}{\PYZob{}}
+    \PY{k+kn}{import} \PY{n+nn}{Collections}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{References} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Expression} \PY{n}{Description} \PY{n}{Pair}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{c+c1}{// Note that we rename \PYZsq{}use\PYZsq{} to \PYZsq{}uses\PYZsq{} to avoid SysML keyword conflict.}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Uses} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Expression} \PY{n}{Description} \PY{n}{Pair}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+    
+  \PY{k+kn}{package} \PY{n+nn}{Miscellaneous} \PY{p}{\PYZob{}}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Guard} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Expression} \PY{n}{Description} \PY{n}{Pair}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{n}{Values} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Expression} \PY{n}{Description} \PY{n}{Pair}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Time} \PY{n}{Complexity}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Expression} \PY{n}{Description} \PY{n}{Pair}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Space} \PY{n}{Complexity}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Expression} \PY{n}{Description} \PY{n}{Pair}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Package Semantic Properties (bf69903f-8342-48ef-8869-0844f7b95e14)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{Semantic Properties}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{4}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_2_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Stakeholders}\PY{err}{\PYZsq{}}
+\PY{p}{\PYZob{}}
+  \PY{c+c1}{// NRC Stakeholders}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Customer}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Assurance} \PY{n}{SME}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Customer}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Certification} \PY{n}{SME}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Customer}\PY{err}{\PYZsq{}}\PY{p}{;}
+  
+  \PY{c+c1}{// Galois Stakeholders}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Employee}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{attribute}
+      \PY{n}{name}\PY{p}{:} \PY{n}{ScalarValues}\PY{p}{:}\PY{p}{:}\PY{n}{String}\PY{p}{;}
+      \PY{n}{email}\PY{p}{:} \PY{n}{ScalarValues}\PY{p}{:}\PY{p}{:}\PY{n}{String}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{PI}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Employee}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{PL}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Employee}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Research} \PY{n}{Engineer}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Employee}\PY{err}{\PYZsq{}}\PY{p}{;} 
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Software} \PY{n}{and} \PY{n}{Assurance} \PY{n}{Research} \PY{n}{Engineer}\PY{err}{\PYZsq{}} 
+    \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Research} \PY{n}{Engineer}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Hardware} \PY{n}{Research} \PY{n}{Engineer}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Research} \PY{n}{Engineer}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{part} \PY{n}{PI} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{PI}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{attribute}
+      \PY{n}{redefines} \PY{n}{name} \PY{o}{=} \PY{l+s}{\PYZdq{}}\PY{l+s}{Joe Kiniry}\PY{l+s}{\PYZdq{}}\PY{p}{;}
+      \PY{n}{redefines} \PY{n}{email} \PY{o}{=} \PY{l+s}{\PYZdq{}}\PY{l+s}{kiniry@galois.com}\PY{l+s}{\PYZdq{}}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{c+c1}{// @todo kiniry Add details for other performers.}
+  \PY{n}{part} \PY{n}{PL} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{PL}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{attribute}
+      \PY{n}{redefines} \PY{n}{name} \PY{o}{=} \PY{l+s}{\PYZdq{}}\PY{l+s}{Andrew Bivin}\PY{l+s}{\PYZdq{}}\PY{p}{;}
+      \PY{n}{redefines} \PY{n}{email} \PY{o}{=} \PY{l+s}{\PYZdq{}}\PY{l+s}{abivin@galois.com}\PY{l+s}{\PYZdq{}}\PY{p}{;}    
+  \PY{p}{\PYZcb{}} 
+  \PY{n}{part} \PY{n}{SARE} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Software} \PY{n}{and} \PY{n}{Assurance} \PY{n}{Research} \PY{n}{Engineer}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{attribute}
+      \PY{n}{redefines} \PY{n}{name} \PY{o}{=} \PY{l+s}{\PYZdq{}}\PY{l+s}{Alex Bakst}\PY{l+s}{\PYZdq{}}\PY{p}{;}
+      \PY{n}{redefines} \PY{n}{email} \PY{o}{=} \PY{l+s}{\PYZdq{}}\PY{l+s}{abakst@galois.com}\PY{l+s}{\PYZdq{}}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{part} \PY{n}{HRE} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Hardware} \PY{n}{Research} \PY{n}{Engineer}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{attribute}
+      \PY{n}{redefines} \PY{n}{name} \PY{o}{=} \PY{l+s}{\PYZdq{}}\PY{l+s}{Michal Podhradsky}\PY{l+s}{\PYZdq{}}\PY{p}{;}
+      \PY{n}{redefines} \PY{n}{email} \PY{o}{=} \PY{l+s}{\PYZdq{}}\PY{l+s}{mpodhradsky@galois.com}\PY{l+s}{\PYZdq{}}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  
+  \PY{n}{concern} \PY{err}{\PYZsq{}}\PY{n}{requirement} \PY{n}{traceability}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{doc} \PY{c+cm}{/* Will all requirements be traceable from project requirement}
+\PY{c+cm}{         * or NRC characteristic to assurance evidence demonstrated in a}
+\PY{c+cm}{         * report? */}
+    \PY{n}{stakeholder} \PY{err}{\PYZsq{}}\PY{n}{Customer}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{stakeholder} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Employee}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  
+  \PY{c+c1}{// @todo kiniry Express other concerns expressed in the RFP, from the NRC,}
+  \PY{c+c1}{// or from Galois or the Galois HARDENS team.}
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Package RTS Stakeholders (1f108c71-1615-4827-bac6-4eda11d3d7c4)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{RTS Stakeholders}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{6}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_4_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{Views}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+
+\PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Viewpoints} \PY{n}{and} \PY{n}{Views}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+  \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Stakeholders}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+
+  \PY{c+c1}{// Viewpoints and view definitions specify the different points of view}
+  \PY{c+c1}{// that a system may be viewed from, and which parts of the system model}
+  \PY{c+c1}{// attend to each view.  We will specify viewpoints for a few kinds}
+  \PY{c+c1}{// of NRC actors, various kinds of HARDENS performers, various kinds of}
+  \PY{c+c1}{// other Galois employees who are interested in this project and its}
+  \PY{c+c1}{// outcomes, and other government and industry parties interested in RDE.}
+  
+  \PY{n}{viewpoint} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{General} \PY{n}{Customer} \PY{n}{Viewpoint}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+
+  \PY{n}{view} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{General} \PY{n}{Customer} \PY{n}{View} \PY{n}{Definition}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}  
+  
+  \PY{n}{viewpoint} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Assurance} \PY{n}{Customer} \PY{n}{Viewpoint}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+  
+  \PY{n}{view} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Assurance} \PY{n}{Customer} \PY{n}{View} \PY{n}{Definition}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+  
+  \PY{n}{viewpoint} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Performer} \PY{n}{Viewpoint}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+  
+  \PY{n}{view} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Performer} \PY{n}{View} \PY{n}{Definition}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+  
+  \PY{n}{view} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{PI} \PY{n}{View}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Performer} \PY{n}{View} \PY{n}{Definition}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+  
+  \PY{n}{view} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{PL} \PY{n}{View}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Performer} \PY{n}{View} \PY{n}{Definition}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+
+  \PY{n}{view} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Software} \PY{n}{Engineer} \PY{n}{View}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Performer} \PY{n}{View} \PY{n}{Definition}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+  
+  \PY{n}{view} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Hardware} \PY{n}{Engineer} \PY{n}{View}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Performer} \PY{n}{View} \PY{n}{Definition}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+  
+  \PY{n}{view} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Assurance} \PY{n}{Engineer} \PY{n}{View}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Performer} \PY{n}{View} \PY{n}{Definition}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+  
+  \PY{n}{viewpoint} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Principal} \PY{n}{View}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+  
+  \PY{n}{viewpoint} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Executive} \PY{n}{View}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+  
+  \PY{n}{viewpoint} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Customer} \PY{n}{Specialist} \PY{n}{View}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+  
+  \PY{n}{viewpoint} \PY{err}{\PYZsq{}}\PY{n}{Galois} \PY{n}{Research} \PY{n}{Engineering} \PY{n}{View}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}
+  
+  \PY{n}{viewpoint} \PY{err}{\PYZsq{}}\PY{n}{General} \PY{n}{Party} \PY{n}{interested} \PY{n}{in} \PY{n}{Rigorous} \PY{n}{Digital} \PY{n}{Engineering}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}\PY{p}{\PYZcb{}}   
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Package RTS Viewpoints and Views (da16fd87-4914-49a4-9e8e-2aa8a88dbfb5)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{RTS Viewpoints and Views}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{8}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_6_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+cm}{/*}
+\PY{c+cm}{ \PYZsh{} Reactor Trip System (RTS) High\PYZhy{}assurance Demonstrator}
+\PY{c+cm}{ \PYZsh{}\PYZsh{} project: High Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS)}
+\PY{c+cm}{ \PYZsh{}\PYZsh{}\PYZsh{} copyright (C) 2021\PYZhy{}2022 Galois}
+\PY{c+cm}{ \PYZsh{}\PYZsh{}\PYZsh{} author: Joe Kiniry \PYZlt{}kiniry@galois.com\PYZgt{}}
+\PY{c+cm}{*/}
+
+\PY{c+c1}{// @see https://github.com/GaloisInc/HARDENS/issues/30}
+
+\PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Glossary} \PY{err}{\PYZsq{}}\PY{n}{Project} \PY{n}{Glossary}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+  \PY{c+c1}{// @design Eliminate all redundancy with concepts in KerML or SysML domain }
+  \PY{c+c1}{// libraries.}
+  \PY{k+kd}{private} \PY{k+kn}{import} \PY{n+nn}{ScalarValues}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+  \PY{k+kd}{private} \PY{k+kn}{import} \PY{n+nn}{KerML}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+
+  \PY{c+c1}{// Original proposal glossary.}
+  \PY{n}{part} \PY{n}{def} \PY{n}{BlueCheck}\PY{p}{;}
+  \PY{c+cm}{/** A formal, state\PYZhy{}based specification language that focuses on the}
+\PY{c+cm}{      specification of the interfaces of discrete modules in a system, and}
+\PY{c+cm}{      often times includes model\PYZhy{}based specification constructs to improve}
+\PY{c+cm}{      usability and expressivity. */}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{id} \PY{n}{BISL} \PY{err}{\PYZsq{}}\PY{n}{Behavioral} \PY{n}{Interface} \PY{n}{Specification} \PY{n}{Language}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Computer}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Coq}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Cryptol}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{DevSecOps}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{id} \PY{n}{DIANC} \PY{err}{\PYZsq{}}\PY{n}{Digital} \PY{n}{Instrumentation} \PY{n}{and} \PY{n}{Control} \PY{n}{Systems}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{c+cm}{/** The NASA Formal Requirements Elicitation Tool is used to make writing,}
+\PY{c+cm}{      understanding, and debugging formal requirements natural and}
+\PY{c+cm}{      intuitive. */}
+  \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{FRET} \PY{err}{\PYZsq{}}\PY{n}{Formal} \PY{n}{Requirements} \PY{n}{Elicitation} \PY{n}{Tool}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{c+cm}{/** An Instruction Set Architecture, or ISA for short, is the set of}
+\PY{c+cm}{      instructions that a given kind of CPU can understand. Example ISAs}
+\PY{c+cm}{      include x86, x64, MIPS, RISC, RISC\PYZhy{}V, AVR, etc. */}
+  \PY{n}{attribute} \PY{n}{def} \PY{n}{id} \PY{n}{ISA} \PY{err}{\PYZsq{}}\PY{n}{Instruction} \PY{n}{Set} \PY{n}{Architecture}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{c+cm}{/** A specification language integrated with support tools and an}
+\PY{c+cm}{      automated theorem prover, developed at the Computer Science Laboratory}
+\PY{c+cm}{      of SRI International.  PVS is based on a kernel consisting of an}
+\PY{c+cm}{      extension of Church\PYZsq{}s theory of types with dependent types, and is}
+\PY{c+cm}{      fundamentally a classical typed higher\PYZhy{}order logic. */}
+  \PY{n}{part} \PY{n}{def} \PY{n}{PVS}\PY{p}{;}
+  \PY{c+cm}{/** RISC\PYZhy{}V (pronounced ``risk\PYZhy{}five\PYZsq{}\PYZsq{}) is an open standard instruction set}
+\PY{c+cm}{      architecture (ISA) based on established reduced instruction set}
+\PY{c+cm}{      computer (RISC) principles. Unlike most other ISA designs, the RISC\PYZhy{}V}
+\PY{c+cm}{      ISA is provided under open source licenses that do not require fees to}
+\PY{c+cm}{      use. A number of companies are offering or have announced RISC\PYZhy{}V}
+\PY{c+cm}{      hardware, open source operating systems with RISC\PYZhy{}V support are}
+\PY{c+cm}{      available and the instruction set is supported in several popular}
+\PY{c+cm}{      software toolchains. */}
+  \PY{n}{attribute} \PY{n}{def} \PY{n}{RISC\PYZus{}V\PYZus{}ISA} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{ISA}\PY{p}{;}
+  \PY{c+cm}{/** A formal specification language that uses hierarchical finite state}
+\PY{c+cm}{      machines to specify system requirements. */}
+  \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{RSML} \PY{err}{\PYZsq{}}\PY{n}{Requirements} \PY{n}{State} \PY{n}{Modeling} \PY{n}{Language}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{c+cm}{/** The Boolean satisfiability problem (sometimes called propositional}
+\PY{c+cm}{      satisfiability problem and abbreviated SAT) is the problem of}
+\PY{c+cm}{      determining if there exists an interpretation that satisfies a given}
+\PY{c+cm}{      Boolean formula. */}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{SAT}\PY{p}{;}
+  \PY{c+cm}{/** The proof script language is used to specify the assumptions and proof}
+\PY{c+cm}{      goals of formal verifications to the SAW tool. */}
+  \PY{n}{part} \PY{n}{def} \PY{n}{SAWscript}\PY{p}{;}
+  \PY{c+cm}{/** A CPU or SoC that is implemented in an HDL and synthesized to a}
+\PY{c+cm}{      bitstream and loaded onto an FPGA. */}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Soft} \PY{n}{Core}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{c+c1}{// size: estimated number of gates}
+    \PY{c+c1}{// complexity: measured complexity metric}
+    \PY{c+c1}{// hdls: which HDLs are used in the design}
+  \PY{p}{\PYZcb{}}
+  \PY{c+cm}{/** A formally defined computer programming language based on the Ada}
+\PY{c+cm}{      programming language, intended for the development of high integrity}
+\PY{c+cm}{      software used in systems where predictable and highly reliable}
+\PY{c+cm}{      operation is essential. It facilitates the development of applications}
+\PY{c+cm}{      that demand safety, security, or business integrity. */}
+  \PY{n}{part} \PY{n}{def} \PY{n}{SPARK}\PY{p}{;}
+  \PY{c+cm}{/** An integrated development environment for formally specifying and}
+\PY{c+cm}{      rigorously analyzing requirements. */}
+  \PY{n}{part} \PY{n}{def} \PY{n}{SpeAR}\PY{p}{;}
+  \PY{c+cm}{/** VCC is a program verification tool that proves correctness of}
+\PY{c+cm}{      annotated concurrent C programs or finds problems in them. VCC extends}
+\PY{c+cm}{      C with design by contract features, like pre\PYZhy{} and postcondition as}
+\PY{c+cm}{      well as type invariants. Annotated programs are translated to logical}
+\PY{c+cm}{      formulas using the Boogie tool, which passes them to an automated SMT}
+\PY{c+cm}{      solver Z3 to check their validity. */}
+  \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{VCC} \PY{err}{\PYZsq{}}\PY{n}{Verifier} \PY{k}{for} \PY{n}{Concurrent} \PY{n}{C}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{c+cm}{/** A software toolchain that includes static analyzers to check}
+\PY{c+cm}{      assertions about a C program; optimizing compilers to translate a C}
+\PY{c+cm}{      program to machine language; and operating systems and libraries to}
+\PY{c+cm}{      supply context for the C program. The Verified Software Toolchain}
+\PY{c+cm}{      project assures with machine\PYZhy{}checked proofs that the assertions}
+\PY{c+cm}{      claimed at the top of the toolchain really hold in the}
+\PY{c+cm}{      machine\PYZhy{}language program, running in the operating\PYZhy{}system context. */}
+  \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{VST} \PY{err}{\PYZsq{}}\PY{n}{Verified} \PY{n}{Software} \PY{n}{Toolchain}\PY{err}{\PYZsq{}}\PY{p}{;}
+
+  \PY{c+c1}{// Mathematical modeling concepts in RDE.}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Refinement}\PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Relationship}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Property}\PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{BooleanExpression}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Safety} \PY{n}{Property}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Property}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Correctness} \PY{n}{Property}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Property}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Security} \PY{n}{Property}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Property}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Model}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Semi}\PY{o}{\PYZhy{}}\PY{n}{Formal} \PY{n}{Model}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Model}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Formal} \PY{n}{Model}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Model}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Consistent}\PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Property}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Complete}\PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Property}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Consistent} \PY{n}{Model}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Consistent}\PY{p}{,} \PY{n}{Model}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Complete} \PY{n}{Model}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Complete}\PY{p}{,} \PY{n}{Model}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Consistent} \PY{n}{and} \PY{n}{Complete} \PY{n}{Model}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Consistent} \PY{n}{Model}\PY{err}{\PYZsq{}}\PY{p}{,} \PY{err}{\PYZsq{}}\PY{n}{Complete} \PY{n}{Model}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Denotational}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Operational}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Semantics}\PY{p}{;}
+  \PY{c+cm}{/** A specification that has a precise, unambiguous, formal semantics}
+\PY{c+cm}{      grounded in real world formal foundations and systems engineering}
+\PY{c+cm}{      artifacts, such as source code and hardware designs. */}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Rigorous}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Deterministic}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Non}\PY{o}{\PYZhy{}}\PY{n}{deterministic}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{FM} \PY{err}{\PYZsq{}}\PY{n}{Formal} \PY{n}{Method}\PY{err}{\PYZsq{}}\PY{p}{;}
+
+  \PY{c+c1}{// Systems modeling concepts in RDE.}
+  \PY{c+c1}{// @design Probably in KerML or SysML domain libraries.}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Requirement}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Scenario}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Product}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Product} \PY{n}{Line}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Configure}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{n}{DOORS}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{n}{Clafer}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{n}{Lobot}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{id} \PY{n}{FSM} \PY{err}{\PYZsq{}}\PY{n}{Finite} \PY{n}{State} \PY{n}{Machine}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{id} \PY{n}{DFSM} \PY{err}{\PYZsq{}}\PY{n}{Deterministic} \PY{n}{Finite} \PY{n}{State} \PY{n}{Machine}\PY{err}{\PYZsq{}} 
+    \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{FSM}\PY{p}{,} \PY{n}{Deterministic}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{id} \PY{n}{NFSM} \PY{err}{\PYZsq{}}\PY{n}{Non}\PY{o}{\PYZhy{}}\PY{n}{deterministic} \PY{n}{Finite} \PY{n}{State} \PY{n}{Machine}\PY{err}{\PYZsq{}} 
+    \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{FSM}\PY{p}{,} \PY{err}{\PYZsq{}}\PY{n}{Non}\PY{o}{\PYZhy{}}\PY{n}{deterministic}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{id} \PY{n}{ASM} \PY{err}{\PYZsq{}}\PY{n}{Abstract} \PY{n}{State} \PY{n}{Machine}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Design}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Architecture}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Specification}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Architecture} \PY{n}{Specification}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Specification}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{System}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Distributed} \PY{n}{System}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{System}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Concurrent} \PY{n}{System}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{System}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Algorithm}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Program}\PY{p}{;}
+  
+  \PY{c+c1}{// Concepts related to measurable abstractions of systems.}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Risk}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Power}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Resource}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Reliability}\PY{p}{;}
+
+  \PY{c+c1}{// Assurance concepts and techonlogies.}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{id} \PY{n}{CDE} \PY{err}{\PYZsq{}}\PY{n}{Collaborative} \PY{n}{Development} \PY{n}{Environment}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{id} \PY{n}{CI} \PY{err}{\PYZsq{}}\PY{n}{Continuous} \PY{n}{Integration}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{id} \PY{n}{CV} \PY{err}{\PYZsq{}}\PY{n}{Continuous} \PY{n}{Verification}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Analyzer}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Static} \PY{n}{Analyzer}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Analyzer}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Dynamic} \PY{n}{Analyzer}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Analyzer}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Solver}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{LF} \PY{err}{\PYZsq{}}\PY{n}{Logical} \PY{n}{Framework}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{High}\PY{o}{\PYZhy{}}\PY{n}{Assurance}\PY{err}{\PYZsq{}}\PY{p}{;}
+
+  \PY{c+c1}{// Concepts relevant to languages and protocols.}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Language}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Specification} \PY{n}{Language}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Language}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Protocol}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{System} \PY{n}{Specification}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Specification}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Hand}\PY{o}{\PYZhy{}}\PY{n}{written}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Machine}\PY{o}{\PYZhy{}}\PY{n}{generated}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Source}\PY{o}{\PYZhy{}}\PY{n}{level} \PY{n}{Specification} \PY{n}{Language}\PY{err}{\PYZsq{}} 
+    \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Specification} \PY{n}{Language}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Model}\PY{o}{\PYZhy{}}\PY{n}{based} \PY{n}{Specification} \PY{n}{Language}\PY{err}{\PYZsq{}} 
+    \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Specification} \PY{n}{Language}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Cryptological}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Cryptographic} \PY{n}{Protocol}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Protocol}\PY{p}{,} \PY{n}{Cryptological}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Cryptographic} \PY{n}{Algorithm}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Algorithm}\PY{p}{,} \PY{n}{Cryptological}\PY{p}{;}
+
+  \PY{c+c1}{// Software engineering.}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{id} \PY{n}{PL} \PY{err}{\PYZsq{}}\PY{n}{Programming} \PY{n}{Language}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Language}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Source} \PY{n}{Code}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{C} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Programming} \PY{n}{Language}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{C\PYZus{}Source} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{C}\PY{p}{,} \PY{err}{\PYZsq{}}\PY{n}{Source} \PY{n}{Code}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Object} \PY{n}{Code}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{id} \PY{n}{IR} \PY{err}{\PYZsq{}}\PY{n}{Intermediate} \PY{n}{Representation}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{id} \PY{n}{LLVM} \PY{err}{\PYZsq{}}\PY{n}{Low}\PY{o}{\PYZhy{}}\PY{n}{Level} \PY{n}{Virtual} \PY{n}{Machine}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{IR}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Compiler} \PY{p}{\PYZob{}}
+    \PY{n}{item} \PY{n}{input}\PY{p}{:} \PY{n}{Language}\PY{o}{[}\PY{l+m+mf}{1.}\PY{p}{.}\PY{o}{*}\PY{o}{]}\PY{p}{;}
+    \PY{n}{item} \PY{n}{output}\PY{p}{:} \PY{n}{Language}\PY{o}{[}\PY{l+m+mf}{1.}\PY{p}{.}\PY{o}{*}\PY{o}{]}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+
+  \PY{c+c1}{// Hardware design.}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Hardware}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{SWaP} \PY{p}{\PYZob{}}
+    \PY{c+c1}{// attribute size:}
+    \PY{c+c1}{// attribute weight: }
+    \PY{c+c1}{// attribute power: }
+  \PY{p}{\PYZcb{}}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Hard} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SWaP}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Soft} \PY{n}{Core} \PY{n}{Hardware}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Hardware}\PY{p}{,} \PY{err}{\PYZsq{}}\PY{n}{Soft} \PY{n}{Core}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Physical} \PY{n}{Hardware}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Hardware}\PY{p}{,} \PY{n}{Hard}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Synthesizer} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Compiler}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{id} \PY{n}{HDL} \PY{err}{\PYZsq{}}\PY{n}{Hardware} \PY{n}{Design} \PY{n}{Language}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{BluespecSystemVerilog} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{HDL}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{SystemVerilog} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{HDL}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Verilog} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SystemVerilog}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Chisel} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{HDL}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{CPU} \PY{err}{\PYZsq{}}\PY{n}{Central} \PY{n}{Processing} \PY{n}{Unit}\PY{err}{\PYZsq{}}\PY{p}{;}
+
+  \PY{c+c1}{// Hardware engineering concepts.}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Component}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Switch} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Component}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Button} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Component}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Header} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Component}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Interface} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Component}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Connector} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Component}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Memory} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Component}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{ASIC} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Component}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{id} \PY{n}{IO} \PY{err}{\PYZsq{}}\PY{n}{I}\PY{o}{/}\PY{n}{O}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{GPIO} \PY{err}{\PYZsq{}}\PY{n}{General} \PY{n}{Purpose} \PY{n}{I}\PY{o}{/}\PY{n}{O}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Sensor}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Temperature} \PY{n}{Sensor}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Pressure} \PY{n}{Sensor}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Actuator}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Solenoid} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Actuator}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Bus}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{USB} \PY{err}{\PYZsq{}}\PY{n}{Universal} \PY{n}{Serial} \PY{n}{Bus}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Bus}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{LED}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Cable}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{FPGA} \PY{err}{\PYZsq{}}\PY{n}{Field}\PY{o}{\PYZhy{}}\PY{n}{Programmable} \PY{n}{Gate} \PY{n}{Array}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{ASIC}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{ECP}\PY{o}{\PYZhy{}}\PY{l+m+mi}{5}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{FPGA}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{PCB} \PY{err}{\PYZsq{}}\PY{n}{Printed} \PY{n}{Circuit} \PY{n}{Board}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{part} \PY{n}{components}\PY{p}{:} \PY{n}{Component}\PY{o}{[}\PY{o}{*}\PY{o}{]}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{USB} \PY{n}{Connector}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{USB}\PY{p}{,} \PY{n}{Connector}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{USB\PYZus{}Mini} \PY{err}{\PYZsq{}}\PY{n}{USB} \PY{n}{Mini} \PY{n}{Connector}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{USB} \PY{n}{Connector}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{PMOD}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{JTAG}\PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Protocol}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{Driver}\PY{p}{;}
+  \PY{n}{port} \PY{n}{def} \PY{n}{USB\PYZus{}In} \PY{p}{\PYZob{}}
+    \PY{n}{in} \PY{n}{item} \PY{err}{\PYZsq{}}\PY{n}{USB} \PY{n}{Connector}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{port} \PY{n}{def} \PY{n}{USB\PYZus{}Out} \PY{p}{\PYZob{}}
+    \PY{n}{out} \PY{n}{item} \PY{err}{\PYZsq{}}\PY{n}{USB} \PY{n}{Connector}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{c+cm}{/** A normal USB cable. */}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{USB} \PY{n}{Cable}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{USB}\PY{p}{,} \PY{n}{Cable} \PY{p}{\PYZob{}}
+    \PY{c+cm}{/** What kind of USB connector is on the start of the cable? */}
+    \PY{n}{port} \PY{n}{start\PYZus{}connector}\PY{p}{:} \PY{n}{USB\PYZus{}In}\PY{p}{;}
+    \PY{c+cm}{/** What kind of USB connector is on the end of the cable? */}
+    \PY{n}{port} \PY{n}{end\PYZus{}connector}\PY{p}{:} \PY{n}{USB\PYZus{}Out}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{port} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Output} \PY{n}{LED}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{LED}\PY{p}{;}
+
+  \PY{c+c1}{// Safety\PYZhy{}critical concepts.}
+  \PY{k+kd}{abstract} \PY{n}{item} \PY{n}{def} \PY{n}{Voting}\PY{p}{;}
+
+  \PY{c+c1}{// Artifacts specific to RDE.}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{CryptolSpec} \PY{err}{\PYZsq{}}\PY{n}{Cryptol} \PY{n}{System} \PY{n}{Specification}\PY{err}{\PYZsq{}} 
+   \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Cryptol}\PY{p}{,} \PY{err}{\PYZsq{}}\PY{n}{System} \PY{n}{Specification}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+     \PY{n}{attribute} \PY{n}{literate}\PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+   \PY{p}{\PYZcb{}}
+  \PY{n}{attribute} \PY{n}{def} \PY{n}{Languages} \PY{p}{\PYZob{}}
+    \PY{n}{attribute} \PY{n}{languages}\PY{p}{:} \PY{n}{String}\PY{o}{[}\PY{o}{*}\PY{o}{]}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{Impl} \PY{err}{\PYZsq{}}\PY{n}{Implementation}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{attribute} \PY{n}{languages}\PY{p}{:} \PY{n}{Languages}\PY{o}{[}\PY{o}{*}\PY{o}{]}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{Software} \PY{err}{\PYZsq{}}\PY{n}{Software} \PY{n}{Implementation}\PY{err}{\PYZsq{}}
+    \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Implementation}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{SWImpl} \PY{err}{\PYZsq{}}\PY{n}{Hand}\PY{o}{\PYZhy{}}\PY{n}{written} \PY{n}{Software} \PY{n}{Implementation}\PY{err}{\PYZsq{}} 
+    \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Software}\PY{p}{,} \PY{err}{\PYZsq{}}\PY{n}{Hand}\PY{o}{\PYZhy{}}\PY{n}{written}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{SynthSW} \PY{err}{\PYZsq{}}\PY{n}{Synthesized} \PY{n}{Software} \PY{n}{Implementation}\PY{err}{\PYZsq{}} 
+    \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Software}\PY{p}{,} \PY{err}{\PYZsq{}}\PY{n}{Machine}\PY{o}{\PYZhy{}}\PY{n}{generated}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Hardware} \PY{n}{Implementation}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{HWImpl} \PY{err}{\PYZsq{}}\PY{n}{Hand}\PY{o}{\PYZhy{}}\PY{n}{written} \PY{n}{Hardware} \PY{n}{Implementation}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{SynthHW} \PY{err}{\PYZsq{}}\PY{n}{Synthesized} \PY{n}{Hardware} \PY{n}{Implementation}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{Binary} \PY{err}{\PYZsq{}}\PY{n}{Software} \PY{n}{Binaries}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{attribute} \PY{n}{verified\PYZus{}compilation}\PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{secure\PYZus{}compilation}\PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+    \PY{n}{attribute} \PY{n}{isa}\PY{p}{:} \PY{n}{ISA}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{part} \PY{n}{def} \PY{n}{RISCV\PYZus{}Binary} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Binary} \PY{p}{\PYZob{}}
+    \PY{c+c1}{// :\PYZgt{}\PYZgt{} isa = RISC\PYZus{}V\PYZus{}ISA;}
+  \PY{p}{\PYZcb{}}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{Bitstream} \PY{err}{\PYZsq{}}\PY{n}{FPGA} \PY{n}{Bitstream}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{attribute} \PY{n}{proprietary\PYZus{}flow}\PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  
+  \PY{c+c1}{// NRC concepts.}
+  \PY{k+kd}{abstract} \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Certifcation} \PY{n}{Regulations}\PY{err}{\PYZsq{}}\PY{p}{;}
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Comment (72a5c8cf-f4ce-40be-a97c-06f56917b8cb)
+Package [Glossary] Project Glossary (74eb07c6-e4fb-4c57-bc4e-546894c000ec)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+cm}{/**}
+\PY{c+cm}{ * All requirements that the RTS system must fulfill, as driven by the}
+\PY{c+cm}{ * IEEE 603\PYZhy{}2018 standards and the NRC RFP.}
+\PY{c+cm}{ */}
+\PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Requirements} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{Requirements}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+  \PY{c+c1}{// Note that we do not specify documentation comments here as they}
+  \PY{c+c1}{// are specified in the Lando specification.  If we do not include}
+  \PY{c+c1}{// additional specifications here on the refinement from the higher\PYZhy{}level}
+  \PY{c+c1}{// specification (in this case, SysML refines Lando), then the higher\PYZhy{}level}
+  \PY{c+c1}{// specification\PYZsq{}s comments/specifications refine too (an hence are }
+  \PY{c+c1}{// just copied verbatim).}
+  \PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Requirements} \PY{err}{\PYZsq{}}\PY{n}{HARDENS} \PY{n}{Project} \PY{n}{High}\PY{o}{\PYZhy{}}\PY{n}{level} \PY{n}{Requirements}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{Project} \PY{n}{Glossary}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+    \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Stakeholders}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+    
+    \PY{n}{requirement} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Project} \PY{n}{Requirements}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{n}{subject} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{staff}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Customer}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{requirement} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Understanding}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Project} \PY{n}{Requirements}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{requirement} \PY{err}{\PYZsq{}}\PY{n}{Identify} \PY{n}{Regulatory} \PY{n}{Gaps}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Project} \PY{n}{Requirements}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{requirement} \PY{n}{Demonstrate} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Project} \PY{n}{Requirements}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{requirement} \PY{err}{\PYZsq{}}\PY{n}{Demonstrator} \PY{n}{Parts}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Project} \PY{n}{Requirements}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{requirement} \PY{err}{\PYZsq{}}\PY{n}{Demonstrator} \PY{n}{Groundwork}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Project} \PY{n}{Requirements}\PY{err}{\PYZsq{}}\PY{p}{;}
+ \PY{p}{\PYZcb{}}
+ \PY{c+c1}{// @todo kiniry These requirements must be made consistent, or merged with}
+ \PY{c+c1}{// those found in the Characteristics specification.}
+ \PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Characteristics} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Characteristics}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+   \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{Project} \PY{n}{Glossary}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+   \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Stakeholders}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+
+   \PY{n}{requirement} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Characteristic}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+     \PY{c+c1}{//subject expert: \PYZsq{}NRC Certification SME\PYZsq{};}
+     \PY{c+c1}{//subject regulation: \PYZsq{}NRC Certification Regulations\PYZsq{};}
+   \PY{p}{\PYZcb{}}
+   \PY{n}{requirement} \PY{err}{\PYZsq{}}\PY{n}{Requirements} \PY{n}{Consistency}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Characteristic}\PY{err}{\PYZsq{}}\PY{p}{;}
+   \PY{n}{requirement} \PY{err}{\PYZsq{}}\PY{n}{Requirements} \PY{n}{Colloquial} \PY{n}{Completeness}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Characteristic}\PY{err}{\PYZsq{}}\PY{p}{;}
+   \PY{n}{requirement} \PY{err}{\PYZsq{}}\PY{n}{Requirements} \PY{n}{Formal} \PY{n}{Completeness}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Characteristic}\PY{err}{\PYZsq{}}\PY{p}{;}
+   \PY{n}{requirement} \PY{err}{\PYZsq{}}\PY{n}{Instrumentation} \PY{n}{Independence}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Characteristic}\PY{err}{\PYZsq{}}\PY{p}{;}
+   \PY{n}{requirement} \PY{err}{\PYZsq{}}\PY{n}{Channel} \PY{n}{Independence}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Characteristic}\PY{err}{\PYZsq{}}\PY{p}{;}
+   \PY{n}{requirement} \PY{err}{\PYZsq{}}\PY{n}{Actuation} \PY{n}{Independence}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Characteristic}\PY{err}{\PYZsq{}}\PY{p}{;}
+   \PY{n}{requirement} \PY{err}{\PYZsq{}}\PY{n}{Actuation} \PY{n}{Correctness}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Characteristic}\PY{err}{\PYZsq{}}\PY{p}{;}
+   \PY{n}{requirement} \PY{err}{\PYZsq{}}\PY{n}{Self}\PY{o}{\PYZhy{}}\PY{n}{Test}\PY{o}{/}\PY{n}{Trip} \PY{n}{Independence}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{NRC} \PY{n}{Characteristic}\PY{err}{\PYZsq{}}\PY{p}{;}
+ \PY{p}{\PYZcb{}}
+ \PY{c+c1}{// Note that formal requirements expressed externally must be traceable}
+ \PY{c+c1}{// to this system model, but need not be repeated in whole here.  Model}
+ \PY{c+c1}{// elements that are expressed in both the SysML and FRET models must}
+ \PY{c+c1}{// be in a refinement relationship with each other (e.g,, in this case study,}
+ \PY{c+c1}{// SysML ⊑ FRET.}
+ \PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{Formal} \PY{n}{Requirements}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+   \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{Project} \PY{n}{Glossary}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+   \PY{n}{requirement} \PY{n}{def} \PY{n}{id} \PY{n}{FRET} \PY{err}{\PYZsq{}}\PY{n}{FRET} \PY{n}{Requirements}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+     \PY{n}{doc} \PY{c+cm}{/* RTS requirements formalized in the FRET tool. */}     
+   \PY{p}{\PYZcb{}}
+   \PY{c+c1}{// @todo kiniry Complete remaining FRET requirements.}
+   \PY{n}{requirement} \PY{n}{ACTUATION\PYZus{}ACTUATOR\PYZus{}0} \PY{p}{:} \PY{n}{FRET}\PY{p}{;}
+ \PY{p}{\PYZcb{}}
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Package [Requirements] RTS Requirements (360eb9b5-7d2c-449a-a87f-8bebe68b16d6)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{12}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{RTS Requirements}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{12}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_9_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{38}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Simplified} \PY{n}{System} \PY{n}{Architecture}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+  \PY{k+kd}{private} \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{Project} \PY{n}{Glossary}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+
+  \PY{c+c1}{// doc id sys\PYZus{}arch\PYZus{}doc}
+  \PY{k+kn}{package} \PY{n+nn}{Root} \PY{p}{\PYZob{}}
+    \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{CFSM} \PY{err}{\PYZsq{}}\PY{n}{Core} \PY{n}{Finite} \PY{n}{State} \PY{n}{Machine}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{FSM}\PY{p}{;}
+    \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{Programming\PYZus{}IO} \PY{err}{\PYZsq{}}\PY{n}{Programming} \PY{n}{I}\PY{o}{/}\PY{n}{O}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{IO}\PY{p}{;}
+    \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{UI\PYZus{}IO} \PY{err}{\PYZsq{}}\PY{n}{UI} \PY{n}{I}\PY{o}{/}\PY{n}{O}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{IO}\PY{p}{;}
+    \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{Debugging\PYZus{}IO} \PY{err}{\PYZsq{}}\PY{n}{Debugging} \PY{n}{I}\PY{o}{/}\PY{n}{O}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{IO}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{Actuation\PYZus{}Logic}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{part} \PY{err}{\PYZsq{}}\PY{n}{Voting} \PY{n}{Logic}\PY{err}{\PYZsq{}}\PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Voting}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{l+m+mi}{2}\PY{o}{]}\PY{p}{;}
+    \PY{n}{part} \PY{err}{\PYZsq{}}\PY{n}{Actuator} \PY{n}{Logic}\PY{err}{\PYZsq{}}\PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Actuator}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{l+m+mi}{2}\PY{o}{]}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{c+cm}{/** Documentation about computation goes here. */}
+  \PY{k+kn}{package} \PY{n+nn}{Computation} \PY{p}{\PYZob{}}
+    \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{RISC}\PY{o}{\PYZhy{}}\PY{n}{V} \PY{n}{CPU}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{CPU}\PY{p}{,} \PY{n}{RISC\PYZus{}V\PYZus{}ISA}\PY{p}{;}
+    \PY{n}{part} \PY{n}{id} \PY{n}{CPUs} \PY{err}{\PYZsq{}}\PY{n}{RISC}\PY{o}{\PYZhy{}}\PY{n}{V} \PY{n}{CPUs}\PY{err}{\PYZsq{}}\PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{RISC}\PY{o}{\PYZhy{}}\PY{n}{V} \PY{n}{CPU}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{l+m+mi}{3}\PY{o}{]}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{k+kn}{package} \PY{n+nn}{Hardware} \PY{p}{\PYZob{}}
+    \PY{k+kn}{package} \PY{n+nn}{FPGA} \PY{p}{\PYZob{}}
+      \PY{n}{part} \PY{n}{id} \PY{n}{DevBoard} \PY{err}{\PYZsq{}}\PY{n}{Lattic} \PY{n}{ECP}\PY{o}{\PYZhy{}}\PY{l+m+mi}{5} \PY{n}{FPGA} \PY{n}{Development} \PY{n}{Board}\PY{err}{\PYZsq{}}\PY{p}{:} \PY{n}{PCB}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{k+kn}{package} \PY{n+nn}{Actuators} \PY{p}{\PYZob{}}
+      \PY{n}{part} \PY{err}{\PYZsq{}}\PY{n}{Actuator}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{l+m+mi}{2}\PY{o}{]}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{k+kn}{package} \PY{n+nn}{Sensors} \PY{p}{\PYZob{}}
+      \PY{n}{part} \PY{n}{TS}\PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Temperature} \PY{n}{Sensor}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{l+m+mi}{2}\PY{o}{]}\PY{p}{;}
+      \PY{n}{part} \PY{n}{PS}\PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Pressure} \PY{n}{Sensor}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{l+m+mi}{2}\PY{o}{]}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+  \PY{p}{\PYZcb{}}
+  \PY{k+kn}{package} \PY{n+nn}{Instrumentation} \PY{p}{\PYZob{}}
+    \PY{n}{part} \PY{n}{def} \PY{n}{Instrumentation}\PY{p}{;}
+    \PY{n}{part} \PY{n}{I}\PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Instrumentation}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{l+m+mi}{4}\PY{o}{]}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  
+  \PY{k+kn}{package} \PY{n+nn}{RTS} \PY{p}{\PYZob{}}
+    \PY{n}{part} \PY{n}{def} \PY{n}{Base\PYZus{}RTS\PYZus{}Architecture\PYZus{}Context} \PY{p}{\PYZob{}}
+      \PY{c+c1}{// part ref }
+    \PY{p}{\PYZcb{}}
+  \PY{p}{\PYZcb{}}
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{38}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Package RTS Simplified System Architecture
+(973650cc-05e2-4650-822b-8c381c2b4f16)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{39}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{RTS Simplified System Architecture}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{39}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_11_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{40}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+cm}{/** The physical hardware components that are a part of the HARDENS RTS}
+\PY{c+cm}{    demonstrator. */}
+\PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Instrumentation} \PY{n}{Physical} \PY{n}{Architecture}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+
+  \PY{k+kn}{package} \PY{n+nn}{TempSensor} \PY{p}{\PYZob{}}
+    \PY{k+kn}{import} \PY{n+nn}{ISQThermodynamics}\PY{p}{:}\PY{p}{:}\PY{n}{TemperatureValue}\PY{p}{;}
+
+    \PY{c+cm}{/** Generic temperature port */}
+    \PY{n}{port} \PY{n}{def} \PY{n}{TemperatureOutPort} \PY{p}{\PYZob{}}
+        \PY{n}{out} \PY{n}{temp} \PY{p}{:} \PY{n}{TemperatureValue}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+
+    \PY{c+cm}{/** Temperature interface */}
+    \PY{k+kd}{interface} \PY{n+nc}{def} \PY{n}{TemperatureInterface} \PY{p}{\PYZob{}}
+      \PY{c+c1}{// each sensor is connected to two instrumentation units}
+      \PY{n}{end} \PY{n}{supplierPort} \PY{p}{:} \PY{n}{TemperatureOutPort}\PY{p}{;}
+      \PY{n}{end} \PY{n}{consumerPort1} \PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TemperatureOutPort}\PY{p}{;}
+      \PY{n}{end} \PY{n}{consumerPort2} \PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TemperatureOutPort}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+
+    \PY{c+cm}{/** A sensor that is capable of measuring the temperature of its environment. */}
+    \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Temperature} \PY{n}{Sensor}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{c+cm}{/** What is your temperature reading in Celcius (C)? */}
+      \PY{n}{attribute} \PY{n}{currentTemp}\PY{p}{:} \PY{n}{TemperatureValue}\PY{p}{;}
+      \PY{n}{port} \PY{n}{tempOut}\PY{p}{:} \PY{n}{TemperatureOutPort}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+  \PY{p}{\PYZcb{}}
+
+  \PY{k+kn}{package} \PY{n+nn}{PressureSensor} \PY{p}{\PYZob{}}
+    \PY{k+kn}{import} \PY{n+nn}{ISQMechanics}\PY{p}{:}\PY{p}{:}\PY{n}{PressureValue}\PY{p}{;}
+
+    \PY{c+cm}{/** Generic pressure port */}
+    \PY{n}{port} \PY{n}{def} \PY{n}{PressureOutPort} \PY{p}{\PYZob{}}
+        \PY{n}{out} \PY{n}{pressure} \PY{p}{:} \PY{n}{PressureValue}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+
+    \PY{c+cm}{/** Pressure sensor interface */}
+    \PY{k+kd}{interface} \PY{n+nc}{def} \PY{n}{PressureInterface} \PY{p}{\PYZob{}}
+      \PY{c+c1}{// each sensor is connected to two instrumentation units}
+      \PY{n}{end} \PY{n}{supplierPort} \PY{p}{:} \PY{n}{PressureOutPort}\PY{p}{;}
+      \PY{n}{end} \PY{n}{consumerPort1} \PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{PressureOutPort}\PY{p}{;}
+      \PY{n}{end} \PY{n}{consumerPort2} \PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{PressureOutPort}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+
+    \PY{c+cm}{/** A sensor that is capable of measuring the air pressure of its environment. */}
+    \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Pressure} \PY{n}{Sensor}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{c+cm}{/** What is your pressure reading in Pascal (P)? */}
+      \PY{n}{attribute} \PY{n}{currentPressure}\PY{p}{:} \PY{n}{PressureValue}\PY{p}{;}
+      \PY{n}{port} \PY{n}{pressureOut}\PY{p}{:} \PY{n}{PressureOutPort}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+  \PY{p}{\PYZcb{}}
+
+  \PY{k+kn}{package} \PY{n+nn}{Instrumentation} \PY{p}{\PYZob{}}
+    \PY{k+kn}{import} \PY{n+nn}{ScalarValues}\PY{p}{:}\PY{p}{:}\PY{n}{Real}\PY{p}{;}
+    \PY{k+kn}{import} \PY{n+nn}{ScalarValues}\PY{p}{:}\PY{p}{:}\PY{n}{Boolean}\PY{p}{;}
+    \PY{k+kn}{import} \PY{n+nn}{TempSensor}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+    \PY{k+kn}{import} \PY{n+nn}{PressureSensor}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+
+    \PY{n}{port} \PY{n}{def} \PY{n}{TripPort} \PY{p}{\PYZob{}}
+      \PY{n}{out} \PY{n}{trip} \PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+
+    \PY{k+kd}{interface} \PY{n+nc}{def} \PY{n}{TripInterface} \PY{p}{\PYZob{}}
+      \PY{c+c1}{// Each trip interface has 1 trip sources, and 1 consumer}
+      \PY{n}{end} \PY{n}{supplierPort} \PY{p}{:} \PY{n}{TripPort}\PY{p}{;}
+      \PY{n}{end} \PY{n}{consumerPort} \PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TripPort}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+
+
+    \PY{n}{part} \PY{n}{def} \PY{n}{InstrumentationUnit} \PY{p}{\PYZob{}}
+      \PY{c+c1}{// setpoints}
+      \PY{n}{attribute} \PY{n}{tempSetpoint} \PY{p}{:} \PY{n}{TemperatureValue}\PY{p}{;}
+      \PY{n}{attribute} \PY{n}{pressureSetpoint} \PY{p}{:} \PY{n}{PressureValue}\PY{p}{;}
+      \PY{n}{attribute} \PY{n}{saturationLimit} \PY{p}{:} \PY{n}{Real}\PY{p}{;}
+
+      \PY{c+c1}{// mode selectors}
+      \PY{n}{attribute} \PY{n}{maintenanceMode} \PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+
+      \PY{c+c1}{// Inputs}
+      \PY{n}{port} \PY{n}{temperatureInput}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TemperatureOutPort}\PY{p}{;}
+      \PY{n}{port} \PY{n}{pressureInput}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{PressureOutPort}\PY{p}{;}
+
+      \PY{c+c1}{// Outputs}
+      \PY{n}{port} \PY{n}{pressureTripOut}\PY{p}{:}\PY{n}{TripPort}\PY{p}{;}
+      \PY{n}{port} \PY{n}{temperatureTripOut}\PY{p}{:}\PY{n}{TripPort}\PY{p}{;}
+      \PY{n}{port} \PY{n}{saturationTripOut}\PY{p}{:}\PY{n}{TripPort}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+  \PY{p}{\PYZcb{}}
+
+  \PY{k+kn}{package} \PY{n+nn}{Actuation} \PY{p}{\PYZob{}}
+    \PY{k+kn}{import} \PY{n+nn}{Instrumentation}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+
+    \PY{n}{port} \PY{n}{def} \PY{n}{ActuationPort} \PY{p}{\PYZob{}}
+      \PY{n}{out} \PY{n}{actuate}\PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+
+    \PY{n}{part} \PY{n}{def} \PY{n}{CoincidenceLogic} \PY{p}{\PYZob{}}
+      \PY{n}{port} \PY{n}{channel1}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TripPort}\PY{p}{;}
+      \PY{n}{port} \PY{n}{channel2}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TripPort}\PY{p}{;}
+      \PY{n}{port} \PY{n}{actuate}\PY{p}{:} \PY{n}{ActuationPort}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{part} \PY{n}{def} \PY{n}{OrLogic} \PY{p}{\PYZob{}}
+      \PY{n}{port} \PY{n}{channel1}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TripPort}\PY{p}{;}
+      \PY{n}{port} \PY{n}{channel2}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TripPort}\PY{p}{;}
+      \PY{n}{port} \PY{n}{actuate}\PY{p}{:} \PY{n}{ActuationPort}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+
+   \PY{n}{part} \PY{n}{def} \PY{n}{ActuationUnit} \PY{p}{\PYZob{}}
+     \PY{n}{part} \PY{n}{tempLogic} \PY{p}{:} \PY{n}{CoincidenceLogic}\PY{p}{;}
+     \PY{n}{part} \PY{n}{pressureLogic} \PY{p}{:} \PY{n}{CoincidenceLogic}\PY{p}{;}
+     \PY{n}{part} \PY{n}{saturationLogic} \PY{p}{:} \PY{n}{OrLogic}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{part} \PY{n}{def} \PY{n}{Actuator} \PY{p}{\PYZob{}}
+       \PY{n}{port} \PY{n}{input}\PY{p}{:} \PY{n}{ActuationPort}\PY{p}{;}
+     \PY{p}{\PYZcb{}}
+    \PY{k+kd}{interface} \PY{n+nc}{def} \PY{n}{OrGate} \PY{p}{\PYZob{}}
+      \PY{n}{end} \PY{n}{inputA}\PY{p}{:} \PY{n}{ActuationPort}\PY{p}{;}
+      \PY{n}{end} \PY{n}{inputB}\PY{p}{:} \PY{n}{ActuationPort}\PY{p}{;}
+      \PY{n}{end} \PY{n}{output}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{ActuationPort}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+  \PY{p}{\PYZcb{}}
+
+  \PY{n}{part} \PY{n}{RTS} \PY{p}{\PYZob{}}
+    \PY{k+kn}{import} \PY{n+nn}{TempSensor}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+    \PY{n}{part} \PY{n}{tempSensor1} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Temperature} \PY{n}{Sensor}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{part} \PY{n}{tempSensor2} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Temperature} \PY{n}{Sensor}\PY{err}{\PYZsq{}}\PY{p}{;}
+
+    \PY{k+kn}{import} \PY{n+nn}{PressureSensor}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+    \PY{n}{part} \PY{n}{pressureSensor1} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Pressure} \PY{n}{Sensor}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{part} \PY{n}{pressureSensor2} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Pressure} \PY{n}{Sensor}\PY{err}{\PYZsq{}}\PY{p}{;}
+
+    \PY{k+kn}{import} \PY{n+nn}{Instrumentation}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+    \PY{n}{part} \PY{n}{InstrumentationUnit1} \PY{p}{:} \PY{n}{InstrumentationUnit}\PY{p}{;}
+    \PY{n}{part} \PY{n}{InstrumentationUnit2} \PY{p}{:} \PY{n}{InstrumentationUnit}\PY{p}{;}
+    \PY{n}{part} \PY{n}{InstrumentationUnit3} \PY{p}{:} \PY{n}{InstrumentationUnit}\PY{p}{;}
+    \PY{n}{part} \PY{n}{InstrumentationUnit4} \PY{p}{:} \PY{n}{InstrumentationUnit}\PY{p}{;}
+
+    \PY{k+kn}{import} \PY{n+nn}{Actuation}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+    \PY{n}{part} \PY{n}{ActuationUnit1}\PY{p}{:} \PY{n}{ActuationUnit}\PY{p}{;}
+    \PY{n}{part} \PY{n}{ActuationUnit2}\PY{p}{:} \PY{n}{ActuationUnit}\PY{p}{;}
+    \PY{n}{part} \PY{n}{Actuator1} \PY{p}{:} \PY{n}{Actuator}\PY{p}{;}
+    \PY{n}{part} \PY{n}{Actuator2} \PY{p}{:} \PY{n}{Actuator}\PY{p}{;}
+
+    \PY{c+c1}{// connect sensors}
+    \PY{k+kd}{interface} \PY{n+nc}{T1} \PY{p}{:} \PY{n}{TemperatureInterface}
+      \PY{n}{connect} \PY{n}{tempSensor1}\PY{p}{.}\PY{n+na}{tempOut} \PY{n}{to} \PY{n}{InstrumentationUnit1}\PY{p}{.}\PY{n+na}{temperatureInput}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{tempSensor1}\PY{p}{.}\PY{n+na}{tempOut} \PY{n}{to} \PY{n}{InstrumentationUnit2}\PY{p}{.}\PY{n+na}{temperatureInput}\PY{p}{;}
+
+    \PY{k+kd}{interface} \PY{n+nc}{T2} \PY{p}{:} \PY{n}{TemperatureInterface}
+      \PY{n}{connect} \PY{n}{tempSensor2}\PY{p}{.}\PY{n+na}{tempOut} \PY{n}{to} \PY{n}{InstrumentationUnit3}\PY{p}{.}\PY{n+na}{temperatureInput}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{tempSensor2}\PY{p}{.}\PY{n+na}{tempOut} \PY{n}{to} \PY{n}{InstrumentationUnit4}\PY{p}{.}\PY{n+na}{temperatureInput}\PY{p}{;}
+
+    \PY{k+kd}{interface} \PY{n+nc}{P1} \PY{p}{:} \PY{n}{PressureInterface}
+      \PY{n}{connect} \PY{n}{pressureSensor1}\PY{p}{.}\PY{n+na}{pressureOut} \PY{n}{to} \PY{n}{InstrumentationUnit1}\PY{p}{.}\PY{n+na}{pressureInput}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{pressureSensor1}\PY{p}{.}\PY{n+na}{pressureOut} \PY{n}{to} \PY{n}{InstrumentationUnit2}\PY{p}{.}\PY{n+na}{pressureInput}\PY{p}{;}
+
+    \PY{k+kd}{interface} \PY{n+nc}{P2} \PY{p}{:} \PY{n}{PressureInterface}
+      \PY{n}{connect} \PY{n}{pressureSensor2}\PY{p}{.}\PY{n+na}{pressureOut} \PY{n}{to} \PY{n}{InstrumentationUnit3}\PY{p}{.}\PY{n+na}{pressureInput}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{pressureSensor2}\PY{p}{.}\PY{n+na}{pressureOut} \PY{n}{to} \PY{n}{InstrumentationUnit4}\PY{p}{.}\PY{n+na}{pressureInput}\PY{p}{;}
+
+    \PY{c+c1}{// connect actuation logic}
+    \PY{c+c1}{// Temperature channels}
+    \PY{k+kd}{interface} \PY{n+nc}{TripTemp1} \PY{p}{:} \PY{n}{TripInterface}
+      \PY{n}{connect} \PY{n}{InstrumentationUnit1}\PY{p}{.}\PY{n+na}{temperatureTripOut} \PY{n}{to} \PY{n}{ActuationUnit1}\PY{p}{.}\PY{n+na}{tempLogic}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+    \PY{k+kd}{interface} \PY{n+nc}{TripTemp2} \PY{p}{:} \PY{n}{TripInterface}
+      \PY{n}{connect} \PY{n}{InstrumentationUnit2}\PY{p}{.}\PY{n+na}{temperatureTripOut} \PY{n}{to} \PY{n}{ActuationUnit1}\PY{p}{.}\PY{n+na}{tempLogic}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+    \PY{k+kd}{interface} \PY{n+nc}{TripTemp3} \PY{p}{:} \PY{n}{TripInterface}
+      \PY{n}{connect} \PY{n}{InstrumentationUnit3}\PY{p}{.}\PY{n+na}{temperatureTripOut} \PY{n}{to} \PY{n}{ActuationUnit2}\PY{p}{.}\PY{n+na}{tempLogic}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+    \PY{k+kd}{interface} \PY{n+nc}{TripTemp4} \PY{p}{:} \PY{n}{TripInterface}
+      \PY{n}{connect} \PY{n}{InstrumentationUnit4}\PY{p}{.}\PY{n+na}{temperatureTripOut} \PY{n}{to} \PY{n}{ActuationUnit2}\PY{p}{.}\PY{n+na}{tempLogic}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+    \PY{c+c1}{// Pressure channels}
+    \PY{k+kd}{interface} \PY{n+nc}{TripPressure1} \PY{p}{:} \PY{n}{TripInterface}
+      \PY{n}{connect} \PY{n}{InstrumentationUnit1}\PY{p}{.}\PY{n+na}{pressureTripOut} \PY{n}{to} \PY{n}{ActuationUnit1}\PY{p}{.}\PY{n+na}{pressureLogic}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+    \PY{k+kd}{interface} \PY{n+nc}{TripPressure2} \PY{p}{:} \PY{n}{TripInterface}
+      \PY{n}{connect} \PY{n}{InstrumentationUnit2}\PY{p}{.}\PY{n+na}{pressureTripOut} \PY{n}{to} \PY{n}{ActuationUnit1}\PY{p}{.}\PY{n+na}{pressureLogic}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+    \PY{k+kd}{interface} \PY{n+nc}{TripPressure3} \PY{p}{:} \PY{n}{TripInterface}
+      \PY{n}{connect} \PY{n}{InstrumentationUnit3}\PY{p}{.}\PY{n+na}{pressureTripOut} \PY{n}{to} \PY{n}{ActuationUnit2}\PY{p}{.}\PY{n+na}{pressureLogic}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+    \PY{k+kd}{interface} \PY{n+nc}{TripPressure4} \PY{p}{:} \PY{n}{TripInterface}
+      \PY{n}{connect} \PY{n}{InstrumentationUnit4}\PY{p}{.}\PY{n+na}{pressureTripOut} \PY{n}{to} \PY{n}{ActuationUnit2}\PY{p}{.}\PY{n+na}{pressureLogic}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+    \PY{c+c1}{// Saturation channels}
+    \PY{k+kd}{interface} \PY{n+nc}{TripSaturation1} \PY{p}{:} \PY{n}{TripInterface}
+      \PY{n}{connect} \PY{n}{InstrumentationUnit1}\PY{p}{.}\PY{n+na}{saturationTripOut} \PY{n}{to} \PY{n}{ActuationUnit1}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+    \PY{k+kd}{interface} \PY{n+nc}{TripSaturation2} \PY{p}{:} \PY{n}{TripInterface}
+      \PY{n}{connect} \PY{n}{InstrumentationUnit2}\PY{p}{.}\PY{n+na}{saturationTripOut} \PY{n}{to} \PY{n}{ActuationUnit1}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+    \PY{k+kd}{interface} \PY{n+nc}{TripSaturation3} \PY{p}{:} \PY{n}{TripInterface}
+      \PY{n}{connect} \PY{n}{InstrumentationUnit3}\PY{p}{.}\PY{n+na}{saturationTripOut} \PY{n}{to} \PY{n}{ActuationUnit2}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+    \PY{k+kd}{interface} \PY{n+nc}{TripSaturation4} \PY{p}{:} \PY{n}{TripInterface}
+      \PY{n}{connect} \PY{n}{InstrumentationUnit4}\PY{p}{.}\PY{n+na}{saturationTripOut} \PY{n}{to} \PY{n}{ActuationUnit2}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+    \PY{c+c1}{// Connect outputs to actuators}
+    \PY{k+kd}{interface} \PY{n+nc}{SaturationOut} \PY{p}{:} \PY{n}{OrGate}
+      \PY{n}{connect} \PY{n}{ActuationUnit1}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{actuate} \PY{n}{to} \PY{n}{Actuator2}\PY{p}{.}\PY{n+na}{input}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{ActuationUnit2}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{actuate} \PY{n}{to} \PY{n}{Actuator2}\PY{p}{.}\PY{n+na}{input}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{c+c1}{// TODO : connect the remaining logic}
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{40}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Package RTS Instrumentation Physical Architecture
+(943a3e8f-d231-4604-8b7e-d1d2bba0398e)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{41}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{RTS Instrumentation Physical Architecture}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{41}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_13_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{18}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+cm}{/*}
+\PY{c+cm}{ \PYZsh{} Reactor Trip System (RTS) High\PYZhy{}assurance Demonstrator}
+\PY{c+cm}{ \PYZsh{}\PYZsh{} project: High Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS)}
+\PY{c+cm}{ \PYZsh{}\PYZsh{}\PYZsh{} copyright (C) 2021 Galois}
+\PY{c+cm}{ \PYZsh{}\PYZsh{}\PYZsh{} author: Joe Kiniry \PYZlt{}kiniry@galois.com\PYZgt{}}
+\PY{c+cm}{*/}
+
+\PY{c+cm}{/**}
+\PY{c+cm}{ * The overall shape of the Reactor Trip System (RTS) is an archetypal}
+\PY{c+cm}{ * *sense\PYZhy{}compute\PYZhy{}actuate* architecture. Sensors are in the `Sensors`}
+\PY{c+cm}{ * subsystem. They are read by the `Instrumentation` subsystem, which}
+\PY{c+cm}{ * contains four separate and independent `Instrumentation`}
+\PY{c+cm}{ * components. The \PYZdq{}Compute\PYZdq{} part of the architecture is spread across}
+\PY{c+cm}{ * the `Actuation Logic` subsystem—which contains the two `Voting`}
+\PY{c+cm}{ * components which perform the actuation logic itself—and the `Root`}
+\PY{c+cm}{ * subsystem which contains the core computation and I/O components, and}
+\PY{c+cm}{ * the two separate and independent devices that drive actuators.}
+\PY{c+cm}{ */}
+\PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{RTS} \PY{err}{\PYZsq{}}\PY{n}{Reactor} \PY{n}{Trip} \PY{n}{System}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+  \PY{k+kd}{private} \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{Semantic} \PY{n}{Properties}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+  \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{Project} \PY{n}{Glossary}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+  \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Viewpoints} \PY{n}{and} \PY{n}{Views}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+  \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Architecture}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+  
+  
+  \PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Architecture} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{Architecture}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{alias} \PY{n}{Arch} \PY{k}{for} \PY{n}{Architecture}\PY{p}{;}
+  \PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Hardware} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{Hardware} \PY{n}{Artifacts}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{alias} \PY{n}{HW} \PY{k}{for} \PY{n}{Hardware}\PY{p}{;}
+  \PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Artifacts} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{Implementation} \PY{n}{Artifacts}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Requirements} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{Requirements}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Properties} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{Properties}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{alias} \PY{n}{Props} \PY{k}{for} \PY{n}{Properties}\PY{p}{;}
+  \PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Characteristics} \PY{err}{\PYZsq{}}\PY{n}{IEEE} \PY{n}{Std} \PY{l+m+mi}{603}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2018} \PY{n}{Characteristics}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{comment} \PY{n}{TopLevelPackages} \PY{n}{about} \PY{n}{Architecture}\PY{p}{,} \PY{n}{Hardware}\PY{p}{,} \PY{n}{Properties}\PY{p}{,} \PY{n}{Characteristics}
+  \PY{c+cm}{/* These are the core top\PYZhy{}level subsystems characterizing HARDEN work. */}
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{18}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Comment (8aa95680-ec61-4251-b8d0-65242c9e4777)
+Package [RTS] Reactor Trip System (2004b5b3-0d8e-4074-ba1f-70830c2262f1)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{19}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{Reactor Trip System}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{19}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_15_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{20}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+cm}{/**}
+\PY{c+cm}{ * The set of all atomic external or internal actions that the RTS}
+\PY{c+cm}{ * system can take.  Note that every scenario must be describable by}
+\PY{c+cm}{ * a sequence of actions. }
+\PY{c+cm}{ */}
+\PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Actions} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{Actions}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+  \PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Internal} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{Internal} \PY{n}{Actions}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{action} \PY{n}{def} \PY{n}{id} \PY{n}{IA} \PY{err}{\PYZsq{}}\PY{n}{Internal} \PY{n}{Action}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{n}{doc} \PY{c+cm}{/* Actions internal to the RTS */}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{action} \PY{n}{id} \PY{n}{Trip} \PY{err}{\PYZsq{}}\PY{n}{Signal} \PY{n}{Trip}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{IA} \PY{p}{\PYZob{}}
+      \PY{n}{in} \PY{n}{item} \PY{n}{division}\PY{p}{;}
+      \PY{n}{in} \PY{n}{item} \PY{n}{channel}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{action} \PY{n}{id} \PY{n}{Vote} \PY{err}{\PYZsq{}}\PY{n}{Vote} \PY{n}{on} \PY{n}{Like} \PY{n}{Trips} \PY{n}{using} \PY{n}{Two}\PY{o}{\PYZhy{}}\PY{n}{out}\PY{o}{\PYZhy{}}\PY{n}{of}\PY{o}{\PYZhy{}}\PY{n}{four} \PY{n}{Coincidence}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{IA} \PY{p}{\PYZob{}}
+      \PY{n}{in} \PY{n}{item} \PY{n}{divisions}\PY{o}{[}\PY{l+m+mi}{2}\PY{o}{]}\PY{p}{;}
+      \PY{n}{in} \PY{n}{item} \PY{n}{channel}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{action} \PY{n}{id} \PY{n}{A} \PY{err}{\PYZsq{}}\PY{n}{Automatically} \PY{n}{Actuate} \PY{n}{Device}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{IA} \PY{p}{\PYZob{}}
+      \PY{n}{in} \PY{n}{item} \PY{n}{device}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{action} \PY{n}{id} \PY{n}{T} \PY{err}{\PYZsq{}}\PY{n}{Self}\PY{o}{\PYZhy{}}\PY{n}{test} \PY{n}{of} \PY{n}{Safety} \PY{n}{Signal} \PY{n}{Path}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{IA}\PY{p}{;}
+  \PY{p}{\PYZcb{}} 
+  \PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{External} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{External} \PY{n}{Actions}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{UI} \PY{n}{Actions}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{n}{action} \PY{n}{def} \PY{n}{id} \PY{n}{UIA} \PY{err}{\PYZsq{}}\PY{n}{UI} \PY{n}{Action}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+        \PY{n}{doc} \PY{c+cm}{/* Actions exhibited by the RTS UI, either inbound or outbound. */}
+      \PY{p}{\PYZcb{}}
+      \PY{c+c1}{// @design kiniry These should both be specializations of UIA, but I}
+      \PY{c+c1}{// don\PYZsq{}t know how to write that in SysML yet.}
+      \PY{n}{action} \PY{n}{def} \PY{n}{id} \PY{n}{UI\PYZus{}IA} \PY{err}{\PYZsq{}}\PY{n}{UI} \PY{n}{Input} \PY{n}{Action}\PY{err}{\PYZsq{}}\PY{p}{;}
+      \PY{n}{action} \PY{n}{def} \PY{n}{id} \PY{n}{UI\PYZus{}OA} \PY{err}{\PYZsq{}}\PY{n}{UI} \PY{n}{Output} \PY{n}{Action}\PY{err}{\PYZsq{}}\PY{p}{;}
+      
+      \PY{c+c1}{// Input actions.}
+      \PY{c+c1}{// @todo kiniry Add features to correspond to UI parameters.}
+      \PY{n}{action} \PY{n}{id} \PY{n}{A} \PY{n}{Actuate} \PY{p}{:} \PY{n}{UI\PYZus{}IA} \PY{p}{\PYZob{}}
+        \PY{n}{in} \PY{n}{item} \PY{n}{actuator}\PY{p}{;}
+        \PY{n}{in} \PY{n}{item} \PY{n}{on\PYZus{}off}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+      \PY{n}{action} \PY{n}{id} \PY{n}{M} \PY{err}{\PYZsq{}}\PY{n}{Set} \PY{n}{Maintenance} \PY{n}{Mode}\PY{err}{\PYZsq{}} \PY{p}{:}  \PY{n}{UI\PYZus{}IA} \PY{p}{\PYZob{}}
+        \PY{n}{in} \PY{n}{item} \PY{n}{division}\PY{p}{;}
+        \PY{n}{in} \PY{n}{item} \PY{n}{on\PYZus{}off}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+      \PY{n}{action} \PY{n}{id} \PY{n}{B} \PY{err}{\PYZsq{}}\PY{n}{Set} \PY{n}{Mode}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{UI\PYZus{}IA} \PY{p}{\PYZob{}}
+        \PY{n}{in} \PY{n}{item} \PY{n}{division}\PY{p}{;}
+        \PY{n}{in} \PY{n}{item} \PY{n}{trip\PYZus{}mode}\PY{p}{;} 
+      \PY{p}{\PYZcb{}} 
+      \PY{n}{action} \PY{n}{id} \PY{n}{S} \PY{err}{\PYZsq{}}\PY{n}{Set} \PY{n}{Setpoint}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{UI\PYZus{}IA} \PY{p}{\PYZob{}}
+        \PY{n}{in} \PY{n}{item} \PY{n}{division}\PY{p}{;}
+        \PY{n}{in} \PY{n}{item} \PY{n}{channel}\PY{p}{;}
+        \PY{n}{in} \PY{n}{item} \PY{n}{value}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+      \PY{n}{action} \PY{n}{id} \PY{n}{V} \PY{err}{\PYZsq{}}\PY{n}{Sensor} \PY{n}{Value}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{UI\PYZus{}IA} \PY{p}{\PYZob{}}
+        \PY{n}{doc} \PY{c+cm}{/* Simulate a sensor reading */}
+        \PY{n}{in} \PY{n}{item} \PY{n}{division}\PY{p}{;}
+        \PY{n}{in} \PY{n}{item} \PY{n}{channel}\PY{p}{;}
+        \PY{n}{in} \PY{n}{item} \PY{n}{value}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+      \PY{n}{action} \PY{n}{id} \PY{n}{Q} \PY{err}{\PYZsq{}}\PY{n}{Quit}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{UI\PYZus{}IA}\PY{p}{;}
+      
+      \PY{c+c1}{// Output actions.}
+      \PY{n}{action} \PY{n}{id} \PY{err}{\PYZsq{}}\PY{n}{Display} \PY{n}{Pressure}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{UI\PYZus{}OA}\PY{p}{;}
+      \PY{n}{action} \PY{n}{id} \PY{err}{\PYZsq{}}\PY{n}{Display} \PY{n}{Temperature}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{UI\PYZus{}OA}\PY{p}{;}
+      \PY{n}{action} \PY{n}{id} \PY{err}{\PYZsq{}}\PY{n}{Display} \PY{n}{Saturation} \PY{n}{Margin}\PY{err}{\PYZsq{}}\PY{p}{:} \PY{n}{UI\PYZus{}OA}\PY{p}{;}
+      \PY{n}{action} \PY{n}{id} \PY{err}{\PYZsq{}}\PY{n}{Display} \PY{n}{Trip} \PY{n}{Ouput} \PY{n}{Signal} \PY{n}{State}\PY{err}{\PYZsq{}}\PY{p}{:} \PY{n}{UI\PYZus{}OA}\PY{p}{;}
+      \PY{n}{action} \PY{n}{id} \PY{err}{\PYZsq{}}\PY{n}{Display} \PY{n}{Indication} \PY{n}{Of} \PY{n}{Channel} \PY{n}{in} \PY{n}{Bypass}\PY{err}{\PYZsq{}}\PY{p}{:} \PY{n}{UI\PYZus{}OA}\PY{p}{;}
+      \PY{n}{action} \PY{n}{id} \PY{err}{\PYZsq{}}\PY{n}{Display} \PY{n}{Actuation} \PY{n}{State}\PY{err}{\PYZsq{}}\PY{p}{:} \PY{n}{UI\PYZus{}OA}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+  \PY{p}{\PYZcb{}}
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{20}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Package [Actions] RTS Actions (a042f3e7-b0a1-4a80-ad1b-20e0b52d1797)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{21}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{RTS Actions}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{21}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_17_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{22}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+cm}{/**}
+\PY{c+cm}{ * The IEEE 603\PYZhy{}2018 requirements (known as \PYZdq{}characteristics\PYZdq{} in}
+\PY{c+cm}{ * the standard) which the RTS demonstrator system must fulfill.}
+\PY{c+cm}{ */}
+\PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Characteristics} \PY{err}{\PYZsq{}}\PY{n}{IEEE} \PY{n}{Std} \PY{l+m+mi}{603}\PY{o}{\PYZhy{}}\PY{l+m+mi}{2018} \PY{n}{Characteristics}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+  \PY{n}{requirement} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Requirements} \PY{n}{Consistency}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{doc} \PY{c+cm}{/* Requirements must be shown to be consistent. */}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{requirement} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Requirements} \PY{n}{Colloquial} \PY{n}{Completeness}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{doc} \PY{c+cm}{/* The system must be shown to fulfill all requirements. */}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{requirement} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Requirements} \PY{n}{Formal} \PY{n}{Completeness}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{doc} \PY{c+cm}{/* Requirements must be shown to be formally complete. */}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{requirement} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Instrumentation} \PY{n}{Independence}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{doc} \PY{c+cm}{/* Independence among the four divisions of instrumentation (inability}
+\PY{c+cm}{           for the behavior of one division to interfere or adversely affect the}
+\PY{c+cm}{           performance of another). */}
+  \PY{p}{\PYZcb{}} 
+  \PY{n}{requirement} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Channel} \PY{n}{Independence}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{doc} \PY{c+cm}{/* Independence among the two instrumentation channels within a division}
+\PY{c+cm}{           (inability for the behavior of one channel to interfere or adversely}
+\PY{c+cm}{           affect the performance of another). */}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{requirement} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Actuation} \PY{n}{Independence}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{doc} \PY{c+cm}{/* Independence among the two trains of actuation logic (inability for}
+\PY{c+cm}{           the behavior of one train to interfere or adversely affect the}
+\PY{c+cm}{           performance of another). */}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{requirement} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Actuation} \PY{n}{Correctness}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{doc} \PY{c+cm}{/* Completion of actuation whenever coincidence logic is satisfied or}
+\PY{c+cm}{           manual actuation is initiated. */}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{requirement} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Self}\PY{o}{\PYZhy{}}\PY{n}{Test}\PY{o}{/}\PY{n}{Trip} \PY{n}{Independence}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{doc} \PY{c+cm}{/* Independence between periodic self\PYZhy{}test functions and trip functions}
+\PY{c+cm}{           (inability for the behavior of the self\PYZhy{}testing to interfere or}
+\PY{c+cm}{           adversely affect the trip functions). */}
+  \PY{p}{\PYZcb{}}
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{22}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Package [Characteristics] IEEE Std 603-2018 Characteristics
+(b3398d4f-934f-41dc-a806-cd60b1236dfa)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{24}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{IEEE Std 603\PYZhy{}2018 Characteristics}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{24}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_19_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{43}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+cm}{/**}
+\PY{c+cm}{ * The physical hardware components that are a part of the HARDENS RTS}
+\PY{c+cm}{ * demonstrator. }
+\PY{c+cm}{ */}
+\PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Hardware} \PY{n}{Artifacts}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+  \PY{k+kd}{private} \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{Project} \PY{n}{Glossary}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+  \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Instrumentation} \PY{n}{Physical} \PY{n}{Architecture}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+  \PY{k+kd}{private} \PY{k+kn}{import} \PY{n+nn}{ScalarValues}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{SERDES} \PY{n}{Test} \PY{n}{SMA} \PY{n}{Connector}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Connector}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Parallel} \PY{n}{Config} \PY{n}{Header}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Header}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Versa} \PY{n}{Expansion} \PY{n}{Connector}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Connector}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{SPI} \PY{n}{Flag} \PY{n}{Configuration} \PY{n}{Memory}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Memory}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{CFG} \PY{n}{Switch}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Switch}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Input} \PY{n}{Switch}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Switch}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Output} \PY{n}{LED}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{LED}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Input} \PY{n}{Push} \PY{n}{Button}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Button}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{l+m+mi}{12} \PY{n}{V} \PY{n}{DC} \PY{n}{Power} \PY{n}{Input}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Power}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{GPIO} \PY{n}{Headers}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Header}\PY{p}{,} \PY{n}{GPIO}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{PMOD}\PY{o}{/}\PY{n}{GPIO} \PY{n}{Header}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Header}\PY{p}{,} \PY{n}{PMOD}\PY{p}{,} \PY{n}{GPIO}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Microphone} \PY{n}{Board}\PY{o}{/}\PY{n}{GPIO} \PY{n}{Header}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Header}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{ECP5}\PY{o}{\PYZhy{}}\PY{l+m+mi}{5}\PY{n}{G} \PY{n}{Device}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{FPGA}\PY{p}{;}
+  \PY{c+c1}{// @todo Ensure that JTAG is, in fact, USB.}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{JTAG} \PY{n}{Interface}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{JTAG}\PY{p}{,} \PY{n}{USB}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Mini} \PY{n}{USB} \PY{n}{Programming}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{USB}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{DevBoard} \PY{err}{\PYZsq{}}\PY{n}{Lattice} \PY{n}{ECP}\PY{o}{\PYZhy{}}\PY{l+m+mi}{5} \PY{n}{FPGA} \PY{n}{Development} \PY{n}{Board}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{PCB} \PY{p}{\PYZob{}}
+    \PY{n}{part} \PY{n}{J9\PYZus{}J26} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{SERDES} \PY{n}{Test} \PY{n}{SMA} \PY{n}{Connector}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{l+m+mi}{16}\PY{o}{]} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+    \PY{n}{part} \PY{n}{J38} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Parallel} \PY{n}{Config} \PY{n}{Header}\PY{err}{\PYZsq{}} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+    \PY{n}{part} \PY{n}{J39\PYZus{}J40} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Versa} \PY{n}{Expansion} \PY{n}{Connector}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{l+m+mi}{2}\PY{o}{]} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+    \PY{n}{part} \PY{n}{U4} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{SPI} \PY{n}{Flag} \PY{n}{Configuration} \PY{n}{Memory}\PY{err}{\PYZsq{}} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+    \PY{n}{part} \PY{n}{SW1} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{CFG} \PY{n}{Switch}\PY{err}{\PYZsq{}} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+    \PY{n}{part} \PY{n}{SW5} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Input} \PY{n}{Switch}\PY{err}{\PYZsq{}} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+    \PY{n}{part} \PY{n}{D5\PYZus{}D12} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Output} \PY{n}{LED}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{l+m+mi}{8}\PY{o}{]} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+    \PY{n}{part} \PY{n}{SW2\PYZus{}SW4} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Input} \PY{n}{Push} \PY{n}{Button}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{l+m+mi}{3}\PY{o}{]} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+    \PY{n}{part} \PY{n}{J37} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{l+m+mi}{12} \PY{n}{V} \PY{n}{DC} \PY{n}{Power} \PY{n}{Input}\PY{err}{\PYZsq{}} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+    \PY{n}{part} \PY{n}{J5\PYZus{}J8\PYZus{}J32\PYZus{}J33} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{GPIO} \PY{n}{Headers}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{l+m+mi}{4}\PY{o}{]} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+    \PY{n}{part} \PY{n}{J31} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{PMOD}\PY{o}{/}\PY{n}{GPIO} \PY{n}{Header}\PY{err}{\PYZsq{}} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+    \PY{n}{part} \PY{n}{J30} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Microphone} \PY{n}{Board}\PY{o}{/}\PY{n}{GPIO} \PY{n}{Header}\PY{err}{\PYZsq{}} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+    \PY{n}{part} \PY{err}{\PYZsq{}}\PY{n}{Prototype} \PY{n}{Area}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{part} \PY{n}{U3} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{ECP5}\PY{o}{\PYZhy{}}\PY{l+m+mi}{5}\PY{n}{G} \PY{n}{Device}\PY{err}{\PYZsq{}} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+    \PY{n}{part} \PY{n}{J1} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{JTAG} \PY{n}{Interface}\PY{err}{\PYZsq{}} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+    \PY{n}{part} \PY{n}{J2} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Mini} \PY{n}{USB} \PY{n}{Programming}\PY{err}{\PYZsq{}} \PY{n}{subsets} \PY{n}{components}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+
+  \PY{k+kd}{enum} \PY{n}{def} \PY{n}{SolenoidState} \PY{p}{\PYZob{}}
+    \PY{n}{OPEN}\PY{p}{;}
+    \PY{n}{CLOSED}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{c+cm}{/** A solenoid actuator capable of being in an open or closed state. */}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Solenoid} \PY{n}{Actuator}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Actuator} \PY{p}{\PYZob{}}
+    \PY{n}{item} \PY{n}{actuator\PYZus{}state}\PY{p}{;}
+    \PY{c+cm}{/** Open! */}
+    \PY{n}{port} \PY{n}{open}\PY{p}{;}
+    \PY{c+cm}{/** Close! */}
+    \PY{n}{port} \PY{n}{close}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{43}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Package RTS Hardware Artifacts (f29e2a46-7354-43f4-94cf-cacd8305b17e)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{44}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{RTS Hardware Artifacts}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{44}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_21_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{28}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Artifacts} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{Implementation} \PY{n}{Artifacts}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+  \PY{k+kd}{private} \PY{k+kn}{import} \PY{n+nn}{ScalarValues}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+  \PY{k+kd}{private} \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{Project} \PY{n}{Glossary}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+
+  \PY{c+c1}{// @design Remove concepts in general Glossary that duplicate or}
+  \PY{c+c1}{// overlap with these concepts.  Move abstract items to Glossary.}
+  \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{CryptolToC} \PY{err}{\PYZsq{}}\PY{n}{Cryptol} \PY{n}{Software} \PY{n}{Compiler}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Compiler} \PY{p}{\PYZob{}}
+    \PY{n}{ref} \PY{n}{item} \PY{n}{input}\PY{p}{:} \PY{n}{CryptolSpec} \PY{n}{redefines} \PY{n}{input}\PY{p}{;}
+    \PY{n}{ref} \PY{n}{item} \PY{n}{output}\PY{p}{:} \PY{n}{C\PYZus{}Source} \PY{n}{redefines} \PY{n}{output}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{CryptolToSystemVerilog} \PY{err}{\PYZsq{}}\PY{n}{Cryptol} \PY{n}{Hardware} \PY{n}{Compiler}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Compiler} \PY{p}{\PYZob{}}
+    \PY{n}{ref} \PY{n}{item} \PY{n}{input}\PY{p}{:} \PY{n}{CryptolSpec} \PY{n}{redefines} \PY{n}{input}\PY{p}{;}
+    \PY{n}{ref} \PY{n}{item} \PY{n}{output}\PY{p}{:} \PY{n}{SystemVerilog} \PY{n}{redefines} \PY{n}{output}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{CPU} \PY{err}{\PYZsq{}}\PY{n}{COTS} \PY{n}{High}\PY{o}{\PYZhy{}}\PY{n}{Assurance} \PY{n}{RV32I} \PY{n}{RISC}\PY{o}{\PYZhy{}}\PY{n}{V} \PY{n}{CPU}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{CPU}\PY{p}{,} \PY{n}{RISC\PYZus{}V\PYZus{}ISA}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{CompCert} \PY{err}{\PYZsq{}}\PY{n}{CompCert} \PY{n}{Compiler}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Compiler} \PY{p}{\PYZob{}}
+    \PY{n}{ref} \PY{n}{item} \PY{n}{input}\PY{p}{:} \PY{n}{C\PYZus{}Source} \PY{n}{redefines} \PY{n}{input}\PY{p}{;}
+    \PY{n}{ref} \PY{n}{item} \PY{n}{output}\PY{p}{:} \PY{n}{RISCV\PYZus{}Binary} \PY{n}{redefines} \PY{n}{output}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{BSC} \PY{err}{\PYZsq{}}\PY{n}{Bluespec} \PY{n}{Compiler}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Compiler} \PY{p}{\PYZob{}}
+    \PY{n}{ref} \PY{n}{item} \PY{n}{input}\PY{p}{:} \PY{n}{BluespecSystemVerilog} \PY{n}{redefines} \PY{n}{input}\PY{p}{;}
+    \PY{n}{ref} \PY{n}{item} \PY{n}{output}\PY{p}{:} \PY{n}{SystemVerilog} \PY{n}{redefines} \PY{n}{output}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{SymbiFlow} \PY{err}{\PYZsq{}}\PY{n}{SymbiFlow} \PY{n}{Synthesizer}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Synthesizer} \PY{p}{\PYZob{}}
+    \PY{n}{ref} \PY{n}{item} \PY{n}{input}\PY{p}{:} \PY{n}{SystemVerilog} \PY{n}{redefines} \PY{n}{input}\PY{p}{;}
+    \PY{n}{ref} \PY{n}{item} \PY{n}{output}\PY{p}{:} \PY{n}{Bitstream} \PY{n}{redefines} \PY{n}{output}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{RTL} \PY{err}{\PYZsq{}}\PY{n}{Demonstrator} \PY{n}{Verilog}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Demonstrator} \PY{n}{Bitstream}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Bitstream}\PY{p}{;}
+  \PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Dataflow} \PY{err}{\PYZsq{}}\PY{n}{Dataflow} \PY{n}{of} \PY{n}{RTS} \PY{n}{Implementation} \PY{n}{Artifacts}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{k+kd}{private} \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Implementation} \PY{n}{Artifacts}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+
+    \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{HARDENS} \PY{n}{Cryptol} \PY{n}{System} \PY{n}{Specification}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{CryptolSpec} \PY{p}{\PYZob{}}
+     \PY{c+c1}{// :\PYZgt{}\PYZgt{} literate = true;}
+    \PY{p}{\PYZcb{}}
+    \PY{c+c1}{// bind \PYZsq{}HARDENS Cryptol System Specification\PYZsq{}.output = CryptolToC.input;}
+  \PY{p}{\PYZcb{}}
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{28}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Package [Artifacts] RTS Implementation Artifacts
+(47e22895-4eeb-409f-813c-7b1d417ae8eb)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{29}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{RTS Implementation Artifacts}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{29}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_23_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{31}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+cm}{/**}
+\PY{c+cm}{ * This RTS architecture specification includes all of the core}
+\PY{c+cm}{ * concepts inherent to NPP Instrumentation and Control systems.}
+\PY{c+cm}{ * A system architecture specification often includes a software,}
+\PY{c+cm}{ * hardware, network, and data architecture specifications.}
+\PY{c+cm}{ */}
+\PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Architecture} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{Architecture}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+  \PY{c+c1}{//import RTS::*;}
+  \PY{c+c1}{//import \PYZsq{}Project Glossary\PYZsq{}::*;}
+  \PY{c+c1}{//import Artifacts::*;}
+  \PY{c+c1}{//import \PYZsq{}RTS Hardware Artifacts\PYZsq{}::*;}
+
+  \PY{n}{part} \PY{n}{def} \PY{n}{Base\PYZus{}RTS\PYZus{}System\PYZus{}Architecture\PYZus{}Context} \PY{p}{\PYZob{}}
+    \PY{c+c1}{// overall RTS architecture shape from}
+  \PY{p}{\PYZcb{}}
+
+  \PY{c+cm}{/**}
+\PY{c+cm}{   * Note that this is the *systems* architecture, which is different}
+\PY{c+cm}{   * than our software, hardware, or data architectures. }
+\PY{c+cm}{   */}
+  \PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{RTS\PYZus{}System\PYZus{}Arch} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{System} \PY{n}{Architecture}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+
+    \PY{k+kn}{package} \PY{n+nn}{Sensor} \PY{p}{\PYZob{}}
+      \PY{k+kd}{private} \PY{k+kn}{import} \PY{n+nn}{Quantities}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+
+      \PY{c+cm}{/** Generic sensor port */}
+      \PY{n}{port} \PY{n}{def} \PY{n}{SensorOutPort} \PY{p}{\PYZob{}}
+          \PY{n}{out} \PY{n}{value} \PY{p}{:} \PY{n}{ScalarQuantityValue}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+
+      \PY{c+cm}{/** Generic sensor */}
+      \PY{n}{part} \PY{n}{def} \PY{n}{GenericSensor} \PY{p}{\PYZob{}}
+        \PY{n}{attribute} \PY{n}{currentValue} \PY{p}{:} \PY{n}{ScalarQuantityValue}\PY{p}{;}
+        \PY{n}{attribute} \PY{n}{sensorAddress} \PY{p}{:} \PY{n}{ScalarValues}\PY{p}{:}\PY{p}{:}\PY{n}{Integer}\PY{p}{;}
+        \PY{n}{port} \PY{n}{output}\PY{p}{:} \PY{n}{SensorOutPort}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+
+      \PY{c+cm}{/**}
+\PY{c+cm}{       * A demultiplexer for sending one sensor signal to multiple}
+\PY{c+cm}{       * outputs. }
+\PY{c+cm}{       */}
+      \PY{n}{part} \PY{n}{def} \PY{n}{Demux} \PY{p}{\PYZob{}}
+        \PY{n}{port} \PY{n}{input}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{SensorOutPort}\PY{p}{;}
+        \PY{c+c1}{// Using vector notation doesn\PYZsq{}t seem to work in connections}
+        \PY{n}{port} \PY{n}{output1}\PY{p}{:} \PY{n}{SensorOutPort}\PY{p}{;}
+        \PY{n}{port} \PY{n}{output2}\PY{p}{:} \PY{n}{SensorOutPort}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+    \PY{p}{\PYZcb{}}
+
+    \PY{c+cm}{/** A generic temperature sensor. */}
+    \PY{k+kn}{package} \PY{n+nn}{TempSensor} \PY{p}{\PYZob{}}
+      \PY{k+kn}{import} \PY{n+nn}{Sensor}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+      \PY{k+kn}{import} \PY{n+nn}{ISQThermodynamics}\PY{p}{:}\PY{p}{:}\PY{n}{TemperatureValue}\PY{p}{;}
+
+      \PY{c+cm}{/** Temperature port */}
+      \PY{n}{port} \PY{n}{def} \PY{n}{TemperatureOutPort} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SensorOutPort} \PY{p}{\PYZob{}}
+          \PY{n}{redefines} \PY{n}{value}\PY{p}{:} \PY{n}{TemperatureValue}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+
+      \PY{c+cm}{/** A sensor that is capable of measuring the temperature of its environment. */}
+      \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Temperature} \PY{n}{Sensor}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{GenericSensor} \PY{p}{\PYZob{}}
+        \PY{c+cm}{/** What is your temperature reading in Celsius (C)? */}
+        \PY{n}{redefines} \PY{n}{currentValue}\PY{p}{:} \PY{n}{TemperatureValue}\PY{p}{;}
+        \PY{n}{redefines} \PY{n}{output}\PY{p}{:} \PY{n}{TemperatureOutPort}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+
+      \PY{n}{part} \PY{n}{def} \PY{n}{TempDemux} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Demux} \PY{p}{\PYZob{}}
+        \PY{n}{redefines} \PY{n}{input}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TemperatureOutPort}\PY{p}{;}
+        \PY{n}{redefines} \PY{n}{output1}\PY{p}{:} \PY{n}{TemperatureOutPort}\PY{p}{;}
+        \PY{n}{redefines} \PY{n}{output2}\PY{p}{:} \PY{n}{TemperatureOutPort}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+    \PY{p}{\PYZcb{}}
+
+    \PY{c+cm}{/** A generic pressure sensor. */}
+    \PY{k+kn}{package} \PY{n+nn}{PressureSensor} \PY{p}{\PYZob{}}
+      \PY{k+kn}{import} \PY{n+nn}{Sensor}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+      \PY{k+kn}{import} \PY{n+nn}{ISQMechanics}\PY{p}{:}\PY{p}{:}\PY{n}{PressureValue}\PY{p}{;}
+
+      \PY{c+cm}{/** Pressure port */}
+      \PY{n}{port} \PY{n}{def} \PY{n}{PressureOutPort} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{SensorOutPort} \PY{p}{\PYZob{}}
+          \PY{n}{redefines} \PY{n}{value}\PY{p}{:} \PY{n}{PressureValue}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+
+      \PY{c+cm}{/** A sensor that is capable of measuring the air pressure of its environment. */}
+      \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Pressure} \PY{n}{Sensor}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{GenericSensor} \PY{p}{\PYZob{}}
+        \PY{c+cm}{/** What is your pressure reading in Pascal (P)? */}
+        \PY{n}{redefines} \PY{n}{currentValue}\PY{p}{:} \PY{n}{PressureValue}\PY{p}{;}
+        \PY{n}{redefines} \PY{n}{output}\PY{p}{:} \PY{n}{PressureOutPort}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+
+      \PY{n}{part} \PY{n}{def} \PY{n}{PressureDemux} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{Demux} \PY{p}{\PYZob{}}
+        \PY{n}{redefines} \PY{n}{input}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{PressureOutPort}\PY{p}{;}
+        \PY{n}{redefines} \PY{n}{output1}\PY{p}{:} \PY{n}{PressureOutPort}\PY{p}{;}
+        \PY{n}{redefines} \PY{n}{output2}\PY{p}{:} \PY{n}{PressureOutPort}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+    \PY{p}{\PYZcb{}}
+
+    \PY{c+cm}{/**}
+\PY{c+cm}{     * The Instrumentation subsystem contains all of the sensors for an }
+\PY{c+cm}{     * NPP I\PYZam{}C system.}
+\PY{c+cm}{     */}
+    \PY{k+kn}{package} \PY{n+nn}{Instrumentation} \PY{p}{\PYZob{}}
+      \PY{k+kd}{private} \PY{k+kn}{import} \PY{n+nn}{ScalarValues}\PY{p}{:}\PY{p}{:}\PY{n}{Real}\PY{p}{;}
+      \PY{k+kd}{private} \PY{k+kn}{import} \PY{n+nn}{ScalarValues}\PY{p}{:}\PY{p}{:}\PY{n}{Boolean}\PY{p}{;}
+      \PY{k+kd}{private} \PY{k+kn}{import} \PY{n+nn}{TempSensor}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+      \PY{k+kd}{private} \PY{k+kn}{import} \PY{n+nn}{PressureSensor}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+
+      \PY{n}{port} \PY{n}{def} \PY{n}{TripPort} \PY{p}{\PYZob{}}
+        \PY{n}{out} \PY{n}{trip} \PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+
+      \PY{n}{port} \PY{n}{def} \PY{n}{BypassPort} \PY{p}{\PYZob{}}
+        \PY{n}{out} \PY{n}{trip} \PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+      
+      \PY{k+kd}{enum} \PY{n}{def} \PY{n}{TripMode} \PY{p}{\PYZob{}}
+        \PY{k+kd}{enum} \PY{n}{Bypass}\PY{p}{;}
+        \PY{k+kd}{enum} \PY{n}{Operate}\PY{p}{;}
+        \PY{k+kd}{enum} \PY{n}{Manual}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+      
+      \PY{k+kd}{enum} \PY{n}{def} \PY{n}{Channel} \PY{p}{\PYZob{}}
+        \PY{k+kd}{enum} \PY{n}{Temperature}\PY{p}{;}
+        \PY{k+kd}{enum} \PY{n}{Pressure}\PY{p}{;}
+        \PY{k+kd}{enum} \PY{n}{Saturation}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+       
+      \PY{n}{attribute} \PY{n}{def} \PY{n}{TripModeCommand} \PY{p}{\PYZob{}}
+        \PY{n}{attribute} \PY{n}{mode}\PY{p}{:} \PY{n}{TripMode}\PY{p}{;}
+        \PY{n}{attribute} \PY{n}{channel}\PY{p}{:} \PY{n}{Channel}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+      
+      \PY{n}{port} \PY{n}{def} \PY{n}{TripModePort} \PY{p}{\PYZob{}}
+        \PY{n}{out} \PY{n}{mode}\PY{p}{:} \PY{n}{TripModeCommand}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+
+      \PY{n}{part} \PY{n}{def} \PY{n}{PressureTable} \PY{p}{\PYZob{}}
+       	\PY{n}{doc} \PY{c+cm}{/* The saturation table gives us the saturation pressure margin given}
+\PY{c+cm}{       	     * the current temperature and pressure, hence the output is pressure}
+\PY{c+cm}{       	     */}
+       	\PY{n}{port} \PY{n}{temperatureInput}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TemperatureOutPort}\PY{p}{;}
+       	\PY{n}{port} \PY{n}{pressureInput}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{PressureOutPort}\PY{p}{;}
+      	\PY{n}{port} \PY{n}{saturationMarginOutput}\PY{p}{:} \PY{n}{PressureOutPort}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+        
+      \PY{n}{part} \PY{n}{def} \PY{n}{InstrumentationUnit} \PY{p}{\PYZob{}}
+        \PY{c+c1}{// setpoints}
+        \PY{n}{attribute} \PY{n}{tempSetpoint} \PY{p}{:} \PY{n}{TemperatureValue}\PY{p}{;}
+        \PY{n}{attribute} \PY{n}{pressureSetpoint} \PY{p}{:} \PY{n}{PressureValue}\PY{p}{;}
+        \PY{n}{attribute} \PY{n}{saturationLimit} \PY{p}{:} \PY{n}{Real}\PY{p}{;}
+
+        \PY{c+c1}{// mode selectors}
+        \PY{n}{attribute} \PY{n}{maintenanceMode} \PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+        \PY{n}{attribute} \PY{n}{temperatureTripMode}\PY{p}{:} \PY{n}{TripMode}\PY{p}{;}
+        \PY{n}{attribute} \PY{n}{pressureTripMode}\PY{p}{:} \PY{n}{TripMode}\PY{p}{;}    
+        \PY{n}{attribute} \PY{n}{saturationTripMode}\PY{p}{:} \PY{n}{TripMode}\PY{p}{;}
+        
+
+        \PY{c+c1}{// Inputs}
+        \PY{n}{port} \PY{n}{temperatureInput}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TemperatureOutPort}\PY{p}{;}
+        \PY{n}{port} \PY{n}{pressureInput}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{PressureOutPort}\PY{p}{;}
+        \PY{n}{port} \PY{n}{saturationMarginInput}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{PressureOutPort}\PY{p}{;}
+        \PY{n}{port} \PY{n}{tripMode}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TripModePort}\PY{p}{;}               
+
+        \PY{c+c1}{// Outputs}
+        \PY{n}{port} \PY{n}{pressureTripOut}\PY{p}{:}\PY{n}{TripPort}\PY{p}{;}
+        \PY{n}{port} \PY{n}{temperatureTripOut}\PY{p}{:}\PY{n}{TripPort}\PY{p}{;}
+        \PY{n}{port} \PY{n}{saturationTripOut}\PY{p}{:}\PY{n}{TripPort}\PY{p}{;}
+
+        \PY{n}{port} \PY{n}{setMaintenanceMode}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{EventControl}\PY{p}{:}\PY{p}{:}\PY{n}{MaintenancePort}\PY{p}{;}
+
+        \PY{n}{port} \PY{n}{newTemperatureSetpoint}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TemperatureOutPort}\PY{p}{;}
+        \PY{n}{port} \PY{n}{newPressureSetpoint}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{PressureOutPort}\PY{p}{;}
+        \PY{n}{port} \PY{n}{newSaturationSetpoint} \PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{SensorOutPort}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+    \PY{p}{\PYZcb{}}
+
+    \PY{k+kn}{package} \PY{n+nn}{Actuation} \PY{p}{\PYZob{}}
+      \PY{k+kn}{import} \PY{n+nn}{Instrumentation}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+
+      \PY{n}{port} \PY{n}{def} \PY{n}{ActuationPort} \PY{p}{\PYZob{}}
+        \PY{n}{out} \PY{n}{actuate}\PY{p}{:} \PY{n}{ScalarValues}\PY{p}{:}\PY{p}{:}\PY{n}{Boolean}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+
+      \PY{n}{part} \PY{n}{def} \PY{n}{CoincidenceLogic} \PY{p}{\PYZob{}}
+        \PY{n}{port} \PY{n}{channel1}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TripPort}\PY{p}{;}
+        \PY{n}{port} \PY{n}{channel2}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TripPort}\PY{p}{;}
+        \PY{n}{port} \PY{n}{channel3}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TripPort}\PY{p}{;}
+        \PY{n}{port} \PY{n}{channel4}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TripPort}\PY{p}{;}
+        \PY{n}{port} \PY{n}{actuate}\PY{p}{:} \PY{n}{ActuationPort}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+      \PY{n}{part} \PY{n}{def} \PY{n}{OrLogic} \PY{p}{\PYZob{}}
+        \PY{n}{port} \PY{n}{channel1}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TripPort}\PY{p}{;}
+        \PY{n}{port} \PY{n}{channel2}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{TripPort}\PY{p}{;}
+        \PY{n}{port} \PY{n}{actuate}\PY{p}{:} \PY{n}{ActuationPort}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+
+     \PY{n}{part} \PY{n}{def} \PY{n}{ActuationUnit} \PY{p}{\PYZob{}}
+       \PY{n}{part} \PY{n}{temperatureLogic} \PY{p}{:} \PY{n}{CoincidenceLogic}\PY{p}{;}
+       \PY{n}{part} \PY{n}{pressureLogic} \PY{p}{:} \PY{n}{CoincidenceLogic}\PY{p}{;}
+       \PY{n}{part} \PY{n}{saturationLogic} \PY{p}{:} \PY{n}{CoincidenceLogic}\PY{p}{;}
+
+       \PY{n}{part} \PY{n}{tempPressureTripOut}\PY{p}{:} \PY{n}{OrLogic}\PY{p}{;}
+
+       \PY{n}{connect} \PY{n}{temperatureLogic}\PY{p}{.}\PY{n+na}{actuate} \PY{n}{to} \PY{n}{tempPressureTripOut}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+       \PY{n}{connect} \PY{n}{pressureLogic}\PY{p}{.}\PY{n+na}{actuate} \PY{n}{to} \PY{n}{tempPressureTripOut}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+      \PY{n}{part} \PY{n}{def} \PY{n}{Actuator} \PY{p}{\PYZob{}}
+         \PY{c+c1}{// Actuate if either of these are true}
+         \PY{n}{port} \PY{n}{input}\PY{p}{:} \PY{n}{ActuationPort}\PY{p}{;}
+         \PY{n}{port} \PY{n}{manualActuatorInput}\PY{p}{:} \PY{o}{\PYZti{}}\PY{n}{ActuationPort}\PY{p}{;}
+       \PY{p}{\PYZcb{}}
+    \PY{p}{\PYZcb{}}
+
+    \PY{k+kn}{package} \PY{n+nn}{EventControl} \PY{p}{\PYZob{}}
+    \PY{k+kn}{import} \PY{n+nn}{ScalarValues}\PY{p}{:}\PY{p}{:}\PY{n}{Boolean}\PY{p}{;}
+    
+      \PY{n}{port} \PY{n}{def} \PY{n}{MaintenancePort} \PY{p}{\PYZob{}}
+        \PY{n}{out} \PY{n}{maintenance}\PY{p}{:} \PY{n}{Boolean}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+
+      \PY{n}{part} \PY{n}{def} \PY{n}{ControlUnit} \PY{p}{\PYZob{}}
+        \PY{c+c1}{// Maintenance mode select x 4 instrumentation units}
+        \PY{n}{port} \PY{n}{maintenanceMode}\PY{p}{:} \PY{n}{MaintenancePort}\PY{o}{[}\PY{l+m+mi}{4}\PY{o}{]}\PY{p}{;}
+        \PY{c+c1}{// Trip mode select x 4 instrumentation units}
+        \PY{n}{port} \PY{n}{tripMode}\PY{p}{:} \PY{n}{Instrumentation}\PY{p}{:}\PY{p}{:}\PY{n}{TripModePort}\PY{o}{[}\PY{l+m+mi}{4}\PY{o}{]}\PY{p}{;}
+        \PY{c+c1}{// New setpoints x 4 instrumentation units}
+        \PY{n}{port} \PY{n}{newPressureSetpoint}\PY{p}{:} \PY{n}{PressureSensor}\PY{p}{:}\PY{p}{:}\PY{n}{PressureOutPort}\PY{o}{[}\PY{l+m+mi}{4}\PY{o}{]}\PY{p}{;}
+        \PY{n}{port} \PY{n}{newTemperatureSetpoint}\PY{p}{:} \PY{n}{TempSensor}\PY{p}{:}\PY{p}{:}\PY{n}{TemperatureOutPort}\PY{o}{[}\PY{l+m+mi}{4}\PY{o}{]}\PY{p}{;}
+        \PY{n}{port} \PY{n}{newSaturationSetpoint}\PY{p}{:} \PY{n}{PressureSensor}\PY{p}{:}\PY{p}{:}\PY{n}{PressureOutPort}\PY{o}{[}\PY{l+m+mi}{4}\PY{o}{]}\PY{p}{;}
+        \PY{c+c1}{// Toggle actuator x2 actuators}
+        \PY{n}{port} \PY{n}{manualActuatorInput}\PY{p}{:} \PY{n}{Actuation}\PY{p}{:}\PY{p}{:}\PY{n}{ActuationPort}\PY{o}{[}\PY{l+m+mi}{2}\PY{o}{]}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+    \PY{p}{\PYZcb{}}
+
+    \PY{n}{part} \PY{n}{RTS} \PY{p}{\PYZob{}}
+      \PY{n}{part} \PY{n}{eventControl} \PY{p}{:} \PY{n}{EventControl}\PY{p}{:}\PY{p}{:}\PY{n}{ControlUnit}\PY{p}{;}
+
+      \PY{k+kn}{import} \PY{n+nn}{Instrumentation}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+      \PY{n}{part} \PY{n}{instrumentationAndSensing} \PY{p}{\PYZob{}}
+        \PY{n}{part} \PY{n}{pressureSensor1} \PY{p}{:} \PY{n}{PressureSensor}\PY{p}{:}\PY{p}{:}\PY{err}{\PYZsq{}}\PY{n}{Pressure} \PY{n}{Sensor}\PY{err}{\PYZsq{}}\PY{p}{;}
+        \PY{n}{part} \PY{n}{pressureSensor2} \PY{p}{:} \PY{n}{PressureSensor}\PY{p}{:}\PY{p}{:}\PY{err}{\PYZsq{}}\PY{n}{Pressure} \PY{n}{Sensor}\PY{err}{\PYZsq{}}\PY{p}{;}
+
+        \PY{n}{part} \PY{n}{tempSensor1} \PY{p}{:} \PY{n}{TempSensor}\PY{p}{:}\PY{p}{:}\PY{err}{\PYZsq{}}\PY{n}{Temperature} \PY{n}{Sensor}\PY{err}{\PYZsq{}}\PY{p}{;}
+        \PY{n}{part} \PY{n}{tempSensor2} \PY{p}{:} \PY{n}{TempSensor}\PY{p}{:}\PY{p}{:}\PY{err}{\PYZsq{}}\PY{n}{Temperature} \PY{n}{Sensor}\PY{err}{\PYZsq{}}\PY{p}{;}
+
+        \PY{n}{part} \PY{n}{instrumentationUnit1} \PY{p}{:} \PY{n}{InstrumentationUnit}\PY{p}{;}
+        \PY{n}{part} \PY{n}{instrumentationUnit2} \PY{p}{:} \PY{n}{InstrumentationUnit}\PY{p}{;}
+        \PY{n}{part} \PY{n}{instrumentationUnit3} \PY{p}{:} \PY{n}{InstrumentationUnit}\PY{p}{;}
+        \PY{n}{part} \PY{n}{instrumentationUnit4} \PY{p}{:} \PY{n}{InstrumentationUnit}\PY{p}{;}
+
+        \PY{n}{part} \PY{n}{table1} \PY{p}{:} \PY{n}{PressureTable}\PY{p}{;}
+        \PY{n}{part} \PY{n}{table2} \PY{p}{:} \PY{n}{PressureTable}\PY{p}{;}
+        \PY{n}{part} \PY{n}{table3} \PY{p}{:} \PY{n}{PressureTable}\PY{p}{;}
+        \PY{n}{part} \PY{n}{table4} \PY{p}{:} \PY{n}{PressureTable}\PY{p}{;}
+
+        \PY{n}{part} \PY{n}{tempDemux1} \PY{p}{:} \PY{n}{TempSensor}\PY{p}{:}\PY{p}{:}\PY{n}{Demux}\PY{p}{;}
+        \PY{n}{part} \PY{n}{tempDemux2} \PY{p}{:} \PY{n}{TempSensor}\PY{p}{:}\PY{p}{:}\PY{n}{Demux}\PY{p}{;}
+
+        \PY{n}{part} \PY{n}{pressureDemux1} \PY{p}{:} \PY{n}{PressureSensor}\PY{p}{:}\PY{p}{:}\PY{n}{Demux}\PY{p}{;}
+        \PY{n}{part} \PY{n}{pressureDemux2} \PY{p}{:} \PY{n}{PressureSensor}\PY{p}{:}\PY{p}{:}\PY{n}{Demux}\PY{p}{;}
+
+        \PY{c+c1}{// Temp sensor 1}
+        \PY{n}{connect} \PY{n}{tempSensor1}\PY{p}{.}\PY{n+na}{output} \PY{n}{to} \PY{n}{tempDemux1}\PY{p}{.}\PY{n+na}{input}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{tempDemux1}\PY{p}{.}\PY{n+na}{output1} \PY{n}{to} \PY{n}{instrumentationUnit1}\PY{p}{.}\PY{n+na}{temperatureInput}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{tempDemux1}\PY{p}{.}\PY{n+na}{output2} \PY{n}{to} \PY{n}{instrumentationUnit2}\PY{p}{.}\PY{n+na}{temperatureInput}\PY{p}{;}
+
+        \PY{c+c1}{// Temp sensor 2}
+        \PY{n}{connect} \PY{n}{tempSensor2}\PY{p}{.}\PY{n+na}{output} \PY{n}{to} \PY{n}{tempDemux2}\PY{p}{.}\PY{n+na}{input}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{tempDemux2}\PY{p}{.}\PY{n+na}{output1} \PY{n}{to} \PY{n}{instrumentationUnit3}\PY{p}{.}\PY{n+na}{temperatureInput}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{tempDemux2}\PY{p}{.}\PY{n+na}{output2} \PY{n}{to} \PY{n}{instrumentationUnit4}\PY{p}{.}\PY{n+na}{temperatureInput}\PY{p}{;}
+
+        \PY{c+c1}{// Pressure sensor 1}
+        \PY{n}{connect} \PY{n}{pressureSensor1}\PY{p}{.}\PY{n+na}{output} \PY{n}{to} \PY{n}{pressureDemux1}\PY{p}{.}\PY{n+na}{input}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{pressureDemux1}\PY{p}{.}\PY{n+na}{output1} \PY{n}{to} \PY{n}{instrumentationUnit1}\PY{p}{.}\PY{n+na}{pressureInput}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{pressureDemux1}\PY{p}{.}\PY{n+na}{output2} \PY{n}{to} \PY{n}{instrumentationUnit2}\PY{p}{.}\PY{n+na}{pressureInput}\PY{p}{;}
+
+        \PY{c+c1}{// Pressure sensor 2}
+        \PY{n}{connect} \PY{n}{pressureSensor2}\PY{p}{.}\PY{n+na}{output} \PY{n}{to} \PY{n}{pressureDemux2}\PY{p}{.}\PY{n+na}{input}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{pressureDemux1}\PY{p}{.}\PY{n+na}{output1} \PY{n}{to} \PY{n}{instrumentationUnit3}\PY{p}{.}\PY{n+na}{pressureInput}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{pressureDemux1}\PY{p}{.}\PY{n+na}{output2} \PY{n}{to} \PY{n}{instrumentationUnit4}\PY{p}{.}\PY{n+na}{pressureInput}\PY{p}{;}
+
+        \PY{c+c1}{// Saturation Margin Calculation}
+        \PY{n}{connect} \PY{n}{pressureDemux1}\PY{p}{.}\PY{n+na}{output1} \PY{n}{to} \PY{n}{table1}\PY{p}{.}\PY{n+na}{pressureInput}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{tempDemux1}\PY{p}{.}\PY{n+na}{output1} \PY{n}{to} \PY{n}{table1}\PY{p}{.}\PY{n+na}{temperatureInput}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{table1}\PY{p}{.}\PY{n+na}{saturationMarginOutput} \PY{n}{to} \PY{n}{instrumentationUnit1}\PY{p}{.}\PY{n+na}{saturationMarginInput}\PY{p}{;}
+        
+        \PY{n}{connect} \PY{n}{pressureDemux1}\PY{p}{.}\PY{n+na}{output2} \PY{n}{to} \PY{n}{table2}\PY{p}{.}\PY{n+na}{pressureInput}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{tempDemux1}\PY{p}{.}\PY{n+na}{output2} \PY{n}{to} \PY{n}{table2}\PY{p}{.}\PY{n+na}{temperatureInput}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{table2}\PY{p}{.}\PY{n+na}{saturationMarginOutput} \PY{n}{to} \PY{n}{instrumentationUnit2}\PY{p}{.}\PY{n+na}{saturationMarginInput}\PY{p}{;}
+        
+        \PY{n}{connect} \PY{n}{pressureDemux2}\PY{p}{.}\PY{n+na}{output1} \PY{n}{to} \PY{n}{table3}\PY{p}{.}\PY{n+na}{pressureInput}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{tempDemux2}\PY{p}{.}\PY{n+na}{output1} \PY{n}{to} \PY{n}{table3}\PY{p}{.}\PY{n+na}{temperatureInput}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{table3}\PY{p}{.}\PY{n+na}{saturationMarginOutput} \PY{n}{to} \PY{n}{instrumentationUnit3}\PY{p}{.}\PY{n+na}{saturationMarginInput}\PY{p}{;}
+        
+        \PY{n}{connect} \PY{n}{pressureDemux2}\PY{p}{.}\PY{n+na}{output2} \PY{n}{to} \PY{n}{table4}\PY{p}{.}\PY{n+na}{pressureInput}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{tempDemux2}\PY{p}{.}\PY{n+na}{output2} \PY{n}{to} \PY{n}{table4}\PY{p}{.}\PY{n+na}{temperatureInput}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{table4}\PY{p}{.}\PY{n+na}{saturationMarginOutput} \PY{n}{to} \PY{n}{instrumentationUnit4}\PY{p}{.}\PY{n+na}{saturationMarginInput}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+
+
+      \PY{k+kn}{import} \PY{n+nn}{Actuation}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+      \PY{n}{part} \PY{n}{actuation} \PY{p}{\PYZob{}}
+        \PY{n}{part} \PY{n}{actuationUnit1}\PY{p}{:} \PY{n}{ActuationUnit}\PY{p}{;}
+        \PY{n}{part} \PY{n}{actuationUnit2}\PY{p}{:} \PY{n}{ActuationUnit}\PY{p}{;}
+
+        \PY{n}{part} \PY{n}{actuator1} \PY{p}{:} \PY{n}{Actuator}\PY{p}{;}
+        \PY{n}{part} \PY{n}{actuator2} \PY{p}{:} \PY{n}{Actuator}\PY{p}{;}
+
+        \PY{n}{part} \PY{n}{actuateActuator1}\PY{p}{:} \PY{n}{OrLogic}\PY{p}{;}
+        \PY{n}{part} \PY{n}{actuateActuator2}\PY{p}{:} \PY{n}{OrLogic}\PY{p}{;}
+
+        \PY{c+c1}{// connect actuators}
+        \PY{c+c1}{// Actuator 1 \PYZhy{} temp or pressure trip}
+        \PY{n}{connect} \PY{n}{actuationUnit1}\PY{p}{.}\PY{n+na}{tempPressureTripOut}\PY{p}{.}\PY{n+na}{actuate} \PY{n}{to} \PY{n}{actuateActuator1}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{actuationUnit2}\PY{p}{.}\PY{n+na}{tempPressureTripOut}\PY{p}{.}\PY{n+na}{actuate} \PY{n}{to} \PY{n}{actuateActuator1}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{actuateActuator1}\PY{p}{.}\PY{n+na}{actuate} \PY{n}{to} \PY{n}{actuator1}\PY{p}{.}\PY{n+na}{input}\PY{p}{;}
+
+        \PY{c+c1}{// Actuator 2 \PYZhy{} Saturation}
+        \PY{n}{connect} \PY{n}{actuationUnit1}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{actuate} \PY{n}{to} \PY{n}{actuateActuator2}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{actuationUnit2}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{actuate} \PY{n}{to} \PY{n}{actuateActuator2}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+        \PY{n}{connect} \PY{n}{actuateActuator2}\PY{p}{.}\PY{n+na}{actuate} \PY{n}{to} \PY{n}{actuator2}\PY{p}{.}\PY{n+na}{input}\PY{p}{;}
+      \PY{p}{\PYZcb{}}
+
+      \PY{c+c1}{// connect Control units}
+      \PY{c+c1}{// Actuators manual override}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{manualActuatorInput}\PY{o}{[}\PY{l+m+mi}{1}\PY{o}{]} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuator1}\PY{p}{.}\PY{n+na}{manualActuatorInput}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{manualActuatorInput}\PY{o}{[}\PY{l+m+mi}{2}\PY{o}{]} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuator2}\PY{p}{.}\PY{n+na}{manualActuatorInput}\PY{p}{;}
+
+      \PY{c+c1}{// Instrumentation mode select}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{maintenanceMode}\PY{o}{[}\PY{l+m+mi}{1}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit1}\PY{p}{.}\PY{n+na}{setMaintenanceMode}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{maintenanceMode}\PY{o}{[}\PY{l+m+mi}{2}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit2}\PY{p}{.}\PY{n+na}{setMaintenanceMode}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{maintenanceMode}\PY{o}{[}\PY{l+m+mi}{3}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit3}\PY{p}{.}\PY{n+na}{setMaintenanceMode}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{maintenanceMode}\PY{o}{[}\PY{l+m+mi}{4}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit4}\PY{p}{.}\PY{n+na}{setMaintenanceMode}\PY{p}{;}
+
+
+      \PY{c+c1}{// Instrumentation pressure setpoint}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{newPressureSetpoint}\PY{o}{[}\PY{l+m+mi}{1}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit1}\PY{p}{.}\PY{n+na}{newPressureSetpoint}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{newPressureSetpoint}\PY{o}{[}\PY{l+m+mi}{2}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit2}\PY{p}{.}\PY{n+na}{newPressureSetpoint}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{newPressureSetpoint}\PY{o}{[}\PY{l+m+mi}{3}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit3}\PY{p}{.}\PY{n+na}{newPressureSetpoint}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{newPressureSetpoint}\PY{o}{[}\PY{l+m+mi}{4}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit4}\PY{p}{.}\PY{n+na}{newPressureSetpoint}\PY{p}{;}
+
+      \PY{c+c1}{// Instrumentation temperature setpoint}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{newTemperatureSetpoint}\PY{o}{[}\PY{l+m+mi}{1}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit1}\PY{p}{.}\PY{n+na}{newTemperatureSetpoint}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{newTemperatureSetpoint}\PY{o}{[}\PY{l+m+mi}{2}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit2}\PY{p}{.}\PY{n+na}{newTemperatureSetpoint}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{newTemperatureSetpoint}\PY{o}{[}\PY{l+m+mi}{3}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit3}\PY{p}{.}\PY{n+na}{newTemperatureSetpoint}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{newTemperatureSetpoint}\PY{o}{[}\PY{l+m+mi}{4}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit4}\PY{p}{.}\PY{n+na}{newTemperatureSetpoint}\PY{p}{;}
+
+      \PY{c+c1}{// Instrumentation saturation setpoint}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{newSaturationSetpoint}\PY{o}{[}\PY{l+m+mi}{1}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit1}\PY{p}{.}\PY{n+na}{newSaturationSetpoint}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{newSaturationSetpoint}\PY{o}{[}\PY{l+m+mi}{2}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit2}\PY{p}{.}\PY{n+na}{newSaturationSetpoint}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{newSaturationSetpoint}\PY{o}{[}\PY{l+m+mi}{3}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit3}\PY{p}{.}\PY{n+na}{newSaturationSetpoint}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{newSaturationSetpoint}\PY{o}{[}\PY{l+m+mi}{4}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit4}\PY{p}{.}\PY{n+na}{newSaturationSetpoint}\PY{p}{;}
+
+      \PY{c+c1}{// Instrumentation trip mode}
+      \PY{c+c1}{// Bypass temperature}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{tripMode}\PY{o}{[}\PY{l+m+mi}{1}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit1}\PY{p}{.}\PY{n+na}{tripMode}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{tripMode}\PY{o}{[}\PY{l+m+mi}{2}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit2}\PY{p}{.}\PY{n+na}{tripMode}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{tripMode}\PY{o}{[}\PY{l+m+mi}{3}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit3}\PY{p}{.}\PY{n+na}{tripMode}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{eventControl}\PY{p}{.}\PY{n+na}{tripMode}\PY{o}{[}\PY{l+m+mi}{4}\PY{o}{]} \PY{n}{to} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit4}\PY{p}{.}\PY{n+na}{tripMode}\PY{p}{;}
+
+      \PY{c+c1}{// Trip on pressure above the setpoint}
+      \PY{c+c1}{// Actuation unit 1}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit1}\PY{p}{.}\PY{n+na}{pressureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit1}\PY{p}{.}\PY{n+na}{pressureLogic}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit2}\PY{p}{.}\PY{n+na}{pressureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit1}\PY{p}{.}\PY{n+na}{pressureLogic}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit3}\PY{p}{.}\PY{n+na}{pressureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit1}\PY{p}{.}\PY{n+na}{pressureLogic}\PY{p}{.}\PY{n+na}{channel3}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit4}\PY{p}{.}\PY{n+na}{pressureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit1}\PY{p}{.}\PY{n+na}{pressureLogic}\PY{p}{.}\PY{n+na}{channel4}\PY{p}{;}
+      \PY{c+c1}{// Actuation unit 2}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit1}\PY{p}{.}\PY{n+na}{pressureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit2}\PY{p}{.}\PY{n+na}{pressureLogic}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit2}\PY{p}{.}\PY{n+na}{pressureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit2}\PY{p}{.}\PY{n+na}{pressureLogic}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit3}\PY{p}{.}\PY{n+na}{pressureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit2}\PY{p}{.}\PY{n+na}{pressureLogic}\PY{p}{.}\PY{n+na}{channel3}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit4}\PY{p}{.}\PY{n+na}{pressureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit2}\PY{p}{.}\PY{n+na}{pressureLogic}\PY{p}{.}\PY{n+na}{channel4}\PY{p}{;}
+
+      \PY{c+c1}{// Trip on temperature above the setpoint}
+      \PY{c+c1}{// Actuation unit 1}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit1}\PY{p}{.}\PY{n+na}{temperatureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit1}\PY{p}{.}\PY{n+na}{temperatureLogic}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit2}\PY{p}{.}\PY{n+na}{temperatureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit1}\PY{p}{.}\PY{n+na}{temperatureLogic}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit3}\PY{p}{.}\PY{n+na}{temperatureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit1}\PY{p}{.}\PY{n+na}{temperatureLogic}\PY{p}{.}\PY{n+na}{channel3}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit4}\PY{p}{.}\PY{n+na}{temperatureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit1}\PY{p}{.}\PY{n+na}{temperatureLogic}\PY{p}{.}\PY{n+na}{channel4}\PY{p}{;}
+      \PY{c+c1}{// Actuation unit 2}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit1}\PY{p}{.}\PY{n+na}{temperatureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit2}\PY{p}{.}\PY{n+na}{temperatureLogic}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit2}\PY{p}{.}\PY{n+na}{temperatureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit2}\PY{p}{.}\PY{n+na}{temperatureLogic}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit3}\PY{p}{.}\PY{n+na}{temperatureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit2}\PY{p}{.}\PY{n+na}{temperatureLogic}\PY{p}{.}\PY{n+na}{channel3}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit4}\PY{p}{.}\PY{n+na}{temperatureTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit2}\PY{p}{.}\PY{n+na}{temperatureLogic}\PY{p}{.}\PY{n+na}{channel4}\PY{p}{;}
+
+      \PY{c+c1}{// Trip on saturation above the setpoint}
+      \PY{c+c1}{// Actuation unit 1}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit1}\PY{p}{.}\PY{n+na}{saturationTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit1}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit2}\PY{p}{.}\PY{n+na}{saturationTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit1}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit3}\PY{p}{.}\PY{n+na}{saturationTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit1}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{channel3}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit4}\PY{p}{.}\PY{n+na}{saturationTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit1}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{channel4}\PY{p}{;}
+      \PY{c+c1}{// Actuation unit 2}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit1}\PY{p}{.}\PY{n+na}{saturationTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit2}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{channel1}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit2}\PY{p}{.}\PY{n+na}{saturationTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit2}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{channel2}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit3}\PY{p}{.}\PY{n+na}{saturationTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit2}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{channel3}\PY{p}{;}
+      \PY{n}{connect} \PY{n}{instrumentationAndSensing}\PY{p}{.}\PY{n+na}{instrumentationUnit4}\PY{p}{.}\PY{n+na}{saturationTripOut} \PY{n}{to} \PY{n}{actuation}\PY{p}{.}\PY{n+na}{actuationUnit2}\PY{p}{.}\PY{n+na}{saturationLogic}\PY{p}{.}\PY{n+na}{channel4}\PY{p}{;}
+
+
+    \PY{p}{\PYZcb{}}
+  \PY{p}{\PYZcb{}} \PY{c+c1}{// package id RTS\PYZus{}System\PYZus{}Arch \PYZsq{}RTS System Architecture\PYZsq{}}
+\PY{p}{\PYZcb{}} \PY{c+c1}{// package id Architecture \PYZsq{}RTS Architecture\PYZsq{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{31}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Package [Architecture] RTS Architecture (160a1b7f-aa0e-486c-88f5-83f972306fad)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{32}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{RTS Architecture}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{32}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_25_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{57}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{///** The physical architecture of the HARDENS RTS demonstrator. */}
+\PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Physical} \PY{n}{Architecture}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+  \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{Project} \PY{n}{Glossary}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+  \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Hardware} \PY{n}{Artifacts}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+    
+  \PY{c+cm}{/** A PCB developer board used to prototype hardware. */}
+  \PY{n}{part} \PY{err}{\PYZsq{}}\PY{n}{HARDENS} \PY{n}{Demonstrator} \PY{n}{Board}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{DevBoard}\PY{p}{;}
+      \PY{c+cm}{/** The USB cable used to communicate the ASCII UI to/from the board. */}
+  \PY{n}{part} \PY{n}{id} \PY{n}{UI\PYZus{}C} \PY{err}{\PYZsq{}}\PY{n}{USB} \PY{n}{UI} \PY{n}{Cable}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{USB} \PY{n}{Cable}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{c+cm}{/** The USB cable used to program the board with a bitstream. */}
+  \PY{n}{part} \PY{n}{id} \PY{n}{Prog\PYZus{}C} \PY{err}{\PYZsq{}}\PY{n}{USB} \PY{n}{Programming} \PY{n}{Cable}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{USB} \PY{n}{Cable}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{c+cm}{/** The USB cable used to interact with the board in a debugger. */}
+  \PY{n}{part} \PY{n}{id} \PY{n}{Debug\PYZus{}C} \PY{err}{\PYZsq{}}\PY{n}{USB} \PY{n}{Debugging} \PY{n}{I}\PY{o}{/}\PY{n}{O} \PY{n}{Cable}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{USB} \PY{n}{Cable}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{c+c1}{// @trace \PYZsh{}11 https://github.com/GaloisInc/HARDENS/issues/11}
+  \PY{c+c1}{// @todo Add attributes for URL traceability.}
+  \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{MPL3115A2} \PY{err}{\PYZsq{}}\PY{n}{SparkFun} \PY{n}{Altitude}\PY{o}{/}\PY{n}{Pressure} \PY{n}{Sensor} \PY{n}{Breakout}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}}
+    \PY{n}{PCB}\PY{p}{,} \PY{err}{\PYZsq{}}\PY{n}{Pressure} \PY{n}{Sensor}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{c+c1}{// 4x https://www.sparkfun.com/products/11084}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{SparkFun} \PY{n}{MOSFET} \PY{n}{Power} \PY{n}{Control} \PY{n}{Kit}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{n}{PCB}\PY{p}{,} \PY{n}{Power}\PY{p}{;}
+  \PY{c+c1}{// 4x https://www.sparkfun.com/products/12959}
+  \PY{n}{part} \PY{n}{def} \PY{n}{id} \PY{n}{TMP102} \PY{err}{\PYZsq{}}\PY{n}{SparkFun} \PY{n}{Digital} \PY{n}{Temperature} \PY{n}{Sensor} \PY{n}{Breakout}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}}
+    \PY{n}{PCB}\PY{p}{,} \PY{err}{\PYZsq{}}\PY{n}{Temperature} \PY{n}{Sensor}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{c+c1}{// 4x https://www.sparkfun.com/products/13314}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Small} \PY{n}{Push}\PY{o}{\PYZhy{}}\PY{n}{Pull} \PY{n}{Solenoid} \PY{o}{\PYZhy{}} \PY{l+m+mi}{12}\PY{n}{VDC}\PY{err}{\PYZsq{}} \PY{p}{:}\PY{o}{\PYZgt{}} \PY{err}{\PYZsq{}}\PY{n}{Solenoid} \PY{n}{Actuator}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{c+c1}{// 4x https://www.adafruit.com/product/412}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{l+m+mi}{1}\PY{n}{N4001} \PY{n}{Diode}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{c+c1}{// 1x https://www.adafruit.com/product/755}
+  \PY{c+cm}{/** The first of two redundant temperature sensors. */}
+  \PY{n}{part} \PY{n}{id} \PY{n}{TS1} \PY{err}{\PYZsq{}}\PY{n}{Temperature} \PY{n}{Sensor} \PY{l+m+mi}{1}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{TMP102}\PY{p}{;}
+  \PY{c+cm}{/** The second of two redundant temperature sensors. */}
+  \PY{n}{part} \PY{n}{id} \PY{n}{TS2} \PY{err}{\PYZsq{}}\PY{n}{Temperature} \PY{n}{Sensor} \PY{l+m+mi}{2}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{TMP102}\PY{p}{;}
+  \PY{c+cm}{/** The first of two redundant pressure sensors. */}
+  \PY{n}{part} \PY{n}{id} \PY{n}{PS1} \PY{err}{\PYZsq{}}\PY{n}{Pressure} \PY{n}{Sensor} \PY{l+m+mi}{1}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{MPL3115A2}\PY{p}{;}
+  \PY{c+cm}{/** The second of two redundant pressure sensors. */}
+  \PY{n}{part} \PY{n}{id} \PY{n}{PS2} \PY{err}{\PYZsq{}}\PY{n}{Pressure} \PY{n}{Sensor} \PY{l+m+mi}{2}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{MPL3115A2}\PY{p}{;}
+  \PY{c+cm}{/** The first of two redundant solenoid actuators. */}
+  \PY{n}{part} \PY{n}{id} \PY{n}{SA1} \PY{err}{\PYZsq{}}\PY{n}{Solenoid} \PY{n}{Actuator} \PY{l+m+mi}{1}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Small} \PY{n}{Push}\PY{o}{\PYZhy{}}\PY{n}{Pull} \PY{n}{Solenoid} \PY{o}{\PYZhy{}} \PY{l+m+mi}{12}\PY{n}{VDC}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{c+cm}{/** The second of two redundant solenoid actuators. */}
+  \PY{n}{part} \PY{n}{id} \PY{n}{SA2} \PY{err}{\PYZsq{}}\PY{n}{Solenoid} \PY{n}{Actuator} \PY{l+m+mi}{2}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Small} \PY{n}{Push}\PY{o}{\PYZhy{}}\PY{n}{Pull} \PY{n}{Solenoid} \PY{o}{\PYZhy{}} \PY{l+m+mi}{12}\PY{n}{VDC}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{c+c1}{// @todo kiniry Add ports for external connectors.}
+
+  \PY{c+cm}{/** The computer used by a developer to interface with the demonstrator,}
+\PY{c+cm}{      typically for driving the demonstrator\PYZsq{}s UI and programming and}
+\PY{c+cm}{      debugging the board. */}
+  \PY{n}{part} \PY{err}{\PYZsq{}}\PY{n}{Developer} \PY{n}{Machine}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{Computer}\PY{p}{;}
+
+  \PY{c+cm}{/** The fully assembled HARDENS demonstrator hardware with all component present. */}
+  \PY{n}{part} \PY{n}{id} \PY{n}{Demonstrator} \PY{err}{\PYZsq{}}\PY{n}{HARDENS} \PY{n}{Demonstrator}\PY{err}{\PYZsq{}}\PY{p}{;}
+
+  \PY{n}{connection} \PY{n}{def} \PY{n}{DevMachineToDevBoard} \PY{p}{\PYZob{}}
+    \PY{n}{end}\PY{p}{:} \PY{n}{Computer}\PY{p}{;}
+    \PY{n}{end}\PY{p}{:} \PY{n}{PCB}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{c+c1}{// connection: DevMachineToDevBoard connect \PYZsq{}Developer Machine\PYZsq{} to DevBoard;}
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{57}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Package RTS Physical Architecture (201c1cd4-38c8-48b2-8f96-cf861831a1f5)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{58}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{RTS Physical Architecture}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{58}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_27_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{33}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+cm}{/**}
+\PY{c+cm}{ * The set of all scenarios that describe interesting end\PYZhy{}to\PYZhy{}end executions}
+\PY{c+cm}{ * of the RTS system.  The full set of scenarios must include all normal}
+\PY{c+cm}{ * behavior (online and during self\PYZhy{}test) and exceptional behavior.  }
+\PY{c+cm}{ */}
+\PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Scenarios} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{Scenarios}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+  \PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Normal} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{Normal} \PY{n}{Behavior} \PY{n}{Scenarios}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Architecture}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{System} \PY{n}{Architecture}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{n}{RTS}\PY{p}{;}
+    
+    \PY{n}{item} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{User}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{n}{def} \PY{n}{id} \PY{n}{NB} \PY{err}{\PYZsq{}}\PY{n}{Normal} \PY{n}{Behavior}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{n}{subject} \PY{n}{RTS}\PY{p}{;}
+      \PY{n}{actor} \PY{n}{user} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{User}\PY{err}{\PYZsq{}}\PY{p}{;}
+      \PY{n}{objective} \PY{p}{\PYZob{}}
+        \PY{n}{doc} \PY{c+cm}{/* @see test\PYZus{}scenarios.lando */}
+      \PY{p}{\PYZcb{}}
+    \PY{p}{\PYZcb{}}
+    \PY{c+c1}{// @design kiniry Actually, ST should specialize NB.  I don\PYZsq{}t know how}
+    \PY{c+c1}{// to express that in SysML yet.}
+    \PY{n}{use} \PY{k}{case} \PY{n}{def} \PY{n}{id} \PY{n}{ST} \PY{err}{\PYZsq{}}\PY{n}{Normal} \PY{n}{Behavior} \PY{n}{Under} \PY{n}{Self}\PY{o}{\PYZhy{}}\PY{n}{Test}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+        \PY{n}{subject} \PY{n}{RTS}\PY{p}{;}
+        \PY{n}{actor} \PY{n}{tester} \PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{User}\PY{err}{\PYZsq{}}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{Self}\PY{o}{\PYZhy{}}\PY{n}{test} \PY{n}{Scenarios}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{k+kn}{import} \PY{n+nn}{Normal}\PY{p}{:}\PY{p}{:}\PY{n}{ST}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{1}\PY{n}{a} \PY{o}{\PYZhy{}} \PY{n}{Trip} \PY{n}{on} \PY{n}{Mock} \PY{n}{High} \PY{n}{Pressure} \PY{n}{Reading} \PY{n}{from} \PY{n}{that} \PY{n}{Pressure} \PY{n}{Sensor}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{1}\PY{n}{b} \PY{o}{\PYZhy{}} \PY{n}{Trip} \PY{n}{on} \PY{n}{Environmental} \PY{n}{High} \PY{n}{Pressure} \PY{n}{Reading} \PY{n}{from} \PY{n}{that} \PY{n}{Pressure} \PY{n}{Sensor}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{2}\PY{n}{a} \PY{o}{\PYZhy{}} \PY{n}{Trip} \PY{n}{on} \PY{n}{Mock} \PY{n}{High} \PY{n}{Temperature} \PY{n}{Reading} \PY{n}{from} \PY{n}{that} \PY{n}{Temperature} \PY{n}{Sensor}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{2}\PY{n}{a} \PY{o}{\PYZhy{}} \PY{n}{Trip} \PY{n}{on} \PY{n}{Environmental} \PY{n}{High} \PY{n}{Temperature} \PY{n}{Reading} \PY{n}{from} \PY{n}{that} \PY{n}{Temperature} \PY{n}{Sensor}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{3}\PY{n}{a} \PY{o}{\PYZhy{}} \PY{n}{Trip} \PY{n}{on} \PY{n}{Mock} \PY{n}{Low} \PY{n}{Saturation} \PY{n}{Margin}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{3}\PY{n}{a} \PY{o}{\PYZhy{}} \PY{n}{Trip} \PY{n}{on} \PY{n}{Environmental} \PY{n}{Low} \PY{n}{Saturation} \PY{n}{Margin}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{4} \PY{o}{\PYZhy{}} \PY{n}{Vote} \PY{n}{on} \PY{n}{Every} \PY{n}{Possible} \PY{n}{Like} \PY{n}{Trip}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{5}\PY{n}{a} \PY{o}{\PYZhy{}} \PY{n}{Automatically} \PY{n}{Actuate} \PY{n}{All} \PY{n}{Mock} \PY{n}{Devices} \PY{n}{in} \PY{n}{Sequence}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{5}\PY{n}{b} \PY{o}{\PYZhy{}} \PY{n}{Automatically} \PY{n}{Actuate} \PY{n}{All} \PY{n}{Mock} \PY{n}{Devices} \PY{n}{in} \PY{n}{Sequence}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{6} \PY{o}{\PYZhy{}} \PY{n}{Manually} \PY{n}{Actuate} \PY{n}{Each} \PY{n}{Device} \PY{n}{in} \PY{n}{Sequence}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{7}\PY{n}{a} \PY{o}{\PYZhy{}} \PY{n}{Select} \PY{n}{Maintenance} \PY{n}{Operating} \PY{n}{Mode} \PY{k}{for} \PY{n}{each} \PY{n}{Division}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{7}\PY{n}{b} \PY{o}{\PYZhy{}} \PY{n}{Select} \PY{n}{Normal} \PY{n}{Operating} \PY{n}{Mode} \PY{k}{for} \PY{n}{each} \PY{n}{Division}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{8} \PY{o}{\PYZhy{}} \PY{n}{Perform} \PY{n}{Each} \PY{n}{Kind} \PY{n}{of} \PY{n}{Setpoint} \PY{n}{Adjustment}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{9} \PY{o}{\PYZhy{}} \PY{n}{Configure} \PY{n}{Bypass} \PY{n}{of} \PY{n}{Each} \PY{n}{Instrument} \PY{n}{Channel} \PY{n}{in} \PY{n}{Sequence}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{10} \PY{o}{\PYZhy{}} \PY{n}{Configure} \PY{n}{Active} \PY{n}{Trip} \PY{n}{Output} \PY{n}{State} \PY{n}{of} \PY{n}{Each} \PY{n}{Instrument} \PY{n}{Channel} \PY{n}{in} \PY{n}{Sequence}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{11} \PY{o}{\PYZhy{}} \PY{n}{Display} \PY{n}{Pressure}\PY{p}{,} \PY{n}{Temperature}\PY{p}{,} \PY{n}{and} \PY{n}{Saturation} \PY{n}{Margin}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{13} \PY{o}{\PYZhy{}} \PY{n}{Display} \PY{n}{Indication} \PY{n}{of} \PY{n}{Every} \PY{n}{Channel} \PY{n}{in} \PY{n}{Bypass} \PY{n}{in} \PY{n}{Sequence}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{14} \PY{o}{\PYZhy{}} \PY{n}{Demonstrate} \PY{n}{Periodic} \PY{n}{Continual} \PY{n}{Self}\PY{o}{\PYZhy{}}\PY{n}{test} \PY{n}{of} \PY{n}{Safety} \PY{n}{Signal} \PY{n}{Path}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+      \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{n}{Full} \PY{n}{Self}\PY{o}{\PYZhy{}}\PY{n}{Test}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{NB}\PY{p}{;}
+    \PY{p}{\PYZcb{}}
+    \PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Scenarios}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{c+c1}{// @todo Still need to enumerate these.      }
+    \PY{p}{\PYZcb{}}
+  \PY{p}{\PYZcb{}} 
+  \PY{k+kn}{package} \PY{n+nn}{id} \PY{n}{Exceptional} \PY{err}{\PYZsq{}}\PY{n}{RTS} \PY{n}{Exceptional} \PY{n}{Behavior} \PY{n}{Scenarios}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{use} \PY{k}{case} \PY{n}{def} \PY{n}{id} \PY{n}{EB} \PY{err}{\PYZsq{}}\PY{n}{Exceptional} \PY{n}{Behavior}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+      \PY{n}{subject} \PY{n}{RTS}\PY{p}{;}
+      \PY{n}{objective} \PY{p}{\PYZob{}}
+        \PY{n}{doc} \PY{c+cm}{/* @see test\PYZus{}scenarios.lando */}
+      \PY{p}{\PYZcb{}}
+    \PY{p}{\PYZcb{}}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{1}\PY{n}{a} \PY{o}{\PYZhy{}} \PY{n}{Cause} \PY{n}{Actuator} \PY{l+m+mi}{1} \PY{n}{to} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{1}\PY{n}{b} \PY{o}{\PYZhy{}} \PY{n}{Cause} \PY{n}{Actuator} \PY{l+m+mi}{2} \PY{n}{to} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{1}\PY{n}{c} \PY{o}{\PYZhy{}} \PY{n}{Non}\PY{o}{\PYZhy{}}\PY{n}{determinisitically} \PY{n}{Cause} \PY{n}{an} \PY{n}{Actuator} \PY{n}{to} \PY{n}{Eventually} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{2}\PY{n}{a} \PY{o}{\PYZhy{}} \PY{n}{Cause} \PY{n}{Temperature} \PY{n}{Sensor} \PY{l+m+mi}{1} \PY{n}{to} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{2}\PY{n}{b} \PY{o}{\PYZhy{}} \PY{n}{Cause} \PY{n}{Temperature} \PY{n}{Sensor} \PY{l+m+mi}{2} \PY{n}{to} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{2}\PY{n}{c} \PY{o}{\PYZhy{}} \PY{n}{Non}\PY{o}{\PYZhy{}}\PY{n}{deterministically} \PY{n}{Cause} \PY{n}{a} \PY{n}{Temperature} \PY{n}{Sensor} \PY{n}{to} \PY{n}{Eventually} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{3}\PY{n}{a} \PY{o}{\PYZhy{}} \PY{n}{Cause} \PY{n}{Pressure} \PY{n}{Sensor} \PY{l+m+mi}{1} \PY{n}{to} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{3}\PY{n}{b} \PY{o}{\PYZhy{}} \PY{n}{Cause} \PY{n}{Pressure} \PY{n}{Sensor} \PY{l+m+mi}{2} \PY{n}{to} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{3}\PY{n}{c} \PY{o}{\PYZhy{}} \PY{n}{Non}\PY{o}{\PYZhy{}}\PY{n}{deterministically} \PY{n}{Cause} \PY{n}{a} \PY{n}{Pressure} \PY{n}{Sensor} \PY{n}{to} \PY{n}{Eventually} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{4}\PY{n}{a} \PY{o}{\PYZhy{}} \PY{n}{Cause} \PY{n}{Instrumentation} \PY{n}{Unit} \PY{l+m+mi}{1} \PY{n}{to} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{4}\PY{n}{b} \PY{o}{\PYZhy{}} \PY{n}{Cause} \PY{n}{Instrumentation} \PY{n}{Unit} \PY{l+m+mi}{2} \PY{n}{to} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{4}\PY{n}{c} \PY{o}{\PYZhy{}} \PY{n}{Cause} \PY{n}{Instrumentation} \PY{n}{Unit} \PY{l+m+mi}{3} \PY{n}{to} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mf}{4d} \PY{o}{\PYZhy{}} \PY{n}{Cause} \PY{n}{Instrumentation} \PY{n}{Unit} \PY{l+m+mi}{4} \PY{n}{to} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{4}\PY{n}{e} \PY{o}{\PYZhy{}} \PY{n}{Non}\PY{o}{\PYZhy{}}\PY{n}{Deterministically} \PY{n}{Cause} \PY{n}{Instrumentation} \PY{n}{Unit} \PY{n}{to} \PY{n}{Eventually} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{c+c1}{// @review kiniry I actually don\PYZsq{}t know if we are fault tolerant to\PYZsq{} : EB;}
+    \PY{c+c1}{// failure in these components.  Please review @abakst.}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{5}\PY{n}{a} \PY{o}{\PYZhy{}} \PY{n}{Cause} \PY{n}{Temperature} \PY{n}{Demultiplexor} \PY{l+m+mi}{1} \PY{n}{to} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{5}\PY{n}{b} \PY{o}{\PYZhy{}} \PY{n}{Cause} \PY{n}{Temperature} \PY{n}{Demultiplexor} \PY{l+m+mi}{2} \PY{n}{to} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+    \PY{n}{use} \PY{k}{case} \PY{err}{\PYZsq{}}\PY{l+m+mi}{5}\PY{n}{b} \PY{o}{\PYZhy{}} \PY{n}{Cause} \PY{n}{a} \PY{n}{Temperature} \PY{n}{Demultiplexor} \PY{n}{to} \PY{n}{Eventualy} \PY{n}{Fail}\PY{err}{\PYZsq{}} \PY{p}{:} \PY{n}{EB}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{33}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Package [Scenarios] RTS Scenarios (e5ae5f58-0ab2-4d0f-9f17-a443eb366a20)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{34}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{RTS Scenarios}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{34}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_29_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{36}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{package} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{System} \PY{n}{Contexts}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+  \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{RTS} \PY{n}{Architecture}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+  \PY{k+kn}{import} \PY{err}{\PYZsq{}}\PY{n+nn}{Kiniry} \PY{n}{RTS} \PY{n}{System} \PY{n}{Architecture} \PY{n}{Draft}\PY{err}{\PYZsq{}}\PY{p}{:}\PY{p}{:}\PY{o}{*}\PY{p}{;}
+  
+  \PY{c+c1}{// This specification is meant to frame the RTS in the larger context of}
+  \PY{c+c1}{// deployment into a Nuclear Power Plant.}
+  
+  \PY{c+c1}{// Definitions of system contexts.}
+  
+  \PY{c+c1}{// Introduce the RTS context.}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Reactor} \PY{n}{Trip} \PY{n}{System} \PY{n}{Context}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{alias} \PY{n}{RTSC} \PY{k}{for} \PY{err}{\PYZsq{}}\PY{n}{Reactor} \PY{n}{Trip} \PY{n}{System} \PY{n}{Context}\PY{err}{\PYZsq{}}\PY{p}{;}
+  
+  \PY{c+c1}{// Introduce the NPP context.}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Nuclear} \PY{n}{Power} \PY{n}{Plant} \PY{n}{Context}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{alias} \PY{n}{NPPC} \PY{k}{for} \PY{err}{\PYZsq{}}\PY{n}{Nuclear} \PY{n}{Power} \PY{n}{Plant} \PY{n}{Context}\PY{err}{\PYZsq{}}\PY{p}{;}
+  
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Nuclear} \PY{n}{Power} \PY{n}{Plant} \PY{n}{Operator}\PY{err}{\PYZsq{}}\PY{p}{;}
+  \PY{n}{part} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Nuclear} \PY{n}{Power} \PY{n}{Plant} \PY{n}{Certifier}\PY{err}{\PYZsq{}}\PY{p}{;}
+  
+  \PY{c+c1}{// Definitions of relevant connections}
+  \PY{n}{connection} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{Digital} \PY{n}{Instrumentation} \PY{n}{and} \PY{n}{Control}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{end}\PY{p}{:} \PY{n}{RTSC}\PY{o}{[}\PY{l+m+mi}{1}\PY{o}{]}\PY{p}{;}
+    \PY{n}{end}\PY{p}{:} \PY{n}{NPPC}\PY{o}{[}\PY{l+m+mi}{1}\PY{o}{]}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+  \PY{n}{alias} \PY{n}{DIandC} \PY{k}{for} \PY{err}{\PYZsq{}}\PY{n}{Digital} \PY{n}{Instrumentation} \PY{n}{and} \PY{n}{Control}\PY{err}{\PYZsq{}}\PY{p}{;}
+
+  \PY{n}{connection} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{NPP} \PY{n}{Operation}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{end}\PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Nuclear} \PY{n}{Power} \PY{n}{Plant} \PY{n}{Operator}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{o}{*}\PY{o}{]}\PY{p}{;}
+    \PY{n}{end}\PY{p}{:} \PY{n}{DIandC}\PY{o}{[}\PY{l+m+mi}{1}\PY{o}{]}\PY{p}{;} 
+  \PY{p}{\PYZcb{}}
+
+  \PY{n}{connection} \PY{n}{def} \PY{err}{\PYZsq{}}\PY{n}{NPP} \PY{n}{Certification} \PY{n}{Authority}\PY{err}{\PYZsq{}} \PY{p}{\PYZob{}}
+    \PY{n}{end}\PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{NPPC}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{l+m+mi}{1}\PY{o}{]}\PY{p}{;}
+    \PY{n}{end}\PY{p}{:} \PY{err}{\PYZsq{}}\PY{n}{Nuclear} \PY{n}{Power} \PY{n}{Plant} \PY{n}{Certifier}\PY{err}{\PYZsq{}}\PY{o}{[}\PY{l+m+mf}{1.}\PY{p}{.}\PY{o}{*}\PY{o}{]}\PY{p}{;}
+  \PY{p}{\PYZcb{}}
+\PY{p}{\PYZcb{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{36}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+Package RTS System Contexts (9b2d0afe-99ce-4068-900f-897491e4d45b)
+
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{37}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{o}{\PYZpc{}}\PY{n}{viz} \PY{l+s}{\PYZdq{}}\PY{l+s}{RTS System Contexts}\PY{l+s}{\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+ 
+            
+\prompt{Out}{outcolor}{37}{}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_31_0.pdf}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}

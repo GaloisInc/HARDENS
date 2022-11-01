@@ -2,17 +2,8 @@
 #include <sys/stat.h>
 #include <sys/times.h>
 #include <sys/time.h>
-
-void *_sbrk(int nbytes);
-int _write(int file, char *ptr, int len);
-int _close(int fd);
-int _fstat(int fd, void *buffer);
-long _lseek(int fd, long offset, int origin);
-int _read(int fd, void *buffer, unsigned int count);
-int _isatty(int fd);
-int _kill(int pid, int sig);
-int _getpid(int n);
-void _exit(int n);
+#include "syscalls.h"
+#include "bsp.h"
 
 void _exit(int n) {
     (void)n;
@@ -28,11 +19,9 @@ void *_sbrk(int nbytes)
     return (void *)-1;
 }
 
-#define UART_TX_REG 0x02000000
-#define MIN_PRINT_DELAY_TICKS 1000
 int _write(int file, char *ptr, int len)
 {
-    volatile uint32_t *uart_tx = (void*) UART_TX_REG;
+    volatile uint32_t *uart_tx = (void*) UART_REG_TX;
     (void)file;
     for (int i=0;i<len;i++) {
     	*uart_tx = ptr[i];

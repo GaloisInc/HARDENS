@@ -1,0 +1,132 @@
+// Architecture
+
+subsystem RTS System Architecture (RTS_System_Arch)
+The system architecture of the Reactor Trip System (RTS).
+
+subsystem Root
+The core subsystem of the RTS.
+
+component Core Finite State Machine (CFSM)
+inherit FSM
+The finite state machine at the core of the RTS which describes its
+main behavioral loop.
+
+component Programming I/O (Programming_IO)
+inherit IO
+The I/O interface used to program the FPGA by loading a bitstream over
+a USB programming interface.
+
+component UI I/O (UI_IO)
+inherit IO
+The I/O interface of the RTS used by a human user to control the
+behavior of the RTS and to understand its current status.
+
+component Debugging I/O (Debugging_IO)
+inherit IO
+The I/O interface used to interface with the FPGA, as well as the
+softcore processor(s) and software loaded onto it, in order to
+introspec on and debug the running system.
+
+subsystem Actuation Logic
+The logic which determines whether or not an RTS actuator should be
+open or closed.
+
+component Voting 1
+The first of two components of the RTS that gathers sensor input,
+executes a voting algorithm, and reports the vote in order to provide
+fault tolerance.
+
+component Voting 2
+The second of two components of the RTS that gathers sensor input,
+executes a voting algorithm, and reports the vote in order to provide
+fault tolerance.
+
+component Actuator 1
+The first of two actuator components of the RTS.
+
+component Actuator 2
+The second of two actuator components of the RTS.
+
+subsystem Computation
+Any kind of digital computation; the execution of an algorithm.
+
+component RISC-V CPU 1
+The first of up to three RISC-V CPUs used in the RTS SoC.
+
+component RISC-V CPU 2
+The second of up to three RISC-V CPUs used in the RTS SoC.
+
+component RISC-V CPU 3
+The third of up to three RISC-V CPUs used in the RTS SoC.
+
+subsystem Hardware
+The hardware subsystems and components of the RTS.
+
+subsystem FPGA
+The FGPA-based subsystems and components of the RTS.
+
+component Lattice ECP-5 FGPA Development Board
+The low-cost FPGA development board used to realize the RTS
+demonstrator.
+
+subsystem Actuators
+The set of actuators of the RTS.
+
+component Actuator 1
+The first of two actuators---solenoids---of the RTS.
+
+component Actuator 2
+The second of two actuators---solenoids---of the RTS.
+
+subsystem Sensors
+The set of sensors of the RTS.
+
+component Temperature Sensor 1
+The first of two temperature sensors of the RTS.
+
+component Temperature Sensor 2
+The second of two temperature sensors of the RTS.
+
+component Pressure Sensor 1
+The first of two pressure sensors of the RTS.
+
+component Pressure Sensor 2
+The second of two pressure sensors of the RTS.
+
+subsystem Instrumentation
+The subsystem which contains all instrumentation-related
+functionality, including all sensors and actuators, of the RTS.
+
+component Instrumentation 1
+The first of four redundant instrumentation components of the RTS.
+
+component Instrumentation 2
+The second of four redundant instrumentation components of the RTS.
+
+component Instrumentation 3
+The third of four redundant instrumentation components of the RTS.
+
+component Instrumentation 4
+The fourth of four redundant instrumentation components of the RTS.
+
+// Top-level subsystems.
+relation RTS_System_Arch contains Root
+relation RTS_System_Arch contains Actuation Logic
+relation RTS_System_Arch contains Computation
+relation RTS_System_Arch contains Hardware
+relation RTS_System_Arch contains Instrumentation
+
+// Nested subsystems.
+relation Hardware contains FPGA
+relation Hardware contains Actuators
+relation Hardware contains Sensors
+
+// Client-supplier relations.
+relation Root client Actuation Logic
+relation Root client Computation
+
+relation Computation client Hardware
+relation Actuation Logic client Hardware
+relation Instrumentation client Hardware
+relation Instrumentation client Actuation Logic
+relation Actuation Logic client Instrumentation

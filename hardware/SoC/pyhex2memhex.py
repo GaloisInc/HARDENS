@@ -50,7 +50,6 @@ def main():
 
     args = parser.parse_args()
     mem2memhex(args)
-    print("Done!")
 
 if __name__ == '__main__':
     main()

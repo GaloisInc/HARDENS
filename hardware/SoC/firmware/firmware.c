@@ -1,41 +1,52 @@
 #include <stdint.h>
-#include <stdio.h>
+#include "bsp.h"
+#include "printf.h"
+//
+// int main(void)
+// {
+//     volatile uint32_t *gpio = (void*) GPIO_REG;
+//     uint32_t cnt = 0;
+//     //char line[256] = {0};
+//     //printf("Hello world\n");
+//     while(1) {
+//         //printf("%u miliseconds passed, GPIO=0x%X\n",time_in_ms(), *gpio);
+//         //printf("%d seconds passed...and a sensor reads 0x%X\n",time_in_s(),i2c_read(0x64, 0x0B));
 
-#define UART_RX_REG 0x02000004
-#define UART_DATA_READY_REG 0x02000008
+//         // NOTE this is still line buffered
+//         //uint8_t c = soc_getchar();
+//         //printf(">>>%c<<<\n",c);
+//         // for (unsigned int i = 0; i < sizeof(line); i++) {
+//         //     line[i] = soc_getchar();
+//         //     if (line[i] == 0 || line[i] == '\n') {
+//         //     break;
+//         //     }
+//         // }
+//         // printf(">>>%s<<<\n",line);
+//         *gpio = cnt;
+//         cnt++;
+//         cnt = cnt % 256;
+//         //delay_ms(1000);
+//         delay(100000);
+//     }
 
-void delay(uint32_t count);
+//     return 0;
+// }
 
-void delay(uint32_t count)
+int main()
 {
-	while(count-->0) {
-		__asm__ volatile ("nop");
+	volatile uint32_t *gpio = (void*)GPIO_REG;
+    *gpio = 0;
+	uint32_t cnt = 0;
+	while(1)
+	{
+		delay_ms(1000);
+        if (cnt == 1) {
+            cnt = 0;
+        } else {
+            cnt = 1;
+        }
+		*gpio = cnt;
+        printf("%u miliseconds passed, GPIO=0x%X\n",time_in_ms(), *gpio);
 	}
-}
-						  
-int main(void)
-{
-	volatile uint32_t *data_rdy = (void*) UART_DATA_READY_REG;
-	volatile uint32_t *rx_data = (void*) UART_RX_REG;
-	printf("Hello world!\n");
-	delay(100);
-
-	while(1) {
-		if (*data_rdy){
-			printf("%c", *rx_data);
-		}
-	}
-
-	// // Uncomment for a loop print
-	// volatile uint32_t *leds = (void*)0x01000000;
-	// *leds = 0;
-	// uint32_t cnt = 0;
-	// while(1)
-	// {
-	// 	delay(500000);
-	// 	*leds = cnt++;
-	// 	printf("%d: Still alive!",cnt);
-	// }
-
 	return 0;
 }

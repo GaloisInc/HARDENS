@@ -1,9 +1,0 @@
-[ { "header": "Intuition", "tactic": "Wp.normal_form", "params": {},
-    "select": { "select": "clause-step", "at": 22, "kind": "have",
-                "target": "((L_Trip Mint_0 vals_0 setpoints_0 2)=(tmp_1_0=1))\n/\\ ((tmp_1_0=0) \\/ (tmp_1_0=1))",
-                "pattern": "&=|L_Trip===$Mint$vals$setpoints" },
-    "children": { "DNF": [ { "prover": "qed", "verdict": "valid" } ],
-                  "DNF": [ { "prover": "qed", "verdict": "valid" } ],
-                  "DNF": [ { "prover": "qed", "verdict": "valid" } ],
-                  "DNF": [ { "prover": "qed", "verdict": "valid" } ],
-                  "DNF": [ { "prover": "qed", "verdict": "valid" } ] } } ]

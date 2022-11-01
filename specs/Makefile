@@ -1,23 +1,33 @@
+LANDO=java -jar ../assets/lando-2.0-12-Jan-2022-29a47e19-jar-with-dependencies.jar
+LOBOT=/tools/lando/source/lobot/dist-newstyle/build/x86_64-linux/ghc-8.8.4/lobot-0.1/x/lobot/build/lobot/lobot
+OBJS := $(patsubst %.lando,%.md,$(wildcard Lando/*.lando))
+
 .PHONY: all validate
 
-all: validate
+all: $(OBJS)
 
 validate: validate_lando validate_lobot
 
 validate_lando:
-	lando validate RTS.lando
-	lando validate acronyms.lando
-	lando validate architecture.lando
-	lando validate dataflow.lando
-	lando validate events.lando
-	lando validate glossary.lando
-	lando validate hardware.lando
-	lando validate instrumentation.lando
-	lando validate project_requirements.lando
-	lando validate requirements.lando
-	lando validate scenarios.lando
-	lando validate test_scenarios.lando
-	lando validate tool_scenarios.lando
+	$(LANDO) validate Lando/RTS.lando
+	$(LANDO) validate Lando/acronyms.lando
+	$(LANDO) validate Lando/architecture.lando
+	$(LANDO) validate Lando/dataflow.lando
+	$(LANDO) validate Lando/events.lando
+	$(LANDO) validate Lando/glossary.lando
+	$(LANDO) validate Lando/hardware.lando
+	$(LANDO) validate Lando/instrumentation.lando
+	$(LANDO) validate Lando/project_requirements.lando
+	$(LANDO) validate Lando/requirements.lando
+	$(LANDO) validate Lando/test_scenarios.lando
+	$(LANDO) validate Lando/tool_scenarios.lando
 
 validate_lobot:
-	lobot RTS.lobot
+	$(LOBOT) RTS.lobot
+
+%.md : %.lando
+	@echo "Converting $< to $@"
+	@$(LANDO) convert --to markdown $< $@
+
+clean :
+	@rm -rf $(OBJS)

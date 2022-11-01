@@ -1,8 +1,8 @@
 #ifndef INSTRUMENTATION_H_
 #define INSTRUMENTATION_H_
 
-#include "platform.h"
 #include "common.h"
+#include "core.h"
 #include "models.acsl"
 
 #define ShouldTrip(_vals, _setpoints, _ch) \
@@ -69,4 +69,5 @@ void instrumentation_init(struct instrumentation_state *state);
   @ensures state->mode[S] \in {BYPASS, OPERATE, TRIP};
 */
 int instrumentation_step(uint8_t div, struct instrumentation_state *state);
+
 #endif // INSTRUMENTATION_H_

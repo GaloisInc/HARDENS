@@ -30,5 +30,5 @@ with open(sys.argv[1]) as csv_file:
     reader = csv.reader(csv_file,delimiter='\t')
     foos = [render(tc) for testcase in reader for tc in expand(testcase)]
     tests = ",\n".join(foos)
-    print({f}"// Tests generated from {sys.argv[1]}")
+    print(f"// Tests generated from {sys.argv[1]}")
     print(tests)

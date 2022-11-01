@@ -1,11 +1,14 @@
 #include "core.h"
 #include "platform.h"
-#include "stdio.h"
 #include "actuate.h"
 #include "rts.h"
 #include <string.h>
 
-int actuate_devices_generated_C(void);
+#ifdef PLATFORM_HOST
+#include <stdio.h>
+#else
+#include "printf.h"
+#endif
 
 #define INST_OFFSET 0
 #define ACT_OFFSET 5
@@ -20,6 +23,7 @@ const char fail[] = "LAST TEST: FAIL";
 char sensor_warning[] = "WARNING: LARGE SENSOR DIFFERENTIAL";
 char sensor_ok[] = "SENSORS OK";
 
+#ifdef ENABLE_SELF_TEST
 struct testcase {
   uint32_t input[4][2];
   uint32_t setpoints[4][3];
@@ -31,6 +35,7 @@ struct testcase {
 // Test data generated from Cryptol RTS::SelfTestOracleHalf
 #include "self_test_data/tests.inc.c"
 };
+#endif
 
 char mode_char(uint8_t mode) {
   switch (mode) {
@@ -86,7 +91,6 @@ int update_ui_instr(struct ui_values *ui) {
       continue;
 
     for (uint8_t j = 0; j < NDIVISIONS; ++j) {
-
       if (ui->maintenance[j])
         continue;
 
@@ -125,6 +129,7 @@ int update_ui_actuation(struct ui_values *ui) {
 }
 
 int update_ui(struct ui_values *ui) {
+  DEBUG_PRINTF(("<core.c> update_ui\n"));
   int err = 0;
   err |= update_ui_instr(ui);
   err |= update_ui_actuation(ui);
@@ -138,11 +143,15 @@ int set_display_line(struct ui_values *ui, uint8_t line_number, char *display, u
   return 0;
 }
 
+#ifdef ENABLE_SELF_TEST
 int end_test(struct test_state *test, struct ui_values *ui) {
+    static int cnt = 0;
     int passed =
          test->test_device_result[test->test_device]
       == (test->self_test_expect || test->actuation_old_vote);
     test->failed = !passed;
+    DEBUG_PRINTF(("<core.c> end_test #%d: test->test_device_result[%u]=0x%X\n", cnt, test->test_device, test->test_device_result[test->test_device]));
+    DEBUG_PRINTF(("<core.c> end_test #%d: (test->self_test_expect || test->actuation_old_vote)=0x%X\n", cnt, (test->self_test_expect || test->actuation_old_vote)));
 
     // Reset state
     set_test_running(0);
@@ -158,7 +167,8 @@ int end_test(struct test_state *test, struct ui_values *ui) {
       set_display_line(ui, 16, (char*)fail, 0);
       set_display_line(ui, 20, (char*)"A TEST FAILED", 0);
     }
-
+    DEBUG_PRINTF(("<core.c> end_test #%d: Passed: %d\n", cnt, passed));
+    cnt++;
     return passed;
 }
 
@@ -176,15 +186,16 @@ int components_ready() {
 int self_test_timer_expired(struct test_state *test) {
   uint32_t t    = time_in_s();
   uint32_t diff = t - test->test_timer_start;
-
   return SELF_TEST_PERIOD_SEC < diff;
 }
 
 int should_start_self_test(struct test_state *test) {
-  return (!is_test_running()) && (self_test_timer_expired(test) || (test->test != 0));
+  int retval = (!is_test_running()) && (self_test_timer_expired(test) || (test->test != 0));
+  return retval;
 }
 
 int test_step(struct test_state *test, struct ui_values *ui) {
+  DEBUG_PRINTF(("<core.c> test_step: Has test failed? %u\n",test->failed));
   int err = 0;
 
   if(!test->failed && should_start_self_test(test)) {
@@ -194,6 +205,8 @@ int test_step(struct test_state *test, struct ui_values *ui) {
       test->self_test_expect = next->expect;
       test->test_device = next->device;
       test->test_actuation_unit = next->actuation_unit;
+      DEBUG_PRINTF(("<core.c> test_step: starting new test. test->self_test_expect=%u,test->test_device=%u, test->test_actuation_unit=%u,\n",
+        test->self_test_expect,test->test_device,test->test_actuation_unit));
       memcpy(test->test_instrumentation, next->instrumentation, 2);
       memcpy(test->test_inputs, next->input, 2*4*sizeof(uint32_t));
       memcpy(test->test_setpoints, next->setpoints, 3*4*sizeof(uint32_t));
@@ -202,27 +215,37 @@ int test_step(struct test_state *test, struct ui_values *ui) {
       set_display_line(ui, 15, (char *)self_test_running, 0);
     }
   } else if (is_test_running() && test->test_device_done[test->test_device]) {
+    DEBUG_PRINTF(("<core.c> test_step: Ending test\n"));
     int passed = end_test(test, ui);
     if(!passed) err = -1;
   } else if (!is_test_running()) {
+    DEBUG_PRINTF(("<core.c> test_step:Continuing test\n"));
     set_display_line(ui, 15, (char *)self_test_not_running, 0);
+  } else {
+    DEBUG_PRINTF(("<core.c> test_step:Catchall\n"));
   }
 
   return err;
 }
+#endif
 
-void core_init(struct core_state *core) {
-  core->test.test_timer_start = time_in_s();
-  core->test.failed = 0;
+void core_init(struct core_state *c) {
+  c->test.test_timer_start = time_in_s();
+  c->test.failed = 0;
 }
 
-int core_step(struct core_state *core) {
+int core_step(struct core_state *c) {
   int err = 0;
   struct rts_command rts;
+#ifndef ENABLE_SELF_TEST
+  time_in_s();
+#endif
 
-  if (!core->error)
+  if (!c->error) {
     // Actuate devices if necessary
-    actuate_devices_generated_C();
+    int retval = actuate_devices_generated_C();
+    DEBUG_PRINTF(("<core.c> actuate_devices_generated_C: 0x%X\n", retval));
+  }
 
   // Let's allow command processing even if an error is detected.
   // In a real system, we would probably want to disconnect the device
@@ -234,7 +257,7 @@ int core_step(struct core_state *core) {
     switch (rts.type) {
     case INSTRUMENTATION_COMMAND:
       err |= send_instrumentation_command(rts.instrumentation_division,
-                                          &rts.cmd.instrumentation);
+                                          &(rts.cmd.instrumentation));
       break;
 
     case ACTUATION_COMMAND:
@@ -247,9 +270,11 @@ int core_step(struct core_state *core) {
     }
   }
 
-  err |= test_step(&core->test, &core->ui);
-  err |= update_ui(&core->ui);
+#ifdef ENABLE_SELF_TEST
+  err |= test_step(&c->test, &c->ui);
+#endif
+  err |= update_ui(&c->ui);
 
-  core->error = err;
+  c->error = err;
   return err;
 }

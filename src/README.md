@@ -4,8 +4,8 @@ This directory contains the source (both hand-written and generated, `C` and
 `SystemVerilog`) for the reactor trip system:
 
 - The root directory contains hand-written `C` sources
-- [](./generated_csrc) contains `C` sources generated from the `Cryptol` model
-- [](./generated_vsrc) contains `SystemVerilog` sources generated from the `Cryptol` model
+- [./generated_csrc](./generated_csrc) contains `C` sources generated from the `Cryptol` model
+- [./generated_vsrc](./generated_vsrc) contains `SystemVerilog` sources generated from the `Cryptol` model
 
 ## Dependencies
 
@@ -36,6 +36,8 @@ implemented) on a NERV-based SoC.
 - `T_THRESHOLD`,`P_THRESHOLD`: indicate in the UI when two sensor readings
   (temperature and pressure, respectively) differ by these thresholds (degrees F
   and 10^-5 lb/in^2, respectively)
+- `SELF_TEST=Enabled` (default) builds the `rts` with a periodic self-test
+  feature. `SELF_TEST=Disabled` builds the system without this feature.
   
 ## UI
 
@@ -60,6 +62,53 @@ Channels are always coded `0` for temperature, `1` for pressure, `2` for saturat
 - `D`: force the display to update
 - `Q`: quit
 
+## Display
+
+The display will look something like the following:
+
+``` sh
+#I 0 (M): T[         0 B 0] P[         0 B 0] S[     -9998 B 1]
+#I 1 (M): T[         0 B 1] P[         0 B 1] S[     -9998 B 1]
+#I 2 (M): T[         0 B 0] P[         0 B 1] S[     -9998 B 1]
+#I 3 (M): T[         0 B 0] P[         0 B 0] S[     -9998 B 1]
+
+#A 0 [9 8]
+#A 1 [0 0]
+
+HW ACTUATORS OFF OFF
+
+
+
+
+
+SENSORS OK
+SELF TEST:     RUNNING
+LAST TEST: PASS
+```
+
+The first four lines display information about each of the four instrumentation units:
+
+- `#I <number>` identifies which unit
+- `(<M or _>)` indicates the unit is in maintenance (`M`), or not (`_`).
+- `<T or P or S>[ <number> <O or B or T> <byte> ]` is a channel reading:
+   - `T`, `P`, `S` for temperature, pressure, and saturation margin
+   - `<number>` is the sensor (or computed) reading: degrees F for `T`, 10^-5 lb/in^2 for `P` and `S`
+   - `O`=normal mode, `B`=bypass, `T`=trip mode
+   - The `<byte>` value's LSB indicates a signal trip if set. The MSB indicates if this is a monitored test signal.
+ 
+The Two `#A` lines indicate the actuation unit output signals:
+
+- `#A <number> [<byte> <byte>]` indicates the state for actuation unit
+  `<number>`. The two byte values indicate the voting logic output for each
+  device. The LSB indicates a vote to actuate if set, the MSB indicates if this
+  is a monitored test signal.
+
+Other output:
+- `HW ACTUATORS <ON or OFF> <ON or OFF>` indicate the state of the HW actuators.
+- `SENSORS <state>` indicate if sensors readings appear to diverge more than some configured threshold (see `T_THRESHOLD`,`P_THRESHOLD`).
+- `SELF TEST: <state>` indicates whether or not self test is currently running
+- `LAST TEST: <state>` indicates the result of the last self test.
+
 ### Simulation Targets
 
 The `Makefile` in this directory can generate simulation builds of the `RTS`
@@ -79,7 +128,7 @@ The `PLATFORM` variable controls whether or not we are building for the Soc:
 #### Sensors
 
 The simulation build can be configured to accept user input for sensor values
-(see [](tests/sense_actuate_0) or to generate a "random walk" of sensor values.
+(see [tests/sense_actuate_0](tests/sense_actuate_0) or to generate a "random walk" of sensor values.
 This is controlled via the `SENSORS` build flag:
 
 - `make SENSORS=Simulated rts` will build a simulator that generates random
@@ -102,7 +151,7 @@ This is controlled via the `SENSORS` build flag:
   `#I` to `#V`
 
 An example of how to script the system is given in
-[](tests/sense_actuate_0); you can execute
+[tests/sense_actuate_0](tests/sense_actuate_0); you can execute
 
 ``` sh
 cat tests/sense_actuate_0 | ./rts.posix
@@ -118,25 +167,28 @@ to run the script.
 ## Building
 
 Run `make rts` to generate an executable simulator. To regenerate
-`SystemVerilog` or `C` functions after an update to the Cryptol model, you can
-run `REGEN_SOURCES=1 make <target>`; by default, the checked-in existing
-generated code will be used.
+`SystemVerilog` or `C` functions after an update to the Cryptol model,
+you can run `REGEN_SOURCES=1 make <target>`; by default, the
+checked-in existing generated code will be used.
 
-## Verification with Frama-c 
+## Verification with Frama-C
 
-ACSL contracts are provided for the components implemented under `generated` and
-`handwritten` and their callers. To verify that implementations satisfy their contracts, run
+ACSL contracts are provided for the components implemented under
+`generated` and `handwritten` and their callers. To verify that
+implementations satisfy their contracts, run
 
 `make -f frama_c.mk`
 
 ## Concurrency
 
-The RTS implementation is a concurrent system comprising two instrumentation +
-actuation logic modules plus a core logic controller.
+The RTS implementation is a concurrent system comprising two
+instrumentation + actuation logic modules plus a core logic
+controller.
 
-Consulting the SysMLv2 architecture, the principal ways in which processes
-communicate is via input and output values (e.g. passing trip signal values from
-the instrumentation divisions to the actuation unit. Each writable memory
-location has a unique writer, and system states inbetween individual writes are
-consistent. Therefore, it is only necessary to guarantee that individual writes
-(to shared locations) are made atomically.
+Consulting the SysMLv2 architecture, the principal ways in which
+processes communicate is via input and output values (e.g., passing
+trip signal values from the instrumentation divisions to the actuation
+unit. Each writable memory location has a unique writer, and system
+states inbetween individual writes are consistent. Therefore, it is
+only necessary to guarantee that individual writes (to shared
+locations) are made atomically.

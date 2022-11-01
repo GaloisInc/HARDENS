@@ -19,12 +19,15 @@ else
   $(info  INFO: BLUESPEC_HOME is $(BLUESPEC_HOME))
 endif
 
-MEMORY_SIZE ?= 0x40000
+IMEMORY_SIZE ?= 0x07000
+DMEMORY_SIZE ?= 0x03000
+
 
 # ================================================================
 
 TOPFILE   ?= src_BSV/Top.bsv
 TOPMODULE ?= mkTop
+TARGET ?= verilator
 
 BSCFLAGS += -keep-fires
 BSCFLAGS += -aggressive-conditions
@@ -35,6 +38,9 @@ BSCFLAGS += -unspecified-to 0
 BSCFLAGS += -parallel-sim-link 8
 # BSCFLAGS += -show-schedule
 # BSCFLAGS += -no-inline-rwire
+ifeq ($(TARGET),verilator)
+BSCFLAGS += -D SIMULATION
+endif
 
 BSC_C_FLAGS += -Xc++  -D_GLIBCXX_USE_CXX11_ABI=0
 BSC_C_FLAGS += -Xl -v
@@ -44,46 +50,67 @@ BSC_C_FLAGS += -Xc -O3 -Xc++ -O3
 # Search path for .bsv files
 
 BSCPATH = src_BSV
+VSCPATH = src_Verilog
 
 # Path for standard bsc libs
-BSCPATH := $(BSCPATH):+
+BSCPATH_V := $(BSCPATH):+
 
 # ================================================================
 # Verilog generation (common for all verilog simulator targets)
-
-BSCDIRS_V = -vdir verilog  -bdir build_v  -info-dir build_v
-BSCPATH_V = $(BSCPATH)
-
-build_v:
-	mkdir -p $@
-
-verilog:
-	mkdir -p $@
+BUILD_V_DIR = build_v
+VERILOG_DIR = verilog
+BSCDIRS_V = -vdir $(VERILOG_DIR)  -bdir $(BUILD_V_DIR)  -info-dir $(BUILD_V_DIR)
 
 FIRMWARE_DIR = firmware
-imem_contents.memhex32:
-	@make -C $(FIRMWARE_DIR) clean
-	@make -C $(FIRMWARE_DIR) firmware.elf
+PROG 	?= demo
+CORE_FREQ ?= 1333333
+
+dmem_contents.memhex32:
+	PROG=$(PROG) make -C $(FIRMWARE_DIR) clean
+	CORE_FREQ=$(CORE_FREQ) PROG=$(PROG) make -C $(FIRMWARE_DIR) firmware.elf
 	@riscv64-unknown-elf-elf2hex --bit-width 32 --input $(FIRMWARE_DIR)/firmware.elf --output $(FIRMWARE_DIR)/intermediate.hex
-#	@riscv64-unknown-elf-objcopy -O ihex $(FIRMWARE_DIR)/firmware.elf $(FIRMWARE_DIR)/intermediate.hex
-	@./pyhex2memhex.py --input $(FIRMWARE_DIR)/intermediate.hex --output $(FIRMWARE_DIR)/firmware.memhex32 --maxlen $(MEMORY_SIZE)
+	@./pyhex2memhex.py --input $(FIRMWARE_DIR)/intermediate.hex --output $(FIRMWARE_DIR)/firmware.memhex32 --maxlen $(DMEMORY_SIZE)
 	@mv $(FIRMWARE_DIR)/firmware.memhex32 $@
-	@mv $(FIRMWARE_DIR)/firmware.asm .
+	@cp $(FIRMWARE_DIR)/firmware.asm .
 	@rm $(FIRMWARE_DIR)/intermediate.hex
 
-.PHONY: compile_verilog
-compile_verilog: build_v verilog imem_contents.memhex32
+imem_contents.memhex32: dmem_contents.memhex32
+	@cp $< $@
+
+verilog: dmem_contents.memhex32 imem_contents.memhex32
+	mkdir -p $(BUILD_V_DIR)
+	mkdir -p $(VERILOG_DIR)
 	@echo INFO: Verilog generation ...
 	bsc -u -elab -verilog  $(BSCDIRS_V)  $(BSCFLAGS) -p +:%/Libraries/FPGA/Misc -p $(BSCPATH_V) $(TOPFILE)
 	@echo INFO: Finished Verilog generation
+
+verilog_fpga: dmem_contents.memhex32 imem_contents.memhex32
+	mkdir -p $(BUILD_V_DIR)
+	mkdir -p $(VERILOG_DIR)
+	@echo INFO: Verilog generation ...
+	bsc -u -elab -verilog  $(BSCDIRS_V)  $(BSCFLAGS) -p +:%/Libraries/FPGA/Misc -p $(BSCPATH_V) src_BSV/FpgaTop.bsv
+	@echo INFO: Finished Verilog generation
+
+verilog_modules:
+	@echo "Copying over handwritten modules"
+	cp -p ../../src/handwritten/SystemVerilog/instrumentation_impl.sv $(VERILOG_DIR)/Is_Ch_Tripped.sv
+	sed 's/Is_Ch_Tripped/Is_Ch_Tripped_Handwritten/' $(VERILOG_DIR)/Is_Ch_Tripped.sv > $(VERILOG_DIR)/out.sv
+	mv $(VERILOG_DIR)/out.sv $(VERILOG_DIR)/Is_Ch_Tripped_Handwritten.sv
+	sed 's/Generate_Sensor_Trips/Generate_Sensor_Trips_Handwritten/' $(VERILOG_DIR)/Is_Ch_Tripped_Handwritten.sv > $(VERILOG_DIR)/out.sv
+	mv $(VERILOG_DIR)/out.sv $(VERILOG_DIR)/Is_Ch_Tripped_Handwritten.sv
+	@echo "Copying over generated modules"
+	cp -p ../../src/generated/SystemVerilog/instrumentation_impl.sv $(VERILOG_DIR)/Is_Ch_Tripped.sv
+	sed 's/Is_Ch_Tripped/Is_Ch_Tripped_Generated/' $(VERILOG_DIR)/Is_Ch_Tripped.sv > $(VERILOG_DIR)/out.sv
+	mv $(VERILOG_DIR)/out.sv $(VERILOG_DIR)/Is_Ch_Tripped_Generated.sv
+	sed 's/Generate_Sensor_Trips/Generate_Sensor_Trips_Generated/' $(VERILOG_DIR)/Is_Ch_Tripped_Generated.sv > $(VERILOG_DIR)/out.sv
+	mv $(VERILOG_DIR)/out.sv $(VERILOG_DIR)/Is_Ch_Tripped_Generated.sv
+	cp -p ../../src/generated/SystemVerilog/actuation_unit_impl.sv $(VERILOG_DIR)/Actuate_D0.sv
+	rm $(VERILOG_DIR)/Is_Ch_Tripped.sv
 
 # ================================================================
 # FOR VERILATOR
 
 EXEFILE_VERILATOR  ?= exe_verilator
-
-.PHONY: all_verilator
-all_verilator:  compile_verilog  link_verilator  exe_verilator
 
 # Boilerplate stuff
 VERILATOR_RESOURCES = Verilator_Resources
@@ -103,16 +130,21 @@ VERILATOR_FLAGS += -CFLAGS -O3
 VERILATOR_FLAGS += -CFLAGS -DVL_DEBUG
 VERILATOR_FLAGS += -LDFLAGS -static
 
-.PHONY: link_verilator
-link_verilator: compile_verilog
+SENSORS ?= Simulated
+ifeq ($(SENSORS),Simulated)
+VERILATOR_FLAGS += -CFLAGS -DSIMULATE_SENSORS
+endif
+
+verilator: verilog verilog_modules
 	@echo "INFO: Link for Verilator ..."
 	@echo "INFO: For convenience (single -I flag to verilator) copy all Verilog files into $(VERILATOR_RTL_DIR)/"
 	mkdir -p $(VERILATOR_RTL_DIR)
 	cp -p  $(VERILATOR_RESOURCES)/verilator_wrapper.v    $(VERILATOR_RTL_DIR)/
 	cp -p  $(VERILATOR_RESOURCES)/*.c    $(VERILATOR_RTL_DIR)/
 	cp -p  $(VERILATOR_RESOURCES)/*.h    $(VERILATOR_RTL_DIR)/
-	cp -p  verilog/*.v                                   $(VERILATOR_RTL_DIR)/
-	cp -p  $(NERV_REPO)/nerv.sv                          $(VERILATOR_RTL_DIR)/
+	cp -p  $(VERILOG_DIR)/*.v            $(VERILATOR_RTL_DIR)/
+	cp -p  $(VERILOG_DIR)/*.sv            $(VERILATOR_RTL_DIR)/
+	cp -p  $(NERV_REPO)/nerv.sv          $(VERILATOR_RTL_DIR)/
 	cp -p  $(BLUESPEC_HOME)/lib/Verilog/*.v  $(VERILATOR_RTL_DIR)/
 	@echo "INFO: Generating sim_main.cpp for TOPMODULE = $(TOPMODULE)"
 	sed  's/TOPMODULE/mkTop/g' \
@@ -133,19 +165,47 @@ link_verilator: compile_verilog
 	mv  $(VERILATOR_MAKE_DIR)/$(EXEFILE_VERILATOR)  .
 	@echo INFO: Finished Link for Verilator
 
-.PHONY: exe_verilator
-exe_verilator: link_verilator
+exe: verilator
 	@echo INFO: Verilator Simulation ...
 	./$(EXEFILE_VERILATOR)
 	@echo INFO: Finished Verilator Simulation
 
 # ================================================================
+# TODO @podhrmic Define CORE_FREQ and TICKS_TO_MS_MULTIPLIER for the FPGA
 
+SYNTH_DIR = Fpga_RTL
+design.json: verilog_fpga verilog_modules
+	mkdir -p $(SYNTH_DIR)
+	cp $(VSCPATH)/*.v $(SYNTH_DIR)/
+	cp $(NERV_REPO)/nerv.sv $(SYNTH_DIR)/
+	cp $(BLUESPEC_HOME)/lib/Verilog/ResetInverter.v $(SYNTH_DIR)/
+	cp $(BLUESPEC_HOME)/lib/Verilog/SizedFIFO.v $(SYNTH_DIR)/
+	cp $(BLUESPEC_HOME)/lib/Verilog/Counter.v $(SYNTH_DIR)/
+	cp $(VERILOG_DIR)/*.v $(SYNTH_DIR)/
+	cp $(VERILOG_DIR)/*.sv $(SYNTH_DIR)/
+	cp $(BLUESPEC_HOME)/lib/Verilog/BRAM1Load.v $(SYNTH_DIR)/
+	cp $(BLUESPEC_HOME)/lib/Verilog/TriState.v $(SYNTH_DIR)/
+	cp $(BLUESPEC_HOME)/lib/Verilog/FIFO2.v $(SYNTH_DIR)/
+	cp $(BLUESPEC_HOME)/lib/Verilog/SizedFIFO0.v $(SYNTH_DIR)/
+	yosys -p "synth_ecp5 -top top -json $@ -top top" $(SYNTH_DIR)/*.v $(SYNTH_DIR)/*.sv
 
-.PHONY: clean
+design.config: design.json
+	nextpnr-ecp5 --json $< --textcfg $@ --um5g-85k --package CABGA381 --lpf ecp5.lpf
+
+design.svf: design.config
+	ecppack --svf design.svf $<
+
+prog:
+	ecppack --svf design.svf design.config
+	openocd -f /opt/share/trellis/misc/openocd/ecp5-evn.cfg -c "transport select jtag; init; svf design.svf; exit"
+
+open:
+	openocd -f /opt/share/trellis/misc/openocd/ecp5-evn.cfg
+
 clean:
 	rm -r -f  *~   */*~  build*  obj_dir \
-		$(VERILATOR_RTL_DIR)  $(VERILATOR_MAKE_DIR)  Verilator_Resources/sim_main.cpp imem_contents.memhex32 firmware.asm \
-		verilog  exe_* *.o *.sft ./*.so
+		$(VERILATOR_RTL_DIR)  $(VERILATOR_MAKE_DIR)  Verilator_Resources/sim_main.cpp *.memhex32 *.asm \
+		$(VERILOG_DIR)  exe_* *.o *.sft ./*.so \
+		design* $(SYNTH_DIR)
 
 # ================================================================

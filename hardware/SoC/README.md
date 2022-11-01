@@ -130,3 +130,23 @@ Run it:
 A transcript of about the first 100 lines is found in
 `transcript_exe_Verilator`.
 
+## Status as of 6/6/2022
+* FPGA sending serial data at 76800 baud
+* a simple python script will read and send data:
+  ```python
+  import serial
+  import time
+  #Serial takes two parameters: serial device and baudrate
+  with serial.Serial('/dev/ttyUSB0', 76800, serial.EIGHTBITS, serial.PARITY_NONE, serial.STOPBITS_ONE) as s:
+      while(1):
+          s.write(bytearray([0xAA])) # TODO: replace this with real data
+          print(s.readline().decode())
+  ```
+* tested with the demo firmware, not the real RTS one
+* in Verilator read and write works, as well as simulted sensors and self-tests (simulated sensors need to be disabled for that)
+* the FPGA input clock is 12MHz, the CPU clock is 1.3MHz (around 9x slowdown), this is likely related to the waits required for memory fetch (we don't use caching)
+* the unfinished part on FPGA platform is:
+  * serial input
+  * i2c sensor communication
+  * wiring of sensors, actuators and such
+* the RTS for non-posix target is currently single core, which causes issues with reading serial input (we don't have interrupts on Nerv). The way to mitigate this is to move to dual-CPU configuration, where one CPU with relatively large memory will service user input/ouput (requires string parsing and manipulation libraries, hence the larger memory), and the other CPU or CPUs that implement the instrumentation/voting logic (the don't need any print functions, so the code size is rather small)

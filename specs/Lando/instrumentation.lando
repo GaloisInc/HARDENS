@@ -1,0 +1,87 @@
+subsystem RTS Instrumentation Architecture
+The architecture for the instrumentation (sensors and actuators)
+subsystem of the RTS demonstrator.
+
+subsystem RTS Instrumentation Systems Architecture
+The systems architecture for the instrumentation subsystem of the RTS
+demonstrator.  Some of the architecture is implemented in hardware,
+and some is implementated in software.
+
+component Instrumentation Implementation (InstImpl) inherit Driver
+A software or hardware driver that interfaces with a sensor.  In the
+RTS demonstrator there are two kinds of sensors: pressure and
+temperature.
+
+component Actuator Implementation (ActImpl)
+inherit Driver
+A software or hardware driver that interfaces with an actuator.  In
+the RTS demonstrator there is one kind of actuator: a solenoid.
+
+component Voting Implementation (VoteImpl)
+inherit Voting
+A software or hardware implemenation of our voting algorithm that
+provides fault tolerance for decision-making based upon the attached
+components' inputs.
+
+subsystem Instrumentation Software Stack (SWStack)
+inherit Software
+The software stack associated with the instrumentation subsystem.
+
+component Instrumentation Implementation 1 (InstImpl1) inherit Instrumentation Implementation
+The first of four sensor drivers for the instrumentation subsystem.
+
+relation InstImpl1 inherit SWImpl
+relation InstImpl1 inherit High-Assurance
+relation InstImpl1 inherit C
+
+component Instrumentation Implementation 2 (InstImpl2)
+inherit InstImpl
+The second of four sensor drivers for the instrumentation subsystem.
+There are multiple sensors in the architecture to provide fault
+tolerance.
+
+component Actuator Implementation 1 (ActImpl1)
+inherit ActImpl
+The first of two actuator drivers for the instrumentation subsystem.
+There are multiple actuators in the architecture to provide fault
+tolerance.
+
+component Voting Implementation 1 (VoteImpl1)
+inherit VoteImpl
+The first of two implementations of the voting component.  Voting is
+used to implement redundancy of instrumentation and control in the RTS
+demonstrator.
+
+relation SWStack client Binaries
+relation Binaries client SWStack
+
+subsystem Instrumentation Actuation and Voting Hardware Stack (HWStack)
+The hardware implementations driving a redundant subset of sensors,
+actuators, and voting components.
+
+component Instrumentation Implementation 3 (InstImpl3)
+inherit InstImpl
+The third of four sensor drivers for the instrumentation subsystem.
+There are multiple sensors in the architecture to provide fault
+tolerance.
+
+component Instrumentation Implementation 4 (InstImpl4)
+inherit InstImpl
+The fourth of four sensor drivers for the instrumentation subsystem.
+There are multiple sensors in the architecture to provide fault
+tolerance.
+
+component Actuator Implementation 2  (ActImpl2)
+inherit ActImpl
+The second of two actuator drivers for the instrumentation subsystem.
+There are multiple actuators in the architecture to provide fault
+tolerance.
+
+component Voting Implementation 2 (VoteImpl2)
+inherit VoteImpl
+The second of two implementations of the voting component.  Voting is
+used to implement redundancy of instrumentation and control in the RTS
+demonstrator.
+
+relation HWStack client Bitstream
+relation Bitstream client HWStack

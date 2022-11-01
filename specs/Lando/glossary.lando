@@ -1,0 +1,410 @@
+subsystem Proposal Glossary (Glossary)
+A list of often difficult or specialized words with their definitions, often placed at the back of a book.
+
+component Behavioral Interface Specification Language (BISL)
+A formal, state-based specification language that focuses on the
+specification of the interfaces of discrete modules in a system, and
+often times includes model-based specification constructs to improve
+usability and expressivity.
+
+component BlueCheck
+A property-based testing framework for components written in Bluespec
+SystemVerilog that uses some of the design patterns and ideas from the
+QuickCheck.
+
+component Coq
+Coq is an interactive theorem prover first released in 1989. It allows
+for expressing mathematical assertions, mechanically checks proofs of
+these assertions, helps find formal proofs, and extracts a certified
+program from the constructive proof of its formal specification. Coq
+works within the theory of the calculus of inductive constructions, a
+derivative of the calculus of constructions. Coq is not an automated
+theorem prover but includes automatic theorem proving tactics
+(procedures) and various decision procedures.
+
+component Cryptol
+Cryptol is a domain specific programming language for cryptography
+developed by Galois.  The language was originally developed for use by
+the United States National Security Agency. The language is also used
+by private firms that provide information technology systems, such as
+Amazon and defense contractors in the United States.  The programming
+language is used for all aspects of developing and using cryptography,
+such as the design and implementation of new ciphers and the
+verification of existing cryptographic algorithms.
+
+component DevSecOps
+The use of tools in a user's local and remote design, development,
+validation, verification, maintenance, and evolution environments that
+facilitate the automatic and continuous evaluation by static and
+dynamic means of a system/subsystem/component's behavioral (e.g.,
+safety and correctness) and non-behavioral (e.g., well-formedness and
+security) properties.
+
+component Digital Instrumentation and Control Systems (DIANDC)
+One of several types of control systems and associated instrumentation
+used for industrial process control.  Such systems can range in size
+from a few modular panel-mounted controllers to large interconnected
+and interactive distributed control systems with many thousands of
+field connections. Systems receive data from remote sensors measuring
+process variables (PVs), compare the collected data with desired
+setpoints (SPs), and derive command functions which are used to
+control a process through the final control elements (FCEs), such as
+control valves.
+
+component Formal Requirements Elicitation Tool (FRET)
+The NASA Formal Requirements Elicitation Tool is used to make writing,
+understanding, and debugging formal requirements natural and
+intuitive.
+
+component PVS
+A specification language integrated with support tools and an
+automated theorem prover, developed at the Computer Science Laboratory
+of SRI International.  PVS is based on a kernel consisting of an
+extension of Church's theory of types with dependent types, and is
+fundamentally a classical typed higher-order logic.
+
+component RISC-V
+RISC-V (pronounced ``risk-five'') is an open standard instruction set
+architecture (ISA) based on established reduced instruction set
+computer (RISC) principles. Unlike most other ISA designs, the RISC-V
+ISA is provided under open source licenses that do not require fees to
+use. A number of companies are offering or have announced RISC-V
+hardware, open source operating systems with RISC-V support are
+available and the instruction set is supported in several popular
+software toolchains.
+
+component Requirements State Modeling Language (RSML)
+A formal specification language that uses hierarchical finite state
+machines to specify system requirements.
+
+component SAT
+The Boolean satisfiability problem (sometimes called propositional
+satisfiability problem and abbreviated SAT) is the problem of
+determining if there exists an interpretation that satisfies a given
+Boolean formula.
+
+component SAWscript
+The proof script language is used to specify the assumptions and proof
+goals of formal verifications to the SAW tool.
+
+component soft-core
+A CPU or SoC that is implemented in an HDL and synthesized to a
+bitstream and loaded onto an FPGA.
+
+component SPARK
+A formally defined computer programming language based on the Ada
+programming language, intended for the development of high integrity
+software used in systems where predictable and highly reliable
+operation is essential. It facilitates the development of applications
+that demand safety, security, or business integrity.
+
+component SpeAR
+An integrated development environment for formally specifying and
+rigorously analyzing requirements.
+
+component Verifier for Concurrent C (VCC)
+VCC is a program verification tool that proves correctness of
+annotated concurrent C programs or finds problems in them. VCC extends
+C with design by contract features, like pre- and postcondition as
+well as type invariants. Annotated programs are translated to logical
+formulas using the Boogie tool, which passes them to an automated SMT
+solver Z3 to check their validity.
+
+component Verified Software Toolchain (VST)
+A software toolchain that includes static analyzers to check
+assertions about a C program; optimizing compilers to translate a C
+program to machine language; and operating systems and libraries to
+supply context for the C program. The Verified Software Toolchain
+project assures with machine-checked proofs that the assertions
+claimed at the top of the toolchain really hold in the
+machine-language program, running in the operating-system context.
+
+component Refinement
+@todo kiniry Add an explanation.
+
+component Property
+@todo kiniry Add an explanation.
+
+component Safety Property
+inherit Property
+@todo kiniry Add an explanation.
+
+component Correctness Property
+inherit Property
+@todo kiniry Add an explanation.
+
+component Security Property
+inherit Property
+@todo kiniry Add an explanation.
+
+component Model
+@todo kiniry Add an explanation.
+
+component Semi-Formal Model
+inherit Model
+@todo kiniry Add an explanation.
+
+component Formal Model
+inherit Model
+@todo kiniry Add an explanation.
+
+component Consistent
+inherit Property
+@todo kiniry Add an explanation.
+
+component Complete
+inherit Property
+@todo kiniry Add an explanation.
+
+component Consistent Model
+inherit Model Consistent
+@todo kiniry Add an explanation.
+
+component Complete Model
+inherit Model Complete
+@todo kiniry Add an explanation.
+
+component Requirement
+@todo kiniry Add an explanation.
+
+component Scenario
+@todo kiniry Add an explanation.
+
+component Product
+@todo kiniry Add an explanation.
+
+component Product Line
+@todo kiniry Add an explanation.
+
+component Configure
+@todo kiniry Add an explanation.
+
+component DOORS
+@todo kiniry Add an explanation.
+
+component Clafer
+@todo kiniry Add an explanation.
+
+component Lobot
+@todo kiniry Add an explanation.
+
+component Lando
+@todo kiniry Add an explanation.
+
+component Denotational
+@todo kiniry Add an explanation.
+
+component Operational
+@todo kiniry Add an explanation.
+
+component Semantics
+@todo kiniry Add an explanation.
+
+component Risk
+@todo kiniry Add an explanation.
+
+component Power
+@todo kiniry Add an explanation.
+
+component Resource
+@todo kiniry Add an explanation.
+
+component Reliability
+@todo kiniry Add an explanation.
+
+component Rigorous
+A specification that has a precise, unambiguous, formal semantics
+grounded in real world formal foundations and systems engineering
+artifacts, such as source code and hardware designs.
+
+component Collaborative Development Environment (CDE)
+@todo kiniry Add an explanation.
+
+component Continuous Integration (CI)
+@todo kiniry Add an explanation.
+
+component Continuous Verification (CV)
+@todo kiniry Add an explanation.
+
+component Analyzer
+@todo kiniry Add an explanation.
+
+component Static Analyzer
+inherit Analyzer
+@todo kiniry Add an explanation.
+
+component Dynamic Analyzer
+inherit Analyzer
+@todo kiniry Add an explanation.
+
+component Finite State Machine (FSM)
+@todo kiniry Add an explanation.
+
+component Deterministic
+@todo kiniry Add an explanation.
+
+component Non-deterministic
+@todo kiniry Add an explanation.
+
+component Deterministic Finite State Machine (DFSM)
+inherit FSM Deterministic
+@todo kiniry Add an explanation.
+
+component Non-deterministic Finite State Machine (NFSM)
+inherit FSM Non-deterministic
+@todo kiniry Add an explanation.
+
+component Abstract State Machine (ASM)
+inherit FSM
+@todo kiniry Add an explanation.
+
+component Design
+@todo kiniry Add an explanation.
+
+component Architecture
+@todo kiniry Add an explanation.
+
+component Specification
+@todo kiniry Add an explanation.
+
+component Architecture Specification
+inherit Specification
+@todo kiniry Add an explanation.
+
+component Solver
+@todo kiniry Add an explanation.
+
+component Formal Method (FM)
+@todo kiniry Add an explanation.
+
+component Logical Framework (LF)
+@todo kiniry Add an explanation.
+
+component Programming Language (PL)
+@todo kiniry Add an explanation.
+
+component Specification Language
+@todo kiniry Add an explanation.
+
+component Protocol
+@todo kiniry Add an explanation.
+
+component System Specification
+inherit Specification
+@todo kiniry Add an explanation.
+
+component Hand-written
+@todo kiniry Add an explanation.
+
+component Machine-generated
+@todo kiniry Add an explanation.
+
+component Source-level Specification Language
+inherit Specification Language
+@todo kiniry Add an explanation.
+
+component Model-based Specification Language
+inherit Specification Language
+@todo kiniry Add an explanation.
+
+component System
+@todo kiniry Add an explanation.
+
+component Distributed System
+inherit System
+@todo kiniry Add an explanation.
+
+component Concurrent System
+inherit System
+@todo kiniry Add an explanation.
+
+component Cryptographic Protocol
+inherit Protocol
+@todo kiniry Add an explanation.
+
+component Cryptographic Algorithm
+@todo kiniry Add an explanation.
+
+component I/O (IO)
+@todo kiniry Add an explanation.
+
+component General Purpose I/O (GPIO)
+inherit IO
+@todo kiniry Add an explanation.
+
+component Sensor
+@todo kiniry Add an explanation.
+
+component Actuator
+@todo kiniry Add an explanation.
+
+component Solenoid
+inherit Actuator
+@todo kiniry Add an explanation.
+
+component Compiler
+@todo kiniry Add an explanation.
+
+component Synthesizer
+@todo kiniry Add an explanation.
+
+component Universal Serial Bus (USB)
+@todo kiniry Add an explanation.
+
+component LED
+@todo kiniry Add an explanation.
+
+component Cable
+@todo kiniry Add an explanation.
+
+component Program
+@todo kiniry Add an explanation.
+
+component Bitstream
+@todo kiniry Add an explanation.
+
+component Field-Programmable Gate Array (FPGA)
+@todo kiniry Add an explanation.
+
+component ECP-5
+inherit FPGA
+@todo kiniry Add an explanation.
+
+component Printed Component Board (PCB)
+@todo kiniry Add an explanation.
+
+component Connector
+@todo kiniry Add an explanation.
+
+component USB Connector
+@todo kiniry Add an explanation.
+
+component USB Mini Connector (USB-Mini)
+inherit USB Connector
+@todo kiniry Add an explanation.
+
+component High-Assurance
+@todo kiniry Add an explanation.
+
+component C
+@todo kiniry Add an explanation.
+
+component PMOD
+@todo kiniry Add an explanation.
+
+component JTAG
+@todo kiniry Add an explanation.
+
+component Driver
+@todo kiniry Add an explanation.
+
+component Voting
+@todo kiniry Add an explanation.
+
+component UCB Cable
+inherit USB Cable
+@todo kiniry Add an explanation.
+
+component Output LED
+inherit LED
+@todo kiniry Add an explanation.

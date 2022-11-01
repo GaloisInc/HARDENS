@@ -1,11 +1,11 @@
-_STACK_SIZE = 4K;
-_HEAP_SIZE = 4K;
+_STACK_SIZE = 2K;
+_HEAP_SIZE = 2K;
 
 MEMORY
 {
     /* FLASH and RAM must have the same memory origin */
-    FLASH(xr)       : ORIGIN = 0x00000000, LENGTH = 0x040000
-    RAM  (rw)       : ORIGIN = 0x00000000, LENGTH = 0x040000
+    FLASH(xr)       : ORIGIN = 0x00000000, LENGTH = 0x007000
+    RAM  (xrw)       : ORIGIN = 0x00000000, LENGTH = 0x00F000
 }
 
 SECTIONS {
@@ -23,7 +23,7 @@ SECTIONS {
         _etext = .;        /* define a global symbol at end of code */
         _sidata = _etext;  /* This is used by the startup in order to initialize the .data secion */
         . = ALIGN(4);
-    } >FLASH
+    } >RAM
 
 
     /* This is the initialized data section

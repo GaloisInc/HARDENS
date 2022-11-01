@@ -2,6 +2,12 @@
 #include "platform.h"
 #include "actuation_logic.h"
 
+#ifdef PLATFORM_HOST
+#include <stdio.h>
+#else
+#include "printf.h"
+#endif
+
 #define VOTE_I(_v, _i) (((_v) >> (_i)) & 0x1)
 
 /*@requires \valid(&trip[0..2][0..3]);
@@ -51,11 +57,24 @@ actuation_logic_collect_trips(uint8_t logic_no, int do_test, uint8_t trip[3][4],
 static uint8_t
 actuate_device(uint8_t device, uint8_t trips[3][4], int old)
 {
+    uint8_t res = 0;
     if (device == 0) {
-        return Actuate_D0(trips, old);
+        res = Actuate_D0(trips, old);
     } else {
-        return Actuate_D1(trips, old);
+        res = Actuate_D1(trips, old);
     }
+    DEBUG_PRINTF(("<actuation_unit.c> actuate_device: device=0x%X, old=0x%X, out=0x%X,trips=[\n", device, old, res));
+    /*@ loop assigns i; */
+    for (int i = 0; i < 3; ++i) {
+        DEBUG_PRINTF(("["));
+        /*@ loop assigns div; */
+        for (int div = 0; div < 4; ++div) {
+        DEBUG_PRINTF(("%u,",trips[i][div]));
+        }
+        DEBUG_PRINTF(("],"));
+    }
+    DEBUG_PRINTF(("]\n"));
+    return res;
 }
 
 /*@requires \valid(state);

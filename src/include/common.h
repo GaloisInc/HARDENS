@@ -59,6 +59,7 @@ struct set_setpoint {
 };
 struct instrumentation_command {
   uint8_t type;
+  uint8_t valid;
   union {
     struct set_mode mode;
     struct set_maintenance maintenance;
