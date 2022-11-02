@@ -1,6 +1,6 @@
 # End to end runtime verification for RTS
 
-This directory contains the drivers and testcases that implement test
+This directory contains the drivers and test cases that implement test
 scenarios defined in [](../specs/test_scenarios.lando).
 
 Each scenario is a template, potentially parameterized by a set of
@@ -26,7 +26,7 @@ Individual tests can be run (and debugged) by using the `test.py` script:
 RTS_BIN=path/to/rts/binary ./test.py <path/to/scenario> [path/to/scenario.cases]
 ```
 
-Defining the `RTS_DEBUG` envrionment variable will cause the tester to
+Defining the `RTS_DEBUG` environment variable will cause the tester to
 print out debug output, including which commands are sent to the
 binary and which output is being checked.
 
@@ -38,7 +38,7 @@ A scenario is a file whose structure is:
   2. A sequence of commands
 
 A command is either a RTS command (such as "M" for setting maintenance
-mode) or a regular expression preceeded by the character `?`.
+mode) or a regular expression preceded by the character `?`.
 
 Tests proceed by executing commands one by one. Regular expressions
 are tested against the output produced thus far. A test fails if a
