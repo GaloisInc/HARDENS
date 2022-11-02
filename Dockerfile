@@ -26,6 +26,9 @@ RUN apt-get install -y wget git python3 pip \
     vim mercurial libboost-program-options-dev \
     texlive-full
 
+# To run test suite
+RUN pip install pexpect
+
 # Builder
 FROM base as builder
 ARG VERSION_LOG=/tools/log.txt
