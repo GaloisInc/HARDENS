@@ -12,7 +12,8 @@ To run all the tests, just run:
 make
 ```
 
-Some tests have a large number of cases. As the implementation and
+Some tests have a large number of cases (e.g., scenarios 4 and 5a both
+have 4,096 cases and takes days to run).  As the implementation and
 tests are symmetric, you can do a quick sanity run by setting the
 `QUICK` environment variable, i.e.:
 
