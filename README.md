@@ -22,6 +22,9 @@ this material are those of the author(s) and do not necessarily
 reflect the views of the NRC.
 ```
 
+The HARDENS final report was delivered to the NRC on 31 October 2022.
+Galois is no longer under contract with the NRC.
+
 ## Project Overview
 
 The goal of HARDENS is to provide to the NRC expert technical services
@@ -171,7 +174,9 @@ assurance:
    side-effect of the optional use of CompCert) binaries, and hardware
    designs (in System Verilog and Bluespec System Verilog).
 
-## Task 1: Implementation
+The HARDENS project Statement-of-Work has four Tasks.
+
+### Task 1: Implementation
 
 As described in our proposal and the project Statement of Work, in
 Task 1 (Implementation), the first task of the HARDENS project, Galois
@@ -209,51 +214,119 @@ will accomplish such early in Task 2, and cross-compile our POSIX C
 implementation to that SoC.  That ongoing work is found in the `nerv`
 branch of the repository.
 
-## Task 2: Validation and Verification
+### Task 2: Validation and Verification
 
-As described in the Statement of Work, for Task 2 of the HARDENS project Galois
-will perform preliminary validation and verification and testing of the design 
-using model-based engineering and testing methods. The deliverable will be the 
-artifacts as described in the proposal.
+As described in the Statement of Work, for Task 2 of the HARDENS
+project Galois will perform preliminary validation and verification
+and testing of the design using model-based engineering and testing
+methods. The deliverable will be the artifacts as described in the
+proposal.
 
-The [Hardens Assurance Case](./Assurance.md) document in this repository describes
-the end-to-end specification-to-implementation process, system requirements, testing, 
-and V&V associated with Task 2 deliverables. Rather than restate the document's contents 
-here, Galois recommends reviewing it as a conextualized summary of Task 2 artifacts.
+The [Hardens Assurance Case](./Assurance.md) document in this
+repository describes the end-to-end specification-to-implementation
+process, system requirements, testing, and V&V associated with Task 2
+deliverables. Rather than restate the document's contents here, Galois
+recommends reviewing it as a conextualized summary of Task 2
+artifacts.
 
-Galois will continue to develop V&V capabilities and port the design to actual hardware
-in preparation for Tasks 3 (Evaluation) and 4 (Presentation).
+Galois will continue to develop V&V capabilities and port the design
+to actual hardware in preparation for Tasks 3 (Evaluation) and 4
+(Presentation).
 
-## Repository Structure
+### Task 3: Evaluation
 
-The repository is structured as follows:
+Draft versions of the final report were submitted to the NRC, and
+multiple presentations were given (at
+[HCSS](https://cps-vo.org/group/hcss_conference/program) on 26 April
+2022, an unrecorded Galois-and-friends talk on 29 April 2022, and
+semi-regular check-ins to NRC staff) about the HARDENS project, 
+over the course of mid-to-late 2022.
 
-- [specs](./specs) contains a domain model (`*.lando`, `*.lobot`), requirements
-  (exported from `FRET` to `RTS_requirements.json`), and a specification of the RTS architecture
-  (`*.sysml`).
-- [models](./models) contains the executable Cryptol model
-- [assets](./assets) and [docs](./docs) contain project and device documentation
-- [saw](./saw) contains SAW-based proofs of correctness of specific model-derived
-  components
-- [tests](./tests) contains end-to-end tests derived from the lando test scenarios.
+NRC staff provided feedback on the project and its demonstrator, which
+resulted in an evolution into the contents of the final report, where
+Galois should spend more or less time, and what final state of the
+demonstrator was acceptible for this first, small project.
 
-## Submodules
+### Task 4: Presentation
 
-This repository does not currently use any submodules.  If/when it
-does, initialize with:
+The day long final presentation of HARDENS to NRC staff took place on 
+12 October 2022.
+
+Screencast recordings demonstrating various aspects of the HARDENS
+system and its assurance case are available via
+[Vimeo](https://vimeo.com/showcase/9971187).  Galois intends to add
+additional videos over time.
+
+The HARDENS final report was delivered to the NRC on 31 October 2022.
+Galois is no longer under contract with the NRC.
+
+## Project Structure
+
+The [HARDENS GitHub project](https://github.com/GaloisInc/HARDENS) is
+emblematic of RDE-based projects at Galois.  It contains a git
+repository which contains most of our project artifacts, an [issue
+tracker](https://github.com/GaloisInc/HARDENS/issues) that is used for
+project management, and [a project
+board](https://github.com/GaloisInc/HARDENS/projects/1) that
+summarizes and abstracts up from issues.  Other project artifacts were
+stored in a Google Shared Drive.
+
+We use [project GitHub Actions](https://github.com/GaloisInc/HARDENS/actions) 
+to automatically trigger continuous integration, deployment, and
+verification of the HARDENS project.
+
+### Repository Structure
+
+The git repository is structured as follows:
+
+- [assets](./assets) and [docs](./docs) contain project and device
+  documentation
+- [hardware](./hardware) contains softcore hardware designs for the
+  HARDENS CPU (NERV), the HARDENS SoC (written in Bluespec System
+  Verilog), and the CPU verification bench (via RISC-V Formal from
+  YosysHQ), and the firmware necessary for bringing up and controlling
+  the CPU and SoC,
+- [models](./models) contains the executable Cryptol model, which is
+  both our high-level digital twin of the entire HARDENS RTS, and is
+  our executable denotational specification of the software, firmware,
+  and hardware that constitutes the RTS
+- [saw](./saw) contains SAW-based proofs of correctness of specific
+  model-derived software components
+- [specs](./specs) contains a domain model written in Lando
+  (`*.lando`), a feature model written in Lobot (`*.lobot`),
+  requirements written in Lando, SysMLv2, and FRET (exported from
+  `FRET` to `RTS_requirements.json`), and a SysMLv2 specification of
+  the RTS architecture (`*.sysml`)
+- [src](./src) contains the software source code of the RTS, including
+  all variants, hand-written and generated components, and ACSL
+  specifications
+- [tests](./tests) contains end-to-end tests derived from the Lando
+  test scenarios and their associated drivers and test bench
+
+### Submodules
+
+This repository currently uses two submodules.
+
+ 1. The [YosysHQ NERV RISC-V CPU](https://github.com/YosysHQ/nerv),
+    which is the CPU used in the demonstrator, and
+ 2. The [RISC-V Formal verification infrastructure]
+    (https://github.com/YosysHQ/riscv-formal), which is
+    used to formally verify the correctness of the CPU.
+    
+One can initialize submodules using these commands:
 
 ```
 $ git submodule init
 $ git submodule update --recursive
 ```
 
-## Docker
+### Docker
 
 A Docker container has been built to make for easier use, evaluation,
 reusability, and repeatibility of project results.  We are adding
 tools to this container as necessary during project execution.
 
-### HARDENS Container
+#### HARDENS Container
 
 To build and run the core HARDENS Docker image, use the
 `build_docker.sh` script and then `docker run` commands.
@@ -295,7 +368,7 @@ $ docker run --network host --privileged -v $PWD:/HARDENS -it artifactory.galois
 The helper script `run_docker.sh` executed the above detacted run
 command, using Galois's `artifactory` docker image name.
 
-### SysMLv2 Container
+#### SysMLv2 Container
 
 To pull and use the pre-build SysMLv2 container, use the following
 `pull` command to pull the container from DockerHub.  See
@@ -309,9 +382,11 @@ $ docker run -d -it --name SysMLv2 --network host -v $PWD:/HARDENS gorenje/sysml
 The Docker container contains snapshots of various tools that are not
 necessarily the latest releases or development versions of said tools.
 We include these particular versions because they are the versions
-used for development of the demonstrator, in alignment with our
-*Tool Dependencies* recommendations, **Tool Metadata**, **Tool
-Availability**, and **Evaluation Platform**.
+used for development of the demonstrator, in alignment with our *Tool
+Dependencies* recommendations, **Tool Metadata**, **Tool
+Availability**, and **Evaluation Platform**.  See
+[Toolchain][Toolchain.md] for notes on some of the tools that are in
+our hardware development tool chain.
 
 In particular, the version of Lando shipped in the image is incapable
 of converting Lando input files into hyperlinked Markdown, as we
@@ -319,7 +394,14 @@ provide in [specs/Lando/](specs/Lando/).  This is partly due to the
 fact that the new version of Lando is not ready for release and is
 only available via Galois's private GitLab server.
 
-## Lattice ECP5 evaluation board
+## Hardware Demonstrator
+
+The HARDENS demonstrator has a hardware-based variant that is under
+development.  It is based on the Lattice ECP5 FPGA board, and uses a
+handful of COTS parts.  Its components cost approximately $250 in
+mid-2022.
+
+### Lattice ECP5 evaluation board
 
 We are using an ECP5-5G FPGA board for the RTS demonstrator.
 
@@ -331,7 +413,7 @@ Details [here](https://www.latticesemi.com/products/developmentboardsandkits/ecp
 
 ![ECP_board](assets/ecp5_top.png)
 
-### GPIO headers
+#### GPIO headers
 
 Headers are: J5, J8, J32, J33 and Max I_OUT for 3V3 is 1.35A
 
@@ -342,19 +424,19 @@ J5 Pinout:
 * 5, 6 - GND (Sensor 1 GND, Sensor 2 GND)
 * 7, 8 - K18, J18 (Sensor 2 I2C)
 
-### LEDs:
+#### LEDs
 
 ![ECP_LED](assets/ecp5_leds.png)
 
-### Switches
+#### Switches
 
 ![ECP_DIP](assets/ecp5_dip.png)
 
-### Buttons
+#### Buttons
 
 General purpose button `SW4` is connected to `P4`
 
-## Sensors/Actuators
+### Sensors/Actuators
 
 * MOSFET power control kit: https://www.sparkfun.com/products/12959
 * 12 V Latch solenoid: https://www.sparkfun.com/products/15324
@@ -419,5 +501,5 @@ characterizes a workflow and set of best practices for such a review.
 
 The final report is available [via
 Overleaf](https://git.overleaf.com/623259a297f75c655f6d1f47) as well
-as a submodule on this project.
-
+as a submodule on this project.  Access to that report in Overleaf is
+only provided to co-authors.
