@@ -1,3 +1,6 @@
 [submodule "hardware/nerv"]
 	path = hardware/nerv
 	url = https://github.com/YosysHQ/nerv.git
+[submodule "hardware/riscv-formal"]
+	path = hardware/riscv-formal
+	url = https://github.com/YosysHQ/riscv-formal
