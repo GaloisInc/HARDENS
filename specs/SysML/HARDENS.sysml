@@ -16,22 +16,22 @@
  * subsystem which contains the core computation and I/O components, and
  * the two separate and independent devices that drive actuators.
  */
-package id RTS 'Reactor Trip System' {
+package <RTS> 'Reactor Trip System' {
   private import 'Semantic Properties'::*;
   import 'Project Glossary'::*;
   import 'RTS Viewpoints and Views'::*;
   import 'RTS Architecture'::*;
   
   
-  package id Architecture 'RTS Architecture';
+  package <Architecture> 'RTS Architecture';
   alias Arch for Architecture;
-  package id Hardware 'RTS Hardware Artifacts';
+  package <Hardware> 'RTS Hardware Artifacts';
   alias HW for Hardware;
-  package id Artifacts 'RTS Implementation Artifacts';
-  package id Requirements 'RTS Requirements';
-  package id Properties 'RTS Properties';
+  package <Artifacts> 'RTS Implementation Artifacts';
+  package <Requirements> 'RTS Requirements';
+  package <Properties> 'RTS Properties';
   alias Props for Properties;
-  package id Characteristics 'IEEE Std 603-2018 Characteristics';
+  package <Characteristics> 'IEEE Std 603-2018 Characteristics';
   comment TopLevelPackages about Architecture, Hardware, Properties, Characteristics
   /* These are the core top-level subsystems characterizing HARDEN work. */
 }

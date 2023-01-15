@@ -1,3 +1,5 @@
+/* RTS_Instrumentation_Physical_Architecture.sysml*/
+
 /** The physical hardware components that are a part of the HARDENS RTS
     demonstrator. */
 package 'RTS Instrumentation Physical Architecture' {

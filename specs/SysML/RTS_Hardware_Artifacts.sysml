@@ -1,6 +1,7 @@
+/* RTS_Hardware_Artifacts.sysml*/
 /**
  * The physical hardware components that are a part of the HARDENS RTS
- * demonstrator. 
+ * demonstrator.
  */
 package 'RTS Hardware Artifacts' {
   private import 'Project Glossary'::*;
@@ -23,7 +24,7 @@ package 'RTS Hardware Artifacts' {
   // @todo Ensure that JTAG is, in fact, USB.
   part def 'JTAG Interface' :> JTAG, USB;
   part def 'Mini USB Programming' :> USB;
-  part def id DevBoard 'Lattice ECP-5 FPGA Development Board' :> PCB {
+  part def <DevBoard> 'Lattice ECP-5 FPGA Development Board' :> PCB {
     part J9_J26 : 'SERDES Test SMA Connector'[16] subsets components;
     part J38 : 'Parallel Config Header' subsets components;
     part J39_J40 : 'Versa Expansion Connector'[2] subsets components;
