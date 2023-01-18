@@ -1,14 +1,14 @@
 /**
  * The set of all scenarios that describe interesting end-to-end executions
  * of the RTS system.  The full set of scenarios must include all normal
- * behavior (online and during self-test) and exceptional behavior.  
+ * behavior (online and during self-test) and exceptional behavior.
  */
-package id Scenarios 'RTS Scenarios' {
-  package id Normal 'RTS Normal Behavior Scenarios' {
+package <Scenarios> 'RTS Scenarios' {
+  package <Normal> 'RTS Normal Behavior Scenarios' {
     import 'RTS Architecture'::'RTS System Architecture'::RTS;
-    
+
     item def 'RTS User';
-    use case def id NB 'Normal Behavior' {
+    use case def <NB> 'Normal Behavior' {
       subject RTS;
       actor user : 'RTS User';
       objective {
@@ -17,7 +17,7 @@ package id Scenarios 'RTS Scenarios' {
     }
     // @design kiniry Actually, ST should specialize NB.  I don't know how
     // to express that in SysML yet.
-    use case def id ST 'Normal Behavior Under Self-Test' {
+    use case def <ST> 'Normal Behavior Under Self-Test' {
         subject RTS;
         actor tester : 'RTS User';
     }
@@ -44,11 +44,11 @@ package id Scenarios 'RTS Scenarios' {
       use case 'Full Self-Test' : NB;
     }
     package 'RTS Scenarios' {
-      // @todo Still need to enumerate these.      
+      // @todo Still need to enumerate these.
     }
-  } 
-  package id Exceptional 'RTS Exceptional Behavior Scenarios' {
-    use case def id EB 'Exceptional Behavior' {
+  }
+  package <Exceptional> 'RTS Exceptional Behavior Scenarios' {
+    use case def <EB> 'Exceptional Behavior' {
       subject RTS;
       objective {
         doc /* @see test_scenarios.lando */

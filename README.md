@@ -417,7 +417,5 @@ In order to help certification actors review a model-based system and
 its assurance case, we intend to provide a chapter in the report that
 characterizes a workflow and set of best practices for such a review.
 
-The final report is available [via
-Overleaf](https://git.overleaf.com/623259a297f75c655f6d1f47) as well
-as a submodule on this project.
-
+The source of the final report is available at https://git.overleaf.com/623259a297f75c655f6d1f47, and a [PDF snapshot](./docs/HARDENS_Final_Report_Oct_2022.pdf)
+of the final report is available in [docs folder](./docs/).

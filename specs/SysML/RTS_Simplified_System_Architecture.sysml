@@ -3,10 +3,10 @@ package 'RTS Simplified System Architecture' {
 
   // doc id sys_arch_doc
   package Root {
-    part def id CFSM 'Core Finite State Machine' :> FSM;
-    part def id Programming_IO 'Programming I/O' :> IO;
-    part def id UI_IO 'UI I/O' :> IO;
-    part def id Debugging_IO 'Debugging I/O' :> IO;
+    part def <CFSM> 'Core Finite State Machine' :> FSM;
+    part def <Programming_IO> 'Programming I/O' :> IO;
+    part def <UI_IO> 'UI I/O' :> IO;
+    part def <Debugging_IO> 'Debugging I/O' :> IO;
   }
   package 'Actuation_Logic' {
     part 'Voting Logic': 'Voting'[2];
@@ -15,11 +15,11 @@ package 'RTS Simplified System Architecture' {
   /** Documentation about computation goes here. */
   package Computation {
     part def 'RISC-V CPU':> CPU, RISC_V_ISA;
-    part id CPUs 'RISC-V CPUs': 'RISC-V CPU'[3];
+    part <CPUs> 'RISC-V CPUs': 'RISC-V CPU'[3];
   }
   package Hardware {
     package FPGA {
-      part id DevBoard 'Lattic ECP-5 FPGA Development Board': PCB;
+      part <DevBoard> 'Lattic ECP-5 FPGA Development Board': PCB;
     }
     package Actuators {
       part 'Actuator'[2];
@@ -33,10 +33,10 @@ package 'RTS Simplified System Architecture' {
     part def Instrumentation;
     part I: 'Instrumentation'[4];
   }
-  
+
   package RTS {
     part def Base_RTS_Architecture_Context {
-      // part ref 
+      // part ref
     }
   }
 }
