@@ -2,7 +2,7 @@
  * The IEEE 603-2018 requirements (known as "characteristics" in
  * the standard) which the RTS demonstrator system must fulfill.
  */
-package 'IEEE Std 603-2018 Characteristics' {
+package <Characteristics> 'IEEE Std 603-2018 Characteristics' {
   requirement def 'Requirements Consistency' {
     doc /* Requirements must be shown to be consistent. */
   }
