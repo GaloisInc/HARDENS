@@ -318,8 +318,8 @@ RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # DocumentationEnricher
 ARG TOOL=der
-ARG TAG=0.1.4
-ARG REPO=https://github.com/SimplisticCode/DER/releases/download/v1.1.4/
+ARG TAG=0.1.5
+ARG REPO=https://github.com/GaloisInc/RDE_RF/releases/tag/v.0.1.5
 WORKDIR /tmp
 RUN wget ${REPO}/${TOOL}-${TAG}.zip
 RUN unzip ${TOOL}-${TAG}.zip
