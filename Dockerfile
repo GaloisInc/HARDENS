@@ -316,7 +316,7 @@ RUN cd /tools/${TOOL}/source/lobot/ && cabal v2-build
 ENV PATH="/tools/${TOOL}:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
-# DocumentationEnricher
+# RDE Refinement Finder (aka the DocumentationEnricher)
 ARG TOOL=der
 ARG TAG=0.1.5
 ARG REPO=https://github.com/GaloisInc/RDE_RF/releases/tag/v.0.1.5
