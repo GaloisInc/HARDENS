@@ -1,3 +1,25 @@
+// HARDENS Reactor Trip System (RTS) Assurance Case
+// In support of a formal model of RTS system behavior written in the
+// Cryptol DSL, verifying the implementation of the RTS, genenerated
+// from Cryptol, and hand-written, in both Verilog and C.
+//
+// @author Alex Bakst <abakst@galois.com>
+// @created November, 2021
+
+// Copyright 2021, 2022, 2023 Galois, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 let alloc_init ty v = do {
     p <- llvm_alloc ty;
     llvm_points_to p v;
