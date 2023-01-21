@@ -285,7 +285,8 @@ use by running a command like:
 $ docker exec -it HARDENS bash -l
 ```
 
-If you are *within Galois network*, you can download the docker image from artifactory:
+If you are *within Galois network* and *you have access rights*, you
+can download the docker image from artifactory:
 
 ```bash
 $ docker pull artifactory.galois.com:5015/hardens:latest
@@ -293,7 +294,8 @@ $ docker run --network host --privileged -v $PWD:/HARDENS -it artifactory.galois
 ```
 
 The helper script `run_docker.sh` executed the above detacted run
-command, using Galois's `artifactory` docker image name.
+command, using Galois's public docker HARDENS image.  The helper
+script `docker_shell.sh` runs a shell in the spawned container.
 
 ### SysMLv2 Container
 
