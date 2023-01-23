@@ -1,3 +1,17 @@
+#    Copyright 2021, 2022, 2023 Galois, Inc.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
 # Base
 FROM ubuntu:22.04 as base
 ARG DEBIAN_FRONTEND=noninteractive
@@ -302,10 +316,10 @@ RUN cd /tools/${TOOL}/source/lobot/ && cabal v2-build
 ENV PATH="/tools/${TOOL}:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
-# DocumentationEnricher
+# RDE Refinement Finder (aka the DocumentationEnricher)
 ARG TOOL=der
-ARG TAG=0.1.4
-ARG REPO=https://github.com/SimplisticCode/DER/releases/download/v1.1.4/
+ARG TAG=0.1.5
+ARG REPO=https://github.com/GaloisInc/RDE_RF/releases/tag/v.0.1.5
 WORKDIR /tmp
 RUN wget ${REPO}/${TOOL}-${TAG}.zip
 RUN unzip ${TOOL}-${TAG}.zip
