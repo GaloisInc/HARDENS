@@ -1,5 +1,5 @@
 # Base
-FROM ubuntu:21.04 as base
+FROM ubuntu:20.04 as base
 ARG DEBIAN_FRONTEND=noninteractive
 RUN mkdir /tools
 WORKDIR /
@@ -283,10 +283,10 @@ RUN cd /tools/${TOOL}/source/lobot/ && cabal v2-build
 ENV PATH="/tools/${TOOL}:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
-# DocumentationEnricher
+# RDE Refinement Finder (aka the DocumentationEnricher)
 ARG TOOL=der
 ARG TAG=0.1.5
-ARG REPO=https://github.com/GaloisInc/RDE_RF/
+ARG REPO=https://github.com/GaloisInc/RDE_RF
 WORKDIR /tmp
 RUN wget ${REPO}/releases/download/v.${TAG}/${TOOL}-${TAG}.zip 
 RUN unzip ${TOOL}-${TAG}.zip
