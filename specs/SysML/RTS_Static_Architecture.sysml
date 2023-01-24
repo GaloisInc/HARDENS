@@ -1,10 +1,26 @@
+/*
+ Copyright 2021, 2022, 2023 Galois, Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
 /**
  * This RTS architecture specification includes all of the core
  * concepts inherent to NPP Instrumentation and Control systems.
  * A system architecture specification often includes a software,
  * hardware, network, and data architecture specifications.
  */
-package id Architecture 'RTS Architecture' {
+package <Architecture> 'RTS Architecture' {
   //import RTS::*;
   //import 'Project Glossary'::*;
   //import Artifacts::*;
@@ -14,9 +30,11 @@ package id Architecture 'RTS Architecture' {
     // overall RTS architecture shape from
   }
 
-  /** Note that this is the *systems* architecture, which is different
-      than our software, hardware, or data architectures. */
-  package id RTS_System_Arch 'RTS System Architecture' {
+  /**
+   * Note that this is the *systems* architecture, which is different
+   * than our software, hardware, or data architectures.
+   */
+  package <RTS_System_Arch> 'RTS System Architecture' {
 
     package Sensor {
       private import Quantities::*;
@@ -35,7 +53,7 @@ package id Architecture 'RTS Architecture' {
 
       /**
        * A demultiplexer for sending one sensor signal to multiple
-       * outputs. 
+       * outputs.
        */
       part def Demux {
         port input: ~SensorOutPort;
@@ -94,7 +112,7 @@ package id Architecture 'RTS Architecture' {
     }
 
     /**
-     * The Instrumentation subsystem contains all of the sensors for an 
+     * The Instrumentation subsystem contains all of the sensors for an
      * NPP I&C system.
      */
     package Instrumentation {
@@ -110,26 +128,35 @@ package id Architecture 'RTS Architecture' {
       port def BypassPort {
         out trip : Boolean;
       }
-      
+
       enum def TripMode {
         enum Bypass;
         enum Operate;
         enum Manual;
       }
-      
+
       enum def Channel {
         enum Temperature;
         enum Pressure;
         enum Saturation;
       }
-       
+
       attribute def TripModeCommand {
         attribute mode: TripMode;
         attribute channel: Channel;
       }
-      
+
       port def TripModePort {
         out mode: TripModeCommand;
+      }
+
+      part def PressureTable {
+       	doc /* The saturation table gives us the saturation pressure margin given
+       	     * the current temperature and pressure, hence the output is pressure
+       	     */
+       	port temperatureInput: ~TemperatureOutPort;
+       	port pressureInput: ~PressureOutPort;
+      	port saturationMarginOutput: PressureOutPort;
       }
 
       part def InstrumentationUnit {
@@ -141,14 +168,15 @@ package id Architecture 'RTS Architecture' {
         // mode selectors
         attribute maintenanceMode : Boolean;
         attribute temperatureTripMode: TripMode;
-        attribute pressureTripMode: TripMode;    
+        attribute pressureTripMode: TripMode;
         attribute saturationTripMode: TripMode;
-        
+
 
         // Inputs
         port temperatureInput: ~TemperatureOutPort;
         port pressureInput: ~PressureOutPort;
-        port tripMode: ~TripModePort;               
+        port saturationMarginInput: ~PressureOutPort;
+        port tripMode: ~TripModePort;
 
         // Outputs
         port pressureTripOut:TripPort;
@@ -202,7 +230,7 @@ package id Architecture 'RTS Architecture' {
 
     package EventControl {
     import ScalarValues::Boolean;
-    
+
       port def MaintenancePort {
         out maintenance: Boolean;
       }
@@ -237,6 +265,11 @@ package id Architecture 'RTS Architecture' {
         part instrumentationUnit3 : InstrumentationUnit;
         part instrumentationUnit4 : InstrumentationUnit;
 
+        part table1 : PressureTable;
+        part table2 : PressureTable;
+        part table3 : PressureTable;
+        part table4 : PressureTable;
+
         part tempDemux1 : TempSensor::Demux;
         part tempDemux2 : TempSensor::Demux;
 
@@ -262,6 +295,23 @@ package id Architecture 'RTS Architecture' {
         connect pressureSensor2.output to pressureDemux2.input;
         connect pressureDemux1.output1 to instrumentationUnit3.pressureInput;
         connect pressureDemux1.output2 to instrumentationUnit4.pressureInput;
+
+        // Saturation Margin Calculation
+        connect pressureDemux1.output1 to table1.pressureInput;
+        connect tempDemux1.output1 to table1.temperatureInput;
+        connect table1.saturationMarginOutput to instrumentationUnit1.saturationMarginInput;
+
+        connect pressureDemux1.output2 to table2.pressureInput;
+        connect tempDemux1.output2 to table2.temperatureInput;
+        connect table2.saturationMarginOutput to instrumentationUnit2.saturationMarginInput;
+
+        connect pressureDemux2.output1 to table3.pressureInput;
+        connect tempDemux2.output1 to table3.temperatureInput;
+        connect table3.saturationMarginOutput to instrumentationUnit3.saturationMarginInput;
+
+        connect pressureDemux2.output2 to table4.pressureInput;
+        connect tempDemux2.output2 to table4.temperatureInput;
+        connect table4.saturationMarginOutput to instrumentationUnit4.saturationMarginInput;
       }
 
 

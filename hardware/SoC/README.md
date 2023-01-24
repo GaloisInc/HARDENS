@@ -150,3 +150,20 @@ A transcript of about the first 100 lines is found in
   * i2c sensor communication
   * wiring of sensors, actuators and such
 * the RTS for non-posix target is currently single core, which causes issues with reading serial input (we don't have interrupts on Nerv). The way to mitigate this is to move to dual-CPU configuration, where one CPU with relatively large memory will service user input/ouput (requires string parsing and manipulation libraries, hence the larger memory), and the other CPU or CPUs that implement the instrumentation/voting logic (the don't need any print functions, so the code size is rather small)
+
+## License
+
+   Copyright 2021, 2022, 2023 Galois, Inc.
+   Copyright 2022 Bluespec, Inc.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.

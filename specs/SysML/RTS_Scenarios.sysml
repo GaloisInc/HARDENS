@@ -1,14 +1,30 @@
+/*
+ Copyright 2021, 2022, 2023 Galois, Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
 /**
  * The set of all scenarios that describe interesting end-to-end executions
  * of the RTS system.  The full set of scenarios must include all normal
- * behavior (online and during self-test) and exceptional behavior.  
+ * behavior (online and during self-test) and exceptional behavior.
  */
-package id Scenarios 'RTS Scenarios' {
-  package id Normal 'RTS Normal Behavior Scenarios' {
+package <Scenarios> 'RTS Scenarios' {
+  package <Normal> 'RTS Normal Behavior Scenarios' {
     import 'RTS Architecture'::'RTS System Architecture'::RTS;
-    
+
     item def 'RTS User';
-    use case def id NB 'Normal Behavior' {
+    use case def <NB> 'Normal Behavior' {
       subject RTS;
       actor user : 'RTS User';
       objective {
@@ -17,7 +33,7 @@ package id Scenarios 'RTS Scenarios' {
     }
     // @design kiniry Actually, ST should specialize NB.  I don't know how
     // to express that in SysML yet.
-    use case def id ST 'Normal Behavior Under Self-Test' {
+    use case def <ST> 'Normal Behavior Under Self-Test' {
         subject RTS;
         actor tester : 'RTS User';
     }
@@ -44,11 +60,11 @@ package id Scenarios 'RTS Scenarios' {
       use case 'Full Self-Test' : NB;
     }
     package 'RTS Scenarios' {
-      // @todo Still need to enumerate these.      
+      // @todo Still need to enumerate these.
     }
-  } 
-  package id Exceptional 'RTS Exceptional Behavior Scenarios' {
-    use case def id EB 'Exceptional Behavior' {
+  }
+  package <Exceptional> 'RTS Exceptional Behavior Scenarios' {
+    use case def <EB> 'Exceptional Behavior' {
       subject RTS;
       objective {
         doc /* @see test_scenarios.lando */

@@ -1,10 +1,27 @@
+/*
+ Copyright 2021, 2022, 2023 Galois, Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+
+/* RTS_Hardware_Artifacts.sysml*/
 /**
  * The physical hardware components that are a part of the HARDENS RTS
- * demonstrator. 
+ * demonstrator.
  */
 package 'RTS Hardware Artifacts' {
   private import 'Project Glossary'::*;
-  //import Architecture::RTS_System_Arch::Hardware::*;
+  import 'RTS Instrumentation Physical Architecture'::*;
   private import ScalarValues::*;
 
   part def 'SERDES Test SMA Connector' :> Connector;
@@ -23,7 +40,7 @@ package 'RTS Hardware Artifacts' {
   // @todo Ensure that JTAG is, in fact, USB.
   part def 'JTAG Interface' :> JTAG, USB;
   part def 'Mini USB Programming' :> USB;
-  part def id DevBoard 'Lattice ECP-5 FPGA Development Board' :> PCB {
+  part def <DevBoard> 'Lattice ECP-5 FPGA Development Board' :> PCB {
     part J9_J26 : 'SERDES Test SMA Connector'[16] subsets components;
     part J38 : 'Parallel Config Header' subsets components;
     part J39_J40 : 'Versa Expansion Connector'[2] subsets components;

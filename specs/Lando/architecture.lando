@@ -1,101 +1,127 @@
+// Copyright 2021, 2022, 2023 Galois, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 // Architecture
 
 subsystem RTS System Architecture (RTS_System_Arch)
-@todo kiniry Add an explanation.
+The system architecture of the Reactor Trip System (RTS).
 
 subsystem Root
-@todo kiniry Add an explanation.
+The core subsystem of the RTS.
 
 component Core Finite State Machine (CFSM)
 inherit FSM
-@todo kiniry Add an explanation.
+The finite state machine at the core of the RTS which describes its
+main behavioral loop.
 
 component Programming I/O (Programming_IO)
 inherit IO
-@todo kiniry Add an explanation.
+The I/O interface used to program the FPGA by loading a bitstream over
+a USB programming interface.
 
 component UI I/O (UI_IO)
 inherit IO
-@todo kiniry Add an explanation.
+The I/O interface of the RTS used by a human user to control the
+behavior of the RTS and to understand its current status.
 
 component Debugging I/O (Debugging_IO)
 inherit IO
-@todo kiniry Add an explanation.
+The I/O interface used to interface with the FPGA, as well as the
+softcore processor(s) and software loaded onto it, in order to
+introspec on and debug the running system.
 
 subsystem Actuation Logic
-@todo kiniry Add an explanation.
+The logic which determines whether or not an RTS actuator should be
+open or closed.
 
 component Voting 1
-@todo kiniry Add an explanation.
+The first of two components of the RTS that gathers sensor input,
+executes a voting algorithm, and reports the vote in order to provide
+fault tolerance.
 
 component Voting 2
-@todo kiniry Add an explanation.
+The second of two components of the RTS that gathers sensor input,
+executes a voting algorithm, and reports the vote in order to provide
+fault tolerance.
 
 component Actuator 1
-@todo kiniry Add an explanation.
+The first of two actuator components of the RTS.
 
 component Actuator 2
-@todo kiniry Add an explanation.
+The second of two actuator components of the RTS.
 
 subsystem Computation
-@todo kiniry Add an explanation.
+Any kind of digital computation; the execution of an algorithm.
 
 component RISC-V CPU 1
-@todo kiniry Add an explanation.
+The first of up to three RISC-V CPUs used in the RTS SoC.
 
 component RISC-V CPU 2
-@todo kiniry Add an explanation.
+The second of up to three RISC-V CPUs used in the RTS SoC.
 
 component RISC-V CPU 3
-@todo kiniry Add an explanation.
+The third of up to three RISC-V CPUs used in the RTS SoC.
 
 subsystem Hardware
-@todo kiniry Add an explanation.
+The hardware subsystems and components of the RTS.
 
 subsystem FPGA
-@todo kiniry Add an explanation.
+The FGPA-based subsystems and components of the RTS.
 
 component Lattice ECP-5 FGPA Development Board
-@todo kiniry Add an explanation.
+The low-cost FPGA development board used to realize the RTS
+demonstrator.
 
 subsystem Actuators
-@todo kiniry Add an explanation.
+The set of actuators of the RTS.
 
 component Actuator 1
-@todo kiniry Add an explanation.
+The first of two actuators---solenoids---of the RTS.
 
 component Actuator 2
-@todo kiniry Add an explanation.
+The second of two actuators---solenoids---of the RTS.
 
 subsystem Sensors
-@todo kiniry Add an explanation.
+The set of sensors of the RTS.
 
 component Temperature Sensor 1
-@todo kiniry Add an explanation.
+The first of two temperature sensors of the RTS.
 
 component Temperature Sensor 2
-@todo kiniry Add an explanation.
+The second of two temperature sensors of the RTS.
 
 component Pressure Sensor 1
-@todo kiniry Add an explanation.
+The first of two pressure sensors of the RTS.
 
 component Pressure Sensor 2
-@todo kiniry Add an explanation.
+The second of two pressure sensors of the RTS.
 
 subsystem Instrumentation
-@todo kiniry Add an explanation.
+The subsystem which contains all instrumentation-related
+functionality, including all sensors and actuators, of the RTS.
 
 component Instrumentation 1
-@todo kiniry Add an explanation.
+The first of four redundant instrumentation components of the RTS.
 
 component Instrumentation 2
-@todo kiniry Add an explanation.
+The second of four redundant instrumentation components of the RTS.
 
 component Instrumentation 3
-@todo kiniry Add an explanation.
+The third of four redundant instrumentation components of the RTS.
 
 component Instrumentation 4
-@todo kiniry Add an explanation.
+The fourth of four redundant instrumentation components of the RTS.
 
 // Top-level subsystems.
 relation RTS_System_Arch contains Root

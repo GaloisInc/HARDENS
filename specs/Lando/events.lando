@@ -1,3 +1,17 @@
+// Copyright 2021, 2022, 2023 Galois, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 // Events are (seemingly-atomic, from the point of view of an external
 // observer) interactions/state-transitions of the system.  The full
 // set of specified events characterizes every potential externally
@@ -11,16 +25,20 @@ Manually Actuate Device
 The user manually actuates a device.
 
 Select Operating Mode
-The user puts an instrumentation division in or takes a division out of 'maintenance' mode.
+The user puts an instrumentation division in or takes a division out
+of 'maintenance' mode.
 
 Perform Setpoint Adjustment
-The user adjusts the setpoint for a particular channel in a particular division in maintenance mode.
+The user adjusts the setpoint for a particular channel in a particular
+division in maintenance mode.
 
 Configure Bypass of an Instrument Channel
-The user sets the mode of the channel of an instrumentation division to either bypass or normal mode.
+The user sets the mode of the channel of an instrumentation division
+to either bypass or normal mode.
 
 Configure Active Trip Output State of an Instrument Channel
-The user sets the mode of the channel of an instrumentation division to either trip or normal mode.
+The user sets the mode of the channel of an instrumentation division
+to either trip or normal mode.
 
 // External output actions are those that are triggered by internal
 // state change, which is, in turn, sometimes prompted by external input
@@ -28,38 +46,49 @@ The user sets the mode of the channel of an instrumentation division to either t
 events Demonstrator External Output Actions
 
 Display Pressure
-The UI displays the current pressure reading for an instrumentation division.
+The UI displays the current pressure reading for an instrumentation
+division.
 
 Display Temperature
-The UI displays the current temperature reading for an instrumentation division.
+The UI displays the current temperature reading for an
+instrumentation division.
 
 Display Saturation Margin
-The UI displays the current saturation margin reading for an instrumentation division.
+The UI displays the current saturation margin reading for an
+instrumentation division.
 
 Display Trip Output Signal State
-The UI displays the current trip signal output for a particular channel and instrumentation division.
+The UI displays the current trip signal output for a particular
+channel and instrumentation division.
 
 Display Indication of Channel in Bypass
-The UI displays the current bypass mode for a particular channel and instrumentation division.
+The UI displays the current bypass mode for a particular channel and
+instrumentation division.
 
 // Internal actions are those that are not triggered by external input on UI.
 events Demonstrator Internal Actions
 
 Trip on High Pressure
-An instrumentation division reads a pressure sensor value that exceeds its setpoint and generates a trip output.
+An instrumentation division reads a pressure sensor value that exceeds
+its setpoint and generates a trip output.
 
 Trip on High Temperature
-An instrumentation division reads a temperature sensor value that exceeds its setpoint and generates a trip output.
+An instrumentation division reads a temperature sensor value that
+exceeds its setpoint and generates a trip output.
 
 Trip on Low Saturation Margin
-An instrumentation division reads temperature and pressure values such that the
-saturation margin is below its setpoint and generates a trip output.
+An instrumentation division reads temperature and pressure values such
+that the saturation margin is below its setpoint and generates a trip
+output.
 
 Vote on Like Trips using Two-out-of-four Coincidence
-An actuation unit reads two like trip inputs and generates the corresponding automatic actuation signal.
+An actuation unit reads two like trip inputs and generates the
+corresponding automatic actuation signal.
 
 Automatically Actuate Device
-An actuation unit generates an automatic actuation signal and sends it to the corresponding device.
+An actuation unit generates an automatic actuation signal and sends it
+to the corresponding device.
 
 Self-test of Safety Signal Path
-The RTS simulates inputs to a pair of instrumentation divisions and checks the corresponding actuation signals.
+The RTS simulates inputs to a pair of instrumentation divisions and
+checks the corresponding actuation signals.

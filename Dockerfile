@@ -1,3 +1,17 @@
+#    Copyright 2021, 2022, 2023 Galois, Inc.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
 # Base
 FROM ubuntu:20.04 as base
 ARG DEBIAN_FRONTEND=noninteractive
@@ -255,6 +269,25 @@ RUN \
     && cabal install --installdir=/tools
 
 ENV PATH="/tools/:${PATH}"
+
+# NuSMV
+# wget https://nusmv.fbk.eu/distrib/NuSMV-2.6.0-linux64.tar.gz
+# tar xzf NuSMV-2.6.0-linux64.tar.gz
+# cp NuSMV-2.6.0-Linux/bin/* /usr/local/bin/
+
+# JKind-1
+# wget https://github.com/andreaskatis/jkind-1/releases/download/v2.0/jkind
+# wget https://github.com/andreaskatis/jkind-1/releases/download/v2.0/jkind.jar
+# wget https://github.com/andreaskatis/jkind-1/releases/download/v2.0/jlustre2kind
+# wget https://github.com/andreaskatis/jkind-1/releases/download/v2.0/jrealizability
+# chmod 755 jkind jlustre2kind jrealizability
+# cp * /usr/local/bin/
+
+# Kind 2
+# wget https://github.com/kind2-mc/kind2/releases/download/v1.6.0/kind2-v1.6.0-linux-x86_64.tar.gz
+# wget https://github.com/kind2-mc/kind2/releases/download/v1.6.0/user_documentation.pdf
+# tar xzf kind2-v1.6.0-linux-x86_64.tar.gz
+# mv kind2 /usr/local/bin/
 
 # Fret
 # ARG TOOL=fret

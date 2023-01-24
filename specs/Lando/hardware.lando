@@ -1,3 +1,17 @@
+// Copyright 2021, 2022, 2023 Galois, Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 subsystem RTS Hardware Artifacts
 The physical hardware components that are a part of the HARDENS RTS
 demonstrator.
@@ -10,57 +24,74 @@ What kind of USB connector is on the end of the cable?
 relation USB Cable inherit USB, Cable
 
 component SERDES Test SMA Connectors (J9-J26)
-@todo To be copied from board documentation.
 
 component Parallel Config Header (J38)
-@todo To be copied from board documentation.
 
 component Versa Expansion Connectors (J39-J40)
-@todo To be copied from board documentation.
 
 component SPI Flag Configuration Memory (U4)
-@todo To be copied from board documentation.
 
 component CFG Switches (SW1)
-@todo To be copied from board documentation.
 
 component Input Switches (SW5)
-@todo To be copied from board documentation.
 
 component Output LEDs (D5-D12)
-@todo To be copied from board documentation.
 
 component Input Push Buttons (SW2-SW4)
-@todo To be copied from board documentation.
 
 component 12 V DC Power Input (J37)
-@todo To be copied from board documentation.
 
 component GPIO Headers (J32-J33)
-@todo To be copied from board documentation.
 
 component PMOD/GPIO Header (J31)
-@todo To be copied from board documentation.
 
 component Microphone Board/GPIO Header (J30)
-@todo To be copied from board documentation.
 
 component Prototype Area
-@todo To be copied from board documentation.
 
 component ECP5-5G Device (U3)
-@todo To be copied from board documentation.
 
 component JTAG Interface (J1)
-@todo To be copied from board documentation.
 
 component Mini USB Programming (J2)
-@todo To be copied from board documentation.
 
 component Lattice ECP-5 FPGA Development Board (Board)
-@todo To be copied from board documentation.
-
-// @todo Add all board I/O and devices listed above.
+The development board used by the HARDENS project.
+How many SERDES test SMA connectors do you have?
+May I have SERDES test SMA connector with this label?
+Plus this SERDES component into that SMA connector!
+Parallel config header?
+Plug this component into that parallel config header!
+How many Versa expansion connectors do you have?
+May I have the Verse expansion connector with this label?
+May I have the SPI flag configuration memory?
+How many CFG switches are there?
+Switch the CFG switches into this configuration!
+What is the current CFG switch configuration?
+How many input switches are there?
+Switch the input switches into this configuration!
+What is the current input switch configuration?
+How many output LEDs are there?
+What is the current state of this output LED?
+How many input push buttons are there?
+Switch this input button into that configuration!
+Is there power plugged inot the power input?
+Plus this power cabel into the power input!
+How many GPIO headers are there?
+Plug this GPIO device into that header.
+What is plugged into this GPIO header?
+How many PMOD/GPIO headers are there?
+Plug this GPIO device into that PMOD/GPIO header.
+What is plugged into this PMOD/GPIO header?
+How many microphone board/GPIO headers are there?
+Plug this GPIO device into that microphone board/GPIO header.
+What is plugged into this microphone board GPIO header?
+What is plugged into the prototpye area?
+What is plugged into the JTAG interface?
+Plus this cable into the JTAG interface!
+What is plugged into the Mini USB interface?
+Plug this cabel into the Mini USB interface!
+May I have the component with this label?
 
 component Temperature Sensor
 A sensor that is capable of measuring the temperature of its environment.

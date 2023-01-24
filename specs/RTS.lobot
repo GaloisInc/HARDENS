@@ -1,7 +1,21 @@
 -- title: Reactor Trip System high-assurance demonstrator.
 -- project: High Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS)
--- copyright (C) 2021 Galois
--- author: Joe Kiniry <kiniry@galois.com>
+-- copyright (C) 2021, 2022 Galois
+-- author: Joe Kiniry <kiniry@galois.com>, Alex Bakst
+
+-- Copyright 2021, 2022, 2023 Galois, Inc.
+--
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
+--
+--     http://www.apache.org/licenses/LICENSE-2.0
+--
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
 nat : kind of int where self >= 0
 
@@ -9,6 +23,7 @@ nat : kind of int where self >= 0
 -- fully virtualized (Twin) mode.  If we choose to target a real RV32,
 -- then we will be running on the bare metal.
 
+-- @refines Makefile PLATFORM
 type virtualized_platform_runtime =
   { Posix, RV32_bare_metal, None }
 
@@ -17,6 +32,7 @@ type virtualized_platform_runtime =
 -- we choose to put the demonstrator on a real RV32, we will likely
 -- use the Vega board.
 
+-- @refines Makefile DEV_BOARD
 type dev_board =
   { Virtual, LFE5UM5G_85F_EVN, RV32M1_VEGA, None }
 
@@ -24,7 +40,7 @@ type dev_board =
 -- variant for this project.  Other variants should be able to use the
 -- exact same build chain.
 
-type fpga =
+type fpga_type =
   { ECP5, ECP5_5G }
 
 -- We can assign an assurance level of every sub-component of the
@@ -42,6 +58,16 @@ type assurance_level =
 
 type twin_or_physical =
   { Twin, Physical }
+
+-- There are four potential kinds of executable models for the RTS
+-- system: a SysML simulation model, the Cryptol model, the Bluespec
+-- SystemVerilog SoC model, the Verilator-based Verilog RTL simulation
+-- model, or none at all (representing the real product).  We support
+-- only three of these options at this time, as we do not support the
+-- SysML or BSV models, as described elsewhere.
+
+type executable_models =
+  { SysML, Cryptol, BSV, Verilog, None }
 
 -- Twins come in different fidelity levels.
 
@@ -70,10 +96,22 @@ type twin_or_physical =
 -- model which relate to system requirements must hold through the
 -- refinement.
 
-type twin_fidelity =
-  { Low, Medium, High, Perfect }
+-- A "None" fidelity means that we are not using twins at all; we are
+-- using the real deployment hardware.
 
--- We use three different C compilers for (cross-)compilation.
+-- Each of these fidelities are bound to specific values below in
+-- order to concretize them with our specific development and
+-- deployment platforms.
+
+type twin_fidelity =
+  { None, Low, Medium, High, Perfect }
+
+-- We use up to three different C compilers for (cross-)compilation.
+-- Only `clang` has been used extensively by the project.  The other
+-- compilers have been used historically on other projects using the
+-- RISC-V ISA at Galois.
+
+-- @refine src/Makefile CC
 type compiler =
   { GCC, Clang, CompCert }
 
@@ -81,8 +119,18 @@ type compiler =
 -- development platforms for the POSIX-based virtual platform is
 -- either ARM or X86-based and the SoC digital twin and deployment
 -- platform are RISC-V-based.
+
+-- Note that we do not specify the ISA of the development and target
+-- platform separately, as we do not currently support cross-platform
+-- builds.
+
 type isa =
   { ARM, X86, RV32 }
+
+-- Our RISC-V-based SoC contains either one or three cores.
+
+type soc_cpus =
+  { One, Three }
 
 -- The feature model of the RTS demonstrator itself.
 
@@ -93,11 +141,17 @@ type isa =
 
 rts : kind of struct
   with -- Which development board is being used?
-       board : dev_board 
+       board : dev_board
+       -- Which FPGA does it have?
+       fpga : fgpa_type
        -- How much does the hardware for this demonstrator cost in USD?
        cost : nat
        -- What level of assurance does the demonstrator have overall?
        assurance : assurance_level
+       -- How many CPUs does our SoC have?
+       cpus : soc_cpus
+       -- Which simulation model are we using?
+       model: executable_models
        -- Is the FPGA being twinned via a Verilog simulator/emulator?
        soc : twin_or_physical
        -- Is the first tempurature sensor a twin or physically present?
@@ -118,9 +172,12 @@ rts : kind of struct
        target : isa
        -- Are all devices twins?
        all_devices_twins : bool
+       -- Are all devices physical?
+       all_devices_physical : bool
        -- Should sensors be simulated?
        simulate_sensors : bool
        -- Should we use parallel execution?
+       -- @refines Makefile EXECUTION
        parallel_execution : bool
        -- Compile with automatic self-test mode enabled?
        self_test_enabled : bool
@@ -131,17 +188,76 @@ rts : kind of struct
        -- What development platform is being used to run this fully virtualized twin?
        rt : virtualized_platform_runtime
   where
-    cost = 0 | cost = 100 | cost = 200
+    -- We either are simulating twins on a development host (cost $0),
+    -- running on a Vega board (cost $100), or running on a real Lattice
+    -- FPGA (cost $200).
+    (cost = 0 | cost = 100 | cost = 200) & ((cost = 0) <=> (board = Virtual)) & ((cost = 100) <=> (board = RV32M1_VEGA)) & ((cost = 200) <=> (board = LFE5UM5G_85F_EVN))
+    -- All devices are digitial twins when they are all, individually, twins.
     all_devices_twins <=> ((ts1 = Twin) & (ts2 = Twin) & (ps1 = Twin) & (ps2 = Twin) & (sa1 = Twin) & (sa2 = Twin))
+    -- All devices are physical when they are all, individually, physical.
+    all_devices_physical <=> ((ts1 = Physical) & (ts2 = Physical) & (ps1 = Physical) & (ps2 = Physical) & (sa1 = Physical) & (sa2 = Physical))
+    -- Either all devices are twins or physical today.
+    all_devices_twins ^ all_devices_physical
+    -- The SoC is a twin exactly when all devices are twins.  We do not support
+    -- mixing and matching of twins and real devices in this minimal demonstrator.
     (soc = Twin) => all_devices_twins
+    -- The SoC is physical when it is our BSV/Verilog-based SoC running
+    -- on the FPGA board.
+    (soc = Physical) <=> (board = LFE5UM5G_85F_EVN)
+    -- We have only been using the clang compiler for the project thus far.
+    (compiler = Clang)
+    -- The RTS is running on a virtualized platform runtime exactly
+    -- when either it is running on a real RISC-V CPU or it is not
+    -- using a board at all, and is thus running on a POSIX
+    -- development platform.
     virtualized_platform_rt <=> ((soc = Twin) & (board = RV32M1_VEGA) & (rt = None)) ^ ((soc = Twin) & (board = None))
+    -- We are using a Lattice ECP5-5G board for demonstration purposes.
+    ((board = LFE5UM5G_85F_EVN) => (fpga = ECP5_5G))
+    -- Explain our assurance levels based upon the real system that has
+    -- been built and its evidence.
 
--- @todo kiniry Add appropriate constraints for the comp and isa features.
+-- @todo kiniry Add appropriate constraints for the compiler and ISA
+-- features when we introduce cross-compilation.
 
-virtualized_rts_configs : kind of rts
-  where all_devices_twins = true & cost = 0 & board = None & virtualized_platform_rt = true
+-- The legal RTS device configurations are explained with the
+-- following feature model, along with their respective fidelities.
+
+rts_configs : kind of rts
+  where
+    -- Our main development and test digital twin: all devices are
+    -- virtualized and we either compile to the development platform's
+    -- POSIX environment or run in Cryptol.  In this configuration,
+    -- our twin fidelity is low.
+    all_devices_twins & (cost = 0) & (board = None) & virtualized_platform_rt & ((model = None) | (model = Cryptol)) & (fidelity = Low)
+
+    -- Our main model-based simulation: we execute a digital twin of
+    -- the RTS demonstrator in Cryptol.
+    (model = Cryptol) => all_devices_twins & (fidelity = Low)
+
+    -- Our main digital twin for simulating the CPU/SoC in software:
+    -- compiling either the RISC-V NERV CPU or the RTS SoC to a
+    -- software simulation using Verilator.  At this time we do not
+    -- have the three CPU version of the SoC working.
+    (all_devices_twins & (board = None)) ^ (all_devices_twins & (board = LFE5UM5G_85F_EVN) & (cpus = One)) & (fidelity = Medium) => (model = Verilog)
+
+    -- Our main deployment platform: the Lattice FPGA development
+    -- board attached to real sensors and actuators.
+    (all_devices_physical & (board = LFE5UM5G_85F_EVN) & (cpus = One) & (fidelity = None) => (model = Verilog)
+
+    -- All other configurations are unsupported at this time, but are
+    -- all possible future build or deployment configurations.
+
+-- @todo kiniry Our assurance case for the feature model checks that
+-- (a) the builds we support in the build system is realizable, (b)
+-- the assurance case we describe is realizable, and (c) our entire
+-- feature model is consistent and complete.
+
+-- Bottom consistency check.
+check_bottom : check
+  on r : rts_configs
+  that false
 
 -- Virtualized builds do not need a development board.
 check_twin_build_configs : check
-   on c : virtualized_rts_configs
+   on c : rts_configs
    that c.board = None
