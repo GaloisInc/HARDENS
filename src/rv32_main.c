@@ -14,10 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/**
- * Main program entry for RTS
- */
-// System includes
+// This file contains the implementation of the bare-metal RISC-V RV32
+// variant of the RTS product line.
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>

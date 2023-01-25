@@ -14,6 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This file contains the specification (C type declarations and ACSL
+// behavioral specification) of the sense/actuate subsystem.
+
 #ifndef SENSE_ACTUATE_H_
 #define SENSE_ACTUATE_H_
 

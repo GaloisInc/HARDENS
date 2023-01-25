@@ -14,6 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This file contains the core functionality of the RTS, mainly its
+// Abstract State Machine (ASM) and the system's I/O events.
+
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
