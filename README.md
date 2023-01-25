@@ -1,12 +1,14 @@
 # HARDENS
 
-*Copyright (C) Galois 2021-2022*
+*Copyright (C) Galois 2021, 2022, 2023*
 
 *Principal Investigator: Joe Kiniry <kiniry@galois.com>*
 
 *Project Lead: Andrew Bivin <abivin@galois.com>*
 
 *Research Engineers: Alexander Bakst <abakst@galois.com> and Michal Podhradsky <mpodhradsky@galois.com>*
+
+*Special Thanks: Rishiyur Nikhil <nikhil@bluespec.com>*
 
 Repository for the HARDENS project for the 
 [Nuclear Regulatory Commission](https://www.nrc.gov/about-nrc.html).
@@ -437,3 +439,6 @@ of the final report is available in [docs folder](./docs/).
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+Portions of this system have additional copyright notices.
+
