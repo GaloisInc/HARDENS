@@ -1,4 +1,4 @@
-# HARDENS
+# High Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS)
 
 *Copyright (C) Galois 2021, 2022, 2023*
 
@@ -14,8 +14,9 @@ Repository for the HARDENS project for the
 [Nuclear Regulatory Commission](https://www.nrc.gov/about-nrc.html).
 
 ```
-This work is supported by the U.S. Nuclear Regulatory Commission (NRC), 
-Office of Nuclear Regulatory Research, under contract/order number 31310021C0014.
+This work is supported by the U.S. Nuclear Regulatory Commission 
+(NRC), Office of Nuclear Regulatory Research, under contract/order 
+number 31310021C0014.
 
 All material is considered in development and not a finalized product. 
 
@@ -85,6 +86,7 @@ bench generation and bisimulation---and formal verification---through
 automatic model-based verification bench generation.
 
 The models used in HARDENS include, from most to least abstract:
+
  - a Lando high-level system specification model, which includes
    within it:
    + a domain engineering model, 
@@ -143,6 +145,7 @@ concepts, tools, and technologies to formally specifying and reasoning
 about systems and their properties.  In the context of RDE and the
 HARDENS project, we use formal methods to achieve the following
 assurance:
+
  - critical components of the RTS are automatically synthesized from
    Cryptol model into both formally verifiable C implementations and
    formally verifiable System Verilog implementations,
@@ -199,9 +202,10 @@ model-based specifications discussed above, as well as automatically
 synthesized formally verified sub-components, as described in the
 HARDENS proposal, for a small handful of critical sub-components.
 These synthesized components are generated in formally verified C
-source code and in the System Verilog HDL. The POSIX-based simulation 
-can execute both the generated C components and the generated System Verilog
-components by means of a shim library wrapping the Verilated components.
+source code and in the System Verilog HDL. The POSIX-based simulation
+can execute both the generated C components and the generated System
+Verilog components by means of a shim library wrapping the Verilated
+components.
 
 Finally, we have a formally verified RISC-V CPU, called the `nerv`
 CPU, built and tested on the ECP5-5G board.  We have sketched out
@@ -213,33 +217,57 @@ branch of the repository.
 
 ## Task 2: Validation and Verification
 
-As described in the Statement of Work, for Task 2 of the HARDENS project Galois
-will perform preliminary validation and verification and testing of the design 
-using model-based engineering and testing methods. The deliverable will be the 
-artifacts as described in the proposal.
+As described in the Statement of Work, for Task 2 of the HARDENS
+project Galois will perform preliminary validation and verification
+and testing of the design using model-based engineering and testing
+methods. The deliverable will be the artifacts as described in the
+proposal.
 
-The [Hardens Assurance Case](./Assurance.md) document in this repository describes
-the end-to-end specification-to-implementation process, system requirements, testing, 
-and V&V associated with Task 2 deliverables. Rather than restate the document's contents 
-here, Galois recommends reviewing it as a conextualized summary of Task 2 artifacts.
+The [Hardens Assurance Case](./Assurance.md) document in this
+repository describes the end-to-end specification-to-implementation
+process, system requirements, testing, and V&V associated with Task 2
+deliverables. Rather than restate the document's contents here, Galois
+recommends reviewing it as a conextualized summary of Task 2
+artifacts.
 
-Galois will continue to develop V&V capabilities and port the design to actual hardware
-in preparation for Tasks 3 (Evaluation) and 4 (Presentation).
+Galois will continue to develop V&V capabilities and port the design
+to actual hardware in preparation for Tasks 3 (Evaluation) and 4
+(Presentation).
 
-## Repository Structure
+## Task 3: Evaluation
+
+In order to evaluate the system, one might read the project's slide
+decks (see Task 4 below), read the project's final report (see Task 5
+below), and review the system's models, specifications,
+implementation, and assurance.  This section summarizes the details of
+this latter aspect.
+
+We summarize in this section:
+
+ - the structure of the project's repository, 
+ - its submodules/dependencies, 
+ - our use of a Docker containers to standardize development and
+   evaluation virtual platforms, and
+ - our hardware development board(s) used for the physical
+   demonstrator (which is still under development) and the product's
+   I/O devices.
+
+### Repository Structure
 
 The repository is structured as follows:
 
-- [specs](./specs) contains a domain model (`*.lando`, `*.lobot`), requirements
-  (exported from `FRET` to `RTS_requirements.json`), and a specification of the RTS architecture
-  (`*.sysml`).
+- [specs](./specs) contains a domain model (`*.lando`, `*.lobot`),
+  requirements (exported from `FRET` to `RTS_requirements.json`), and
+  a specification of the RTS architecture (`*.sysml`).
 - [models](./models) contains the executable Cryptol model
-- [assets](./assets) and [docs](./docs) contain project and device documentation
-- [saw](./saw) contains SAW-based proofs of correctness of specific model-derived
-  components
-- [tests](./tests) contains end-to-end tests derived from the lando test scenarios.
+- [assets](./assets) and [docs](./docs) contain project and device
+  documentation
+- [saw](./saw) contains SAW-based proofs of correctness of specific
+  model-derived components
+- [tests](./tests) contains end-to-end tests derived from the lando
+  test scenarios.
 
-## Submodules
+### Submodules
 
 This repository does not currently use any submodules.  If/when it
 does, initialize with:
@@ -249,20 +277,21 @@ $ git submodule init
 $ git submodule update --recursive
 ```
 
-## Docker
+### Docker
 
 A Docker container has been built to make for easier use, evaluation,
-reusability, and repeatibility of project results.  We are adding
+reusability, and repeatability of project results.  We are adding
 tools to this container as necessary during project execution.
 
-### HARDENS Container
+#### HARDENS Container
 
 To build and run the core HARDENS Docker image, use the
 `build_docker.sh` script and then `docker run` commands.
 
 ```
 $ ./build_docker.sh
-$ docker run --network host --privileged -v $PWD:/HARDENS -it hardens:latest
+$ docker run --network host --privileged -v $PWD:/HARDENS -it \
+  hardens:latest
 ```
 
 In order to run a long-lived Docker container for reuse, use a `docker
@@ -270,7 +299,8 @@ run` command like the following, ensuring that you are in the right
 directory in order to bind your sandbox properly into the container.
 
 ```
-$ docker run -d -it --name HARDENS --network host --privileged -v $PWD:/HARDENS hardens:latest
+$ docker run -d -it --name HARDENS --network host --privileged \
+  -v $PWD:/HARDENS hardens:latest
 ```
 
 If you have stopped a container running and it lists as "exited" when
@@ -281,7 +311,7 @@ following command.
 $ docker start HARDENS
 ```
 
-After running such a detacted container, attach to it for interactive
+After running such a detached container, attach to it for interactive
 use by running a command like:
 ```
 $ docker exec -it HARDENS bash -l
@@ -292,22 +322,25 @@ can download the docker image from artifactory:
 
 ```bash
 $ docker pull artifactory.galois.com:5015/hardens:latest
-$ docker run --network host --privileged -v $PWD:/HARDENS -it artifactory.galois.com:5015/hardens:latest
+$ docker run --network host --privileged -v $PWD:/HARDENS -it \
+  artifactory.galois.com:5015/hardens:latest
 ```
 
-The helper script `run_docker.sh` executed the above detacted run
+The helper script `run_docker.sh` executed the above detached run
 command, using Galois's public docker HARDENS image.  The helper
 script `docker_shell.sh` runs a shell in the spawned container.
 
-### SysMLv2 Container
+#### SysMLv2 Container
 
 To pull and use the pre-build SysMLv2 container, use the following
-`pull` command to pull the container from DockerHub.  See
-https://hub.docker.com/r/gorenje/sysmlv2-jupyter for details.
+`pull` command to pull the container from DockerHub.  
+
+See https://hub.docker.com/r/gorenje/sysmlv2-jupyter for details.
 
 ```
 $ docker pull gorenje/sysmlv2-jupyter:latest
-$ docker run -d -it --name SysMLv2 --network host -v $PWD:/HARDENS gorenje/sysmlv2-jupyter:latest
+$ docker run -d -it --name SysMLv2 --network host -v $PWD:/HARDENS \
+  gorenje/sysmlv2-jupyter:latest
 ```
 
 The Docker container contains snapshots of various tools that are not
@@ -323,48 +356,58 @@ provide in [specs/Lando/](specs/Lando/).  This is partly due to the
 fact that the new version of Lando is not ready for release and is
 only available via Galois's private GitLab server.
 
-## Lattice ECP5 evaluation board
+### Lattice ECP5 evaluation board
 
 We are using an ECP5-5G FPGA board for the RTS demonstrator.
 
 Details [here](https://www.latticesemi.com/products/developmentboardsandkits/ecp5evaluationboard#_C694C444BC684AD48A3ED64C227B6455). The board uses ECP5-5G FPGA ([LFE5UM5G-85F-8BG381](https://www.latticesemi.com/en/Products/FPGAandCPLD/ECP5)) which has:
 
 - 84k LUTs
-- On-board Boot Flash – 128 Mbit Serial Peripheral Interface (SPI) Flash, with Quad read featu
+- On-board Boot Flash – 128 Mbit Serial Peripheral Interface (SPI) Flash, with Quad read feature
 - 8 input DIP switches, 3 push buttons and 8 LEDs for demo purposes
 
 ![ECP_board](assets/ecp5_top.png)
 
-### GPIO headers
+#### GPIO headers
 
 Headers are: J5, J8, J32, J33 and Max I_OUT for 3V3 is 1.35A
 
-J5 Pinout:
+J5 pinout:
 
 * 1, 2 - VCCIO2 (Sensor 1 VIN, Sensor 2 VIN)
 * 3, 4 - H20, G19 (Sensor 1 I2C)
 * 5, 6 - GND (Sensor 1 GND, Sensor 2 GND)
 * 7, 8 - K18, J18 (Sensor 2 I2C)
 
-### LEDs:
+#### LEDs:
+
+Several LEDs are available.
 
 ![ECP_LED](assets/ecp5_leds.png)
 
-### Switches
+#### Switches
+
+Several switches are available.
 
 ![ECP_DIP](assets/ecp5_dip.png)
 
-### Buttons
+#### Buttons
 
 General purpose button `SW4` is connected to `P4`
 
-## Sensors/Actuators
+### Sensors/Actuators
 
 * MOSFET power control kit: https://www.sparkfun.com/products/12959
 * 12 V Latch solenoid: https://www.sparkfun.com/products/15324
 * Pressure sensor: https://www.sparkfun.com/products/11084
 
-## Slide Deck
+## Task 4: Presentation
+
+Multiple slide decks have been written about this case study, and it
+has been presented in several forums.  One deck is the final
+presentation that was given to the NRC.
+
+### Slide Deck
 
 The HARDENS slide deck is meant to fully characterize the RTS
 demonstrator and also, in tandem, explain the concepts, technologies,
@@ -377,13 +420,14 @@ demonstrating correct-by-construction components and subsystems, and a
 variety of assurance tools.
 
 There are three versions of the HARDENS talk:
+
  1. A [short version summarizing the HARDENS
     project](docs/HARDENS_HCSS_May_2022.pdf), which was given at HCSS
     in May 2022.
  2. A [90 minute
     version](docs/HARDENS_Galois_Explaining_RDE_by_Example_May_2022.pdf)
     which was used to give a presentation at Galois in May 2022 about
-    Rigorous Digital Engienering.  Friends of Galois attended this
+    Rigorous Digital Engineering.  Friends of Galois attended this
     talk as well.
  3. A [six hour version that was the final presentation for the entire
     project to the NRC](docs/HARDENS_NRC_Oct_2022.pdf), given on 12
@@ -391,13 +435,18 @@ There are three versions of the HARDENS talk:
 
 These presentations were all written using Apple Keynote.  The
 canonical source for the final presentation is found in the file
-[HARDENS.key](docs/HARDENS.key).  A Powerpoint version of the slide
+[HARDENS.key](docs/HARDENS.key).  A PowerPoint version of the slide
 deck is also exported from Keynote and in the same directory. No
-attempt has been made to make sure the exported Powerpoint is pretty.
+attempt has been made to make sure the exported PowerPoint is pretty.
 
-## Final Report
+## Task 5: Final Report
+
+A final report for the NRC was written.
+
+### Final Report
 
 Our final report for HARDENS must have the following characteristics:
+
  1. [X] it must be well-suited to fit into the document-centric
         certification process used by the NRC and other similar
         government agencies,
@@ -410,8 +459,9 @@ Our final report for HARDENS must have the following characteristics:
         appendix chapters.
 
 In order to fulfill (1) above, the final report must be both:
- 1. [X] a polished, high-quality, hyperlinked HTML webpage, or set of
-        webpages that compile into a single webpage, that contains the
+
+ 1. [X] a polished, high-quality, hyperlinked HTML web page, or set of
+        web pages that compile into a single web page, that contains the
         entire report, includes its technical appendices, and
  2. [X] a polished, high-quality, hyperlinked PDF document that can be
         printed on paper and, in that form, it just as easy to read
@@ -421,7 +471,9 @@ In order to help certification actors review a model-based system and
 its assurance case, we intend to provide a chapter in the report that
 characterizes a workflow and set of best practices for such a review.
 
-The source of the final report is available at https://git.overleaf.com/623259a297f75c655f6d1f47, and a [PDF snapshot](./docs/HARDENS_Final_Report_Oct_2022.pdf)
+The source of the final report is available (invite only at the
+minute) via [https://git.overleaf.com/623259a297f75c655f6d1f47](Overleaf), 
+and a [PDF snapshot](./docs/HARDENS_Final_Report_Oct_2022.pdf)
 of the final report is available in [docs folder](./docs/).
 
 ## License
