@@ -162,7 +162,7 @@ BUILD_MSG = BUILD CC=$(CC) PLATFORM=$(PLATFORM) EXECUTION=$(EXECUTION) SELF_TEST
 
 .PHONY: all rts clean linux macos proof generate_sources generate_c generate_sv self_test_data/tests.inc.c core.c
 
-all: rts rts_no_self_test
+all: rts
 
 rts: $(SRC:.c=.o) $(EXTRA_SRC)
 	$(CC) $(CFLAGS) $(LIBS) -o $@ $^
