@@ -319,12 +319,12 @@ RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 # RDE Refinement Finder (aka the DocumentationEnricher)
 ARG TOOL=der
 ARG TAG=0.1.5
-ARG REPO=https://github.com/GaloisInc/RDE_RF/releases/tag/v.0.1.5
+ARG REPO=https://github.com/GaloisInc/RDE_RF
 WORKDIR /tmp
-RUN wget ${REPO}/${TOOL}-${TAG}.zip
+RUN wget ${REPO}/releases/download/v.${TAG}/${TOOL}-${TAG}.zip
 RUN unzip ${TOOL}-${TAG}.zip
-RUN    mv ${TOOL}-${TAG} /tools/${TOOL}
-ENV PATH="/tools/${TOOL}/bin:${PATH}"
+RUN mv ${TOOL}-${TAG} /tools/${TOOL} && rm ${TOOL}-${TAG}.zip
+ENV PATH="/tools/${TOOL}:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # Runner
