@@ -92,7 +92,7 @@ ifeq ($(DEV_BOARD),LFE5UM5G_85F_EVN)
 CORE_FREQ=2400000
 
 rts:
-	CORE_FREQ=$(CORE_FREQ) PROG=main make -C hardware/SoC/ prog
+	CORE_FREQ=$(CORE_FREQ) PROG=main make -C hardware/SoC/ design.svf
 
 else
 $(info Unsupported dev board!)
