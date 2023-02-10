@@ -38,7 +38,7 @@ RUN apt-get install -y wget git python3 pip \
     libc++-dev libc++abi-dev nodejs python2 npm \
     iverilog verilator \
     vim mercurial libboost-program-options-dev \
-    texlive-full
+    texlive-full pandoc
 
 # Builder
 FROM base as builder
