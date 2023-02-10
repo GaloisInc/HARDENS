@@ -186,6 +186,11 @@ ARG TAG=dfae4580e322584185235f301bc8a03b6bc19a65
 ARG REPO=https://github.com/GaloisInc/cryptol.git
 RUN git clone ${REPO} /tmp/${TOOL}
 WORKDIR /tmp/${TOOL}
+# Build fix
+COPY <<EOF cabal.project.local
+constraints:
+  parameterized-utils < 2.1.6
+EOF
 RUN \
     git checkout ${TAG} \
     && git submodule update --init \
