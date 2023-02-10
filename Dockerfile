@@ -257,24 +257,6 @@ RUN cp build/bin/btor* /usr/local/bin/
 RUN cp deps/btor2tools/bin/btorsim /usr/local/bin/
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
-# cryptol-verilog
-ARG TOOL=cryptol-verilog
-COPY ${TOOL} /tmp/${TOOL}
-WORKDIR /tmp/${TOOL}
-RUN \
-    cabal v2-build \
-    && cabal v2-install --installdir=/tools
-
-# Crymp
-ARG TOOL=cryptol-codegen
-COPY ${TOOL} /tmp/${TOOL}
-WORKDIR /tmp/${TOOL}
-RUN \
-    cabal build \
-    && cabal install --installdir=/tools
-
-ENV PATH="/tools/:${PATH}"
-
 # NuSMV
 # wget https://nusmv.fbk.eu/distrib/NuSMV-2.6.0-linux64.tar.gz
 # tar xzf NuSMV-2.6.0-linux64.tar.gz
@@ -331,6 +313,24 @@ RUN unzip ${TOOL}-${TAG}.zip
 RUN mv ${TOOL}-${TAG} /tools/${TOOL} && rm ${TOOL}-${TAG}.zip
 ENV PATH="/tools/${TOOL}:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
+# cryptol-verilog
+ARG TOOL=cryptol-verilog
+COPY ${TOOL} /tmp/${TOOL}
+WORKDIR /tmp/${TOOL}
+RUN \
+    cabal v2-build \
+    && cabal v2-install --installdir=/tools
+
+# Crymp
+ARG TOOL=cryptol-codegen
+COPY ${TOOL} /tmp/${TOOL}
+WORKDIR /tmp/${TOOL}
+RUN \
+    cabal build \
+    && cabal install --installdir=/tools
+
+ENV PATH="/tools/:${PATH}"
 
 # Runner
 FROM base as runner
