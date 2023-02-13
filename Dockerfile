@@ -180,11 +180,12 @@ RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 RUN \
     wget https://downloads.haskell.org/~ghcup/x86_64-linux-ghcup -O /usr/local/bin/ghcup \
     && chmod +x /usr/local/bin/ghcup
-ENV PATH="${HOME}/.cabal/bin:${HOME}/.ghcup/bin:${PATH}"
+ENV PATH="/root/.ghcup/bin:${PATH}"
 RUN \
     ghcup install ghc 8.8.4 \
     && ghcup set ghc 8.8.4 \
     && ghcup install cabal
+RUN cabal update
 
 # cryptol 2.11
 ARG TOOL=cryptol
