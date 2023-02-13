@@ -20,8 +20,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Env and settings
-DOCKER_JFROG_PATH=artifactory.galois.com:5015
-IMAGE_TAG=${DOCKER_JFROG_PATH}/hardens:latest
+IMAGE_TAG=galoisinc/hardens:latest
 
 # clone cryptol-verilog and update its submodules prior to building the docker image
 if [ -d "cryptol-verilog" ];
@@ -62,9 +61,7 @@ DOCKER_BUILDKIT=1 sudo docker build \
 
 if [ $doPush -eq 1 ]; then
     echo "Logging in to the docker repository"
-    docker login ${DOCKER_JFROG_PATH}
+    docker login
     echo "INFO: Pushing the image..."
-    docker push ${IMAGE_TAG}
-    echo "INFO: Logout from the docker repo"
-    docker logout ${DOCKER_JFROG_PATH}
+    docker push IMAGE_TAG
 fi
