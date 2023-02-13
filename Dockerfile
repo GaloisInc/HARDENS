@@ -32,8 +32,7 @@ RUN apt-get install -y wget git python3 pip \
     autoconf automake autotools-dev curl libmpc-dev \
     libmpfr-dev libgmp-dev texinfo gperf \
     libtool patchutils bc zlib1g-dev libexpat-dev \
-    libftdi-dev unzip \
-    cabal-install libffi7 \
+    libftdi-dev unzip libffi7 \
     libftdi1-2 libftdi1-dev libhidapi-libusb0 libhidapi-dev libudev-dev make g++ \
     libc++-dev libc++abi-dev nodejs python2 npm \
     iverilog verilator \
@@ -178,7 +177,14 @@ RUN \
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # GHC and Cabal
-RUN cabal update
+RUN \
+    wget https://downloads.haskell.org/~ghcup/x86_64-linux-ghcup -O /usr/local/bin/ghcup \
+    && chmod +x /usr/local/bin/ghcup
+ENV PATH="${HOME}/.cabal/bin:${HOME}/.ghcup/bin:${PATH}"
+RUN \
+    ghcup install ghc 8.8.4 \
+    && ghcup set ghc 8.8.4 \
+    && ghcup install cabal
 
 # cryptol 2.11
 ARG TOOL=cryptol
