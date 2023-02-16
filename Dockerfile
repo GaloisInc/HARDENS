@@ -182,8 +182,8 @@ RUN \
     && chmod +x /usr/local/bin/ghcup
 ENV PATH="/root/.ghcup/bin:${PATH}"
 RUN \
-    ghcup install ghc 8.8.4 \
-    && ghcup set ghc 8.8.4 \
+    ghcup install ghc 8.10.7 \
+    && ghcup set ghc 8.10.7 \
     && ghcup install cabal
 RUN cabal update
 
@@ -194,10 +194,8 @@ ARG REPO=https://github.com/GaloisInc/cryptol.git
 RUN git clone ${REPO} /tmp/${TOOL}
 WORKDIR /tmp/${TOOL}
 # Build fix
-COPY <<EOF cabal.project.local
-constraints:
-  parameterized-utils < 2.1.6
-EOF
+RUN echo "constraints:" > cabal.project.local
+RUN echo "  parameterized-utils < 2.1.6" >> cabal.project.local
 RUN \
     git checkout ${TAG} \
     && git submodule update --init \
