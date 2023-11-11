@@ -14,114 +14,187 @@
 
 // Architecture
 
-subsystem RTS System Architecture (RTS_System_Arch)
-The system architecture of the Reactor Trip System (RTS).
+subsystem RTS System Architecture (RTS_System_Arch) 
+The RTS System Architecture defines the overall structure and
+organization of the eactor Trip System. It encompasses the major
+components and s ubsystems necessary for the operation, control, and
+monitoring of the system, ensuring safety and reliability in nuclear
+power plant environments.
 
 subsystem Root
-The core subsystem of the RTS.
+The Root subsystem acts as the central coordinating element of the RTS
+System, managing interactions between various subsystems, processing
+inputs, and directing the flow of operations. It plays a pivotal role
+in maintaining the integrity and functionality of the entire system.
 
 component Core Finite State Machine (CFSM)
 inherit FSM
-The finite state machine at the core of the RTS which describes its
-main behavioral loop.
+The Core Finite State Machine (CFSM) is the heart of the RTS System's
+control logic. It manages state transitions based on inputs and
+conditions, ensuring that the system responds predictably and safely
+under all operational scenarios.
 
 component Programming I/O (Programming_IO)
 inherit IO
-The I/O interface used to program the FPGA by loading a bitstream over
-a USB programming interface.
+The Programming I/O component handles all programming-related
+input/output interactions for the system, facilitating updates,
+configurations, and customizations essential for the operation and
+maintenance of the RTS System.
 
 component UI I/O (UI_IO)
 inherit IO
-The I/O interface of the RTS used by a human user to control the
-behavior of the RTS and to understand its current status.
+The UI I/O component manages the user interface interactions,
+providing operators with the necessary controls and displays for
+system monitoring and manual overrides when required.
 
 component Debugging I/O (Debugging_IO)
 inherit IO
-The I/O interface used to interface with the FPGA, as well as the
-softcore processor(s) and software loaded onto it, in order to
-introspec on and debug the running system.
+The Debugging I/O component is dedicated to diagnostics and debugging,
+offering interfaces for system testing, fault diagnosis, and
+performance analysis to ensure the RTS System's reliability and
+safety.
 
 subsystem Actuation Logic
-The logic which determines whether or not an RTS actuator should be
-open or closed.
+The Actuation Logic subsystem is responsible for processing inputs and
+making decisions to trigger the appropriate actuation mechanisms. It
+plays a critical role in the safety features of the system, ensuring
+timely and accurate responses to operational conditions.
 
 component Voting 1
-The first of two components of the RTS that gathers sensor input,
-executes a voting algorithm, and reports the vote in order to provide
-fault tolerance.
+A voting component that is part of a redundant decision-making
+system. It contributes to a consensus on actions to be taken,
+enhancing the reliability and safety of the system by preventing
+erroneous or unilateral actuations.
 
 component Voting 2
-The second of two components of the RTS that gathers sensor input,
-executes a voting algorithm, and reports the vote in order to provide
-fault tolerance.
+Another voting component, working in tandem with Voting 1, to provide
+a fail-safe decision-making process. This redundancy is crucial for
+maintaining system integrity under adverse conditions or in case of
+component failures.
 
 component Actuator 1
-The first of two actuator components of the RTS.
+A primary actuator in the system, responsible for executing physical
+actions based on the decisions made by the Actuation Logic
+subsystem. It is a critical component for implementing the safety
+mechanisms of the RTS System.
 
 component Actuator 2
-The second of two actuator components of the RTS.
+A secondary actuator that provides redundancy and increased
+reliability for the actuation process. It ensures that the system
+remains operational and effective even in the event of a failure in
+the primary actuator.
 
 subsystem Computation
-Any kind of digital computation; the execution of an algorithm.
+The Computation subsystem encompasses the computational resources and
+processing units of the RTS System. It handles data processing,
+algorithm execution, and system logic, playing a vital role in the
+system's overall functionality and performance.
 
 component RISC-V CPU 1
-The first of up to three RISC-V CPUs used in the RTS SoC.
+The first of three RISC-V CPUs, providing the necessary computational
+power for processing system data, executing control algorithms, and
+managing system operations. It is a key component in the system's
+ability to perform complex tasks efficiently.
 
 component RISC-V CPU 2
-The second of up to three RISC-V CPUs used in the RTS SoC.
+The second RISC-V CPU, which works in conjunction with the other CPUs
+to ensure high processing capability and redundancy, thus enhancing
+the system's reliability and performance under various operational
+conditions.
 
 component RISC-V CPU 3
-The third of up to three RISC-V CPUs used in the RTS SoC.
+The third RISC-V CPU, completing the trio of processors. It further
+strengthens the system's computational capacity and redundancy,
+ensuring robust and reliable performance in all scenarios.
 
 subsystem Hardware
-The hardware subsystems and components of the RTS.
+The Hardware subsystem includes all the physical components of the RTS
+Systm, such as processors, sensors, actuators, and other electronic
+devi ces. It is the foundation upon which the system's functionalities
+are built and executed.
 
 subsystem FPGA
-The FGPA-based subsystems and components of the RTS.
+The FPGA (Field-Programmable Gate Array) subsystem is dedicated to
+providing customizable and flexible hardware solutions for the RTS
+System. It allows for on-the-fly reconfiguration of hardware logic,
+adapting to changing requirements and operational scenarios.
 
 component Lattice ECP-5 FGPA Development Board
-The low-cost FPGA development board used to realize the RTS
-demonstrator.
+This component is a development board based on the Lattice ECP-5 FPGA,
+offering a versatile and powerful platform for hardware development
+and testing within the RTS System. It is instrumental in prototyping
+and refining system hardware.
 
 subsystem Actuators
-The set of actuators of the RTS.
+The Actuators subsystem comprises all mechanical components that
+execute phyical actions as directed by the system's control
+logic. These compo nents are crucial for implementing the operational
+decisions made by the system.
 
 component Actuator 1
-The first of two actuators---solenoids---of the RTS.
+The primary actuator in the subsystem, responsible for executing
+critical mechanical actions as dictated by the system's control
+logic. It plays a pivotal role in the physical operations of the RTS
+System.
 
 component Actuator 2
-The second of two actuators---solenoids---of the RTS.
+A secondary actuator that provides redundancy and reliability. This
+actuator ensures that critical physical actions are carried out even
+in the event of a failure in
 
 subsystem Sensors
-The set of sensors of the RTS.
+The Sensors subsystem consists of various sensing devices that gather
+data about the operational environment and system parameters. This
+data is vital for the system's decision-making processes and for
+monitoring its performance and safety.
 
 component Temperature Sensor 1
-The first of two temperature sensors of the RTS.
+A sensor that measures temperature, providing crucial data for the
+system's operational decisions. This data is essential for monitoring
+and maintaining safe operating conditions within the nuclear power
+plant environment.
 
 component Temperature Sensor 2
-The second of two temperature sensors of the RTS.
+Another temperature sensor, working alongside Temperature Sensor 1, to
+ensure accurate and reliable temperature measurements. This redundancy
+is critical for maintaining consistent and safe system operations.
 
 component Pressure Sensor 1
-The first of two pressure sensors of the RTS.
+A pressure sensor that monitors the pressure levels within the
+system. This information is vital for detecting anomalies and ensuring
+the system operates within safe pressure parameters.
 
 component Pressure Sensor 2
-The second of two pressure sensors of the RTS.
+A secondary pressure sensor that provides additional data for ensuring
+accurate and reliable pressure monitoring. This redundancy enhances
+the system's ability to detect and respond to pressure-related
+anomalies.
 
 subsystem Instrumentation
-The subsystem which contains all instrumentation-related
-functionality, including all sensors and actuators, of the RTS.
+The Instrumentation subsystem encompasses all devices and components
+used for measring, monitoring, and controlling various aspects of the
+syst em's operation. This subsystem is essential for ensuring the
+accuracy and reliability of the system's performance.
 
 component Instrumentation 1
-The first of four redundant instrumentation components of the RTS.
+The first in a series of instrumentation components, responsible for
+measuring specific operational parameters and providing data essential
+for system monitoring and control.
 
 component Instrumentation 2
-The second of four redundant instrumentation components of the RTS.
+Another instrumentation component, working in conjunction with
+Instrumentation 1, to ensure comprehensive monitoring and control of
+the system's operational parameters.
 
 component Instrumentation 3
-The third of four redundant instrumentation components of the RTS.
+An additional instrumentation component, further expanding the
+system's monitoring capabilities and ensuring that all relevant
+operational parameters are accurately tracked and managed.
 
 component Instrumentation 4
-The fourth of four redundant instrumentation components of the RTS.
+The final instrumentation component, completing the subsystem's range
+of monitoring and control capabilities. It plays a crucial role in
+maintaining the overall effectiveness and safety of the RTS System.
 
 // Top-level subsystems.
 relation RTS_System_Arch contains Root

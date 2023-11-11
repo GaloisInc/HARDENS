@@ -17,46 +17,95 @@ The physical hardware components that are a part of the HARDENS RTS
 demonstrator.
 
 component USB Cable
-A normal USB cable.
+A standard USB cable connecting various devices in the HARDENS
+system. It features a USB Type-A connector at one end and a USB Type-B
+connector at the other, facilitating data transfer and power supply.
 What kind of USB connector is on the start of the cable?
 What kind of USB connector is on the end of the cable?
 
 relation USB Cable inherit USB, Cable
 
 component SERDES Test SMA Connectors (J9-J26)
+Serial/Deserializer Test SMA Connectors, providing high-speed serial
+communication capabilities. These connectors are integral to testing
+the serial data interfaces on the board.
 
 component Parallel Config Header (J38)
+A header used for configuring devices in parallel mode. This component
+is essential for setting up and initializing various hardware elements
+on the HARDENS board.
 
 component Versa Expansion Connectors (J39-J40)
+Versatile expansion connectors providing interface options for
+additional modules and components. These connectors allow for the
+extension and customization of the HARDENS system.
 
 component SPI Flag Configuration Memory (U4)
+A memory component configured via the Serial Peripheral Interface
+(SPI), used for storing flag configurations and system settings.
 
 component CFG Switches (SW1)
+Configuration switches allowing for manual setting adjustments and
+configuration of the system. These switches provide a straightforward
+method for altering system behavior.
 
 component Input Switches (SW5)
+A set of switches used for providing input commands to the
+system. These switches are an integral part of the user interface,
+enabling direct user interaction with the system.
 
 component Output LEDs (D5-D12)
+Light Emitting Diodes that serve as output indicators. These LEDs
+provide visual feedback on the system's status and are crucial for
+monitoring and diagnostic purposes.
 
 component Input Push Buttons (SW2-SW4)
+Push buttons used for inputting commands or triggering actions in the
+system. They offer a tactile interface for user interaction, essential
+for manual control and testing.
 
 component 12 V DC Power Input (J37)
+A power input connector for a 12V DC supply, powering the HARDENS
+system. This component ensures the system receives a stable and
+reliable power source.
 
 component GPIO Headers (J32-J33)
+General Purpose Input/Output headers, providing versatile I/O
+capabilities for the system. These headers are critical for
+interfacing with various sensors and actuators.
 
 component PMOD/GPIO Header (J31)
+A PMOD-compatible GPIO header offering additional connectivity for
+modular components and peripherals, enhancing the system's flexibility
+and expansion capabilities.
 
 component Microphone Board/GPIO Header (J30)
+A header combining microphone input and GPIO functionality, useful for
+audio input and various interfacing requirements.
 
 component Prototype Area
+An area on the board designated for prototyping and testing new
+circuits and components. This space allows for experimentation and
+customization within the HARDENS system.
 
 component ECP5-5G Device (U3)
+A Lattice ECP5-5G FPGA device, providing a high-performance
+programmable logic solution for the HARDENS system. This component is
+key to the system's flexibility and adaptability.
 
 component JTAG Interface (J1)
+A Joint Test Action Group interface, used for programming, debugging,
+and testing the system's hardware components. It is essential for
+development and maintenance.
 
 component Mini USB Programming (J2)
+A Mini USB port used for programming the system. This interface allows
+for the uploading of software and firmware to the HARDENS system.
 
 component Lattice ECP-5 FPGA Development Board (Board)
-The development board used by the HARDENS project.
+A development board based on the Lattice ECP-5 FPGA, offering a
+versatile platform for the HARDENS system's hardware development and
+prototyping.
 How many SERDES test SMA connectors do you have?
 May I have SERDES test SMA connector with this label?
 Plus this SERDES component into that SMA connector!
@@ -94,15 +143,18 @@ Plug this cabel into the Mini USB interface!
 May I have the component with this label?
 
 component Temperature Sensor
-A sensor that is capable of measuring the temperature of its environment.
-What is your temperature reading in Celsius (C)?
+A sensor capable of measuring environmental temperature. Provides
+readings in Celsius, essential for monitoring temperature conditions
+in the system.
 
 component Pressure Sensor
-A sensor that is capable of measuring the air pressure of its environment.
-What is your pressure reading in Pascal (P)?
+A sensor capable of measuring air pressure in the
+environment. Provides readings in Pascals, crucial for monitoring and
+maintaining optimal pressure conditions.
 
 component Solenoid Actuator
-A solenoid actuator capable of being in an open or closed state.
+A solenoid actuator capable of moving between open and closed
+states. Used for controlling mechanical processes in the system.
 Close!
 Open!
 
@@ -111,52 +163,70 @@ relation Pressure Sensor inherit Sensor
 relation Solenoid Actuator inherit Actuator
 
 subsystem Physical Architecture
-The physical architecture of the HARDENS RTS demonstrator.
+The physical architecture of the HARDENS RTS demonstrator,
+encompassing the layout and arrangement of all physical components.
 
 component USB UI Cable (UI-C)
-The USB cable used to communicate the ASCII UI to/from the board.
+A USB cable used for transmitting the ASCII-based user interface data
+to and from the HARDENS board. This cable is vital for user
+interaction with the system.
 
 component USB Programming Cable (Prog-C)
-The USB cable used to program the board with a bitstream.
+A USB cable specifically used for programming the HARDENS board with
+required bitstreams. This cable is essential for updating and
+maintaining the system's software.
 
 component USB Debugging I/O Cable (Debug-C)
-The USB cable used to interact with the board in a debugger.
+A USB cable designed for debugging purposes, allowing for detailed
+interaction with the HARDENS board during development and
+troubleshooting.
 
 component Dev Board (Board)
-A PCB developer board used to prototype hardware.
-
+A development board that serves as the prototyping platform for the
+HARDENS system. It is instrumental in testing and refining hardware
+designs.
 // * MOSFET power control kit: https://www.sparkfun.com/products/12959
-
 // * 12 V Latch solenoid: https://www.sparkfun.com/products/15324
-
 // * Pressure sensor: https://www.sparkfun.com/products/11084
 
 component Temperature Sensor 1 (TS1)
-The first of two redundant temperature sensors.
+The first of two redundant temperature sensors, providing crucial
+temperature data for the system. Redundancy ensures reliability and
+accuracy in measurements.
 
 component Temperature Sensor 2 (TS2)
-The second of two redundant temperature sensors.
+The second of the redundant temperature sensors, working in tandem
+with TS1 to provide comprehensive temperature monitoring for the
+system.
 
 component Pressure Sensor 1 (PS1)
-The first of two redundatnt pressure sensors.
+The first of two redundant pressure sensors, essential for accurate
+pressure measurement within the system. Redundancy enhances
+reliability in pressure monitoring.
 
 component Pressure Sensor 2 (PS2)
-The second of two redundant pressure sensors.
+The second of the redundant pressure sensors, complementing PS1 to
+ensure thorough and reliable pressure monitoring across the system.
 
 component Solenoid Actuator 1 (SA1)
-The first of two redundant solenoid actuators.
+The first of two redundant solenoid actuators, responsible for
+mechanical operations in the system. Redundancy ensures continuous
+operation in case of a single actuator failure.
 
 component Solenoid Actuator 2 (SA2)
-The second of two redundant solenoid actuators.
+The second of the redundant solenoid actuators, providing a backup to
+SA1, ensuring the system's mechanical functions remain uninterrupted
+and reliable.
 
 component HARDENS Demonstrator (Demonstrator)
-The fully assembled HARDENS demonstrator hardware with all component
-present.
+The fully assembled HARDENS demonstrator hardware with all components
+present. It represents the complete physical embodiment of the HARDENS
+RTS system.
 
 component Developer Machine
-The computer used by a developer to interface with the demonstrator,
-typically for driving the demonstrator's UI and programming and
-debugging the board.
+The computer used by developers for interfacing with the demonstrator,
+typically for driving the user interface, programming, and debugging
+the HARDENS board.
 
 relation Demonstrator client Board
 relation Board client UI
@@ -176,4 +246,3 @@ relation ECP5-5G Device inherit FPGA
 relation Board contains ECP5-5G
 relation Board inherit PCB
 relation FPGA Dev Board contains J2
-
