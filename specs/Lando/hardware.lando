@@ -185,6 +185,7 @@ component Dev Board (Board)
 A development board that serves as the prototyping platform for the
 HARDENS system. It is instrumental in testing and refining hardware
 designs.
+
 // * MOSFET power control kit: https://www.sparkfun.com/products/12959
 // * 12 V Latch solenoid: https://www.sparkfun.com/products/15324
 // * Pressure sensor: https://www.sparkfun.com/products/11084
