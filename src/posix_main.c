@@ -14,6 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This file contains the implementation of the POSIX variant of the
+// RTS product line.
+
 #include "common.h"
 #include "core.h"
 #include "instrumentation.h"

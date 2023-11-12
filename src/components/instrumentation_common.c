@@ -14,6 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This file contains the implementation of the instrumentation
+// subsystem's initialization of the RTS.
+
 #include "instrumentation.h"
 
 void instrumentation_init(struct instrumentation_state *state) {

@@ -14,6 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This file contains the hand-written, formally verified
+// software implementation of the instrumentation subsystem.
+
 #include <stdint.h>
 
 // Identified by SAW: vals[2] and setpoints[2] must be less than 0x80000000

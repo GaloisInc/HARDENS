@@ -13,7 +13,6 @@
 // limitations under the License.
 
 subsystem Proposal Glossary (Glossary)
-A list of often difficult or specialized words with their definitions, often placed at the back of a book.
 
 component Behavioral Interface Specification Language (BISL)
 A formal, state-based specification language that focuses on the
@@ -134,291 +133,502 @@ claimed at the top of the toolchain really hold in the
 machine-language program, running in the operating-system context.
 
 component Refinement
-@todo kiniry Add an explanation.
+The process of elaborating or detailing a design or idea, often used
+in software and systems engineering to develop a more detailed design
+or implementation from an abstract concept.  There are a variety of
+formal theories of refinement that we use in RDE, including those from
+Morgan, Morris, Back, and Hoare and He.
 
 component Property
-@todo kiniry Add an explanation.
+A characteristic or attribute of a system, used in formal
+specifications to describe essential qualities or features that the
+system should exhibit.
 
 component Safety Property
 inherit Property
-@todo kiniry Add an explanation.
+A safety property ensures that a system does not enter a hazardous
+state or perform unsafe actions, often critical in high-assurance or
+safety-critical systems.
 
 component Correctness Property
 inherit Property
-@todo kiniry Add an explanation.
+A correctness property asserts that a system's behavior matches its
+specifications, ensuring that it functions correctly as per its
+defined requirements.
 
 component Security Property
 inherit Property
-@todo kiniry Add an explanation.
+A security property defines criteria for protecting a system from
+unauthorized access, use, disclosure, disruption, modification, or
+destruction.
 
 component Model
-@todo kiniry Add an explanation.
+A simplified representation of a system or process, used in various
+contexts like software engineering, system design, or scientific
+research, to analyze, predict, or understand the system's behavior.
 
 component Semi-Formal Model
 inherit Model
-@todo kiniry Add an explanation.
+A semi-formal model uses structured and partially formalized languages
+or diagrams to represent a system, combining formal elements with
+informal descriptions.
 
 component Formal Model
 inherit Model
-@todo kiniry Add an explanation.
+A formal model uses mathematical and logical foundations to represent
+a system rigorously, enabling precise analysis and verification of
+system properties.
 
 component Consistent
 inherit Property
-@todo kiniry Add an explanation.
+Consistency refers to the absence of contradictions in a set of data,
+specifications, or models. It ensures that different parts of a system
+or document do not conflict with each other.
 
 component Complete
 inherit Property
-@todo kiniry Add an explanation.
+Completeness in the context of systems or specifications refers to the
+inclusion of all necessary and relevant parts or information, leaving
+no significant aspect unaddressed.
 
 component Consistent Model
 inherit Model Consistent
-@todo kiniry Add an explanation.
+A consistent model is one that is free from contradictions or
+conflicts within its structure or elements, ensuring logical coherence
+in its representation of the system.
 
 component Complete Model
 inherit Model Complete
-@todo kiniry Add an explanation.
+A complete model comprehensively represents all aspects of the system
+it describes, ensuring that no crucial components or behaviors are
+omitted.
 
 component Requirement
-@todo kiniry Add an explanation.
+A requirement is a formal expression of need or a condition that a
+system or component must satisfy, often used in the context of system
+design and engineering.
 
 component Scenario
-@todo kiniry Add an explanation.
+A scenario is a narrative or sequence of events, often used to
+describe a possible situation in system operations or to illustrate
+how a system might be used.  Scenarios can also be used to express
+situations that should not take place, are dangerous, or are insecure.
 
 component Product
-@todo kiniry Add an explanation.
+A product refers to a tangible or intangible result of a process, such
+as a software application, hardware device, or service, created to
+fulfill a specific need or requirement.
 
 component Product Line
-@todo kiniry Add an explanation.
+A product line is a group of related products developed by a company,
+sharing common features, technology, and market segment, often
+allowing for variations to meet different customer needs.  Product
+lines are formally specified using feature models.
 
 component Configure
-@todo kiniry Add an explanation.
+To configure means to set up or arrange the elements of a system or
+component, often involving choices about options, parameters, or
+settings to meet specific requirements.  Feature models are configured
+to specify products.
 
 component DOORS
-@todo kiniry Add an explanation.
+DOORS (Dynamic Object-Oriented Requirements System) is a software
+application for managing complex requirements in large systems,
+facilitating organization, tracking, and analysis of requirements.
 
 component Clafer
-@todo kiniry Add an explanation.
+Clafer is a lightweight modeling language designed for specification
+and analysis, supporting feature modeling, meta-modeling, and
+multi-objective optimization.
 
 component Lobot
-@todo kiniry Add an explanation.
+Lobot is a feature modeling sublanguage used within the Lando system
+specification language, enabling the specification of system features
+and their relationships.
 
 component Lando
-@todo kiniry Add an explanation.
+Lando is a system specification language resembling natural language,
+used for specifying various aspects of a system, including its domain
+model, architecture, requirements, events, and scenarios.
 
 component Denotational
-@todo kiniry Add an explanation.
+Denotational semantics is a formal method for expressing the meaning
+of programming languages, using mathematical objects to represent the
+meaning of expressions in the language.
 
 component Operational
-@todo kiniry Add an explanation.
+Operational semantics is a way to define the behavior of a programming
+language through the use of abstract machines or mathematical
+operations, describing how program operations execute.
 
 component Semantics
-@todo kiniry Add an explanation.
+Semantics in the context of programming languages and formal
+specifications refers to the meaning or interpretation of syntactic
+structures, such as code or formulas.
 
 component Risk
-@todo kiniry Add an explanation.
+Risk refers to the potential for loss or harm, often assessed in terms
+of likelihood and impact, and is a key consideration in systems
+engineering and project management.
 
 component Power
-@todo kiniry Add an explanation.
+Power, in an engineering context, typically refers to the rate at
+which energy is used, produced, or transferred, and is a critical
+factor in the design and operation of electronic systems.
 
 component Resource
-@todo kiniry Add an explanation.
+A resource is an asset or input used to achieve objectives in a
+process or project, such as materials, people, time, information, or
+technology.
 
 component Reliability
-@todo kiniry Add an explanation.
+Reliability refers to the probability of a system or component
+functioning correctly over a specified period under defined
+conditions, and is a key quality attribute in engineering.
 
 component Rigorous
-A specification that has a precise, unambiguous, formal semantics
-grounded in real world formal foundations and systems engineering
-artifacts, such as source code and hardware designs.
+A specification or methodology is rigorous if it is precise,
+well-defined, and based on formal principles, ensuring a high level of
+accuracy and reliability.
 
 component Collaborative Development Environment (CDE)
-@todo kiniry Add an explanation.
+A Collaborative Development Environment (CDE) is a software platform
+that enables multiple individuals or teams to work together on
+software development projects, often providing tools for
+communication, code sharing, and project management.
 
 component Continuous Integration (CI)
-@todo kiniry Add an explanation.
+Continuous Integration (CI) is a software development practice where
+developers regularly merge their code changes into a central
+repository, followed by automated builds and tests.
 
 component Continuous Verification (CV)
-@todo kiniry Add an explanation.
+Continuous Verification (CV) involves the ongoing application of
+processes, tools, and practices to ensure that a system meets its
+requirements, often integrated into the software development
+lifecycle.
 
 component Analyzer
-@todo kiniry Add an explanation.
+An analyzer is a tool or method used to examine, inspect, or evaluate
+something, often used in the context of software to analyze code for
+quality, performance, or security.
 
 component Static Analyzer
 inherit Analyzer
-@todo kiniry Add an explanation.
+A Static Analyzer is a tool that evaluates software code without
+executing it, checking for issues such as syntax errors, code quality,
+and potential vulnerabilities.
 
 component Dynamic Analyzer
 inherit Analyzer
-@todo kiniry Add an explanation.
+A Dynamic Analyzer is a tool that assesses software code during its
+execution, monitoring for runtime errors, performance issues, and
+other dynamic behaviors.
 
 component Finite State Machine (FSM)
-@todo kiniry Add an explanation.
+A Finite State Machine (FSM) is a computational model used to
+represent and control execution flow, defined by a set of states,
+transitions between those states, and actions.
 
 component Deterministic
-@todo kiniry Add an explanation.
+Deterministic refers to a system or process that behaves predictably
+and consistently, producing the same output for a given input every
+time, without random variations.
 
 component Non-deterministic
-@todo kiniry Add an explanation.
+Non-deterministic refers to a system or process where the outcome is
+not predictable with certainty, potentially yielding different results
+for the same input in different instances.
 
 component Deterministic Finite State Machine (DFSM)
 inherit FSM Deterministic
-@todo kiniry Add an explanation.
+A Deterministic Finite State Machine (DFSM) is an FSM where each
+state's transition to the next state is uniquely determined by the
+input, leading to predictable behavior.
 
 component Non-deterministic Finite State Machine (NFSM)
 inherit FSM Non-deterministic
-@todo kiniry Add an explanation.
+A Non-deterministic Finite State Machine (NFSM) is a type of FSM where
+for some states, the next state may be one of several possible
+states. NFSMs are used in scenarios where a system's next state is not
+strictly determined by its current state and inputs.
 
 component Abstract State Machine (ASM)
 inherit FSM
-@todo kiniry Add an explanation.
+An Abstract State Machine (ASM) is a computational model used in
+computer science for designing and analyzing algorithms and system
+specifications. ASMs capture the operational semantics of a system at
+a high level of abstraction.
 
 component Design
-@todo kiniry Add an explanation.
+Design in the context of engineering refers to the process of creating
+a plan or convention for constructing an object, system, or measurable
+human interaction. It often involves research, thought, modeling,
+interactive adjustment, and re-design.
 
 component Architecture
-@todo kiniry Add an explanation.
+Architecture in system development refers to the conceptual structure
+and logical organization of a computer, system, or other complex
+entity. It defines the system components or modules and the
+relationships between them.
 
 component Specification
-@todo kiniry Add an explanation.
+Specification in software and systems engineering is the process of
+defining the desired behavior and functionalities of a system or
+component. It acts as a guideline or blueprint for development and
+assessment.
 
 component Architecture Specification
 inherit Specification
-@todo kiniry Add an explanation.
+An Architecture Specification is a detailed document that describes
+the architecture of a system. It includes information about the
+system's components, their interactions, and guidelines for how the
+system should be built and operated.
 
 component Solver
-@todo kiniry Add an explanation.
+A Solver is a computational tool or program that solves a mathematical
+problem or equation. In computer science, solvers are used to find
+solutions to complex algorithms, logic problems, and optimization
+challenges.
 
 component Formal Method (FM)
-@todo kiniry Add an explanation.
+Formal Methods (FMs) are a particular kind of mathematically-based
+technique for the specification, development, and verification of
+software and hardware systems. They are used to ensure the correctness
+and reliability of systems, particularly in critical applications.
 
 component Logical Framework (LF)
-@todo kiniry Add an explanation.
+A Logical Framework (LF) is a formal system with a strong foundation
+in logic, used for specifying and reasoning about various types of
+mathematical objects. It provides a structure in which various logical
+theories can be encoded.
 
 component Programming Language (PL)
-@todo kiniry Add an explanation.
+A Programming Language (PL) is a formal language comprising a set of
+instructions that produce various kinds of output. PLs are used in
+computer programming to implement algorithms and manipulate data.
 
 component Specification Language
-@todo kiniry Add an explanation.
+A Specification Language is a formal language used to describe, in a
+systematic and precise manner, the aspects of a system or
+component. It serves as a tool for communication, analysis, and
+implementation of systems.
 
 component Protocol
-@todo kiniry Add an explanation.
+A Protocol in computing is a set of rules or procedures for
+transmitting data between electronic devices, such as computers. It
+defines the syntax, semantics, and synchronization of communication.
 
 component System Specification
 inherit Specification
-@todo kiniry Add an explanation.
+A System Specification is a document that captures the requirements
+and functionalities of a system. It details how a system is supposed
+to operate and the constraints under which it must operate.
 
 component Hand-written
-@todo kiniry Add an explanation.
+Hand-written in the context of software and systems refers to
+components, code, or documentation that is manually written by
+individuals, as opposed to being automatically generated by a tool or
+software.
 
 component Machine-generated
-@todo kiniry Add an explanation.
+Machine-generated refers to code, documentation, or other outputs that
+are automatically produced by a software tool, compiler, or system,
+without direct human input in the creation process.
 
 component Source-level Specification Language
 inherit Specification Language
-@todo kiniry Add an explanation.
+A Source-level Specification Language is a type of specification
+language used to describe the behavior, structure, and other
+attributes of a system at the source code level.
 
 component Model-based Specification Language
 inherit Specification Language
-@todo kiniry Add an explanation.
+A Model-based Specification Language is used for specifying and
+designing systems based on models. It focuses on defining system
+characteristics through high-level models, often in a graphical
+format.
 
 component System
-@todo kiniry Add an explanation.
+A System in engineering and computer science refers to a set of
+interacting or interdependent components forming an integrated
+whole. It's often complex, with various elements working together to
+achieve specific goals.
 
 component Distributed System
 inherit System
-@todo kiniry Add an explanation.
+A Distributed System is a system whose components are located on
+different networked computers, which communicate and coordinate their
+actions by passing messages to each other.
 
 component Concurrent System
 inherit System
-@todo kiniry Add an explanation.
+A Concurrent System refers to a system where several computations are
+executing simultaneously, and potentially interacting with each
+other. The computations may be executing on multiple computational
+units or interleaved on a single unit.
 
 component Cryptographic Protocol
 inherit Protocol
-@todo kiniry Add an explanation.
+A Cryptographic Protocol is a protocol that uses cryptographic
+techniques to securely communicate and transfer data over a
+network. It ensures t he confidentiality, integrity, authenticity, and
+non-repudiation of data.
 
 component Cryptographic Algorithm
-@todo kiniry Add an explanation.
+A Cryptographic Algorithm is a mathematical function used in
+encryption and decryption processes. It's an essential component of
+cryptographic techniques, ensuring the security of data transmission
+and storage.
 
 component I/O (IO)
-@todo kiniry Add an explanation.
+Input/Output (IO) refers to the communication between an information
+processing system (such as a computer) and the outside world, possibly
+a human or another information processing system.
 
 component General Purpose I/O (GPIO)
 inherit IO
-@todo kiniry Add an explanation.
+General Purpose Input/Output (GPIO) is a pin on a chip whose behavior
+can be controlled by the user at runtime. GPIOs are used for a wide
+range of purposes, from reading a simple switch to controlling complex
+systems.
 
 component Sensor
-@todo kiniry Add an explanation.
+A Sensor is a device that detects and responds to some type of input
+from the physical environment. The specific input could be light,
+heat, motion, moisture, pressure, or any one of a great number of
+other environmental phenomena.
 
 component Actuator
-@todo kiniry Add an explanation.
+An Actuator is a type of motor that is responsible for moving or
+controlling a mechanism or system. It is operated by a source of
+energy, typically electric current, hydraulic fluid pressure, or
+pneumatic pressure.
 
 component Solenoid
 inherit Actuator
-@todo kiniry Add an explanation.
+A Solenoid is a type of electromagnet, a coil of wire that is actuated
+when an electric current passes through it. Solenoids are often used
+as actuators in automation systems.
 
 component Compiler
-@todo kiniry Add an explanation.
+A Compiler is a program that translates source code written in a
+programming language into another computer language, typically machine
+code or an intermediate language.
 
 component Synthesizer
-@todo kiniry Add an explanation.
+In the domain of hardware engineering, a Synthesizer is a tool or
+software system used for converting high-level descriptions of
+hardware, such as those written in Hardware Description Languages
+(HDLs), into a lower-level, detailed hardware representation or direct
+hardware instantiation. This process is commonly used in the
+development of digital circuits and systems, where the synthesizer
+translates abstract hardware models into physical layout or FPGA
+(Field-Programmable Gate Array) configurations, facilitating the
+creation and testing of hardware designs.
 
 component Universal Serial Bus (USB)
-@todo kiniry Add an explanation.
+Universal Serial Bus (USB) is an industry standard for cables,
+connectors, and protocols for connection, communication, and power
+supply between computers, peripheral devices, and other electronics.
 
 component LED
-@todo kiniry Add an explanation.
+A Light Emitting Diode (LED) is a semiconductor light source that
+emits light when current flows through it. LEDs are used as indicator
+lamps in many devices and are increasingly used for other lighting.
 
 component Cable
-@todo kiniry Add an explanation.
+A Cable in electronics and telecommunications is an assembly of one or
+more wires running side by side or bundled, used to carry electric
+current.
 
 component Program
-@todo kiniry Add an explanation.
+A Program in computing is a set of instructions that tells a computer
+how to perform a specific task. Programs are a fundamental part of
+computer systems and software.
 
 component Bitstream
-@todo kiniry Add an explanation.
+A Bitstream is a sequence of bits used to provide a configuration or
+data to programmable devices, such as a field-programmable gate array
+(FPGA) or other programmable hardware.
 
 component Field-Programmable Gate Array (FPGA)
-@todo kiniry Add an explanation.
+A Field-Programmable Gate Array (FPGA) is an integrated circuit
+designed to be configured by the customer or designer after
+manufacturing, allowing a flexible approach to hardware design and
+deployment.
 
 component ECP-5
 inherit FPGA
-@todo kiniry Add an explanation.
+The ECP-5 is a series of field-programmable gate array (FPGA) chips
+from Lattice Semiconductor, known for their efficiency, performance,
+and versatility in various electronic applications.
 
-component Printed Component Board (PCB)
-@todo kiniry Add an explanation.
+component Printed Circuit Board (PCB)
+A Printed Circuit Board (PCB) mechanically supports and electrically
+connects electronic components using conductive tracks, pads, and
+other features etched from copper sheets laminated onto a
+non-conductive substrate.
 
 component Connector
-@todo kiniry Add an explanation.
+A Connector in electronics is an electro-mechanical device used to
+join electrical terminations and create an electrical
+circuit. Connectors are used to connect and disconnect electronic
+components.
 
 component USB Connector
-@todo kiniry Add an explanation.
+A USB Connector is a type of connector used for Universal Serial Bus
+(USB) interfaces. It is used for data transfer, power supply, and
+communication between devices and computers.
 
 component USB Mini Connector (USB-Mini)
 inherit USB Connector
-@todo kiniry Add an explanation.
+A USB Mini Connector is a smaller version of the standard USB
+connector, designed for smaller devices such as digital cameras and
+smartphones. It is part of the USB family of connectors.
 
 component High-Assurance
-@todo kiniry Add an explanation.
+High-Assurance in systems and software engineering refers to a high
+level of confidence in the correctness, safety, and reliability of a
+system, often achieved through rigorous testing, formal verification,
+and compliance with standards.
 
 component C
-@todo kiniry Add an explanation.
+C is a high-level and general-purpose programming language that is
+widely used for system and application software, device drivers,
+embedded software, and high-performance server and client
+applications.
 
 component PMOD
-@todo kiniry Add an explanation.
+PMOD refers to a type of standardized interface used in electronic
+systems, particularly for interfacing peripheral modules to FPGA or
+microcontroller development boards.
 
 component JTAG
-@todo kiniry Add an explanation.
+Joint Test Action Group (JTAG) is a standard for testing and verifying
+electronic circuit boards and systems. It is commonly used for
+debugging and programming FPGAs and microprocessors.
 
 component Driver
-@todo kiniry Add an explanation.
+In computing, a Driver is a type of software that controls a
+device. Every device, whether it be a printer, disk drive, or
+keyboard, must have a driver program to function with a computer
+system.
 
 component Voting
-@todo kiniry Add an explanation.
+Voting in the context of computing and systems refers to a method for
+ensuring reliability and fault tolerance by having multiple system
+components (like processors or sensors) perform the same operation and
+then voting on the result to decide the correct output.
 
-component UCB Cable
+component USB Cable
 inherit USB Cable
-@todo kiniry Add an explanation.
+A USB Cable is a cable used to connect devices to a computer or power
+source using Universal Serial Bus (USB) standards. It is used for data
+transfer and charging devices.
 
 component Output LED
 inherit LED
-@todo kiniry Add an explanation.
+An Output LED is a light-emitting diode used as an output device in
+electronic systems. It provides visual feedback, often indicating the
+status of a process or system.

@@ -14,6 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This file contains the device/variant-independent implementation of
+// the sense/actuate subsystem of the RTS.
+
 #include "common.h"
 #include "platform.h"
 #include "instrumentation.h"

@@ -17,6 +17,8 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
+-- This file contains the feature model for the RTS product line.
+
 nat : kind of int where self >= 0
 
 -- Our development platforms for running the RTS demonstrator in a

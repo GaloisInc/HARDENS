@@ -16,6 +16,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This is the "bottom" implementation of the RTS software and
+// firmware which is used to verify the consistency of the systems's
+// model-based behavioral interface specifications written in Cryptol
+// and ACSL.
+
 #include "actuate.h"
 #include "actuation_logic.h"
 #include "common.h"

@@ -14,6 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This file contains the axiomatic specification (C type declarations
+// and ACSL behavioral specification) of the actuation unit.
+
 #ifndef MODELS_ACSL_
 #define MODELS_ACSL_
 #include <stdint.h>

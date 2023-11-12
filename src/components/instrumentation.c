@@ -14,6 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This file contains the implementation of the instrumentation
+// subsystem of the RTS.
+
 #include "instrumentation.h"
 #include "platform.h"
 #include "common.h"

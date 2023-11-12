@@ -14,6 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This file contains the specification (C type declarations and ACSL
+// behavioral specification) of the platform subsystem/interface.
+
 #ifndef PLATFORM_H_
 #define PLATFORM_H_
 #include <stdint.h>

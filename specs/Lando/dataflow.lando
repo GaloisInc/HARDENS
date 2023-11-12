@@ -20,7 +20,7 @@ language (DSL), either as Literate Cryptol, which can be Cryptol
 embedded in Markdown or LaTeX, or plain Cryptol. Cryptol is a strongly
 typed, functional DSL for specifying and reasoning about bit-level
 algorithms and their correctness properties and is mainly used to
-specify cryptographic algorithms.  See https://crypto.net/ for more
+specify cryptographic algorithms. See https://crypto.net/ for more
 information.
 
 component Cryptol Software Compiler (CryptolToC)
@@ -34,47 +34,79 @@ compile different subsets of the Cryptol language into implementations
 and test benches written in the VHDL, Verilog, and SystemVerilog.
 
 component Software Implementation (Software)
-@todo kiniry Add an explanation.
+A software implementation of the RTS system, encompassing the
+development of software components, their integration, and
+testing. This includes the implementation of algorithms, interfaces,
+and protocols defined in the system specification.
 
 component Hand-written Software Implementation (SWImpl)
-inherit Hand-written Software 
-@todo kiniry Add an explanation.
+inherit Hand-written Software
+An implementation of software components for the RTS system, manually
+coded by developers. This method focuses on achieving optimized
+performance and tailored solutions for specific parts of the system.
 
 component Synthesized Software Implementation (SynthSW)
-inherit Machine-generated Software 
-@todo kiniry Add an explanation.
+inherit Machine-generated Software
+An automated generation of software components for the RTS system,
+utilizing tools and compilers to convert high-level specifications
+into executable code, ensuring consistency and reducing manual errors.
 
 component Hardware Implementation (Hardware)
-@todo kiniry Add an explanation.
+The development of hardware components for the RTS system, including
+design, fabrication, and testing of electronic circuits and other
+hardware elements essential for the system functionality.
 
 component Hand-written Hardware Implementation (HWImpl)
 inherit Hand-written Hardware
-@todo kiniry Add an explanation.
+A manual approach to hardware development for the RTS system,
+involving direct design and layout of circuits and components by
+hardware engineers, often for specialized or critical parts of the
+system.
 
 component Synthesized Hardware Implementation (SynthHW)
 inherit Machine-generated Hardware
-@todo kiniry Add an explanation.
+Automated generation of hardware components for the RTS system using
+hardware description languages and synthesis tools, allowing for rapid
+prototyping and consistent design implementation.
 
 component COTS High-Assurance RV32I RISC-V CPU (CPU)
-@todo kiniry Add an explanation.
+A commercially available, high-assurance implementation of the RV32I
+RISC-V CPU architecture. This component provides a reliable and tested
+processing unit for the RTS system, adhering to rigorous safety and
+performance standards.
 
 component CompCert Compiler (CompCert)
-@todo kiniry Add an explanation.
+A formally verified compiler for the C programming language, providing
+high-assurance and reliability in the compilation process, crucial for
+safety-critical systems like the RTS.
 
 component Bluespec Compiler (BSC)
-@todo kiniry Add an explanation.
+A high-level compiler for hardware design, allowing for the
+development of hardware components using the Bluespec language, which
+offers formal verification capabilities and facilitates the creation
+of high-assurance hardware systems.
 
 component SymbiFlow Synthesizer (SymbiFlow)
-@todo kiniry Add an explanation.
+An open-source toolchain for FPGA (Field-Programmable Gate Array)
+hardware synthesis, supporting a variety of hardware description
+languages and platforms, crucial for the flexible and robust
+development of the RTS system's hardware components.
 
 component Software Binaries (Binaries)
-@todo kiniry Add an explanation.
+The compiled and executable form of the software components of the RTS
+system. These binaries are the result of the compilation process and
+are ready for deployment in the system.
 
 component Demonstrator Verilog (RTL)
-@todo kiniry Add an explanation.
+The Register Transfer Level (RTL) representation of the RTS system in
+Verilog, providing a detailed description of the hardware components
+at the logic gate level, essential for hardware synthesis and
+analysis.
 
 component FPGA Bitstream (Bitstream)
-@todo kiniry Add an explanation.
+The binary configuration file used to program FPGA devices in the RTS
+system. This bitstream is generated from the RTL description and is
+loaded onto the FPGA to implement the hardware design.
 
 subsystem Dataflow of RTS Implementation Artifacts (Dataflow)
 This specification, which comes from the Galois HARDENS proposal,
