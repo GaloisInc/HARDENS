@@ -285,13 +285,11 @@ tools to this container as necessary during project execution.
 
 #### HARDENS Container
 
-To build and run the core HARDENS Docker image, use the
-`build_docker.sh` script and then `docker run` commands.
+To build and run the core HARDENS Docker image, use the prebuild `galoisinc/hardens:latest` image. Note that `build_docker.sh` currently does not work, as `cryptol-codegen` no longer builds. Best if you use the following command:
 
 ```
-$ ./build_docker.sh
 $ docker run --network host --privileged -v $PWD:/HARDENS -it \
-  hardens:latest
+  galoisinc/hardens:latest
 ```
 
 In order to run a long-lived Docker container for reuse, use a `docker
@@ -300,7 +298,7 @@ directory in order to bind your sandbox properly into the container.
 
 ```
 $ docker run -d -it --name HARDENS --network host --privileged \
-  -v $PWD:/HARDENS hardens:latest
+  -v $PWD:/HARDENS galoisinc/hardens:latest
 ```
 
 If you have stopped a container running and it lists as "exited" when
@@ -315,15 +313,6 @@ After running such a detached container, attach to it for interactive
 use by running a command like:
 ```
 $ docker exec -it HARDENS bash -l
-```
-
-If you are *within Galois network* and *you have access rights*, you
-can download the docker image from artifactory:
-
-```bash
-$ docker pull artifactory.galois.com:5015/hardens:latest
-$ docker run --network host --privileged -v $PWD:/HARDENS -it \
-  artifactory.galois.com:5015/hardens:latest
 ```
 
 The helper script `run_docker.sh` executed the above detached run
