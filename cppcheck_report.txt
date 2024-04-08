@@ -1,0 +1,218 @@
+hardware/SoC/firmware/bsp.c:4:42: style:inconclusive: Function 'i2c_read' argument 2 names different: declaration 'data' definition 'data_tx'. [funcArgNamesDifferent]
+uint32_t i2c_read(uint8_t addr, uint32_t data_tx)
+                                         ^
+hardware/SoC/firmware/bsp.h:78:42: note: Function 'i2c_read' argument 2 names different: declaration 'data' definition 'data_tx'.
+uint32_t i2c_read(uint8_t addr, uint32_t data);
+                                         ^
+hardware/SoC/firmware/bsp.c:4:42: note: Function 'i2c_read' argument 2 names different: declaration 'data' definition 'data_tx'.
+uint32_t i2c_read(uint8_t addr, uint32_t data_tx)
+                                         ^
+hardware/SoC/firmware/bsp.c:59:7: style: Local variable 'delay_ms' shadows outer function [shadowFunction]
+  int delay_ms = 0;
+      ^
+hardware/SoC/firmware/bsp.h:76:6: note: Shadowed declaration
+void delay_ms(uint32_t ms);
+     ^
+hardware/SoC/firmware/bsp.c:59:7: note: Shadow variable
+  int delay_ms = 0;
+      ^
+hardware/SoC/firmware/printf.c:386:39: warning: Either the condition 'prec>9U' is redundant or the array 'pow10[10]' is accessed at index 10, which is out of bounds. [arrayIndexOutOfBoundsCond]
+  double tmp = (value - whole) * pow10[prec];
+                                      ^
+hardware/SoC/firmware/printf.c:380:51: note: Assuming that condition 'prec>9U' is not redundant
+  while ((len < PRINTF_FTOA_BUFFER_SIZE) && (prec > 9U)) {
+                                                  ^
+hardware/SoC/firmware/printf.c:386:39: note: Array index out of bounds
+  double tmp = (value - whole) * pow10[prec];
+                                      ^
+hardware/SoC/firmware/printf.c:407:24: style: Redundant condition: If 'diff > 0.5', the comparison '!(diff < 0.5)' is always true. [redundantCondition]
+    if ((!(diff < 0.5) || (diff > 0.5)) && (whole & 1)) {
+                       ^
+hardware/SoC/firmware/printf.c:248:11: style: Condition 'len' is always false [knownConditionTrueFalse]
+      if (len && (base == 16U)) {
+          ^
+hardware/SoC/firmware/printf.c:246:39: note: Assuming condition 'len' is true
+    if (!(flags & FLAGS_PRECISION) && len && ((len == prec) || (len == width))) {
+                                      ^
+hardware/SoC/firmware/printf.c:247:7: note: len is decremented', new value is 0
+      len--;
+      ^
+hardware/SoC/firmware/printf.c:248:11: note: Condition 'len' is always false
+      if (len && (base == 16U)) {
+          ^
+src/generated/C/actuation_unit_impl.c:1:1: error: syntax error [syntaxError]
+typedef unsigned _ExtInt(1) w1;
+^
+src/generated/C/actuator_impl.c:1:1: error: syntax error [syntaxError]
+typedef unsigned _ExtInt(1) w1;
+^
+src/generated/C/instrumentation_impl.c:1:1: error: syntax error [syntaxError]
+typedef unsigned _ExtInt(1) w1;
+^
+src/generated/C/saturation_impl.c:1:1: error: syntax error [syntaxError]
+typedef unsigned _ExtInt(1) w1;
+^
+src/posix_main.c:120:18: warning: %hhd in format string (no. 1) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  if (2 == (ok = sscanf(line, "A %hhd %hhd", &device, &on))) {
+                 ^
+src/posix_main.c:120:18: warning: %hhd in format string (no. 2) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  if (2 == (ok = sscanf(line, "A %hhd %hhd", &device, &on))) {
+                 ^
+src/posix_main.c:127:25: warning: %hhd in format string (no. 1) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  } else if (2 == (ok = sscanf(line, "M %hhd %hhd", &div, &on))) {
+                        ^
+src/posix_main.c:127:25: warning: %hhd in format string (no. 2) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  } else if (2 == (ok = sscanf(line, "M %hhd %hhd", &div, &on))) {
+                        ^
+src/posix_main.c:138:25: warning: %hhd in format string (no. 1) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  } else if (3 == (ok = sscanf(line, "B %hhd %hhd %hhd", &div, &ch, &mode))) {
+                        ^
+src/posix_main.c:138:25: warning: %hhd in format string (no. 2) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  } else if (3 == (ok = sscanf(line, "B %hhd %hhd %hhd", &div, &ch, &mode))) {
+                        ^
+src/posix_main.c:138:25: warning: %hhd in format string (no. 3) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  } else if (3 == (ok = sscanf(line, "B %hhd %hhd %hhd", &div, &ch, &mode))) {
+                        ^
+src/posix_main.c:150:25: warning: %hhd in format string (no. 1) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  } else if (3 == (ok = sscanf(line, "S %hhd %hhd %d", &div, &ch, &val))) {
+                        ^
+src/posix_main.c:150:25: warning: %hhd in format string (no. 2) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  } else if (3 == (ok = sscanf(line, "S %hhd %hhd %d", &div, &ch, &val))) {
+                        ^
+src/posix_main.c:150:25: warning: %d in format string (no. 3) requires 'int *' but the argument type is 'unsigned int *'. [invalidScanfArgType_int]
+  } else if (3 == (ok = sscanf(line, "S %hhd %hhd %d", &div, &ch, &val))) {
+                        ^
+src/posix_main.c:162:25: warning: %hhd in format string (no. 1) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  } else if (3 == (ok = sscanf(line, "V %hhd %hhd %d", &sensor, &ch, &val))) {
+                        ^
+src/posix_main.c:162:25: warning: %hhd in format string (no. 2) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  } else if (3 == (ok = sscanf(line, "V %hhd %hhd %d", &sensor, &ch, &val))) {
+                        ^
+src/posix_main.c:162:25: warning: %d in format string (no. 3) requires 'int *' but the argument type is 'unsigned int *'. [invalidScanfArgType_int]
+  } else if (3 == (ok = sscanf(line, "V %hhd %hhd %d", &sensor, &ch, &val))) {
+                        ^
+src/posix_main.c:174:25: warning: %hhd in format string (no. 1) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  } else if (3 == (ok = sscanf(line, "ES %hhd %hhd %hhd", &sensor, &ch, &mode))) {
+                        ^
+src/posix_main.c:174:25: warning: %hhd in format string (no. 2) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  } else if (3 == (ok = sscanf(line, "ES %hhd %hhd %hhd", &sensor, &ch, &mode))) {
+                        ^
+src/posix_main.c:174:25: warning: %hhd in format string (no. 3) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  } else if (3 == (ok = sscanf(line, "ES %hhd %hhd %hhd", &sensor, &ch, &mode))) {
+                        ^
+src/posix_main.c:178:25: warning: %hhd in format string (no. 1) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  } else if (2 == (ok = sscanf(line, "EI %hhd %hhd", &div, &mode))) {
+                        ^
+src/posix_main.c:178:25: warning: %hhd in format string (no. 2) requires 'char *' but the argument type is 'unsigned char *'. [invalidScanfArgType_int]
+  } else if (2 == (ok = sscanf(line, "EI %hhd %hhd", &div, &mode))) {
+                        ^
+src/posix_main.c:364:27: style: Variable 'cmd' is assigned a value that is never used. [unreadVariable]
+  struct rts_command *cmd = (struct rts_command *)malloc(sizeof(*cmd));
+                          ^
+src/rv32_main.c:190:12: style: The scope of the variable 'data' can be reduced. [variableScope]
+  uint32_t data = 0;
+           ^
+src/rv32_main.c:191:12: style: The scope of the variable 'addr' can be reduced. [variableScope]
+  uint32_t addr = 0;
+           ^
+src/rv32_main.c:193:11: style: The scope of the variable 'intermidiate' can be reduced. [variableScope]
+  uint8_t intermidiate = 0;
+          ^
+src/rv32_main.c:303:10: style: Local variable 'line' shadows outer variable [shadowVariable]
+    char line[256];
+         ^
+src/rv32_main.c:293:8: note: Shadowed declaration
+  char line[256];
+       ^
+src/rv32_main.c:303:10: note: Shadow variable
+    char line[256];
+         ^
+src/rv32_main.c:190:17: style: Variable 'data' is assigned a value that is never used. [unreadVariable]
+  uint32_t data = 0;
+                ^
+src/rv32_main.c:191:17: style: Variable 'addr' is assigned a value that is never used. [unreadVariable]
+  uint32_t addr = 0;
+                ^
+src/rv32_main.c:193:24: style: Variable 'intermidiate' is assigned a value that is never used. [unreadVariable]
+  uint8_t intermidiate = 0;
+                       ^
+src/bottom.c:39:0: style: The function 'Coincidence_2_4' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/syscalls.c:36:0: style: The function '_close' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/syscalls.c:8:0: style: The function '_exit' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/syscalls.c:61:0: style: The function '_fstat' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/syscalls.c:84:0: style: The function '_getpid' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/syscalls.c:69:0: style: The function '_isatty' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/syscalls.c:76:0: style: The function '_kill' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/syscalls.c:43:0: style: The function '_lseek' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/syscalls.c:52:0: style: The function '_read' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/syscalls.c:15:0: style: The function '_sbrk' is never used. [unusedFunction]
+
+^
+src/bottom.c:29:0: style: The function 'actuate_devices' is never used. [unusedFunction]
+
+^
+src/bottom.c:54:0: style: The function 'actuation_unit_step' is never used. [unusedFunction]
+
+^
+hardware/SoC/Verilator_Resources/C_Imported_Functions.c:139:0: style: The function 'c_i2c_request' is never used. [unusedFunction]
+
+^
+hardware/SoC/Verilator_Resources/C_Imported_Functions.c:122:0: style: The function 'c_putchar' is never used. [unusedFunction]
+
+^
+hardware/SoC/Verilator_Resources/C_Imported_Functions.c:60:0: style: The function 'c_trygetchar' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/printf.c:908:0: style: The function 'fctprintf' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/bsp.c:4:0: style: The function 'i2c_read' is never used. [unusedFunction]
+
+^
+src/bottom.c:89:0: style: The function 'instrumentation_step' is never used. [unusedFunction]
+
+^
+src/bottom.c:210:0: style: The function 'is_actuation_unit_under_test' is never used. [unusedFunction]
+
+^
+hardware/SoC/Verilator_Resources/C_Imported_Functions.c:52:0: style: The function 'print_tty' is never used. [unusedFunction]
+
+^
+src/common.c:136:0: style: The function 'reset_actuation_logic' is never used. [unusedFunction]
+
+^
+hardware/SoC/Verilator_Resources/sim_main_template.cpp:19:0: style: The function 'sc_time_stamp' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/printf.c:885:0: style: The function 'snprintf_' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/printf.c:875:0: style: The function 'sprintf_' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/printf.c:895:0: style: The function 'vprintf_' is never used. [unusedFunction]
+
+^
+hardware/SoC/firmware/printf.c:902:0: style: The function 'vsnprintf_' is never used. [unusedFunction]
+
+^
+nofile:0:0: information: Cppcheck cannot find all the include files (use --check-config for details) [missingInclude]
+
