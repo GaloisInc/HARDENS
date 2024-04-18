@@ -92,7 +92,7 @@ ifeq ($(DEV_BOARD),LFE5UM5G_85F_EVN)
 CORE_FREQ=2400000
 
 rts:
-	CORE_FREQ=$(CORE_FREQ) PROG=main make -C hardware/SoC/ prog
+	CORE_FREQ=$(CORE_FREQ) PROG=main make -C hardware/SoC/ design.svf
 
 else
 $(info Unsupported dev board!)
@@ -109,7 +109,7 @@ endif # PLATFORM=posix ?
 # Documentation
 #
 
-docs: README.pdf
+docs: README.pdf Assurance.pdf Toolchain.pdf
 
 README.pdf: README.md
 	pandoc -o README.pdf README.md
@@ -123,7 +123,7 @@ Toolchain.pdf: Toolchain.md
 clean: src_clean doc_clean
 
 doc_clean:
-	rm -f README.pdf Assurance.pdf Toolchain.md
+	rm -f README.pdf Assurance.pdf Toolchain.pdf
 
 .PHONY: rts all clean src_clean fw_clean doc_clean docs
 
