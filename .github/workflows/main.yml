@@ -46,7 +46,7 @@ jobs:
           options: -v ${{ github.workspace }}:/HARDENS
           run: |
             cp -r /HARDENS/ /tmp
-            make -C /tmp/HARDENS/src -f frama_c.mk
+            make -C /tmp/HARDENS/src -f frama_c.mk proofs
 
   rts_posix_scenarios:
     runs-on: ubuntu-latest
