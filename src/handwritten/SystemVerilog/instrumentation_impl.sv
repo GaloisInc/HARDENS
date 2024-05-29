@@ -14,6 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This file contains the hand-written, formally verified
+// hardware implementation of the instrumentation subsystem.
+
 module Is_Ch_Tripped
     #(localparam Log2Modes = 2)
     ( input logic [Log2Modes - 1:0] mode,

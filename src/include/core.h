@@ -14,6 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This file contains the specification (C type declarations and ACSL
+// behavioral specification) of the core components of the RTS.
+
 #ifndef CORE_H_
 #define CORE_H_
 

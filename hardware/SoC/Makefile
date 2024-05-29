@@ -3,7 +3,7 @@
 # ================================================================
 
 #   Copyright 2021, 2022, 2023 Galois, Inc.
-#   Copyright 2022 Bluespec, Inc.
+#   Copyright 2022 Rishiyur Nikhil
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -38,8 +38,12 @@ else
   $(info  INFO: BLUESPEC_HOME is $(BLUESPEC_HOME))
 endif
 
+# NOTE: make sure that these values match what is in
+# https://github.com/GaloisInc/HARDENS/blob/develop/hardware/SoC/src_BSV/NervSoC.bsv#L151
+#
+# NOTE: if this much memory doesn't fit into the FPGA, you will need to adjust it downwards
 IMEMORY_SIZE ?= 0x07000
-DMEMORY_SIZE ?= 0x03000
+DMEMORY_SIZE ?= 0x07000
 
 
 # ================================================================
@@ -82,6 +86,11 @@ BSCDIRS_V = -vdir $(VERILOG_DIR)  -bdir $(BUILD_V_DIR)  -info-dir $(BUILD_V_DIR)
 
 FIRMWARE_DIR = firmware
 PROG 	?= demo
+# NOTE: this value might have to be updated for the simulated target,
+# depending on the host computer
+# 1333333 Hz *should* be OK for the FPGA target
+# See https://github.com/GaloisInc/HARDENS/blob/develop/hardware/SoC/firmware/bsp.c#L43
+# for details
 CORE_FREQ ?= 1333333
 
 dmem_contents.memhex32:

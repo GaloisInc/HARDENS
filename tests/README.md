@@ -1,7 +1,7 @@
-# End to end runtime verification for RTS
+# End-to-End Runtime Verification for RTS
 
 This directory contains the drivers and testcases that implement test
-scenarios defined in [](../specs/test_scenarios.lando).
+scenarios defined in [the Lando specification](../specs/test_scenarios.lando).
 
 Each scenario is a template, potentially parameterized by a set of
 variables, as outlined below.

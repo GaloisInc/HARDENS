@@ -14,6 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This file contains the implementation of the actuator component of
+// the RTS.
+
 #include "platform.h"
 #include "actuate.h"
 #include "actuation_logic.h"

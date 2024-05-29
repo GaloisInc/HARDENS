@@ -32,13 +32,12 @@ RUN apt-get install -y wget git python3 pip \
     autoconf automake autotools-dev curl libmpc-dev \
     libmpfr-dev libgmp-dev texinfo gperf \
     libtool patchutils bc zlib1g-dev libexpat-dev \
-    libftdi-dev unzip \
-    cabal-install libffi7 \
+    libftdi-dev unzip libffi7 \
     libftdi1-2 libftdi1-dev libhidapi-libusb0 libhidapi-dev libudev-dev make g++ \
     libc++-dev libc++abi-dev nodejs python2 npm \
     iverilog verilator \
     vim mercurial libboost-program-options-dev \
-    texlive-full
+    texlive-full pandoc
 
 # Builder
 FROM base as builder
@@ -178,6 +177,14 @@ RUN \
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # GHC and Cabal
+RUN \
+    wget https://downloads.haskell.org/~ghcup/x86_64-linux-ghcup -O /usr/local/bin/ghcup \
+    && chmod +x /usr/local/bin/ghcup
+ENV PATH="/root/.ghcup/bin:${PATH}"
+RUN \
+    ghcup install ghc 8.10.7 \
+    && ghcup set ghc 8.10.7 \
+    && ghcup install cabal
 RUN cabal update
 
 # cryptol 2.11
@@ -186,6 +193,9 @@ ARG TAG=dfae4580e322584185235f301bc8a03b6bc19a65
 ARG REPO=https://github.com/GaloisInc/cryptol.git
 RUN git clone ${REPO} /tmp/${TOOL}
 WORKDIR /tmp/${TOOL}
+# Build fix
+RUN echo "constraints:" > cabal.project.local
+RUN echo "  parameterized-utils < 2.1.6" >> cabal.project.local
 RUN \
     git checkout ${TAG} \
     && git submodule update --init \
@@ -252,24 +262,6 @@ RUN cp build/bin/btor* /usr/local/bin/
 RUN cp deps/btor2tools/bin/btorsim /usr/local/bin/
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
-# cryptol-verilog
-ARG TOOL=cryptol-verilog
-COPY ${TOOL} /tmp/${TOOL}
-WORKDIR /tmp/${TOOL}
-RUN \
-    cabal v2-build \
-    && cabal v2-install --installdir=/tools
-
-# Crymp
-ARG TOOL=cryptol-codegen
-COPY ${TOOL} /tmp/${TOOL}
-WORKDIR /tmp/${TOOL}
-RUN \
-    cabal build \
-    && cabal install --installdir=/tools
-
-ENV PATH="/tools/:${PATH}"
-
 # NuSMV
 # wget https://nusmv.fbk.eu/distrib/NuSMV-2.6.0-linux64.tar.gz
 # tar xzf NuSMV-2.6.0-linux64.tar.gz
@@ -319,13 +311,31 @@ RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 # RDE Refinement Finder (aka the DocumentationEnricher)
 ARG TOOL=der
 ARG TAG=0.1.5
-ARG REPO=https://github.com/GaloisInc/RDE_RF/releases/tag/v.0.1.5
+ARG REPO=https://github.com/GaloisInc/RDE_RF
 WORKDIR /tmp
-RUN wget ${REPO}/${TOOL}-${TAG}.zip
+RUN wget ${REPO}/releases/download/v.${TAG}/${TOOL}-${TAG}.zip
 RUN unzip ${TOOL}-${TAG}.zip
-RUN    mv ${TOOL}-${TAG} /tools/${TOOL}
-ENV PATH="/tools/${TOOL}/bin:${PATH}"
+RUN mv ${TOOL}-${TAG} /tools/${TOOL} && rm ${TOOL}-${TAG}.zip
+ENV PATH="/tools/${TOOL}:${PATH}"
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+
+# cryptol-verilog
+ARG TOOL=cryptol-verilog
+COPY ${TOOL} /tmp/${TOOL}
+WORKDIR /tmp/${TOOL}
+RUN \
+    cabal v2-build \
+    && cabal v2-install --installdir=/tools
+
+# Crymp
+ARG TOOL=cryptol-codegen
+COPY ${TOOL} /tmp/${TOOL}
+WORKDIR /tmp/${TOOL}
+RUN \
+    cabal build \
+    && cabal install --installdir=/tools
+
+ENV PATH="/tools/:${PATH}"
 
 # Runner
 FROM base as runner

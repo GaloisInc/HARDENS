@@ -23,10 +23,7 @@ jobs:
       - name: Prove specs
         uses: addnab/docker-run-action@v3
         with:
-          username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-          registry: artifactory.galois.com:5015
-          image: artifactory.galois.com:5015/hardens
+          image: galoisinc/hardens
           options: -v ${{ github.workspace }}:/HARDENS
           run: |
             make -C saw
@@ -49,7 +46,7 @@ jobs:
           options: -v ${{ github.workspace }}:/HARDENS
           run: |
             cp -r /HARDENS/ /tmp
-            make -C /tmp/HARDENS/src -f frama_c.mk
+            make -C /tmp/HARDENS/src -f frama_c.mk proofs
 
   rts_posix_scenarios:
     runs-on: ubuntu-latest
@@ -61,10 +58,7 @@ jobs:
       - name: Build RTS and run test scenarios
         uses: addnab/docker-run-action@v3
         with:
-          username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-          registry: artifactory.galois.com:5015
-          image: artifactory.galois.com:5015/hardens
+          image: galoisinc/hardens
           options: -v ${{ github.workspace }}:/HARDENS
           run: |
             make rts
@@ -72,7 +66,7 @@ jobs:
             pip3 install -r requirements.txt &&
             RTS_DEBUG=1 QUICK=1 python3 ./run_all.py
 
-  rts_riscv_scenarios:
+  rts_riscv_build_verilator:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository and submodules
@@ -82,12 +76,25 @@ jobs:
       - name: Build RTS and run test scenarios
         uses: addnab/docker-run-action@v3
         with:
-          username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          password: ${{ secrets.ARTIFACTORY_PASSWORD }}
-          registry: artifactory.galois.com:5015
-          image: artifactory.galois.com:5015/hardens
+          image: galoisinc/hardens
           options: -v ${{ github.workspace }}:/HARDENS
           run: |
             make rts
             PLATFORM=RV32_bare_metal make rts
-# TODO: run scenarios
+# NOTE: there is currently no way to run RISCV scenarios
+
+  rts_riscv_build_fpga:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Build RTS and run test scenarios
+        uses: addnab/docker-run-action@v3
+        with:
+          image: galoisinc/hardens
+          options: -v ${{ github.workspace }}:/HARDENS
+          run: |
+            make rts
+            PLATFORM=RV32_bare_metal DEV_BOARD=LFE5UM5G_85F_EVN make rts

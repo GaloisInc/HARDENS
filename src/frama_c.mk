@@ -18,7 +18,7 @@ WP=frama-c $(FRAMAC_FLAGS)
 FRAMAC=frama-c $(FRAMAC_FLAGS) -wp-rte -wp $(FRAMAC_FLAGS) -wp-prover tip,alt-ergo,z3
 GUI=frama-c-gui $(FRAMAC_FLAGS) -wp-rte -wp-prover tip,alt-ergo-z3
 
-SRC=actuation_logic.c core.c sense_actuate.c\
+SRC=core.c sense_actuate.c\
     variants/actuation_unit_generated_C.c\
     variants/actuation_unit_generated_SystemVerilog.c\
     variants/instrumentation_generated_C.c\
@@ -34,6 +34,7 @@ EXCLUDE_INSTR=$(addprefix -wp-skip-fct , rotl1 rotl2 rotl3 rotl32 rotr1 rotr2 ro
 
 proofs: actuator_proof actuation_unit_proof instrumentation_proof
 
+# NOTE: does not complie
 report:
 	$(FRAMAC) \
       variants/actuator_generated_C.c \
@@ -43,8 +44,9 @@ report:
       $(EXCLUDE_ACT) $(EXCLUDE_ACTU) $(EXCLUDE_INSTR) \
       -then -report
 
+# NOTE: does not complie
 metrics:
-	frama-c $(SRC) -metrics -cpp-extra-args="-I include" -c11
+	$(FRAMAC) $(SRC) -metrics -cpp-extra-args="-I include" -c11
 
 actuator_proof:
 	$(FRAMAC) components/actuator.c
@@ -62,11 +64,14 @@ instrumentation_proof:
 actuator_gui:
 	$(GUI) -cpp-extra-args='-include "common.h" -include "actuate.h"'  generated/C/actuator_impl.c $(EXCLUDE_ACTU)
 
+# NOTE: requires framac/frama-c-gui:dev docker image
 actuation_unit_gui:
 	$(GUI) -cpp-extra-args='-include "common.h" -include "actuation_logic.h"'  generated/C/actuation_unit_impl.c $(EXCLUDE_ACTU)
 
+# NOTE: requires framac/frama-c-gui:dev docker image
 instrumentation_gui_generated:
 	$(GUI) -cpp-extra-args='-include "common.h" -include "instrumentation.h"' generated/C/instrumentation_impl.c $(EXCLUDE_INSTR)
 
+# NOTE: requires framac/frama-c-gui:dev docker image
 instrumentation_gui_handwritten:
 	$(GUI) -cpp-extra-args='-include "common.h" -include "instrumentation.h"' handwritten/C/instrumentation_impl.c $(EXCLUDE_INSTR)

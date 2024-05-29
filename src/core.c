@@ -14,6 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// This file contains the core functionality of the RTS with regards
+// to state update and UI I/O.
+
 #include "core.h"
 #include "platform.h"
 #include "actuate.h"

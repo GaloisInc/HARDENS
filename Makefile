@@ -60,7 +60,7 @@ rts:
 	SENSORS=$(SENSORS) SELF_TEST=Disabled make -C src rts
 	mv src/rts src/rts.no_self_test
 
-clean:
+src_clean:
 	make -C src clean
 
 else # Not PLATFORM=posix
@@ -76,7 +76,7 @@ fw_only:
 fw_clean:
 	PROG=main make -C hardware/SoC/firmware clean
 
-clean:
+src_clean:
 	PROG=main make -C hardware/SoC/ clean
 
 $(info Choosing dev board $(DEV_BOARD))
@@ -92,7 +92,7 @@ ifeq ($(DEV_BOARD),LFE5UM5G_85F_EVN)
 CORE_FREQ=2400000
 
 rts:
-	CORE_FREQ=$(CORE_FREQ) PROG=main make -C hardware/SoC/ prog
+	CORE_FREQ=$(CORE_FREQ) PROG=main make -C hardware/SoC/ design.svf
 
 else
 $(info Unsupported dev board!)
@@ -105,7 +105,27 @@ $(info Unsupported platform!)
 endif # PLATFORM=RV32_bare_metal ?
 endif # PLATFORM=posix ?
 
-.PHONY: rts all clean
+#
+# Documentation
+#
+
+docs: README.pdf Assurance.pdf Toolchain.pdf
+
+README.pdf: README.md
+	pandoc -o README.pdf README.md
+
+Assurance.pdf: Assurance.md
+	pandoc -o Assurance.pdf Assurance.md
+
+Toolchain.pdf: Toolchain.md
+	pandoc -o Toolchain.pdf Toolchain.md
+
+clean: src_clean doc_clean
+
+doc_clean:
+	rm -f README.pdf Assurance.pdf Toolchain.pdf
+
+.PHONY: rts all clean src_clean fw_clean doc_clean docs
 
 check:
 	make -C models
