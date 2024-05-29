@@ -79,12 +79,12 @@ def run_script(p, cmds):
                 print(f"SENDING: {c.strip()}")
             p.sendline(c.strip())
             p.sendline('')
-        time.sleep(2)
+        time.sleep(0.1)
     return True
 
 def run(script, args):
     p = pexpect.spawn(RTS_BIN)
-    time.sleep(2)
+    time.sleep(0.1)
     with open(script) as f:
         cmds = f.readlines()
         fst = cmds[0].strip()
