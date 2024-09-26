@@ -1,10 +1,16 @@
 # From https://github.com/marketplace/actions/unofficial-coverity-scan
-# Your .github/workflows/coverity.yml file.
+# 
 # NOTE: this action was disabled in the UI. To re-enable it, go to
 # https://github.com/GaloisInc/HARDENS/actions/workflows/coverity.yml
-# The analysis (cov-build) likely needs HARDENS tools, such as cross-compilers,
+# but the action is not guaranteed to work.
+#
+# @podhrmic had to manually run the analysis
+# and upload the results to https://scan.coverity.com/projects/galoisinc-hardens
+#
+# The analysis (cov-build) needs HARDENS tools, such as cross-compilers,
 # which are in the HARDENS docker image. However, the coverity tool itself is relatively
 # large (a few GB), thus it hasn't been added.
+#
 name: Coverity Scan
 
 # We only want to test official release code, not every pull request.
