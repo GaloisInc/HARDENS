@@ -1,0 +1,30 @@
+# From https://github.com/marketplace/actions/unofficial-coverity-scan
+# 
+# NOTE: this action was disabled in the UI. To re-enable it, go to
+# https://github.com/GaloisInc/HARDENS/actions/workflows/coverity.yml
+# but the action is not guaranteed to work.
+#
+# @podhrmic had to manually run the analysis
+# and upload the results to https://scan.coverity.com/projects/galoisinc-hardens
+#
+# The analysis (cov-build) needs HARDENS tools, such as cross-compilers,
+# which are in the HARDENS docker image. However, the coverity tool itself is relatively
+# large (a few GB), thus it hasn't been added.
+#
+name: Coverity Scan
+
+# We only want to test official release code, not every pull request.
+on:
+  push:
+    branches: [feature/coverity-and-other-scans]
+
+jobs:
+  coverity:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: vapier/coverity-scan-action@v1
+      with:
+        email: ${{ secrets.COVERITY_SCAN_EMAIL }}
+        token: ${{ secrets.COVERITY_SCAN_TOKEN }}
+        command: make rts
