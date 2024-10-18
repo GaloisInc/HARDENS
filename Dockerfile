@@ -18,7 +18,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN mkdir /tools
 WORKDIR /
 
-RUN apt-get update && apt-get upgrade -y
+RUN apt-get update --allow-insecure-repositories && apt-get upgrade -y
 RUN apt-get install -y wget git python3 pip \
     python3-dev software-properties-common \
     iproute2 usbutils srecord \
@@ -114,12 +114,13 @@ RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 RUN echo "`iverilog -v | head -1`" >> ${VERSION_LOG}
 
 # Bluespec compiler
+# We have to bump to at least 2023.01 in order to support Ubuntu 22.04.
 ARG TOOL=bluespec-compiler
-ARG TAG=bsc-2021.07-ubuntu-20.04
+ARG TAG=bsc-2023.01-ubuntu-22.04
 ARG REPO=https://github.com/B-Lang-org/bsc
 WORKDIR /tmp
 RUN \
-    wget ${REPO}/releases/download/2021.07/${TAG}.tar.gz \
+    wget ${REPO}/releases/download/2023.01/${TAG}.tar.gz \
     && tar xvzf ${TAG}.tar.gz \
     && mv ${TAG} /tools/${TAG} \
     && rm ${TAG}.tar.gz
@@ -166,18 +167,21 @@ RUN \
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # Bluespec libraries
-ARG TOOL=bsc-contrib
-ARG TAG=aa205330885f6955e24fd99a0319e2733b5353f1
-ARG REPO=https://github.com/B-Lang-org/bsc-contrib.git
-RUN git clone ${REPO} /tools/${TOOL}
-WORKDIR /tools/${TOOL}
-RUN \
-    git checkout ${TAG} \
-    && make PREFIX=/tools/bsc-2021.07-ubuntu-20.04/
-RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
+# These are not building for the version of BSC we have installed in
+# Ubuntu 22.x for now, so this is being commented out.
+# ARG TOOL=bsc-contrib
+# ARG TAG=c9d4f1b7415e4b1053b6934614e91bceafeacf04
+# ARG REPO=https://github.com/B-Lang-org/bsc-contrib.git
+# RUN git clone ${REPO} /tools/${TOOL}
+# WORKDIR /tools/${TOOL}
+# RUN \
+#     git checkout ${TAG} \
+#     && make PREFIX=/tools/bsc-2023.01-ubuntu-22.04/
+# RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # GHC and Cabal
 RUN \
+#    curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | sh
     wget https://downloads.haskell.org/~ghcup/x86_64-linux-ghcup -O /usr/local/bin/ghcup \
     && chmod +x /usr/local/bin/ghcup
 ENV PATH="/root/.ghcup/bin:${PATH}"
