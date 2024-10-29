@@ -1,4 +1,4 @@
-#   Copyright 2021, 2022, 2023 Galois, Inc.
+#   Copyright 2021, 2022, 2023, 2024 Galois, Inc.
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 
 CLANG9 ?= clang
 CFLAGS = -g -O1 -I../src/include -Wno-bitwise-op-parentheses -Wno-shift-op-parentheses
+SAW ?= /tools/saw/bin/saw
 
 ACTUATOR_IMPLS=generated/actuator_impl.bc
 ACTUATION_UNIT_IMPLS=generated/actuation_unit_impl.bc
@@ -29,16 +30,16 @@ all: proofs
 proofs: saturation_proofs instrumentation_proofs actuation_unit_proofs actuator_proofs
 
 actuator_proofs: actuator.saw $(ACTUATOR_IMPLS)
-	saw $<
+	$(SAW) $<
 
 actuation_unit_proofs: actuation_unit.saw $(ACTUATION_UNIT_IMPLS)
-	saw $<
+	$(SAW) $<
 
 saturation_proofs: saturation.saw $(SATURATION_IMPLS)
-	saw $<
+	$(SAW) $<
 
 instrumentation_proofs: instrumentation.saw $(INSTRUMENTATION_IMPLS)
-	saw $<
+	$(SAW) $<
 	yosys -q -s generated/Is_Ch_Tripped.yosys
 	yosys -q -s handwritten/Is_Ch_Tripped.yosys
 	yosys -q -s generated/Generate_Sensor_Trips.yosys
