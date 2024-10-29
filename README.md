@@ -1,6 +1,6 @@
 # High Assurance Rigorous Digital Engineering for Nuclear Safety (HARDENS)
 
-*Copyright (C) Galois 2021, 2022, 2023*
+*Copyright (C) Galois 2021, 2022, 2023, 2024*
 
 *Principal Investigator: Joe Kiniry <kiniry@galois.com>*
 
@@ -36,7 +36,7 @@ Digital Instrumentation and Control Systems for existing Nuclear Power
 Plants (NPPs).
 
 In the HARDENS project Galois will demonstrate to the Nuclear
-Regulatory Commission (NRC) cutting- edge capabilities in the
+Regulatory Commission (NRC) cutting-edge capabilities in the
 model-based design, validation, and verification of safety-critical,
 mission-critical, high-assurance systems. Our demonstrator includes
 high-assurance software and hardware, includes open source RISC-V
@@ -178,15 +178,15 @@ assurance:
 
 ## Task 1: Implementation
 
-As described in our proposal and the project Statement of Work, in
-Task 1 (Implementation), the first task of the HARDENS project, Galois
-will implement the system described above using both (1) highly
+As described in our proposal and the project *Statement of Work*, in
+*Task 1 (Implementation)*, the first task of the HARDENS project,
+Galois will implement the system described above using both (1) highly
 integrated computer-based engineering development processes and (2)
 model-based systems engineering.  All the modules of the simple
 protection system will be modeled functionally, and one FPGA-based
 circuit card will be modeled/designed in detail. The deliverable will
 be the model-based design itself. We will use Galois’s RDE process and
-methodology to achieve this goal, as well as the V&V in Task 2.
+methodology to achieve this goal, as well as the V&V in *Task 2*.
 
 All project models---the SysMLv2 model, the executable, rigorously
 validated and formally verified Cryptol model, and the semi-formal and
@@ -207,17 +207,21 @@ can execute both the generated C components and the generated System
 Verilog components by means of a shim library wrapping the Verilated
 components.
 
-Finally, we have a formally verified RISC-V CPU, called the `nerv`
-CPU, built and tested on the ECP5-5G board.  We have sketched out
-an initial three core SoC design using Bluespec SystemVerilog, but
-have not yet built that SoC for emulation or put it on the FGPA.  We
-will accomplish such early in Task 2, and cross-compile our POSIX C
-implementation to that SoC.  That ongoing work is found in the `nerv`
-branch of the repository.
+We have a formally verified RISC-V CPU, called the `nerv` CPU, built
+and tested on the ECP5-5G board.  We have sketched out an initial
+three core SoC design using Bluespec SystemVerilog, but did not build
+that SoC for emulation or put it on the FGPA.  The RTS does
+cross-compile our POSIX C implementation to the RISC-V ISA.  That
+ongoing work is found in the `nerv` branch of the repository.
+
+Examine the build system contained in the [`Makefile`](./Makefile) for
+information about how to build the RTS system, its documentation, and
+re-running its assurance case.  The top-level rules that are the most
+important are called `rts`, `docs`, and `check`.
 
 ## Task 2: Validation and Verification
 
-As described in the Statement of Work, for Task 2 of the HARDENS
+As described in the *Statement of Work*, for *Task 2* of the HARDENS
 project Galois will perform preliminary validation and verification
 and testing of the design using model-based engineering and testing
 methods. The deliverable will be the artifacts as described in the
@@ -225,32 +229,35 @@ proposal.
 
 The [Hardens Assurance Case](./Assurance.md) document in this
 repository describes the end-to-end specification-to-implementation
-process, system requirements, testing, and V&V associated with Task 2
-deliverables. Rather than restate the document's contents here, Galois
-recommends reviewing it as a conextualized summary of Task 2
+process, system requirements, testing, and V&V associated with *Task
+2* deliverables. Rather than restate the document's contents here,
+Galois recommends reviewing it as a conextualized summary of *Task 2*
 artifacts.
 
-Galois will continue to develop V&V capabilities and port the design
-to actual hardware in preparation for Tasks 3 (Evaluation) and 4
-(Presentation).
+Again, see the build system contained in the [`Makefile`](./Makefile)
+for information about how to build the RTS system, its documentation,
+and re-running its assurance case.  The top-level rule that re-runs
+the assurance case is called `check`.  
+
+The script called `run_framac_proofs.sh` re-runs the Frama-C-based
+assurance case.  It uses a Docker image of the Frama-C tools, and
+as such should not be run within the HARDENS Docker container.
 
 ## Task 3: Evaluation
 
-In order to evaluate the system, one might read the project's slide
-decks (see Task 4 below), read the project's final report (see Task 5
-below), and review the system's models, specifications,
+In order to evaluate the system, we suggest reading the project's
+slide decks (see *Task 4* below), read the project's final report (see
+*Task 5* below), and review the system's models, specifications,
 implementation, and assurance.  This section summarizes the details of
 this latter aspect.
 
 We summarize in this section:
 
- - the structure of the project's repository, 
- - its submodules/dependencies, 
- - our use of a Docker containers to standardize development and
-   evaluation virtual platforms, and
- - our hardware development board(s) used for the physical
-   demonstrator (which is still under development) and the product's
-   I/O devices.
+ - the structure of the project's repository, its
+ - submodules/dependencies, our use of a Docker containers to
+ - standardize development and evaluation virtual platforms, and our
+ - hardware development board(s) used for the physical demonstrator
+ - (which is incomplete) and the product's I/O devices.
 
 ### Repository Structure
 
@@ -285,7 +292,18 @@ tools to this container as necessary during project execution.
 
 #### HARDENS Container
 
-To build and run the core HARDENS Docker image, use the prebuild `galoisinc/hardens:latest` image. Note that `build_docker.sh` currently does not work, as `cryptol-codegen` no longer builds. Best if you use the following command:
+To build and run the core HARDENS Docker image, use the pre-built
+`galoisinc/hardens:latest` image available from
+[DockerHub](https://hub.docker.com).
+
+The helper script `run_docker.sh` (optionally, if necessary) pulls
+and executes the HARDENS Docker container, using Galois's public
+docker HARDENS image.  The helper script `docker_shell.sh` runs a
+shell in the spawned container.  Depending upon your Docker
+environment, you may have to run these commands using `sudo`.
+
+If you'd like to run and exec containers by hand, the following
+command is an example of how to run the image:
 
 ```
 $ docker run --network host --privileged -v $PWD:/HARDENS -it \
@@ -315,10 +333,6 @@ use by running a command like:
 $ docker exec -it HARDENS bash -l
 ```
 
-The helper script `run_docker.sh` executed the above detached run
-command, using Galois's public docker HARDENS image.  The helper
-script `docker_shell.sh` runs a shell in the spawned container.
-
 #### SysMLv2 Container
 
 To pull and use the pre-build SysMLv2 container, use the following
@@ -335,8 +349,8 @@ $ docker run -d -it --name SysMLv2 --network host -v $PWD:/HARDENS \
 The Docker container contains snapshots of various tools that are not
 necessarily the latest releases or development versions of said tools.
 We include these particular versions because they are the versions
-used for development of the demonstrator, in alignment with our
-*Tool Dependencies* recommendations, **Tool Metadata**, **Tool
+used for development of the demonstrator, in alignment with our *Tool
+Dependencies* recommendations, **Tool Metadata**, **Tool
 Availability**, and **Evaluation Platform**.
 
 In particular, the version of Lando shipped in the image is incapable
@@ -352,7 +366,8 @@ We are using an ECP5-5G FPGA board for the RTS demonstrator.
 Details [here](https://www.latticesemi.com/products/developmentboardsandkits/ecp5evaluationboard#_C694C444BC684AD48A3ED64C227B6455). The board uses ECP5-5G FPGA ([LFE5UM5G-85F-8BG381](https://www.latticesemi.com/en/Products/FPGAandCPLD/ECP5)) which has:
 
 - 84k LUTs
-- On-board Boot Flash – 128 Mbit Serial Peripheral Interface (SPI) Flash, with Quad read feature
+- On-board Boot Flash – 128 Mbit Serial Peripheral Interface (SPI)
+  Flash, with Quad read feature
 - 8 input DIP switches, 3 push buttons and 8 LEDs for demo purposes
 
 ![ECP_board](assets/ecp5_top.png)
@@ -465,9 +480,27 @@ minute) via [https://git.overleaf.com/623259a297f75c655f6d1f47](Overleaf),
 and a [PDF snapshot](./docs/HARDENS_Final_Report_Oct_2022.pdf)
 of the final report is available in [docs folder](./docs/).
 
+## HARDENS Lives On
+
+The HARDENS case study has had a life of its own since Galois
+completed the project in early 2023.
+
+It has been the subject of discussion at several conferences, such as:
+ - the NRC's [Regulatory Information Conference (RIC)](https://ric.nrc.gov), 
+ - the NSA's [High Confidence Software and Systems Conference (HCSS)](https://sos-vo.org/group/hcss_conference),
+ - the [Digital Engineering Center of Excellence](https://dice.inl.gov) Conference (DICE),
+ - it was a repeated focus of the [Halden Human-Technology-Organisation Project](https://ife.no/en/project/oecd-nea-halden-hto-project/) (Halden HTO)'s workshop focused on [Risk and Evidence Safety Assurance](https://www.nrc.gov/about-nrc/regulatory/research/digital.html) throughout the whole of 2023,
+ - DARPA and the NRC jointly funded R&D in the [DARPA ARCOS](https://www.darpa.mil/program/automated-rapid-certification-of-software) program to extend meta-model of [Adelard's ASCE tool](https://www.adelard.com/asce/) in order to accommodate for the advanced demonstrated in this case study.
+
+In 2024 and beyond, Galois is, and expects to be, executing new R&D
+projects with various Government agencies to reuse, extend, and
+transition RDE and this demonstrator, including its use as a part of a
+case study in the [DARPA PROVERS
+program](https://www.darpa.mil/program/pipelined-reasoning-of-verifiers-enabling-robust-systems).
+
 ## License
 
-   Copyright 2021, 2022, 2023 Galois, Inc.
+   Copyright 2021, 2022, 2023, 2024 Galois, Inc.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
