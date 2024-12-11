@@ -18,7 +18,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN mkdir /tools
 WORKDIR /
 
-RUN apt-get update && apt-get upgrade -y
+RUN apt-get update && apt-get upgrade -y --allow-unauthenticated
 RUN apt-get install -y wget git python3 pip \
     python3-dev software-properties-common \
     iproute2 usbutils srecord \
@@ -38,6 +38,8 @@ RUN apt-get install -y wget git python3 pip \
     iverilog verilator \
     vim mercurial libboost-program-options-dev \
     texlive-full pandoc
+# Needed by our runtime verification harness.
+RUN pip install pexpect
 
 # Builder
 FROM base as builder
@@ -84,6 +86,7 @@ RUN \
 RUN echo "${TOOL} ${REPO} ${TAG}" >> ${VERSION_LOG}
 
 # RISCV toolchain
+# Why are we building this?
 ARG TOOL=riscv-gnu-toolchain
 ARG TAG=2024.09.03
 ARG REPO=https://github.com/riscv/riscv-gnu-toolchain

@@ -57,6 +57,8 @@ echo "INFO: Building the container..."
 DOCKER_BUILDKIT=1 sudo docker build \
     --progress=plain \
     --tag ${IMAGE_TAG} \
+    --platform linux/amd64,linux/arm64
+    --file Dockerfile-2024 \
     .
 
 if [ $doPush -eq 1 ]; then
