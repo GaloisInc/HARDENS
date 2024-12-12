@@ -20,7 +20,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Env and settings
-IMAGE_TAG=galoisinc/hardens:latest
+IMAGE_TAG=galoisinc/hardens:1.1
 
 # clone cryptol-verilog and update its submodules prior to building the docker image
 if [ -d "cryptol-verilog" ];
@@ -54,9 +54,14 @@ fi
 
 # Build the container
 echo "INFO: Building the container..."
-DOCKER_BUILDKIT=1 sudo docker build \
+sudo docker buildx create \
+     --name multi-platform-builder \
+     --driver docker-container \
+     --use
+DOCKER_BUILDKIT=1 sudo docker buildx build \
     --progress=plain \
     --tag ${IMAGE_TAG} \
+    --tag galoisinc/hardens:latest \
     --platform linux/amd64,linux/arm64
     --file Dockerfile-2024 \
     .
